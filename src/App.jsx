@@ -7,13 +7,22 @@ import {
 } from "react-zoom-pan-pinch";
 import GameState from "./components/GameState";
 import GlobalGameState from "./model/GlobalGameState";
+
 import "./style.css";
 
 function App() {
   const [turn, setTurn] = useState(GlobalGameState.gameTurn);
+  const [isMoveable, setIsMoveable] = useState(false);
+
+  const onDrag = () => {
+    setIsMoveable(true);
+  };
+  const onStop = () => {
+    setIsMoveable(false);
+  };
 
   function turnHandler() {
-    setTurn(GlobalGameState.gameTurn)
+    setTurn(GlobalGameState.gameTurn);
   }
 
   const Controls = () => {
@@ -40,15 +49,23 @@ function App() {
       </div>
     );
   };
+  const initialJpAopPosition = { left: 2.7, top: 7 };
 
   return (
     <>
-      <TransformWrapper>
+      <TransformWrapper
+        initialScale={1}
+        disabled={isMoveable}
+        minScale={0.5}
+        maxScale={6}
+        limitToBounds={false}
+        // pinch={{ step: 5 }}
+      >
         <Controls />
         <div class="d-flex p-2">
-          <GameState turn = {turn}/>
+          <GameState turn={turn} />
           <TransformComponent>
-            <Board turnHandler={turnHandler}/>
+            <Board turnHandler={turnHandler} onDrag={onDrag} onStop={onStop} />
           </TransformComponent>
         </div>
       </TransformWrapper>
