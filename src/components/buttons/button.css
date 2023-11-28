@@ -1,0 +1,12 @@
+.dropdown-pos {
+  position: absolute;
+  bottom: 500px;
+  width: 250px;
+}
+button.list-group-item:hover {
+  background: #0d6efd;
+  color: white;
+}
+.selected {
+  outline: 2px solid blue;
+}
