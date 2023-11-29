@@ -41,6 +41,12 @@ function GameState({ turn }) {
               <p class="text-left">
                 Turn: {turn} - {GlobalGameState.turnText[turn - 1]}
               </p>
+              <p class="text-left">
+                Japan Air Ops: {GlobalGameState.airOperationPoints["japan"]}
+              </p>
+              <p class="text-left">
+              US Air Ops: {GlobalGameState.airOperationPoints["us"]}
+              </p>
             </div>
           </div>
         </div>

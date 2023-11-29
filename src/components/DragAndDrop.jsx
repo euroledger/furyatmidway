@@ -13,41 +13,46 @@ function DragAndDrop({ handleDragEnter, handleDrop }) {
       <div
         class={"drag-drop-zone zone1"}
         style={{
-          left: position[0].left,
+          left: position[0].left + "%",
+          top: "5.8%",
+        }}
+        onDragEnter={(e) => handleDragEnter(e, 0)}
+        onDragOver={onDragOver}
+      ></div>
+      <div
+        class={"drag-drop-zone zone2"}
+        style={{
+          left: position[1].left + "%",
           top: "5.8%",
         }}
         onDragEnter={(e) => handleDragEnter(e, 1)}
-        onDrop={(e) => handleDrop(e, 1)}
         onDragOver={onDragOver}
       ></div>
       <div
         class={"drag-drop-zone zone2"}
         style={{
-          left: position[1].left,
-          top: "5.8%",
+          left: position[2].left + "%",
+          top: `5.8%`,
         }}
         onDragEnter={(e) => handleDragEnter(e, 2)}
-        onDrop={(e) => handleDrop(e, 2)}
         onDragOver={onDragOver}
       ></div>
       <div
         class={"drag-drop-zone zone2"}
         style={{
-          left: position[2].left,
+          left: position[3].left + "%",
           top: `5.8%`,
         }}
         onDragEnter={(e) => handleDragEnter(e, 3)}
-        onDrop={(e) => handleDrop(e, 3)}
         onDragOver={onDragOver}
       ></div>
       <div
         class={"drag-drop-zone zone2"}
         style={{
-          left: position[3].left,
+          left: position[4].left + "%",
           top: `5.8%`,
         }}
-        onDragEnter={(e) => handleDragEnter(e)}
-        onDrop={(e) => handleDrop(e, 4)}
+        onDragEnter={(e) => handleDragEnter(e, 4)}
         onDragOver={onDragOver}
       ></div>
     </>
