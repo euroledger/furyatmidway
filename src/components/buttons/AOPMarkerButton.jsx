@@ -17,7 +17,7 @@ function AOPMarkerButton({
   onStop,
   getZone,
   zIndex,
-  incrementZIndex
+  incrementZIndex,
 }) {
   const aopMarker = {
     items: [
@@ -38,40 +38,15 @@ function AOPMarkerButton({
     ],
   };
   const [position, setPosition] = useState(initialPosition);
-  const [isDropdownVisible, setDropdownVisible] = useState(false);
   const [aopMarkerItems, setAOPMarkerDisabledState] = useState(aopMarker.items);
-
-  const handleButtonChange = (event, userData) => {
-    setDropdownVisible(false);
-
-    const airOps = GlobalGameState.airOperationPoints[side];
-    const xoffset = userData.delta[airOps];
-
-    if (xoffset > 0) {
-      GlobalGameState.airOperationPoints[side] += 1;
-    } else {
-      GlobalGameState.airOperationPoints[side] -= 1;
-    }
-
-    aopMarker.items[0].userData.isDisabled =
-      GlobalGameState.airOperationPoints[side] == 4;
-    aopMarker.items[1].userData.isDisabled =
-      GlobalGameState.airOperationPoints[side] == 0;
-
-    const newPos = position.left + xoffset;
-    setPosition({ ...position, left: newPos });
-    setAOPMarkerDisabledState(aopMarker.items);
-  };
-
-  const myRef = useRef();
 
   // ensure that if the buttons are not in the same space
   // they revert to their default (centred) position
   if (
     GlobalGameState.airOperationPoints["japan"] !=
-    GlobalGameState.airOperationPoints["us"] && position.top != AOPOffsets[0].top + 0.4
-    && position.left != AOPOffsets[0].left + 0.3
-
+      GlobalGameState.airOperationPoints["us"] &&
+    position.top != AOPOffsets[0].top + 0.4 &&
+    position.left != AOPOffsets[0].left + 0.3
   ) {
     setPosition({
       ...position,
@@ -106,56 +81,29 @@ function AOPMarkerButton({
     });
   };
 
-  const handleClickOutside = (e) => {
-    if (!myRef.current) {
-      return;
-    }
-    if (!myRef.current.contains(e.target)) {
-      setDropdownVisible(false);
-    }
-  };
-
-  useEffect(() => {
-    document.addEventListener("mousedown", handleClickOutside);
-    return () => document.removeEventListener("mousedown", handleClickOutside);
-  });
-
-  const handleChange = (event) => {
-    setDropdownVisible(!isDropdownVisible);
-  };
-
   const z = zIndex[side] + 5;
   return (
     <>
       <div>
-        <input
-          type="image"
-          src={image}
-          name="saveForm"
-          class={"button-pos dropdown-toggle"}
-          style={{
-            position: "absolute",
-            width: "40px",
-            left: `${position.left}%`,
-            top: `${position.top}%`,
-            zIndex: z,
-          }}
-          id="saveForm"
-          onClick={handleChange}
-          onMouseEnter={onDrag}
-          onMouseLeave={onStop}
-          draggabble="true"
-          onDragStart={onDrag}
-          onDragEnd={handleDrop}
-        />
-        {isDropdownVisible && (
-          <PopupMenu
-            position={position}
-            menuItems={aopMarkerItems}
-            handleButtonChange={handleButtonChange}
-            myRef={myRef}
+          <input
+            type="image"
+            src={image}
+            name="saveForm"
+            class={"button-pos"}
+            style={{
+              position: "absolute",
+              width: "40px",
+              left: `${position.left}%`,
+              top: `${position.top}%`,
+              zIndex: z,
+            }}
+            id="saveForm"
+            onMouseEnter={onDrag}
+            onMouseLeave={onStop}
+            draggabble="true"
+            onDragStart={onDrag}
+            onDragEnd={handleDrop}
           />
-        )}
       </div>
     </>
   );

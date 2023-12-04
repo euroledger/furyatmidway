@@ -1,0 +1,383 @@
+import React from "react";
+import "./main.scss";
+
+const POINTY = 0;
+const FLAT = 1;
+
+const hexOrigin = {
+  x: -15,
+  y: -21,
+};
+
+const hexType = FLAT;
+export default class CanvasHex extends React.Component {
+  constructor(props) {
+    super(props);
+    this.state = {
+      hexSize: 32,
+      scale: props.scale,
+    };
+    this.handleMouseMove = this.handleMouseMove.bind(this);
+  }
+
+  UNSAFE_componentWillMount() {
+    this.hexParameters =
+      hexType === POINTY
+        ? this.getPointyHexParameters()
+        : this.getPointyHexParameters();
+
+    this.setState({
+      canvasSize: { canvasWidth: 450, canvasHeight: 400 },
+    });
+  }
+
+  componentDidMount() {
+    this.setState({
+      canvasPosition: { left: 0, right: 0, top: 0, bottom: 0 },
+    });
+    const { canvasWidth, canvasHeight } = this.state.canvasSize;
+    this.canvasHex.width = canvasWidth;
+    this.canvasHex.height = canvasHeight;
+    this.canvasCoordinates.width = canvasWidth;
+    this.canvasCoordinates.height = canvasHeight;
+    this.getCanvasPosition(this.canvasCoordinates);
+    if (hexType === POINTY) {
+      this.drawPointyHexes();
+    } else {
+      this.drawFlatHexes();
+    }
+  }
+
+  shouldComponentUpdate(nextProps, nextState) {
+    if (nextState.currentHex !== this.state.currentHex) {
+      const { q, r, x, y } = nextState.currentHex;
+      const { canvasWidth, canvasHeight } = this.state.canvasSize;
+      const ctx = this.canvasCoordinates.getContext("2d");
+      ctx.clearRect(0, 0, canvasWidth, canvasHeight);
+      if (hexType === POINTY) {
+        this.drawPointyHex(this.canvasCoordinates, { x, y }, "lime", 3);
+      } else {
+        this.drawFlatHex(this.canvasCoordinates, { x, y }, "red", 3);
+      }
+      return true;
+    }
+    return false;
+  }
+
+  flatHexToPixel = (hex) => {
+    const x = this.state.hexSize * ((3 / 2) * hex.q) + hexOrigin.x;
+    const y =
+      this.state.hexSize * ((Math.sqrt(3) / 2) * hex.q + Math.sqrt(3) * hex.r) +
+      hexOrigin.y;
+    return { x, y };
+  };
+
+  pixelToFlatHex = ({ x, y }) => {
+    let q =
+      ((x - hexOrigin.x) * 2) / 3 / (this.state.hexSize * this.props.scale);
+    let r =
+      (((y - hexOrigin.y) * Math.sqrt(3)) / 3 - (x - hexOrigin.x) / 3) /
+      (this.state.hexSize * this.props.scale);
+    return { q, r, s: -q - r };
+  };
+
+  pointyHexToPixel = (hex) => {
+    const x =
+      this.state.hexSize * Math.sqrt(3) * (hex.q + hex.r / 2) + hexOrigin.x;
+    const y = ((this.state.hexSize * 3) / 2) * hex.r + hexOrigin.y;
+    return { x, y };
+  };
+
+  pixelToPointyHex = ({ x, y }) => {
+    let q =
+      (((x - hexOrigin.x) * Math.sqrt(3)) / 3 - (y - hexOrigin.y) / 3) /
+      this.state.hexSize;
+    let r = ((y - hexOrigin.y) * 2) / 3 / this.state.hexSize;
+    return { q, r, s: -q - r };
+  };
+
+  getFlatHexCornerCoord = (center, i) => {
+    const angle_deg = 60 * i;
+    const angle_rad = (Math.PI / 180) * angle_deg;
+
+    const x = center.x + this.state.hexSize * Math.cos(angle_rad);
+    const y = center.y + this.state.hexSize * Math.sin(angle_rad);
+    return { x, y };
+  };
+
+  getPointyHexCornerCoord = (center, i) => {
+    const angle_deg = 60 * i - 30;
+    const angle_rad = (Math.PI / 180) * angle_deg;
+
+    const x = center.x + this.state.hexSize * Math.cos(angle_rad);
+    const y = center.y + this.state.hexSize * Math.sin(angle_rad);
+    return { x, y };
+  };
+
+  getFlatHexParameters = () => {
+    let hexWidth = this.state.hexSize * 2;
+    let hexHeight = Math.sqrt(3) * this.state.hexSize;
+    let vertDist = hexHeight;
+    let horizDist = (hexWidth * 3) / 4;
+    return { hexWidth, hexHeight, vertDist, horizDist };
+  };
+
+  getPointyHexParameters = () => {
+    let hexHeight = this.state.hexSize * 2;
+    let hexWidth = (Math.sqrt(3) / 2) * hexHeight;
+    let vertDist = (hexHeight * 3) / 4;
+    let horizDist = hexWidth;
+    return { hexWidth, hexHeight, vertDist, horizDist };
+  };
+
+  drawHexCoordinates = (canvasID, center, hex) => {
+    const row = String.fromCharCode(hex.q -1 + 'A'.charCodeAt(0))
+    const ctx = canvasID.getContext("2d");
+
+    let col = 0;
+    if (hex.r === 1) {
+      col = 0; 
+    }
+    if (hex.r ===  2){
+      col = 200;
+    }
+    // if (hex.r === 3  || hex.r === 4){
+    //   col = 2;
+    // }
+    // if (hex.r === 5  || hex.r === 6){
+    //   col = 3;
+    // }
+    // if (hex.r === 7  || hex.r === 8){
+    //   col = 4;
+    // }
+    ctx.fillText(hex.q, center.x - 11, center.y + 3);
+    ctx.fillText(hex.r, center.x + 5, center.y + 3);
+  };
+
+  drawFlatHexes = () => {
+    const { canvasWidth, canvasHeight } = this.state.canvasSize;
+    const { hexWidth, hexHeight, vertDist, horizDist } = this.hexParameters;
+    let qLeftSide = Math.round(hexOrigin.x / horizDist) * 4;
+    let qRightSide = Math.round((canvasWidth - hexOrigin.x) / horizDist) * 2;
+    let rTopSide = Math.round(hexOrigin.y / vertDist) * 4;
+    let rBottomSide = Math.round((canvasHeight - hexOrigin.y) / vertDist) * 2;
+
+    for (let r = -rTopSide; r <= rBottomSide; r++) {
+      let p = 0;
+      for (let q = 0; q <= qRightSide; q++) {
+        if (q % 2 === 0 && q !== 0) {
+          p++;
+        }
+        let { x, y } = this.flatHexToPixel({ q, r: r - p });
+        if (
+          x > hexWidth / 2 &&
+          x < canvasWidth - hexWidth / 2 &&
+          y > hexHeight / 2 &&
+          y < canvasHeight - hexHeight / 2
+        ) {
+          this.drawFlatHex(this.canvasHex, { x, y }, "rgba(50, 40, 0, 0)", 1);
+          this.drawHexCoordinates(this.canvasHex, { x, y }, { q, r: r - p });
+        }
+      }
+    }
+
+    for (let r = -rTopSide; r <= rBottomSide; r++) {
+      let n = 0;
+      for (let q = -1; q >= -qLeftSide; q--) {
+        if (q % 2 !== 0) {
+          n++;
+        }
+        let { x, y } = this.flatHexToPixel({ q, r: r + n });
+        if (
+          x > hexWidth / 2 &&
+          x < canvasWidth - hexWidth / 2 &&
+          y > hexHeight / 2 &&
+          y < canvasHeight - hexHeight / 2
+        ) {
+          this.drawFlatHex(this.canvasHex, { x, y }, "rgba(50, 40, 0, 0)", 1);
+          this.drawHexCoordinates(this.canvasHex, { x, y }, { q, r: r + n });
+        }
+      }
+    }
+  };
+
+  drawPointyHexes = () => {
+    const { canvasWidth, canvasHeight } = this.state.canvasSize;
+    const { hexWidth, hexHeight, vertDist, horizDist } = this.hexParameters;
+    let qLeftSide = Math.round(hexOrigin.x / horizDist) * 4;
+    let qRightSide = Math.round((canvasWidth - hexOrigin.x) / horizDist) * 2;
+    let rTopSide = Math.round(hexOrigin.y / vertDist) * 4;
+    let rBottomSide = Math.round((canvasHeight - hexOrigin.y) / vertDist) * 2;
+
+    let p = 0;
+    for (let r = 0; r <= rBottomSide; r++) {
+      if (r % 2 === 0 && r !== 0) {
+        p++;
+      }
+      for (let q = -qLeftSide; q <= qRightSide; q++) {
+        let { x, y } = this.pointyHexToPixel({ q: q - p, r });
+        if (
+          x > hexWidth / 2 &&
+          x < canvasWidth - hexWidth / 2 &&
+          y > hexHeight / 2 &&
+          y < canvasHeight - hexHeight / 2
+        ) {
+          this.drawPointyHex(this.canvasHex, { x, y });
+          this.drawHexCoordinates(this.canvasHex, { x, y }, { q: q - p, r });
+        }
+      }
+    }
+    let n = 0;
+    for (let r = -1; r >= -rTopSide; r--) {
+      if (r % 2 === 0) {
+        n++;
+      }
+      for (let q = -qLeftSide; q <= qRightSide; q++) {
+        let { x, y } = this.pointyHexToPixel({ q: q + n, r });
+        if (
+          x > hexWidth / 2 &&
+          x < canvasWidth - hexWidth / 2 &&
+          y > hexHeight / 2 &&
+          y < canvasHeight - hexHeight / 2
+        ) {
+          this.drawPointyHex(this.canvasHex, { x, y });
+          this.drawHexCoordinates(this.canvasHex, { x, y }, { q: q + n, r });
+        }
+      }
+    }
+  };
+
+  drawPointyHex = (canvasID, { x, y }, color, width) => {
+    for (let i = 0; i <= 5; i++) {
+      let start = this.getPointyHexCornerCoord({ x, y }, i);
+      let end = this.getPointyHexCornerCoord({ x, y }, i + 1);
+      this.drawLine(
+        canvasID,
+        { x: start.x, y: start.y },
+        { x: end.x, y: end.y },
+        color,
+        width
+      );
+    }
+  };
+
+  drawFlatHex = (canvasID, { x, y }, color, width) => {
+    for (let i = 0; i <= 5; i++) {
+      let start = this.getFlatHexCornerCoord({ x, y }, i);
+      let end = this.getFlatHexCornerCoord({ x, y }, i + 1);
+      this.drawLine(
+        canvasID,
+        { x: start.x, y: start.y },
+        { x: end.x, y: end.y },
+        color,
+        width
+      );
+    }
+  };
+
+  drawHex(canvasID, center) {
+    for (let i = 0; i <= 5; i++) {
+      let start, end;
+      if (hexType === POINTY) {
+        start = this.getPointyHexCornerCoord(center, i);
+        end = this.getPointyHexCornerCoord(center, i + 1);
+      } else {
+        start = this.getFlatHexCornerCoord(center, i);
+        end = this.getFlatHexCornerCoord(center, i + 1);
+      }
+
+      this.drawLine(
+        canvasID,
+        { x: start.x, y: start.y },
+        { x: end.x, y: end.y }
+      );
+    }
+  }
+
+  drawLine(canvasID, start, end, color, width) {
+    const ctx = canvasID.getContext("2d");
+    ctx.beginPath();
+    ctx.moveTo(start.x, start.y);
+    ctx.strokeStyle = color;
+    ctx.lineWidth = width;
+    ctx.lineTo(end.x, end.y);
+    ctx.stroke();
+    ctx.closePath();
+  }
+
+  cubeRound = (frac) => {
+    var q = Math.round(frac.q);
+    var r = Math.round(frac.r);
+    var s = Math.round(frac.s);
+
+    var q_diff = Math.abs(q - frac.q);
+    var r_diff = Math.abs(r - frac.r);
+    var s_diff = Math.abs(s - frac.s);
+
+    if (q_diff > r_diff && q_diff > s_diff) {
+      q = -r - s;
+    } else if (r_diff > s_diff) {
+      r = -q - s;
+    } else {
+      s = -q - r;
+    }
+
+    return { q, r, s };
+  };
+
+  getCanvasPosition(canvasID) {
+    if (!this.state.canvasPosition) {
+      return;
+    }
+    const { left, right, top, bottom } = this.state.canvasPosition;
+
+    // console.log("BEFORE CANVAS width = ", right - left);
+    // console.log("BEFORE CANVAS height = ", bottom - top);
+    let rect = canvasID.getBoundingClientRect();
+    this.setState({
+      canvasPosition: {
+        left: rect.left,
+        right: rect.right,
+        top: rect.top,
+        bottom: rect.bottom,
+      },
+    });
+  }
+  handleMouseMove = (e) => {
+    this.getCanvasPosition(this.canvasCoordinates);
+
+    const { left, right, top, bottom } = this.state.canvasPosition;
+    const mx = e.pageX - left;
+    const my = e.pageY - top - window.scrollY;
+
+    if (hexType === POINTY) {
+      const { q, r } = this.cubeRound(this.pixelToPointyHex({ x: mx, y: my }));
+
+      const { x, y } = this.pointyHexToPixel({ q, r });
+      this.setState({
+        currentHex: { q, r, x, y },
+      });
+    } else {
+      const { q, r } = this.cubeRound(this.pixelToFlatHex({ x: mx, y: my }));
+      console.log(q, r);
+      const { x, y } = this.flatHexToPixel({ q, r });
+      this.setState({
+        currentHex: { q, r, x, y },
+      });
+    }
+  };
+
+  render() {
+    return (
+      <div>
+        <canvas ref={(canvasHex) => (this.canvasHex = canvasHex)}></canvas>
+        <canvas
+          ref={(canvasCoordinates) =>
+            (this.canvasCoordinates = canvasCoordinates)
+          }
+          onMouseMove={this.handleMouseMove}
+        ></canvas>
+      </div>
+    );
+  }
+}

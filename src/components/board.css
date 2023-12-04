@@ -4,3 +4,14 @@
   text-align: center;
   border-radius: 0.5rem;
 }
+
+.border{
+  border-left: 6px solid blue;
+  /* width: 100px;
+  height: 70px; */
+  /* background: lightgray; */
+}
+
+.zone1 {
+  background: green;
+}

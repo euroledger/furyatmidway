@@ -13,6 +13,7 @@ import "./style.css";
 function App() {
   const [turn, setTurn] = useState(GlobalGameState.gameTurn);
   const [isMoveable, setIsMoveable] = useState(false);
+  const [scale, setScale] = useState(1);
 
   const onDrag = () => {
     setIsMoveable(true);
@@ -51,6 +52,10 @@ function App() {
   };
   const initialJpAopPosition = { left: 2.7, top: 7 };
 
+  function handleScaleChange(event) {
+    console.log("SCALE CHANGED scale = ", event.instance.transformState.scale)
+    setScale(event.instance.transformState.scale)
+  }
   return (
     <>
       <TransformWrapper
@@ -59,13 +64,14 @@ function App() {
         minScale={0.5}
         maxScale={6}
         limitToBounds={false}
+        onTransformed={(e) => handleScaleChange(e)}
         // pinch={{ step: 5 }}
       >
         <Controls />
         <div class="d-flex p-2">
           <GameState turn={turn} />
           <TransformComponent>
-            <Board turnHandler={turnHandler} onDrag={onDrag} onStop={onStop} />
+            <Board turnHandler={turnHandler} onDrag={onDrag} onStop={onStop} scale={scale}/>
           </TransformComponent>
         </div>
       </TransformWrapper>
