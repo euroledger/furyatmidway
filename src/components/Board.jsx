@@ -2,20 +2,24 @@ import React, { useState } from "react";
 import TurnMarkerButton from "./buttons/TurnMarkerButton";
 import AOPMarkerButton from "./buttons/AOPMarkerButton";
 import MidwayInvasionButton from "./buttons/MidwayInvasionButton";
+import MidwayGarrisonButton from "./buttons/MidwayGarrisonButton";
 import DragAndDrop from "./DragAndDrop";
 import CanvasHex from "./CanvasHex";
 import "./board.css";
 import AOPOffsets from "./AopBoxOffsets";
+import MIFOffsets from "./MIFBoxOffsets";
+import MGTOffsets from "./MGTBoxOffsets";
 
-function Board({ turnHandler, onDrag, onStop, scale }) {
+function Board({ turnHandler, gameStateHandler, onDrag, onStop, scale }) {
   let zProps = { us: 0, japan: 0 };
   const initialJpAopPosition = { left: 2.7, top: 7 };
   const initialUSAopPosition = { left: 3.5, top: 6.1 };
-  const initialMIFPosition = { left: 45.5, top: 7.1 };
+  const initialMIFPosition = { left: 40.1, top: 5.9 };
+  const initialMGFPosition = { left: 77.3, top: 5.9 };
 
   const [zone, setZone] = useState(0);
   const [mifzone, setMIFZone] = useState(5);
-
+  const [mgfzone, setMGFZone] = useState(6);
   const [zIndex, setZIndex] = useState(zProps);
 
   const handleDragEnter = (event, zone) => {
@@ -23,8 +27,21 @@ function Board({ turnHandler, onDrag, onStop, scale }) {
     event.stopPropagation();
     setZone(zone);
   };
+  const handleMIFDragEnter = (event, zone) => {
+    event.preventDefault();
+    event.stopPropagation();
+    setMIFZone(zone);
+  };
+
+  const handleMGFDragEnter = (event, zone) => {
+    event.preventDefault();
+    event.stopPropagation();
+    setMGFZone(zone);
+  };
   const getZone = () => zone;
   const getMIFZone = () => mifzone;
+  const getMGFZone = () => mgfzone;
+
 
   const incrementZIndex = (side, increment) => {
     if (side === "japan") {
@@ -63,8 +80,7 @@ function Board({ turnHandler, onDrag, onStop, scale }) {
             top: `17.7%`,
           }}
         >
-          
-          {/* US MAP <Canvas></Canvas> */} 
+          {/* US MAP <Canvas></Canvas> */}
         </div>
         <TurnMarkerButton
           image="/images/turnmarker.png"
@@ -85,6 +101,7 @@ function Board({ turnHandler, onDrag, onStop, scale }) {
           getZone={getZone}
           zIndex={zIndex}
           incrementZIndex={incrementZIndex}
+          gameStateHandler={gameStateHandler}
         />
         <AOPMarkerButton
           image="/images/usaop.png"
@@ -95,13 +112,35 @@ function Board({ turnHandler, onDrag, onStop, scale }) {
           getZone={getZone}
           zIndex={zIndex}
           incrementZIndex={incrementZIndex}
+          gameStateHandler={gameStateHandler}
         />
+        <div>
+          <DragAndDrop
+            handleDragEnter={handleMIFDragEnter}
+            zones={MIFOffsets}
+          ></DragAndDrop>
+        </div>
         <MidwayInvasionButton
           image="/images/midwayinvasion.png"
           initialPosition={initialMIFPosition}
           onDrag={onDrag}
           onStop={onStop}
           getZone={getMIFZone}
+          gameStateHandler={gameStateHandler}
+        />
+        <div>
+          <DragAndDrop
+            handleDragEnter={handleMGFDragEnter}
+            zones={MGTOffsets}
+          ></DragAndDrop>
+        </div>
+        <MidwayGarrisonButton
+          image="/images/midwaygarrison.png"
+          initialPosition={initialMGFPosition}
+          onDrag={onDrag}
+          onStop={onStop}
+          getZone={getMGFZone}
+          gameStateHandler={gameStateHandler}
         />
       </div>
     </>

@@ -48,12 +48,18 @@ export default class CanvasHex extends React.Component {
     }
   }
 
+  clearCanvas() {
+    const { canvasWidth, canvasHeight } = this.state.canvasSize;
+    const ctx = this.canvasCoordinates.getContext("2d");
+    ctx.clearRect(0, 0, canvasWidth, canvasHeight); // clears the canvas
+  }
+
   shouldComponentUpdate(nextProps, nextState) {
     if (nextState.currentHex !== this.state.currentHex) {
       const { q, r, x, y } = nextState.currentHex;
-      const { canvasWidth, canvasHeight } = this.state.canvasSize;
-      const ctx = this.canvasCoordinates.getContext("2d");
-      ctx.clearRect(0, 0, canvasWidth, canvasHeight);
+     
+      this.clearCanvas();
+
       if (hexType === POINTY) {
         this.drawPointyHex(this.canvasCoordinates, { x, y }, "lime", 3);
       } else {
@@ -131,25 +137,16 @@ export default class CanvasHex extends React.Component {
   };
 
   drawHexCoordinates = (canvasID, center, hex) => {
-    const row = String.fromCharCode(hex.q -1 + 'A'.charCodeAt(0))
+    const row = String.fromCharCode(hex.q - 1 + "A".charCodeAt(0));
     const ctx = canvasID.getContext("2d");
 
     let col = 0;
     if (hex.r === 1) {
-      col = 0; 
+      col = 0;
     }
-    if (hex.r ===  2){
+    if (hex.r === 2) {
       col = 200;
     }
-    // if (hex.r === 3  || hex.r === 4){
-    //   col = 2;
-    // }
-    // if (hex.r === 5  || hex.r === 6){
-    //   col = 3;
-    // }
-    // if (hex.r === 7  || hex.r === 8){
-    //   col = 4;
-    // }
     ctx.fillText(hex.q, center.x - 11, center.y + 3);
     ctx.fillText(hex.r, center.x + 5, center.y + 3);
   };
@@ -176,7 +173,9 @@ export default class CanvasHex extends React.Component {
           y < canvasHeight - hexHeight / 2
         ) {
           this.drawFlatHex(this.canvasHex, { x, y }, "rgba(50, 40, 0, 0)", 1);
-          this.drawHexCoordinates(this.canvasHex, { x, y }, { q, r: r - p });
+
+          const { q1, r1 } = this.convertCoords(q,r- p)
+          this.drawHexCoordinates(this.canvasHex, { x, y }, { q: q1, r: r1 });
         }
       }
     }
@@ -331,8 +330,6 @@ export default class CanvasHex extends React.Component {
     }
     const { left, right, top, bottom } = this.state.canvasPosition;
 
-    // console.log("BEFORE CANVAS width = ", right - left);
-    // console.log("BEFORE CANVAS height = ", bottom - top);
     let rect = canvasID.getBoundingClientRect();
     this.setState({
       canvasPosition: {
@@ -343,6 +340,25 @@ export default class CanvasHex extends React.Component {
       },
     });
   }
+
+  convertCoords = (q,r) => {
+    const offsets = [ 0, 1, 1, 1, 2, 2, 3, 3, 4, 4]
+
+    let r1 = r;
+    if (q >= 2) {
+      r1 = r + offsets[q]
+    } else {
+      r1 = r
+    }
+
+    const row = String.fromCharCode(q - 1 + "A".charCodeAt(0));
+    return { q1: row, r1}
+  }
+
+  handleMouseLeave = (e) => {
+    this.clearCanvas();
+  }
+
   handleMouseMove = (e) => {
     this.getCanvasPosition(this.canvasCoordinates);
 
@@ -359,10 +375,31 @@ export default class CanvasHex extends React.Component {
       });
     } else {
       const { q, r } = this.cubeRound(this.pixelToFlatHex({ x: mx, y: my }));
-      console.log(q, r);
       const { x, y } = this.flatHexToPixel({ q, r });
+
+      const odd = [7, 6, 5, 4, 3];
+      const oddTop = [0, -1, -2, -3, -4];
+
+      const index = Math.floor(q / 2);
+
+      // for the midway map, restrict hex selection to the displayed grid
+      if (
+        q === 0 ||
+        q === 10 ||
+        (q % 2 === 1 && r === odd[index]) ||
+        (q % 2 === 0 && r >= odd[index])
+      ) {
+        return;
+      }
+
+      if (
+        (r === oddTop[index])
+      ) {
+        return;
+      }
+      const {q1, r1} = this.convertCoords(q,r)
       this.setState({
-        currentHex: { q, r, x, y },
+        currentHex: { q, r, x, y, row: q1, col: r1 }, // row col are the midway map coords
       });
     }
   };
@@ -376,6 +413,7 @@ export default class CanvasHex extends React.Component {
             (this.canvasCoordinates = canvasCoordinates)
           }
           onMouseMove={this.handleMouseMove}
+          onMouseLeave={this.handleMouseLeave}
         ></canvas>
       </div>
     );

@@ -1,9 +1,9 @@
 import React, { useRef, useState } from "react";
 import GlobalGameState from "../../model/GlobalGameState";
 import "./button.css";
-import MIFOffsets from "../MIFBoxOffsets";
+import MGTOffsets from "../MGTBoxOffsets";
 
-function MidwayInvasionButton({
+function MidwayGarrisonButton({
   image,
   initialPosition,
   onDrag,
@@ -12,16 +12,19 @@ function MidwayInvasionButton({
   gameStateHandler
 }) {
   const [position, setPosition] = useState(initialPosition);
- 
+
+  const myRef = useRef();
+
+  
   const handleDrop = (event) => {
     event.preventDefault();
 
-    GlobalGameState.midwayInvasionLevel = getZone();
+    GlobalGameState.midwayGarrisonLevel = getZone();
   
     setPosition({
       ...position,
-      left: MIFOffsets[getZone()].left + 0.1,
-      top: MIFOffsets[getZone()].top + 0.2,
+      left: MGTOffsets[getZone()].left + 0.1,
+      top: MGTOffsets[getZone()].top + 0.2,
     });
     gameStateHandler();
   };
@@ -52,4 +55,4 @@ function MidwayInvasionButton({
   );
 }
 
-export default MidwayInvasionButton;
+export default MidwayGarrisonButton;

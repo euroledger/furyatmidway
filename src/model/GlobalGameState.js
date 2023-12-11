@@ -8,6 +8,8 @@ export default class GlobalGameState {
 
   static midwayInvasionLevel = 5;
 
+  static midwayGarrisonLevel = 6;
+
   static turnText = [
     "June 4, 1942 Morning",
     "June 4, 1942 Afternoon",

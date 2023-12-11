@@ -1,5 +1,4 @@
-import React, { useEffect, useRef, useState } from "react";
-import PopupMenu from "./PopupMenu";
+import React, { useState } from "react";
 import GlobalGameState from "../../model/GlobalGameState";
 import "./button.css";
 import AOPOffsets from "../AopBoxOffsets";
@@ -18,27 +17,10 @@ function AOPMarkerButton({
   getZone,
   zIndex,
   incrementZIndex,
+  gameStateHandler
 }) {
-  const aopMarker = {
-    items: [
-      {
-        label: "Advance 1",
-        userData: {
-          delta: [3.6, 3.6, 3.6, 3.6, 3.6],
-          isDisabled: false,
-        },
-      },
-      {
-        label: "Back 1",
-        userData: {
-          delta: [-3.6, -3.6, -3.6, -3.6, -3.6],
-          isDisabled: true,
-        },
-      },
-    ],
-  };
+
   const [position, setPosition] = useState(initialPosition);
-  const [aopMarkerItems, setAOPMarkerDisabledState] = useState(aopMarker.items);
 
   // ensure that if the buttons are not in the same space
   // they revert to their default (centred) position
@@ -79,6 +61,7 @@ function AOPMarkerButton({
       left: AOPOffsets[getZone()].left + 0.3 + leftOffset,
       top: AOPOffsets[getZone()].top + 0.4 - topOffset,
     });
+    gameStateHandler()
   };
 
   const z = zIndex[side] + 5;
