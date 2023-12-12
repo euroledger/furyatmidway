@@ -54,7 +54,7 @@ function App() {
   const initialJpAopPosition = { left: 2.7, top: 7 };
 
   function gameStateHandler () {
-    setGameState(!gameState);
+    setGameState(!gameState); 
   }
   
   function handleScaleChange(event) {

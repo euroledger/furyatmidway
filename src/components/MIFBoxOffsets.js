@@ -2,7 +2,7 @@
 
 const MIFOffsets = [
   {
-    left: 22.3,
+    left: 22.4,
     top: 5.8,
   },
   {
@@ -18,7 +18,7 @@ const MIFOffsets = [
     top: 5.8,
   },
   {
-    left: 36.5,
+    left: 36.6,
     top: 5.8,
   },
   {

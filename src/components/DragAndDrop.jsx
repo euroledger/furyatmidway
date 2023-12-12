@@ -10,7 +10,8 @@ function DragAndDrop({ handleDragEnter, handleDrop, zones }) {
   const myZones = zones.map((p, index) => {
     return (
       <div
-        class={"drag-drop-zone zone1"}
+        key={index}
+        class={"drag-drop-zone zone2"}
         style={{
           left: p.left + "%",
           top: p.top + "%",
@@ -20,11 +21,7 @@ function DragAndDrop({ handleDragEnter, handleDrop, zones }) {
       ></div>
     );
   });
-  return (
-    <>
-      {myZones}
-    </>
-  );
+  return <>{myZones}</>;
 }
 
 export default DragAndDrop;

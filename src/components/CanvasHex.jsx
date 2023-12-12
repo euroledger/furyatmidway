@@ -14,12 +14,12 @@ export default class CanvasHex extends React.Component {
   constructor(props) {
     super(props);
     this.state = {
-      hexSize: 32,
+      hexSize: 36,
       scale: props.scale,
+      side: props.side
     };
     this.handleMouseMove = this.handleMouseMove.bind(this);
   }
-
   UNSAFE_componentWillMount() {
     this.hexParameters =
       hexType === POINTY
@@ -27,7 +27,7 @@ export default class CanvasHex extends React.Component {
         : this.getPointyHexParameters();
 
     this.setState({
-      canvasSize: { canvasWidth: 450, canvasHeight: 400 },
+      canvasSize: { canvasWidth: 510, canvasHeight: 450 },
     });
   }
 
@@ -60,10 +60,12 @@ export default class CanvasHex extends React.Component {
      
       this.clearCanvas();
 
+      let colors = { us: "blue", japan: "red" };
+
       if (hexType === POINTY) {
         this.drawPointyHex(this.canvasCoordinates, { x, y }, "lime", 3);
       } else {
-        this.drawFlatHex(this.canvasCoordinates, { x, y }, "red", 3);
+        this.drawFlatHex(this.canvasCoordinates, { x, y }, colors[this.state.side], 3);
       }
       return true;
     }
@@ -158,6 +160,8 @@ export default class CanvasHex extends React.Component {
     let qRightSide = Math.round((canvasWidth - hexOrigin.x) / horizDist) * 2;
     let rTopSide = Math.round(hexOrigin.y / vertDist) * 4;
     let rBottomSide = Math.round((canvasHeight - hexOrigin.y) / vertDist) * 2;
+
+    console.log("BOTTOM : ", rBottomSide);
 
     for (let r = -rTopSide; r <= rBottomSide; r++) {
       let p = 0;
@@ -341,17 +345,12 @@ export default class CanvasHex extends React.Component {
     });
   }
 
+  // convert the axial coordinates to the offset coordinates (as printed on the game map)
   convertCoords = (q,r) => {
-    const offsets = [ 0, 1, 1, 1, 2, 2, 3, 3, 4, 4]
-
-    let r1 = r;
-    if (q >= 2) {
-      r1 = r + offsets[q]
-    } else {
-      r1 = r
-    }
+    const r1 = q >= 2 ? r + Math.floor(q/2) : r
 
     const row = String.fromCharCode(q - 1 + "A".charCodeAt(0));
+    console.log(row, r1)
     return { q1: row, r1}
   }
 

@@ -2,7 +2,7 @@
 
 const MGTOffsets = [
   {
-    left: 55.9,
+    left: 56.0,
     top: 5.9,
   },
   {

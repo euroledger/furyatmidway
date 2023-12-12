@@ -64,23 +64,24 @@ function Board({ turnHandler, gameStateHandler, onDrag, onStop, scale }) {
         <div
           style={{
             position: "absolute",
-            left: `7.2%`,
+            left: `7.3%`,
             top: `15.1%`,
           }}
         >
-          <CanvasHex scale={scale}></CanvasHex>
+          <CanvasHex scale={scale} side="japan"></CanvasHex>
         </div>
         <div
-          className="border"
+          // className="border"
           style={{
             position: "absolute",
             width: "520px",
             height: "420px",
-            left: `50.2%`,
-            top: `17.7%`,
+            left: `50.4%`,
+            top: `17.8%`,
           }}
         >
           {/* US MAP <Canvas></Canvas> */}
+          <CanvasHex scale={scale} side="us"></CanvasHex>
         </div>
         <TurnMarkerButton
           image="/images/turnmarker.png"

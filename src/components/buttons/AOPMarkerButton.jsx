@@ -40,6 +40,7 @@ function AOPMarkerButton({
   const handleDrop = (event) => {
     event.preventDefault();
 
+    console.log("ZONE = ", getZone());
     GlobalGameState.airOperationPoints[side] = getZone();
 
     let leftOffset = 0;
