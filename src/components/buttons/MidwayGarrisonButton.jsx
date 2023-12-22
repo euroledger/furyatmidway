@@ -9,7 +9,6 @@ function MidwayGarrisonButton({
   onDrag,
   onStop,
   getZone,
-  gameStateHandler
 }) {
   const [position, setPosition] = useState(initialPosition);
 
@@ -20,13 +19,17 @@ function MidwayGarrisonButton({
     event.preventDefault();
 
     GlobalGameState.midwayGarrisonLevel = getZone();
+
+    const gl = getZone() === 0 ? "X" : getZone()
   
+    GlobalGameState.log(`Midway Garrison Track set to ${gl}`)
+
     setPosition({
       ...position,
-      left: MGTOffsets[getZone()].left + 0.1,
-      top: MGTOffsets[getZone()].top + 0.2,
+      left: MGTOffsets[getZone()].left + 0.2,
+      top: MGTOffsets[getZone()].top + 0.3,
     });
-    gameStateHandler();
+    GlobalGameState.stateHandler();
   };
 
   return (

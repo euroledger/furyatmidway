@@ -1,7 +1,7 @@
 import React, { useState } from "react";
 import "./board.css";
 
-function DragAndDrop({ handleDragEnter, handleDrop, zones }) {
+function DragAndDrop({ handleDragEnter, zones }) {
   const onDragOver = (e) => {
     e.stopPropagation();
     e.preventDefault();

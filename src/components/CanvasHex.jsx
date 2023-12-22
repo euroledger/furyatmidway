@@ -16,7 +16,7 @@ export default class CanvasHex extends React.Component {
     this.state = {
       hexSize: 36,
       scale: props.scale,
-      side: props.side
+      side: props.side,
     };
     this.handleMouseMove = this.handleMouseMove.bind(this);
   }
@@ -57,7 +57,7 @@ export default class CanvasHex extends React.Component {
   shouldComponentUpdate(nextProps, nextState) {
     if (nextState.currentHex !== this.state.currentHex) {
       const { q, r, x, y } = nextState.currentHex;
-     
+
       this.clearCanvas();
 
       let colors = { us: "blue", japan: "red" };
@@ -65,7 +65,12 @@ export default class CanvasHex extends React.Component {
       if (hexType === POINTY) {
         this.drawPointyHex(this.canvasCoordinates, { x, y }, "lime", 3);
       } else {
-        this.drawFlatHex(this.canvasCoordinates, { x, y }, colors[this.state.side], 3);
+        this.drawFlatHex(
+          this.canvasCoordinates,
+          { x, y },
+          colors[this.state.side],
+          3
+        );
       }
       return true;
     }
@@ -161,8 +166,6 @@ export default class CanvasHex extends React.Component {
     let rTopSide = Math.round(hexOrigin.y / vertDist) * 4;
     let rBottomSide = Math.round((canvasHeight - hexOrigin.y) / vertDist) * 2;
 
-    console.log("BOTTOM : ", rBottomSide);
-
     for (let r = -rTopSide; r <= rBottomSide; r++) {
       let p = 0;
       for (let q = 0; q <= qRightSide; q++) {
@@ -178,7 +181,7 @@ export default class CanvasHex extends React.Component {
         ) {
           this.drawFlatHex(this.canvasHex, { x, y }, "rgba(50, 40, 0, 0)", 1);
 
-          const { q1, r1 } = this.convertCoords(q,r- p)
+          const { q1, r1 } = this.convertCoords(q, r - p);
           this.drawHexCoordinates(this.canvasHex, { x, y }, { q: q1, r: r1 });
         }
       }
@@ -346,24 +349,33 @@ export default class CanvasHex extends React.Component {
   }
 
   // convert the axial coordinates to the offset coordinates (as printed on the game map)
-  convertCoords = (q,r) => {
+  convertCoords = (q, r) => {
     const r1 = q >= 2 ? r + Math.floor(q/2) : r
 
     const row = String.fromCharCode(q - 1 + "A".charCodeAt(0));
-    console.log(row, r1)
     return { q1: row, r1}
-  }
+
+  };
 
   handleMouseLeave = (e) => {
     this.clearCanvas();
-  }
+  };
 
   handleMouseMove = (e) => {
+    this.determineMousePosition(e);
+  };
+
+  determineMousePosition = (e) => {
     this.getCanvasPosition(this.canvasCoordinates);
 
     const { left, right, top, bottom } = this.state.canvasPosition;
+
     const mx = e.pageX - left;
     const my = e.pageY - top - window.scrollY;
+
+    // console.log("?>>>>>>>>>>>>>mx =", mx, "my =",my)
+    // console.log("e.pageX =", e.pageX, "e.pageY =", e.pageY)
+    // console.log("lefy =", left, " top = ", top)
 
     if (hexType === POINTY) {
       const { q, r } = this.cubeRound(this.pixelToPointyHex({ x: mx, y: my }));
@@ -391,18 +403,22 @@ export default class CanvasHex extends React.Component {
         return;
       }
 
-      if (
-        (r === oddTop[index])
-      ) {
+      if (r === oddTop[index]) {
         return;
       }
-      const {q1, r1} = this.convertCoords(q,r)
+
+      const { q1, r1 } = this.convertCoords(q, r);
       this.setState({
         currentHex: { q, r, x, y, row: q1, col: r1 }, // row col are the midway map coords
       });
     }
   };
 
+  handleDragOver(e) {
+    e.preventDefault();
+    this.determineMousePosition(e);
+    this.props.setCurrentCoords(this.state.currentHex)
+  }
   render() {
     return (
       <div>
@@ -413,6 +429,7 @@ export default class CanvasHex extends React.Component {
           }
           onMouseMove={this.handleMouseMove}
           onMouseLeave={this.handleMouseLeave}
+          onDragOver={(e) => this.handleDragOver(e)}
         ></canvas>
       </div>
     );

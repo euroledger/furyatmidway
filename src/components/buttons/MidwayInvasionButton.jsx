@@ -9,7 +9,6 @@ function MidwayInvasionButton({
   onDrag,
   onStop,
   getZone,
-  gameStateHandler
 }) {
   const [position, setPosition] = useState(initialPosition);
  
@@ -18,12 +17,16 @@ function MidwayInvasionButton({
 
     GlobalGameState.midwayInvasionLevel = getZone();
   
+    const il = getZone() === 0 ? "X" : getZone()
+
+    GlobalGameState.log(`Midway Invasion Track set to ${il}`)
+
     setPosition({
       ...position,
-      left: MIFOffsets[getZone()].left + 0.1,
+      left: MIFOffsets[getZone()].left + 0.3,
       top: MIFOffsets[getZone()].top + 0.2,
     });
-    gameStateHandler();
+    GlobalGameState.stateHandler();
   };
 
   return (

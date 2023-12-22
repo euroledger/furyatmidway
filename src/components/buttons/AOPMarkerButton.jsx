@@ -17,7 +17,6 @@ function AOPMarkerButton({
   getZone,
   zIndex,
   incrementZIndex,
-  gameStateHandler
 }) {
 
   const [position, setPosition] = useState(initialPosition);
@@ -43,6 +42,9 @@ function AOPMarkerButton({
     console.log("ZONE = ", getZone());
     GlobalGameState.airOperationPoints[side] = getZone();
 
+    const sideStr = side === "us" ? "US" : "Japan"
+    GlobalGameState.log(`${sideStr} Air Operations Points set to ${getZone()}`)
+
     let leftOffset = 0;
     let topOffset = 0;
     if (
@@ -62,7 +64,7 @@ function AOPMarkerButton({
       left: AOPOffsets[getZone()].left + 0.3 + leftOffset,
       top: AOPOffsets[getZone()].top + 0.4 - topOffset,
     });
-    gameStateHandler()
+    GlobalGameState.stateHandler()
   };
 
   const z = zIndex[side] + 5;

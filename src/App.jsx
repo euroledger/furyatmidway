@@ -5,13 +5,13 @@ import {
   TransformComponent,
   useControls,
 } from "react-zoom-pan-pinch";
-import GameState from "./components/GameState";
+import GameStatePanel from "./components/leftpanel/GameStatePanel";
 import GlobalGameState from "./model/GlobalGameState";
 
 import "./style.css";
 
 function App() {
-  const [turn, setTurn] = useState(GlobalGameState.gameTurn);
+  // const [turn, setTurn] = useState(GlobalGameState.gameTurn);
   const [gameState, setGameState] = useState(false);
   const [isMoveable, setIsMoveable] = useState(false);
   const [scale, setScale] = useState(1);
@@ -22,10 +22,6 @@ function App() {
   const onStop = () => {
     setIsMoveable(false);
   };
-
-  function turnHandler() {
-    setTurn(GlobalGameState.gameTurn);
-  }
 
   const Controls = () => {
     const { zoomIn, zoomOut, resetTransform } = useControls();
@@ -60,6 +56,8 @@ function App() {
   function handleScaleChange(event) {
     setScale(event.instance.transformState.scale)
   }
+
+  GlobalGameState.stateHandler = gameStateHandler
   return (
     <>
       <TransformWrapper
@@ -73,9 +71,9 @@ function App() {
       >
         <Controls />
         <div class="d-flex p-2">
-          <GameState gameState={gameState} />
+          <GameStatePanel gameState={gameState} />
           <TransformComponent>
-            <Board turnHandler={turnHandler} gameStateHandler={gameStateHandler} onDrag={onDrag} onStop={onStop} scale={scale}/>
+            <Board gameStateHandler={gameStateHandler} onDrag={onDrag} onStop={onStop} scale={scale}/>
           </TransformComponent>
         </div>
       </TransformWrapper>

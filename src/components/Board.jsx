@@ -9,24 +9,31 @@ import "./board.css";
 import AOPOffsets from "./AopBoxOffsets";
 import MIFOffsets from "./MIFBoxOffsets";
 import MGTOffsets from "./MGTBoxOffsets";
+import Counters from "./buttons/mapobjects/Counters";
 
-function Board({ turnHandler, gameStateHandler, onDrag, onStop, scale }) {
+function Board({ turnHandler, onDrag, onStop, scale }) {
   let zProps = { us: 0, japan: 0 };
   const initialJpAopPosition = { left: 2.7, top: 7 };
   const initialUSAopPosition = { left: 3.5, top: 6.1 };
-  const initialMIFPosition = { left: 40.1, top: 5.9 };
-  const initialMGFPosition = { left: 77.3, top: 5.9 };
+  const initialMIFPosition = { left: 40.3, top: 6.2 };
+  const initialMGFPosition = { left: 77.5, top: 6.2 };
 
   const [zone, setZone] = useState(0);
+  const [currentHex, setCurrentHex] = useState({});
   const [mifzone, setMIFZone] = useState(5);
   const [mgfzone, setMGFZone] = useState(6);
   const [zIndex, setZIndex] = useState(zProps);
+
+  const setCurrentCoords = (currentHex) => {
+    setCurrentHex(currentHex);
+  };
 
   const handleDragEnter = (event, zone) => {
     event.preventDefault();
     event.stopPropagation();
     setZone(zone);
   };
+
   const handleMIFDragEnter = (event, zone) => {
     event.preventDefault();
     event.stopPropagation();
@@ -41,7 +48,6 @@ function Board({ turnHandler, gameStateHandler, onDrag, onStop, scale }) {
   const getZone = () => zone;
   const getMIFZone = () => mifzone;
   const getMGFZone = () => mgfzone;
-
 
   const incrementZIndex = (side, increment) => {
     if (side === "japan") {
@@ -68,7 +74,11 @@ function Board({ turnHandler, gameStateHandler, onDrag, onStop, scale }) {
             top: `15.1%`,
           }}
         >
-          <CanvasHex scale={scale} side="japan"></CanvasHex>
+          <CanvasHex
+            scale={scale}
+            side="japan"
+            setCurrentCoords={setCurrentCoords}
+          ></CanvasHex>
         </div>
         <div
           // className="border"
@@ -81,11 +91,14 @@ function Board({ turnHandler, gameStateHandler, onDrag, onStop, scale }) {
           }}
         >
           {/* US MAP <Canvas></Canvas> */}
-          <CanvasHex scale={scale} side="us"></CanvasHex>
+          <CanvasHex
+            scale={scale}
+            side="us"
+            setCurrentCoords={setCurrentCoords}
+          ></CanvasHex>
         </div>
         <TurnMarkerButton
           image="/images/turnmarker.png"
-          turnHandler={turnHandler}
         />
         <div>
           <DragAndDrop
@@ -102,7 +115,6 @@ function Board({ turnHandler, gameStateHandler, onDrag, onStop, scale }) {
           getZone={getZone}
           zIndex={zIndex}
           incrementZIndex={incrementZIndex}
-          gameStateHandler={gameStateHandler}
         />
         <AOPMarkerButton
           image="/images/usaop.png"
@@ -113,7 +125,6 @@ function Board({ turnHandler, gameStateHandler, onDrag, onStop, scale }) {
           getZone={getZone}
           zIndex={zIndex}
           incrementZIndex={incrementZIndex}
-          gameStateHandler={gameStateHandler}
         />
         <div>
           <DragAndDrop
@@ -127,7 +138,6 @@ function Board({ turnHandler, gameStateHandler, onDrag, onStop, scale }) {
           onDrag={onDrag}
           onStop={onStop}
           getZone={getMIFZone}
-          gameStateHandler={gameStateHandler}
         />
         <div>
           <DragAndDrop
@@ -141,8 +151,12 @@ function Board({ turnHandler, gameStateHandler, onDrag, onStop, scale }) {
           onDrag={onDrag}
           onStop={onStop}
           getZone={getMGFZone}
-          gameStateHandler={gameStateHandler}
         />
+        <Counters
+          onDrag={onDrag}
+          onStop={onStop}
+          currentHex={currentHex}
+        ></Counters>
       </div>
     </>
   );

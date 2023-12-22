@@ -1,10 +1,15 @@
+import React, { useState } from "react";
+
 export default class GlobalGameState {
+
   static gameTurn = 1;
 
   static airOperationPoints = {
     japan: 0,
     us: 0
   }
+
+  static stateHandler 
 
   static midwayInvasionLevel = 5;
 
@@ -19,4 +24,11 @@ export default class GlobalGameState {
     "June 5, 1942 Afternoon",
     "June 5, 1942 Evening",
   ]
+
+  static log = (message) => {
+    this.logItems.push(message)
+    this.stateHandler()
+  }
+
+  static logItems=["Logging begin..."];
 }
