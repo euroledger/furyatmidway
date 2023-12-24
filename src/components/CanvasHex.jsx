@@ -5,8 +5,8 @@ const POINTY = 0;
 const FLAT = 1;
 
 const hexOrigin = {
-  x: -15,
-  y: -21,
+  x: -17,
+  y: -23,
 };
 
 const hexType = FLAT;
@@ -14,7 +14,7 @@ export default class CanvasHex extends React.Component {
   constructor(props) {
     super(props);
     this.state = {
-      hexSize: 36,
+      hexSize: 32,
       scale: props.scale,
       side: props.side,
     };
@@ -27,7 +27,7 @@ export default class CanvasHex extends React.Component {
         : this.getPointyHexParameters();
 
     this.setState({
-      canvasSize: { canvasWidth: 510, canvasHeight: 450 },
+      canvasSize: { canvasWidth: 460, canvasHeight: 385 },
     });
   }
 

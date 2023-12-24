@@ -61,7 +61,7 @@ function Board({ turnHandler, onDrag, onStop, scale }) {
     <>
       <div>
         <img
-          src="/images/battleboard.gif"
+          src="/images/bb.jpg"
           alt="test"
           style={{ left: "50%" }}
           width="100%"
@@ -70,8 +70,8 @@ function Board({ turnHandler, onDrag, onStop, scale }) {
         <div
           style={{
             position: "absolute",
-            left: `7.3%`,
-            top: `15.1%`,
+            left: `12.5%`,
+            top: `22.9%`,
           }}
         >
           <CanvasHex
@@ -84,10 +84,8 @@ function Board({ turnHandler, onDrag, onStop, scale }) {
           // className="border"
           style={{
             position: "absolute",
-            width: "520px",
-            height: "420px",
-            left: `50.4%`,
-            top: `17.8%`,
+            left: `47.4%`,
+            top: `26.6%`,
           }}
         >
           {/* US MAP <Canvas></Canvas> */}

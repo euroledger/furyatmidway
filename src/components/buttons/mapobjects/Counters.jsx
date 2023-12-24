@@ -14,8 +14,8 @@ function Counters({ onDrag, onStop, currentHex, gameStateHandler }) {
 
   const handleDrop = (event) => {
     setPosition({
-      left: currentHex.x + counter.currentHex.x - 18,
-      top: currentHex.y + counter.currentHex.y - 5,
+      left: currentHex.x + counter.currentHex.x +66,
+      top: currentHex.y + counter.currentHex.y +80,
     });
     GlobalGameState.log(`Japanese 1AF moves to ${currentHex.row}-${currentHex.col}`)
   };
