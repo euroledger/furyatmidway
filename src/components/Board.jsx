@@ -9,9 +9,12 @@ import "./board.css";
 import AOPOffsets from "./AopBoxOffsets";
 import MIFOffsets from "./MIFBoxOffsets";
 import MGTOffsets from "./MGTBoxOffsets";
-import Counters from "./buttons/mapobjects/Counters";
+import FleetCounter from "./buttons/mapobjects/FleetCounter";
+import AirCounter from "./buttons/mapobjects/AirCounter";
+import loadCounters from "../Loader";
+import JapanAirBoxOffsets from '../components/buttons/mapobjects/JapanAirBoxOffsets'
 
-function Board({ turnHandler, onDrag, onStop, scale }) {
+function Board({ onDrag, onStop, scale }) {
   let zProps = { us: 0, japan: 0 };
   const initialJpAopPosition = { left: 2.7, top: 7 };
   const initialUSAopPosition = { left: 3.5, top: 6.1 };
@@ -22,7 +25,10 @@ function Board({ turnHandler, onDrag, onStop, scale }) {
   const [currentHex, setCurrentHex] = useState({});
   const [mifzone, setMIFZone] = useState(5);
   const [mgfzone, setMGFZone] = useState(6);
+  const [airBox, setAirBox] = useState({});
   const [zIndex, setZIndex] = useState(zProps);
+
+  const counters = loadCounters();
 
   const setCurrentCoords = (currentHex) => {
     setCurrentHex(currentHex);
@@ -45,9 +51,22 @@ function Board({ turnHandler, onDrag, onStop, scale }) {
     event.stopPropagation();
     setMGFZone(zone);
   };
+
+  const handleAirBoxDragEnter = (event, index, name) => {
+    event.preventDefault();
+    event.stopPropagation();
+    const airZones = JapanAirBoxOffsets.find((o => o.name === name));
+    console.log("AIR Box index = ", index)
+    const offsets = airZones.offsets[index]
+    setAirBox({name, offsets})
+  }
   const getZone = () => zone;
   const getMIFZone = () => mifzone;
   const getMGFZone = () => mgfzone;
+  const getAirBox = () => {
+    
+    return airBox;
+  }
 
   const incrementZIndex = (side, increment) => {
     if (side === "japan") {
@@ -56,6 +75,9 @@ function Board({ turnHandler, onDrag, onStop, scale }) {
       setZIndex({ ...zProps, us: zProps[side] + increment });
     }
   };
+
+  const japanCapZones = JapanAirBoxOffsets.find((o => o.name === "1CD CAP"));
+  const japanCapReturningZones = JapanAirBoxOffsets.find((o => o.name === "1CD CAP RETURNING"));
 
   return (
     <>
@@ -95,9 +117,7 @@ function Board({ turnHandler, onDrag, onStop, scale }) {
             setCurrentCoords={setCurrentCoords}
           ></CanvasHex>
         </div>
-        <TurnMarkerButton
-          image="/images/turnmarker.png"
-        />
+        <TurnMarkerButton image="/images/markers/turnmarker.png" />
         <div>
           <DragAndDrop
             handleDragEnter={handleDragEnter}
@@ -105,7 +125,7 @@ function Board({ turnHandler, onDrag, onStop, scale }) {
           ></DragAndDrop>
         </div>
         <AOPMarkerButton
-          image="/images/jpaop.png"
+          image="/images/markers/jpaop.png"
           side="japan"
           initialPosition={initialJpAopPosition}
           onDrag={onDrag}
@@ -115,7 +135,7 @@ function Board({ turnHandler, onDrag, onStop, scale }) {
           incrementZIndex={incrementZIndex}
         />
         <AOPMarkerButton
-          image="/images/usaop.png"
+          image="/images/markers/usaop.png"
           side="us"
           initialPosition={initialUSAopPosition}
           onDrag={onDrag}
@@ -131,7 +151,7 @@ function Board({ turnHandler, onDrag, onStop, scale }) {
           ></DragAndDrop>
         </div>
         <MidwayInvasionButton
-          image="/images/midwayinvasion.png"
+          image="/images/markers/midwayinvasion.png"
           initialPosition={initialMIFPosition}
           onDrag={onDrag}
           onStop={onStop}
@@ -144,17 +164,41 @@ function Board({ turnHandler, onDrag, onStop, scale }) {
           ></DragAndDrop>
         </div>
         <MidwayGarrisonButton
-          image="/images/midwaygarrison.png"
+          image="/images/markers/midwaygarrison.png"
           initialPosition={initialMGFPosition}
           onDrag={onDrag}
           onStop={onStop}
           getZone={getMGFZone}
         />
-        <Counters
+        <FleetCounter
           onDrag={onDrag}
           onStop={onStop}
           currentHex={currentHex}
-        ></Counters>
+          id="1AF"
+          counterData={counters.get("1AF")}
+        ></FleetCounter>
+        <AirCounter
+          onDrag={onDrag}
+          onStop={onStop}
+          currentHex={currentHex}
+          counterData={counters.get("Akagi-A6M-1")}
+          getAirBox={getAirBox}
+        ></AirCounter>
+        <div>
+          <DragAndDrop
+            // handleDragEnter={(e) => handleAirBoxDragEnter(e, japanCapZones.name)}
+            name={japanCapZones.name}
+            handleDragEnter={handleAirBoxDragEnter}
+            zones={japanCapZones.offsets}
+          ></DragAndDrop>
+        </div>
+        <div>
+          <DragAndDrop
+            handleDragEnter={(e) => handleAirBoxDragEnter(e, japanCapReturningZones.name)}
+            zones={japanCapReturningZones.offsets}
+          ></DragAndDrop>
+        </div>
+        
       </div>
     </>
   );

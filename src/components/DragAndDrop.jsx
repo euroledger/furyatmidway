@@ -1,7 +1,7 @@
-import React, { useState } from "react";
+import React from "react";
 import "./board.css";
 
-function DragAndDrop({ handleDragEnter, zones }) {
+function DragAndDrop({ name, handleDragEnter, zones }) {
   const onDragOver = (e) => {
     e.stopPropagation();
     e.preventDefault();
@@ -16,7 +16,7 @@ function DragAndDrop({ handleDragEnter, zones }) {
           left: p.left + "%",
           top: p.top + "%",
         }}
-        onDragEnter={(e) => handleDragEnter(e, index)}
+        onDragEnter={(e) => handleDragEnter(e, index, name)}
         onDragOver={onDragOver}
       ></div>
     );

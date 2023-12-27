@@ -5,7 +5,6 @@ import Navbar from "react-bootstrap/Navbar";
 import Board from "./components/Board";
 import Button from "react-bootstrap/Button";
 import ButtonGroup from "react-bootstrap/ButtonGroup";
-import Form from "react-bootstrap/Form";
 import {
   TransformWrapper,
   TransformComponent,
@@ -17,7 +16,6 @@ import GlobalGameState from "./model/GlobalGameState";
 import "./style.css";
 
 function App() {
-  // const [turn, setTurn] = useState(GlobalGameState.gameTurn);
   const [gameState, setGameState] = useState(false);
   const [isMoveable, setIsMoveable] = useState(false);
   const [scale, setScale] = useState(1);
@@ -32,27 +30,8 @@ function App() {
   const Controls = () => {
     const { zoomIn, zoomOut, resetTransform } = useControls();
     return (
-      // <div class="container">
-      //   <h1 className="display-2 text-center">Fury at Midway PC Version</h1>
-      //   <div class="mt-5 mb-5 panel panel-primary text-center">
-      //     <div id="button-container" class="btn-group">
-      //       <button class="btn btn-primary" onClick={() => zoomIn()}>
-      //         Zoom In
-      //       </button>
-      //       <button class="ms-2 btn btn-primary" onClick={() => zoomOut()}>
-      //         Zoom Out
-      //       </button>
-      //       <button
-      //         class="ms-2 btn btn-primary"
-      //         onClick={() => resetTransform()}
-      //       >
-      //         Reset
-      //       </button>
-      //     </div>
-      //   </div>
-      // </div>
       <Navbar
-        bg="primary"
+        bg="black"
         data-bs-theme="dark"
         sticky="top"
         className="justify-content-between"
@@ -65,6 +44,30 @@ function App() {
               <Nav.Link href="/">US Hand</Nav.Link>
               <Nav.Link href="/">Japan Hand</Nav.Link>
               <Nav.Link href="/about">Roll Dice</Nav.Link>
+            </Nav>
+            <p
+              className="navbar-text"
+              style={{
+                marginLeft: "200px",
+                marginTop: "17px",
+                marginRight: "5px",
+              }}
+            >
+              {GlobalGameState.getSetupMessage()}
+            </p>
+
+            <Nav>
+              {/* <p class="navbar-text">Some text</p> */}
+
+              <Button
+                className="me-1"
+                variant="secondary"
+                onClick={() => zoomIn()}
+                disabled={true}
+                style={{ background: "#9e1527" }}
+              >
+                Next Action
+              </Button>
             </Nav>
             <ButtonGroup className="ms-auto" aria-label="Basic example">
               <Button
@@ -94,8 +97,6 @@ function App() {
       </Navbar>
     );
   };
-  const initialJpAopPosition = { left: 2.7, top: 7 };
-
   function gameStateHandler() {
     setGameState(!gameState);
   }

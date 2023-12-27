@@ -1,15 +1,27 @@
 import React, { useState } from "react";
 
 export default class GlobalGameState {
+  static PHASE = {
+    SETUP: 1,
+    MOVE: 2
+  }
 
+  static SETUP_MESSAGES = [
+    'Place Akagi Air Units',
+    'Place Kaga Air Units',
+    'Place Hiryu Air Units',
+    'Place Soryu Air Units'
+  ]
+
+  
   static gameTurn = 1;
 
   static airOperationPoints = {
     japan: 0,
-    us: 0
-  }
+    us: 0,
+  };
 
-  static stateHandler 
+  static stateHandler;
 
   static midwayInvasionLevel = 5;
 
@@ -23,12 +35,19 @@ export default class GlobalGameState {
     "June 5, 1942 Morning",
     "June 5, 1942 Afternoon",
     "June 5, 1942 Evening",
-  ]
+  ];
 
   static log = (message) => {
-    this.logItems.push(message)
-    this.stateHandler()
-  }
+    this.logItems.push(message);
+    this.stateHandler();
+  };
 
-  static logItems=["Logging begin..."];
+  static logItems = ["Logging begin..."];
+
+  static gamePhase = this.PHASE.SETUP
+  static setupPhase = 0;
+
+  static getSetupMessage = () => {
+    return this.SETUP_MESSAGES[this.setupPhase]
+  }
 }

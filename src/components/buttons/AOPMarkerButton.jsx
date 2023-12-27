@@ -39,7 +39,6 @@ function AOPMarkerButton({
   const handleDrop = (event) => {
     event.preventDefault();
 
-    console.log("ZONE = ", getZone());
     GlobalGameState.airOperationPoints[side] = getZone();
 
     const sideStr = side === "us" ? "US" : "Japan"
@@ -64,7 +63,6 @@ function AOPMarkerButton({
       left: AOPOffsets[getZone()].left + 0.3 + leftOffset,
       top: AOPOffsets[getZone()].top + 0.4 - topOffset,
     });
-    GlobalGameState.stateHandler()
   };
 
   const z = zIndex[side] + 5;
