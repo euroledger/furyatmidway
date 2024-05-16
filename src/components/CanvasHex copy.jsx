@@ -5,8 +5,8 @@ const POINTY = 0;
 const FLAT = 1;
 
 const hexOrigin = {
-  x: -17,
-  y: -20.5,
+  x: -18,
+  y: -16.5,
 };
 
 const hexType = FLAT;

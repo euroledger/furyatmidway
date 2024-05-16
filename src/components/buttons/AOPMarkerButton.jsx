@@ -76,7 +76,7 @@ function AOPMarkerButton({
             class={"button-pos"}
             style={{
               position: "absolute",
-              width: "40px",
+              width: "3%",
               left: `${position.left}%`,
               top: `${position.top}%`,
               zIndex: z,
