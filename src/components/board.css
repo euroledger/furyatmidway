@@ -1,10 +1,9 @@
 .drag-drop-zone {
   position: absolute;
-  /* padding: 1.4rem; */
-  width: 2.92rem;
-  height: 2.92rem;
+  width: 3.3%;
+  height: 5.3%;
   text-align: center;
-  border-radius: 0.5rem;
+  border-radius: 3px;
 }
 
 .border{

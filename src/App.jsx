@@ -107,6 +107,26 @@ function App() {
 
   GlobalGameState.stateHandler = gameStateHandler;
 
+  console.log("FUCKETY 222!")
+  // setup
+  let oldValue = window.devicePixelRatio;
+  window.addEventListener('resize', function (e) {
+    console.log("BOLLOCKS!")
+    let newValue = window.devicePixelRatio;
+    if (newValue !== oldValue) {
+      let event = new Event('devicepixelratiochange');
+      event.oldValue = oldValue;
+      event.newValue = newValue;
+      oldValue = newValue;
+      window.dispatchEvent(event);
+    }
+  });
+
+  // usage
+  window.addEventListener('devicepixelratiochange', function (e) {
+    // note: change of devicePixelRatio means change of page zoom, but devicePixelRatio itself doesn't mean page zoom
+    console.log('devicePixelRatio changed from ' + e.oldValue + ' to ' + e.newValue);
+  });
   return (
     <>
       <TransformWrapper
@@ -116,7 +136,7 @@ function App() {
         maxScale={6}
         limitToBounds={false}
         onTransformed={(e) => handleScaleChange(e)}
-        // pinch={{ step: 5 }}
+      // pinch={{ step: 5 }}
       >
         <Controls />
 

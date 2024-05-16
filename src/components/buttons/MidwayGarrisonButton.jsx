@@ -42,7 +42,7 @@ function MidwayGarrisonButton({
           class={"button-pos dropdown-toggle"}
           style={{
             position: "absolute",
-            width: "40px",
+            width: "3%",
             left: `${position.left}%`,
             top: `${position.top}%`,
           }}
