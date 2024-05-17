@@ -146,7 +146,9 @@ function App() {
           <div
             style={{
               minHeight: "648px",
-              minWidth: "1028px"
+              minWidth: "1080px",
+              maxHeight: "648px",
+              maxWidth: "1080px"
             }}
           >
             <TransformComponent>

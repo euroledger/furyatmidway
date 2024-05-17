@@ -14,7 +14,7 @@ export default class CanvasHex extends React.Component {
   constructor(props) {
     super(props);
     this.state = {
-      hexSize: 27,
+      hexSize: 24.6,
       scale: props.scale,
       side: props.side,
     };
