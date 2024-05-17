@@ -29,14 +29,14 @@ function loadCounters() {
     top: 550,
   };
   counters.set(
-    "Akagi-A6M-1",
+    "Akagi-A6M-Kaga-1",
     new BaseCounter(
-      "1AF",
-      "Japanese 1AF",
+      "Akagi A6M-2b",
+      "Japanese A6M-2b (Akagi)",
       position,
       { x: 66, y: 80 },
       "/images/aircounters/akagi-a6m-front.png",
-      "40px"
+      "2%"
     )
   );
   return counters;

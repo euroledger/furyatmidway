@@ -6,6 +6,13 @@
   border-radius: 3px;
 }
 
+.drag-drop-zone-small {
+  position: absolute;
+  width: 2.3%;
+  height: 3.3%;
+  text-align: center;
+  border-radius: 3px;
+}
 
 .zone2 {
   /* background: green;  */

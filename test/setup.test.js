@@ -35,10 +35,10 @@ test("check fleet unit counter values", () => {
   expect(af.longName).toBe("Japanese 1AF");
   expect(af.position.left).toBe(102);
   expect(af.position.top).toBe(117);
-  expect(af.offsets.x).toBe(66);
-  expect(af.offsets.y).toBe(80);
+  expect(af.offsets.x).toBe(28);
+  expect(af.offsets.y).toBe(31)
   expect(af.image).toBe("/images/fleetcounters/1AF.png");
-  expect(af.width).toBe("40px");
+  expect(af.width).toBe("3.0%");
 });
 
 test("check setup phase messages", () => {

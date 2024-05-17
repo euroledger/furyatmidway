@@ -1,8 +1,8 @@
 import React, { useState } from "react";
 import "../../board.css";
 import GlobalGameState from "../../../model/GlobalGameState";
-import HexCommand from '../../../HexCommand';
-import COMMAND_TYPE from '../../../COMMAND_TYPE'
+import HexCommand from '../../../commands/HexCommand';
+import COMMAND_TYPE from '../../../commands/COMMAND_TYPE'
 
 
 function FleetCounter({ onDrag, onStop, id, currentHex, counterData }) {

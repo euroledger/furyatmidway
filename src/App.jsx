@@ -127,7 +127,6 @@ function App() {
   // window width
   const width = window.innerWidth;
 
-  console.log("BOLLOCKS: height = ", height, ", width = ", width);
   return (
     <>
       <TransformWrapper

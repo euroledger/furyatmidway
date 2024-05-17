@@ -156,8 +156,8 @@ export default class CanvasHex extends React.Component {
     if (hex.r === 2) {
       col = 200;
     }
-    ctx.fillText(hex.q, center.x - 11, center.y + 3);
-    ctx.fillText(hex.r, center.x + 5, center.y + 3);
+    // ctx.fillText(hex.q, center.x - 11, center.y + 3);
+    // ctx.fillText(hex.r, center.x + 5, center.y + 3);
   };
 
   drawFlatHexes = () => {
@@ -375,9 +375,9 @@ export default class CanvasHex extends React.Component {
     const mx = e.pageX - left;
     const my = e.pageY - top - window.scrollY;
 
-    console.log("?>>>>>>>>>>>>>mx =", mx, "my =",my)
-    console.log("e.pageX =", e.pageX, "e.pageY =", e.pageY)
-    console.log("lefy =", left, " top = ", top)
+    // console.log("?>>>>>>>>>>>>>mx =", mx, "my =",my)
+    // console.log("e.pageX =", e.pageX, "e.pageY =", e.pageY)
+    // console.log("lefy =", left, " top = ", top)
 
     if (hexType === POINTY) {
       const { q, r } = this.cubeRound(this.pixelToPointyHex({ x: mx, y: my }));
@@ -395,10 +395,26 @@ export default class CanvasHex extends React.Component {
 
       const index = Math.floor(q / 2);
 
-      // for the midway map, restrict hex selection to the displayed grid
+      // for the midway map, restrict hex selection to the displayed 
+      if (q===1 && r>=7)  {
+        return
+      }
+      if (q===3 && r>=6)  {
+        return
+      }
+      if (q===5 && r>=5)  {
+        return
+      }
+      
+      if (q===7 && r>=4)  {
+        return
+      }
+      if (q===9 && r>=3)  {
+        return
+      }
       if (
         q === 0 ||
-        q === 10 ||
+        q >= 10 ||
         (q % 2 === 1 && r === odd[index]) ||
         (q % 2 === 0 && r >= odd[index])
       ) {

@@ -4,6 +4,7 @@ import AOPMarkerButton from "./buttons/AOPMarkerButton";
 import MidwayInvasionButton from "./buttons/MidwayInvasionButton";
 import MidwayGarrisonButton from "./buttons/MidwayGarrisonButton";
 import DragAndDrop from "./DragAndDrop";
+import DragAndDropSmall from "./DragAndDropSmall";
 import CanvasHex from "./CanvasHex";
 import "./board.css";
 import AOPOffsets from "./AopBoxOffsets";
@@ -55,16 +56,19 @@ function Board({ onDrag, onStop, scale }) {
   const handleAirBoxDragEnter = (event, index, name) => {
     event.preventDefault();
     event.stopPropagation();
+    console.log("Looking for ", name)
     const airZones = JapanAirBoxOffsets.find((o => o.name === name));
     console.log("AIR Box index = ", index)
+    console.log("airzones = ", airZones)
+
     const offsets = airZones.offsets[index]
-    setAirBox({name, offsets})
+    setAirBox({ name, offsets, index })
   }
   const getZone = () => zone;
   const getMIFZone = () => mifzone;
   const getMGFZone = () => mgfzone;
   const getAirBox = () => {
-    
+
     return airBox;
   }
 
@@ -76,8 +80,9 @@ function Board({ onDrag, onStop, scale }) {
     }
   };
 
-  const japanCapZones = JapanAirBoxOffsets.find((o => o.name === "1CD CAP"));
-  const japanCapReturningZones = JapanAirBoxOffsets.find((o => o.name === "1CD CAP RETURNING"));
+  const japan1DCapZones = JapanAirBoxOffsets.find((o => o.name === "1CD CAP"));
+  const japan1DCapReturningZones = JapanAirBoxOffsets.find((o => o.name === "1CD CAP RETURNING"));
+  const japan1DHangarZones = JapanAirBoxOffsets.find((o => o.name === "1CD HANGAR"));
 
   return (
     <>
@@ -181,24 +186,30 @@ function Board({ onDrag, onStop, scale }) {
           onDrag={onDrag}
           onStop={onStop}
           currentHex={currentHex}
-          counterData={counters.get("Akagi-A6M-1")}
+          counterData={counters.get("Akagi-A6M-Kaga-1")}
           getAirBox={getAirBox}
         ></AirCounter>
         <div>
-          <DragAndDrop
-            // handleDragEnter={(e) => handleAirBoxDragEnter(e, japanCapZones.name)}
-            name={japanCapZones.name}
+          <DragAndDropSmall
+            name={japan1DCapZones.name}
             handleDragEnter={handleAirBoxDragEnter}
-            zones={japanCapZones.offsets}
-          ></DragAndDrop>
+            zones={japan1DCapZones.offsets}
+          ></DragAndDropSmall>
         </div>
         <div>
-          <DragAndDrop
-            handleDragEnter={(e) => handleAirBoxDragEnter(e, japanCapReturningZones.name)}
-            zones={japanCapReturningZones.offsets}
-          ></DragAndDrop>
+          <DragAndDropSmall
+            handleDragEnter={(e) => handleAirBoxDragEnter(e, 0, japan1DCapReturningZones.name)}
+            zones={japan1DCapReturningZones.offsets}
+          ></DragAndDropSmall>
         </div>
-        
+        <div>
+          <DragAndDropSmall
+            name={japan1DHangarZones.name}
+            handleDragEnter={handleAirBoxDragEnter}
+            zones={japan1DHangarZones.offsets}
+          ></DragAndDropSmall>
+        </div>
+
       </div>
     </>
   );

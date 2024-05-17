@@ -8,7 +8,6 @@ class Command {
     this.unit = unit;
     this.from = from;
     this.to = to;
-
   }
   set commandType(ct) {
     this._commandType = ct;

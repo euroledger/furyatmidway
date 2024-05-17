@@ -1,7 +1,7 @@
 import React from "react";
 import "./board.css";
 
-function DragAndDrop({ name, handleDragEnter, zones }) {
+function DragAndDropSmall({ name, handleDragEnter, zones }) {
   const onDragOver = (e) => {
     e.stopPropagation();
     e.preventDefault();
@@ -11,7 +11,7 @@ function DragAndDrop({ name, handleDragEnter, zones }) {
     return (
       <div
         key={index}
-        class={"drag-drop-zone zone2"}
+        class={"drag-drop-zone-small zone2"}
         style={{
           left: p.left + "%",
           top: p.top + "%",
@@ -24,4 +24,4 @@ function DragAndDrop({ name, handleDragEnter, zones }) {
   return <>{myZones}</>;
 }
 
-export default DragAndDrop;
+export default DragAndDropSmall;
