@@ -127,7 +127,7 @@ function App() {
   // window width
   const width = window.innerWidth;
 
-  console.log("BOLLOCKS: height = ", height, ", width = ", width); 
+  console.log("BOLLOCKS: height = ", height, ", width = ", width);
   return (
     <>
       <TransformWrapper
@@ -143,14 +143,22 @@ function App() {
 
         <div class="d-flex p-2">
           <GameStatePanel gameState={gameState} />
-          <TransformComponent>
-            <Board
-              gameStateHandler={gameStateHandler}
-              onDrag={onDrag}
-              onStop={onStop}
-              scale={scale}
-            />
-          </TransformComponent>
+          <div
+            style={{
+              height: "648px",
+              width: "1400px"
+            }}
+          >
+            <TransformComponent>
+              <Board
+                gameStateHandler={gameStateHandler}
+                onDrag={onDrag}
+                onStop={onStop}
+                scale={scale}
+              />
+            </TransformComponent>
+          </div>
+
         </div>
       </TransformWrapper>
     </>
