@@ -55,7 +55,7 @@ function AOPMarkerButton({
       incrementZIndex(side, 10);
       zIndex += 5;
     } else {
-      incrementZIndex("japan", 0);
+      incrementZIndex(side, 0);
     }
 
     setPosition({
@@ -76,7 +76,7 @@ function AOPMarkerButton({
             class={"button-pos"}
             style={{
               position: "absolute",
-              width: "3%",
+              width: "2.8%",
               left: `${position.left}%`,
               top: `${position.top}%`,
               zIndex: z,

@@ -16,7 +16,7 @@ function DragAndDrop({ name, handleDragEnter, zones }) {
           left: p.left + "%",
           top: p.top + "%",
         }}
-        onDragEnter={(e) => handleDragEnter(e, index, name)}
+        onDragEnter={(e) => handleDragEnter(e, index)}
         onDragOver={onDragOver}
       ></div>
     );

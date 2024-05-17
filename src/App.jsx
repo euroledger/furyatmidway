@@ -107,27 +107,14 @@ function App() {
 
   GlobalGameState.stateHandler = gameStateHandler;
 
-  console.log("FUCKETY 222!")
-  // setup
-  let oldValue = window.devicePixelRatio;
-  window.addEventListener('resize', function (e) {
-    console.log("BOLLOCKS!")
-    let newValue = window.devicePixelRatio;
-    if (newValue !== oldValue) {
-      let event = new Event('devicepixelratiochange');
-      event.oldValue = oldValue;
-      event.newValue = newValue;
-      oldValue = newValue;
-      window.dispatchEvent(event);
-    }
-  });
 
+  // disable browser zoom (ctrl+ ctrl-)
   window.addEventListener('keydown', function (e) {
     if ((e.ctrlKey || e.metaKey) && (e.which === 61 || e.which === 107 || e.which === 173 || e.which === 109 || e.which === 187 || e.which === 189)) {
       e.preventDefault();
     }
   }, false);
-  
+
   // usage
   window.addEventListener('devicepixelratiochange', function (e) {
     // note: change of devicePixelRatio means change of page zoom, but devicePixelRatio itself doesn't mean page zoom
