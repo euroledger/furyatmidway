@@ -29,6 +29,8 @@ export default class CanvasHex extends React.Component {
     this.setState({
       canvasSize: { canvasWidth: 460, canvasHeight: 385 },
     });
+    // const elem = document.getElementById("canvas")
+    // console.log(elem)
   }
 
   componentDidMount() {

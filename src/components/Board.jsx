@@ -102,7 +102,7 @@ function Board({ onDrag, onStop, scale }) {
             setCurrentCoords={setCurrentCoords}
           ></CanvasHex>
         </div>
-        <div
+        <div id="canvas"
           // className="border"
           style={{
             position: "absolute",

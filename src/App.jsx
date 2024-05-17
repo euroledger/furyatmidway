@@ -120,6 +120,14 @@ function App() {
     // note: change of devicePixelRatio means change of page zoom, but devicePixelRatio itself doesn't mean page zoom
     console.log('devicePixelRatio changed from ' + e.oldValue + ' to ' + e.newValue);
   });
+
+  // window height
+  const height = window.innerHeight;
+
+  // window width
+  const width = window.innerWidth;
+
+  console.log("BOLLOCKS: height = ", height, ", width = ", width); 
   return (
     <>
       <TransformWrapper
