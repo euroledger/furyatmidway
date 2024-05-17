@@ -142,11 +142,11 @@ function App() {
         <Controls />
 
         <div class="d-flex p-2">
-          <GameStatePanel gameState={gameState} />
+            <GameStatePanel gameState={gameState} />
           <div
             style={{
-              height: "648px",
-              width: "1400px"
+              minHeight: "648px",
+              minWidth: "1028px"
             }}
           >
             <TransformComponent>

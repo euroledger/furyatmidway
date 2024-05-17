@@ -81,7 +81,7 @@ function Board({ onDrag, onStop, scale }) {
 
   return (
     <>
-      <div>
+      <div >
         <img
           src="/images/bb.jpg"
           alt="test"

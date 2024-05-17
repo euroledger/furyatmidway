@@ -16,9 +16,9 @@ function loadCounters() {
       "1AF",
       "Japanese 1AF",
       position,
-      { x: 23, y: 27 }, // offsets
+      { x: 38, y: 45 }, // offsets
       "/images/fleetcounters/1AF.png",
-      "3.2%"
+      "3.0%"
     )
   );
 
