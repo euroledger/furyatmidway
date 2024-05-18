@@ -5,19 +5,19 @@ const JapanBoxOffsets = [
     name: "1CD CAP",
     offsets: [
       {
-        left: 15.3,
+        left: 15.4,
         top: 68.3,
       },
       {
-        left: 17.6,
+        left: 17.7,
         top: 68.3,
       },
       {
-        left: 19.8,
+        left: 19.9,
         top: 68.3,
       },
       {
-        left: 22.0,
+        left: 22.1,
         top: 68.3,
       },
     ],
@@ -36,19 +36,19 @@ const JapanBoxOffsets = [
     offsets: [
       {
         left: 14.7,
-        top: 89.5,
+        top: 90.5,
       },
       {
         left: 14.7,
-        top: 92.7,
+        top: 93.7,
       },
       {
         left: 16.9,
-        top: 89.5,
+        top: 90.5,
       },
       {
         left: 16.9,
-        top: 92.7,
+        top: 93.7,
       },
     ],
   },

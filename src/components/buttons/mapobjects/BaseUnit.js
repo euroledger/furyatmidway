@@ -1,4 +1,4 @@
-export default class BaseCounter {
+export default class BaseUnit {
     constructor(name, longName, position, offsets, image, width) {
         this.name = name;
         this.longName = longName

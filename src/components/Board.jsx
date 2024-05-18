@@ -12,6 +12,7 @@ import MIFOffsets from "./MIFBoxOffsets";
 import MGTOffsets from "./MGTBoxOffsets";
 import FleetCounter from "./buttons/mapobjects/FleetCounter";
 import AirCounter from "./buttons/mapobjects/AirCounter";
+import AirCounters from "./buttons/mapobjects/AirCounters";
 import loadCounters from "../Loader";
 import JapanAirBoxOffsets from '../components/buttons/mapobjects/JapanAirBoxOffsets'
 
@@ -182,13 +183,18 @@ function Board({ onDrag, onStop, scale }) {
           id="1AF"
           counterData={counters.get("1AF")}
         ></FleetCounter>
-        <AirCounter
+        {/* <AirCounter
           onDrag={onDrag}
           onStop={onStop}
-          currentHex={currentHex}
           counterData={counters.get("Akagi-A6M-Kaga-1")}
           getAirBox={getAirBox}
-        ></AirCounter>
+        ></AirCounter> */}
+          <AirCounters
+          onDrag={onDrag}
+          onStop={onStop}
+          counterData={counters}
+          getAirBox={getAirBox}
+        ></AirCounters>
         <div>
           <DragAndDropSmall
             name={japan1DCapZones.name}

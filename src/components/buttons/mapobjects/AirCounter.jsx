@@ -3,6 +3,7 @@ import "../../board.css";
 import DropCommand from "../../../commands/DropCommand";
 import COMMAND_TYPE from "../../../commands/COMMAND_TYPE";
 import GlobalGameState from "../../../model/GlobalGameState";
+import { counter } from "@fortawesome/fontawesome-svg-core";
 
 
 function AirCounter({ onDrag, onStop, getAirBox, counterData }) {
@@ -27,12 +28,15 @@ function AirCounter({ onDrag, onStop, getAirBox, counterData }) {
     
     setPosition({
         ...position,
-        left: offsets.left + 0.1 + "%",
-        top: offsets.top + "%",
+        left: offsets.left + "%",
+        top: offsets.top -0.2 + "%",
       });
       let command = new DropCommand(COMMAND_TYPE.DROP, counterData.longName, "OFFBOARD", `${name} - box ${index}`)
       GlobalGameState.log(`Command: ${command.toString()}`)
   };
+
+
+  console.log("CREATING UNIT WIDTH ", counterData.width)
 
   return (
     <div>
