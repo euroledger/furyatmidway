@@ -4,7 +4,6 @@ export default class FleetUnit {
         this.damaged = damaged;
     };
 
-
     set name(n) {
         this._name = n;
     }

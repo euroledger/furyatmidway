@@ -1,8 +1,14 @@
 // Midway Garrison track
 
+import GlobalUnitsModel from "../../../model/GlobalUnitsModel";
+
+// GlobalUnitsModel {
+
+//   AirBoxes = {
+//       JP_CD_CAP1:
 const JapanBoxOffsets = [
   {
-    name: "1CD CAP",
+    name: GlobalUnitsModel.AirBoxes.JP_CD_CAP1,
     offsets: [
       {
         left: 15.4,
@@ -23,7 +29,7 @@ const JapanBoxOffsets = [
     ],
   },
   {
-    name: "1CD CAP RETURNING",
+    name: GlobalUnitsModel.AirBoxes.JP_CAP_RETURN1,
     offsets: [
       {
         left: 10.3,
@@ -32,7 +38,7 @@ const JapanBoxOffsets = [
     ],
   },
   {
-    name: "1CD HANGAR",
+    name: GlobalUnitsModel.AirBoxes.JP_1CD_HANGER,
     offsets: [
       {
         left: 14.7,

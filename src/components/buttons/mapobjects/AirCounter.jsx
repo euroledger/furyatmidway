@@ -3,12 +3,10 @@ import "../../board.css";
 import DropCommand from "../../../commands/DropCommand";
 import COMMAND_TYPE from "../../../commands/COMMAND_TYPE";
 import GlobalGameState from "../../../model/GlobalGameState";
-import { counter } from "@fortawesome/fontawesome-svg-core";
 
 
-function AirCounter({ onDrag, onStop, getAirBox, counterData }) {
+function AirCounter({ controller, onDrag, onStop, getAirBox, counterData }) {
   const [position, setPosition] = useState({
-    hexCoords: {},
     left: counterData.position.left,
     top: counterData.position.top,
   });
@@ -16,27 +14,25 @@ function AirCounter({ onDrag, onStop, getAirBox, counterData }) {
   const handleDrop = (event) => {
     event.preventDefault();
 
-    const {name, offsets, index}  = getAirBox()
+    const { name, offsets, index } = getAirBox()
 
     console.log("DROP...")
     if (!offsets) {
-        return
+      return
     }
 
-    console.log(`DROP ON an AIR BOX name = ${name}}`)
-    Object.keys(counterData).forEach((prop)=> console.log(prop));
-    
+    const { boxName, boxIndex } = controller.getAirUnitLocation(counterData.name)
+
+    console.log("**************>>>>>>>>>>>>>>>> boxName= ", boxName, ", boxIndex = ", boxIndex)
     setPosition({
-        ...position,
-        left: offsets.left + "%",
-        top: offsets.top -0.2 + "%",
-      });
-      let command = new DropCommand(COMMAND_TYPE.DROP, counterData.longName, "OFFBOARD", `${name} - box ${index}`)
-      GlobalGameState.log(`Command: ${command.toString()}`)
+      ...position,
+      left: offsets.left + "%",
+      top: offsets.top - 0.2 + "%",
+    });
+    
+    let command = new DropCommand(COMMAND_TYPE.DROP, counterData.longName, "OFFBOARD", `${name} - box ${index}`)
+    GlobalGameState.log(`Command: ${command.toString()}`)
   };
-
-
-  console.log("CREATING UNIT WIDTH ", counterData.width)
 
   return (
     <div>

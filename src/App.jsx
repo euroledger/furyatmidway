@@ -14,11 +14,18 @@ import GameStatePanel from "./components/leftpanel/GameStatePanel";
 import GlobalGameState from "./model/GlobalGameState";
 
 import "./style.css";
+import Controller from "./controller/Controller";
 
 function App() {
   const [gameState, setGameState] = useState(false);
   const [isMoveable, setIsMoveable] = useState(false);
   const [scale, setScale] = useState(1);
+
+  const controller = new Controller()
+
+  // this class will take a set of preset commands and run them in sequence in 
+  // order to test the React App
+  // const uiTester = new UITester()
 
   const onDrag = () => {
     setIsMoveable(true);
@@ -152,6 +159,7 @@ function App() {
           >
             <TransformComponent>
               <Board
+                controller={controller}
                 gameStateHandler={gameStateHandler}
                 onDrag={onDrag}
                 onStop={onStop}

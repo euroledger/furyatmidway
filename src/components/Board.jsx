@@ -11,12 +11,12 @@ import AOPOffsets from "./AopBoxOffsets";
 import MIFOffsets from "./MIFBoxOffsets";
 import MGTOffsets from "./MGTBoxOffsets";
 import FleetCounter from "./buttons/mapobjects/FleetCounter";
-import AirCounter from "./buttons/mapobjects/AirCounter";
 import AirCounters from "./buttons/mapobjects/AirCounters";
 import loadCounters from "../Loader";
 import JapanAirBoxOffsets from '../components/buttons/mapobjects/JapanAirBoxOffsets'
+import GlobalUnitsModel from '../model/GlobalUnitsModel'
 
-function Board({ onDrag, onStop, scale }) {
+function Board({ controller, onDrag, onStop, scale }) {
   let zProps = { us: 0, japan: 0 };
   const initialJpAopPosition = { left: 2.7, top: 7 };
   const initialUSAopPosition = { left: 3.5, top: 6.1 };
@@ -69,7 +69,6 @@ function Board({ onDrag, onStop, scale }) {
   const getMIFZone = () => mifzone;
   const getMGFZone = () => mgfzone;
   const getAirBox = () => {
-
     return airBox;
   }
 
@@ -81,9 +80,9 @@ function Board({ onDrag, onStop, scale }) {
     }
   };
 
-  const japan1DCapZones = JapanAirBoxOffsets.find((o => o.name === "1CD CAP"));
-  const japan1DCapReturningZones = JapanAirBoxOffsets.find((o => o.name === "1CD CAP RETURNING"));
-  const japan1DHangarZones = JapanAirBoxOffsets.find((o => o.name === "1CD HANGAR"));
+  const japan1DCapZones = JapanAirBoxOffsets.find((o => o.name === GlobalUnitsModel.AirBoxes.JP_CD_CAP1));
+  const japan1DCapReturningZones = JapanAirBoxOffsets.find((o => o.name === GlobalUnitsModel.AirBoxes.JP_CAP_RETURN1));
+  const japan1DHangarZones = JapanAirBoxOffsets.find((o => o.name === GlobalUnitsModel.AirBoxes.JP_1CD_HANGER));
 
   return (
     <>
@@ -186,10 +185,11 @@ function Board({ onDrag, onStop, scale }) {
         {/* <AirCounter
           onDrag={onDrag}
           onStop={onStop}
-          counterData={counters.get("Akagi-A6M-Kaga-1")}
+          counterData={counters.get("Akagi-A6M-2b-1")}
           getAirBox={getAirBox}
         ></AirCounter> */}
           <AirCounters
+          controller={controller}
           onDrag={onDrag}
           onStop={onStop}
           counterData={counters}

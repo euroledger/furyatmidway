@@ -25,7 +25,7 @@ function AOPMarkerButton({
   // they revert to their default (centred) position
   if (
     GlobalGameState.airOperationPoints["japan"] !=
-      GlobalGameState.airOperationPoints["us"] &&
+    GlobalGameState.airOperationPoints["us"] &&
     position.top != AOPOffsets[0].top + 0.4 &&
     position.left != AOPOffsets[0].left + 0.3
   ) {
@@ -69,25 +69,25 @@ function AOPMarkerButton({
   return (
     <>
       <div>
-          <input
-            type="image"
-            src={image}
-            name="saveForm"
-            class={"button-pos"}
-            style={{
-              position: "absolute",
-              width: "2.8%",
-              left: `${position.left}%`,
-              top: `${position.top}%`,
-              zIndex: z,
-            }}
-            id="saveForm"
-            onMouseEnter={onDrag}
-            onMouseLeave={onStop}
-            draggabble="true"
-            onDragStart={onDrag}
-            onDragEnd={handleDrop}
-          />
+        <input
+          type="image"
+          src={image}
+          name="saveForm"
+          class={"button-pos"}
+          style={{
+            position: "absolute",
+            width: "2.8%",
+            left: `${position.left}%`,
+            top: `${position.top}%`,
+            zIndex: z,
+          }}
+          id="saveForm"
+          onMouseEnter={onDrag}
+          onMouseLeave={onStop}
+          draggabble="true"
+          onDragStart={onDrag}
+          onDragEnd={handleDrop}
+        />
       </div>
     </>
   );
