@@ -1,8 +1,5 @@
 import React, { useState } from "react";
 import "../../board.css";
-import DropCommand from "../../../commands/DropCommand";
-import COMMAND_TYPE from "../../../commands/COMMAND_TYPE";
-import GlobalGameState from "../../../model/GlobalGameState";
 import AirCounter from "./AirCounter";
 
 function AirCounters({ controller, onDrag, onStop, getAirBox, counterData }) {

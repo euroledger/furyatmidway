@@ -4,13 +4,12 @@ import DropCommand from "../../../commands/DropCommand";
 import COMMAND_TYPE from "../../../commands/COMMAND_TYPE";
 import GlobalGameState from "../../../model/GlobalGameState";
 
-
 function AirCounter({ controller, onDrag, onStop, getAirBox, counterData }) {
   const [position, setPosition] = useState({
     left: counterData.position.left,
     top: counterData.position.top,
   });
-
+  
   const handleDrop = (event) => {
     event.preventDefault();
 
@@ -23,15 +22,24 @@ function AirCounter({ controller, onDrag, onStop, getAirBox, counterData }) {
 
     const { boxName, boxIndex } = controller.getAirUnitLocation(counterData.name)
 
-    console.log("**************>>>>>>>>>>>>>>>> boxName= ", boxName, ", boxIndex = ", boxIndex)
+    const from = boxName === GlobalUnitsModel.AirBoxes.OFFBOARD ? "OFFBOARD" : boxName + "- box " + boxIndex
+    const to = `${name} - box ${index}`
+
     setPosition({
       ...position,
       left: offsets.left + "%",
       top: offsets.top - 0.2 + "%",
     });
     
-    let command = new DropCommand(COMMAND_TYPE.DROP, counterData.longName, "OFFBOARD", `${name} - box ${index}`)
+    let command = new DropCommand(COMMAND_TYPE.MOVE, counterData.longName, from, to)
     GlobalGameState.log(`Command: ${command.toString()}`)
+
+    // set air unit location to new location (to)
+    // 1. add air unit to box - this automatically updates the map of locations (and removes from old box)
+
+    // 2. set the state of prev box index to enabled and new (to) box index to disabled
+    // pass this state into here from above as it will be used to re-render the drag and drop objects
+    // this prevents more than one counter being dropped into the same drop zone
   };
 
   return (

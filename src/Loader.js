@@ -4,7 +4,7 @@ import GlobalUnitsModel from './model/GlobalUnitsModel'
 import FleetUnit from "./model/FleetUnit";
 import AircraftUnit from "./model/AircraftUnit";
 
-function loadCounters() {
+function loadCounters(controller) {
   let counters = new Map();
 
   // 1AF Counter
@@ -32,7 +32,7 @@ function loadCounters() {
 
   GlobalUnitsModel.usFleetUnits.set("CSF", new FleetUnit("CSF", false))
   GlobalUnitsModel.usFleetUnits.set("DMCV", new FleetUnit("DMCV", false))
- 
+
   // Akagi Air Counters
   // A6M 1
   position = {
@@ -40,38 +40,44 @@ function loadCounters() {
     left: 10,
     top: 430,
   };
+
+  const af1 = new AirUnit(
+    "Akagi-A6M-2b-1",
+    "Japanese A6M-2b (Akagi) 1",
+    position,
+    { x: 66, y: 80 },
+    "/images/aircounters/akagi-a6m-front.png",
+    "2.1%",
+  )
   counters.set(
     "Akagi-A6M-2b-1",
-    new AirUnit(
-      "Akagi-A6M-2b-1",
-      "Japanese A6M-2b (Akagi) 1",
-      position,
-      { x: 66, y: 80 },
-      "/images/aircounters/akagi-a6m-front.png",
-      "2.1%",
-    )
+    af1
   );
 
   GlobalUnitsModel.jpAirUnits.set("Akagi-A6M-2b-1", new AircraftUnit("Akagi-A6M-2b-1", 3, 3, false, false))
-  
+  controller.addAirUnitToBox(GlobalUnitsModel.AirBoxes.OFFBOARD, 0, af1)
+
+  controller.set
   // A6M 2
   position = {
     hexCoords: {},
     left: 10,
     top: 455,
   };
+  const af2 = new AirUnit(
+    "Akagi-A6M-2b-2",
+    "Japanese A6M-2b (Akagi) 2",
+    position,
+    { x: 66, y: 80 },
+    "/images/aircounters/akagi-a6m-front.png",
+    "2.1%",
+  )
   counters.set(
     "Akagi-A6M-2b-2",
-    new AirUnit(
-      "Akagi-A6M-2b-2",
-      "Japanese A6M-2b (Akagi) 2",
-      position,
-      { x: 66, y: 80 },
-      "/images/aircounters/akagi-a6m-front.png",
-      "2.1%",
-    )
+    af2
   );
   GlobalUnitsModel.jpAirUnits.set("Akagi-A6M-2b-2", new AircraftUnit("Akagi-A6M-2b-2", 3, 3, false, false))
+  controller.addAirUnitToBox(GlobalUnitsModel.AirBoxes.OFFBOARD, 0, af2)
 
   return counters;
 }

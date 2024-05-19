@@ -30,7 +30,7 @@ function Board({ controller, onDrag, onStop, scale }) {
   const [airBox, setAirBox] = useState({});
   const [zIndex, setZIndex] = useState(zProps);
 
-  const counters = loadCounters();
+  const counters = loadCounters(controller);
 
   const setCurrentCoords = (currentHex) => {
     setCurrentHex(currentHex);

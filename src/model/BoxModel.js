@@ -7,6 +7,9 @@ export default class BoxModels {
     constructor() {
         this.japanDiv1CapBoxes = new Array(4)
         this.japanDiv2CapBoxes = new Array(4)
+        this.japanDiv1CapReturn = new Array(1)
+        this.japanDiv2CapReturn = new Array(1)
+
         this.offboard = new Array()
 
         // map of air unit boxes, each item is a zone within the air box represented
@@ -14,6 +17,8 @@ export default class BoxModels {
         this.boxMap = new Map()
         this.boxMap.set(GlobalUnitsModel.AirBoxes.OFFBOARD, this.offboard)
         this.boxMap.set(GlobalUnitsModel.AirBoxes.JP_CD_CAP1, this.japanDiv1CapBoxes)
+        this.boxMap.set(GlobalUnitsModel.AirBoxes.JP_CAP_RETURN1, this.japanDiv1CapReturn)
+
         // map of air unit -> location
         // This maps the name of an air unit to its location (ie box name, index)
         this.airUnitLocationMap = new Map()
@@ -28,16 +33,22 @@ export default class BoxModels {
         if (!box) {
             return null
         }
+        // remove from previous location
+        const prevLocation = this.getAirUnitLocation(value.name)
+
+        if (prevLocation != undefined) {
+            this.removeAirUnitFromBox(prevLocation.boxName, prevLocation.boxIndex)
+        }
         if (boxName === GlobalUnitsModel.AirBoxes.OFFBOARD) {
             box.push(value)
         } else {
             box[index] = value
         }
 
-        this.addAirUnitLocationToMap(value.name, boxName, index)
+        this.setAirUnitLocation(value.name, boxName, index)
     }
 
-    addAirUnitLocationToMap = (airUnitName, boxName, boxIndex) => {
+    setAirUnitLocation = (airUnitName, boxName, boxIndex) => {
         this.airUnitLocationMap.set(airUnitName, { boxName, boxIndex })
     }
 

@@ -9,7 +9,7 @@ describe('Controller tests', () => {
 
     beforeEach(() => {
         controller = new Controller()
-        counters = loadCounters();
+        counters = loadCounters(controller);
     });
 
     test("check air units can be added, retrieved and removed to/from model", () => {
@@ -63,5 +63,28 @@ describe('Controller tests', () => {
 
         expect(boxName).toBe(GlobalUnitsModel.AirBoxes.JP_CD_CAP1)
         expect(boxIndex).toBe(2)
+    });
+
+    test("Move an air unit from OFFBOARD to the CAP box to the CAP returning box", () => {
+        const af1 = counters.get("Akagi-A6M-2b-1");
+        const af2 = counters.get("Akagi-A6M-2b-2");
+
+        // loader adds units to OFFBOARD during load process
+
+        controller.addAirUnitToBox(GlobalUnitsModel.AirBoxes.JP_CD_CAP1, 2, af1)
+        controller.addAirUnitToBox(GlobalUnitsModel.AirBoxes.JP_CD_CAP1, 3, af2)
+
+        controller.addAirUnitToBox(GlobalUnitsModel.AirBoxes.JP_CAP_RETURN1, 0, af1)
+
+        let location = controller.getAirUnitLocation("Akagi-A6M-2b-1")
+        expect(location.boxName).toBe(GlobalUnitsModel.AirBoxes.JP_CAP_RETURN1)
+        expect(location.boxIndex).toBe(0)
+
+        location = controller.getAirUnitLocation("Akagi-A6M-2b-2")
+        expect(location.boxName).toBe(GlobalUnitsModel.AirBoxes.JP_CD_CAP1)
+        expect(location.boxIndex).toBe(3)
+
+        let airUnits = controller.getAllAirUnitsInBox(GlobalUnitsModel.AirBoxes.JP_CD_CAP1)
+        expect(airUnits.length).toBe(1)
     });
 });
