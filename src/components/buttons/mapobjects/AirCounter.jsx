@@ -1,8 +1,9 @@
 import React, { useState } from "react";
 import "../../board.css";
-import DropCommand from "../../../commands/DropCommand";
+import MoveCommand from "../../../commands/MoveCommand";
 import COMMAND_TYPE from "../../../commands/COMMAND_TYPE";
 import GlobalGameState from "../../../model/GlobalGameState";
+import GlobalUnitsModel from "../../../model/GlobalUnitsModel";
 
 function AirCounter({ controller, onDrag, onStop, getAirBox, counterData }) {
   const [position, setPosition] = useState({
@@ -15,14 +16,14 @@ function AirCounter({ controller, onDrag, onStop, getAirBox, counterData }) {
 
     const { name, offsets, index } = getAirBox()
 
-    console.log("DROP...")
     if (!offsets) {
       return
     }
 
     const { boxName, boxIndex } = controller.getAirUnitLocation(counterData.name)
 
-    const from = boxName === GlobalUnitsModel.AirBoxes.OFFBOARD ? "OFFBOARD" : boxName + "- box " + boxIndex
+    const from = boxName === GlobalUnitsModel.AirBoxes.OFFBOARD ? "OFFBOARD" : boxName + " - box " + boxIndex
+
     const to = `${name} - box ${index}`
 
     setPosition({
@@ -30,8 +31,10 @@ function AirCounter({ controller, onDrag, onStop, getAirBox, counterData }) {
       left: offsets.left + "%",
       top: offsets.top - 0.2 + "%",
     });
-    
-    let command = new DropCommand(COMMAND_TYPE.MOVE, counterData.longName, from, to)
+
+    controller.addAirUnitToBox(name, index, counterData)
+
+    let command = new MoveCommand(COMMAND_TYPE.MOVE, counterData.longName, from, to)
     GlobalGameState.log(`Command: ${command.toString()}`)
 
     // set air unit location to new location (to)

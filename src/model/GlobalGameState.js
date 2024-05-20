@@ -1,4 +1,6 @@
 import React, { useState } from "react";
+import loadCounters from "../Loader";
+import Controller from "../controller/Controller";
 
 export default class GlobalGameState {
   static PHASE = {
@@ -50,4 +52,6 @@ export default class GlobalGameState {
   static getSetupMessage = () => {
     return this.SETUP_MESSAGES[this.setupPhase]
   }
+  static controller = new Controller()
+  static counters = loadCounters(this.controller)
 }

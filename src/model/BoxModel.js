@@ -53,6 +53,7 @@ export default class BoxModels {
     }
 
     getAirUnitLocation = (airUnitName) => {
+        const loc = this.airUnitLocationMap.get(airUnitName)
         return this.airUnitLocationMap.get(airUnitName)
     }
 

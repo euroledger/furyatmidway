@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import TurnMarkerButton from "./buttons/TurnMarkerButton";
 import AOPMarkerButton from "./buttons/AOPMarkerButton";
 import MidwayInvasionButton from "./buttons/MidwayInvasionButton";
@@ -15,6 +15,7 @@ import AirCounters from "./buttons/mapobjects/AirCounters";
 import loadCounters from "../Loader";
 import JapanAirBoxOffsets from '../components/buttons/mapobjects/JapanAirBoxOffsets'
 import GlobalUnitsModel from '../model/GlobalUnitsModel'
+import GlobalGameState from "../model/GlobalGameState";
 
 function Board({ controller, onDrag, onStop, scale }) {
   let zProps = { us: 0, japan: 0 };
@@ -24,13 +25,12 @@ function Board({ controller, onDrag, onStop, scale }) {
   const initialMGFPosition = { left: 77.5, top: 6.2 };
 
   const [zone, setZone] = useState(0);
+  const [loaded, setLoaded] = useState(false)
   const [currentHex, setCurrentHex] = useState({});
   const [mifzone, setMIFZone] = useState(5);
   const [mgfzone, setMGFZone] = useState(6);
   const [airBox, setAirBox] = useState({});
   const [zIndex, setZIndex] = useState(zProps);
-
-  const counters = loadCounters(controller);
 
   const setCurrentCoords = (currentHex) => {
     setCurrentHex(currentHex);
@@ -57,10 +57,7 @@ function Board({ controller, onDrag, onStop, scale }) {
   const handleAirBoxDragEnter = (event, index, name) => {
     event.preventDefault();
     event.stopPropagation();
-    console.log("Looking for ", name)
     const airZones = JapanAirBoxOffsets.find((o => o.name === name));
-    console.log("AIR Box index = ", index)
-    console.log("airzones = ", airZones)
 
     const offsets = airZones.offsets[index]
     setAirBox({ name, offsets, index })
@@ -180,7 +177,7 @@ function Board({ controller, onDrag, onStop, scale }) {
           onStop={onStop}
           currentHex={currentHex}
           id="1AF"
-          counterData={counters.get("1AF")}
+          counterData={GlobalGameState.counters.get("1AF")}
         ></FleetCounter>
         {/* <AirCounter
           onDrag={onDrag}
@@ -192,7 +189,7 @@ function Board({ controller, onDrag, onStop, scale }) {
           controller={controller}
           onDrag={onDrag}
           onStop={onStop}
-          counterData={counters}
+          counterData={GlobalGameState.counters}
           getAirBox={getAirBox}
         ></AirCounters>
         <div>
