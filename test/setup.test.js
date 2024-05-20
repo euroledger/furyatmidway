@@ -23,7 +23,7 @@ describe('Controller tests', () => {
     expect(GlobalUnitsModel.usFleetUnits.get("CSF")).toBeTruthy();
     expect(GlobalUnitsModel.usFleetUnits.get("DMCV")).toBeTruthy();
 
-    expect(GlobalUnitsModel.jpAirUnits.size).toBe(2)
+    expect(GlobalUnitsModel.jpAirUnits.size).toBe(4)
   });
 
   test("check fleet unit values", () => {
@@ -82,5 +82,6 @@ describe('Controller tests', () => {
     expect(af.longName).toBe("Japanese A6M-2b (Akagi) 2");
     expect(af.image).toBe("/images/aircounters/akagi-a6m-front.png");
     expect(af.width).toBe("2.1%");
+    expect(af.carrier).toBe(GlobalUnitsModel.japanCarriers.AKAGI)
   });
 })

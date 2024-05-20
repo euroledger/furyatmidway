@@ -57,6 +57,9 @@ function Board({ controller, onDrag, onStop, scale }) {
   const handleAirBoxDragEnter = (event, index, name) => {
     event.preventDefault();
     event.stopPropagation();
+
+    const unit = controller.getAirUnitInBox(name, index)
+    console.log("...and unit here is", unit)
     const airZones = JapanAirBoxOffsets.find((o => o.name === name));
 
     const offsets = airZones.offsets[index]
@@ -191,6 +194,7 @@ function Board({ controller, onDrag, onStop, scale }) {
           onStop={onStop}
           counterData={GlobalGameState.counters}
           getAirBox={getAirBox}
+          setAirBox={setAirBox}
         ></AirCounters>
         <div>
           <DragAndDropSmall

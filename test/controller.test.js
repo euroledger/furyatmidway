@@ -87,4 +87,14 @@ describe('Controller tests', () => {
         let airUnits = controller.getAllAirUnitsInBox(GlobalUnitsModel.AirBoxes.JP_CD_CAP1)
         expect(airUnits.length).toBe(1)
     });
+
+    test("Air Units for Carrier", () => {
+        const airUnits = controller.getAirUnitsForCarrier("Akagi")
+        expect(airUnits.length).toBe(4)
+
+        expect(airUnits[0].name).toBe("Akagi-A6M-2b-1")
+        expect(airUnits[1].name).toBe("Akagi-A6M-2b-2")
+        expect(airUnits[2].name).toBe("Akagi-D3A-1")
+        expect(airUnits[3].name).toBe("Akagi-B5N-2")
+    });
 });

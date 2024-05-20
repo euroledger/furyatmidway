@@ -2,7 +2,7 @@ import React, { useState } from "react";
 import "../../board.css";
 import AirCounter from "./AirCounter";
 
-function AirCounters({ controller, onDrag, onStop, getAirBox, counterData }) {
+function AirCounters({ controller, onDrag, onStop, getAirBox, setAirBox, counterData }) {
   const vals = Array.from(counterData.values())
   const airCounters = vals.map((airUnit) => {
     if (airUnit.constructor.name === 'AirUnit') {
@@ -14,6 +14,7 @@ function AirCounters({ controller, onDrag, onStop, getAirBox, counterData }) {
           onStop={onStop}
           counterData={airUnit}
           getAirBox={getAirBox}
+          setAirBox={setAirBox}
         ></AirCounter>
       );
     }

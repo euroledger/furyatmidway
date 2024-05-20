@@ -140,7 +140,6 @@ function App() {
         maxScale={6}
         limitToBounds={false}
         onTransformed={(e) => handleScaleChange(e)}
-      // pinch={{ step: 5 }}
       >
         <Controls />
 

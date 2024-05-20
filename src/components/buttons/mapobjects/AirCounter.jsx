@@ -5,12 +5,15 @@ import COMMAND_TYPE from "../../../commands/COMMAND_TYPE";
 import GlobalGameState from "../../../model/GlobalGameState";
 import GlobalUnitsModel from "../../../model/GlobalUnitsModel";
 
-function AirCounter({ controller, onDrag, onStop, getAirBox, counterData }) {
+function AirCounter({ controller, onDrag, onStop, getAirBox, setAirBox, counterData }) {
   const [position, setPosition] = useState({
     left: counterData.position.left,
     top: counterData.position.top,
   });
   
+  //  TODO if this is a cap box and the air unit is not a fighter unit => disallow drop 
+  // (and display error message)
+  console.log("This unit belongs to carrier ", counterData.carrier + "\n")
   const handleDrop = (event) => {
     event.preventDefault();
 
@@ -43,6 +46,7 @@ function AirCounter({ controller, onDrag, onStop, getAirBox, counterData }) {
     // 2. set the state of prev box index to enabled and new (to) box index to disabled
     // pass this state into here from above as it will be used to re-render the drag and drop objects
     // this prevents more than one counter being dropped into the same drop zone
+    setAirBox({})
   };
 
   return (

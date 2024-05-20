@@ -20,12 +20,24 @@ class Controller {
         return this.BoxModel.getAllAirUnitsInBox(boxName)
     }
 
+    getAirUnitInBox = (boxName, index) => {
+        return this.BoxModel.getAirUnitInBox(boxName, index)
+    }
+
     isAirUnitInBox = (boxName, airUnitName) => {
         return this.BoxModel.isAirUnitInBox(boxName, airUnitName)
     }
 
     getAirUnitLocation = (airUnitName) => {
         return this.BoxModel.getAirUnitLocation(airUnitName)
+    }
+
+    addAirUnitToCarrier(carrier, value) {
+        this.BoxModel.addAirUnitToCarrier (carrier, value)
+    }
+
+    getAirUnitsForCarrier(carrier) {
+       return this.BoxModel.getAirUnitsForCarrier (carrier)
     }
 }
 

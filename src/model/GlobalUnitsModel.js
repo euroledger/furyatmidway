@@ -2,6 +2,12 @@ import FleetUnit from "./FleetUnit";
 
 export default class GlobalUnitsModel {
 
+    static japanCarriers = {
+        AKAGI: "Akagi",
+        KAGA: "Kaga",
+        HIRYU: "Hiryu",
+        SORYU: "Soryu",
+    }
     static AirBoxes = {
         OFFBOARD: "OFFBOARD",
         JP_CD_CAP1: "1CD CAP",

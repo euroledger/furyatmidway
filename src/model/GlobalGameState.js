@@ -1,8 +1,9 @@
-import React, { useState } from "react";
 import loadCounters from "../Loader";
 import Controller from "../controller/Controller";
+import GlobalUnitsModel from './GlobalUnitsModel';
 
 export default class GlobalGameState {
+
   static PHASE = {
     SETUP: 1,
     MOVE: 2
@@ -15,8 +16,16 @@ export default class GlobalGameState {
     'Place Soryu Air Units'
   ]
 
-  
+  static JAPAN_CARRIERS = [
+    GlobalUnitsModel.japanCarriers.AKAGI,
+    GlobalUnitsModel.japanCarriers.KAGA,
+    GlobalUnitsModel.japanCarriers.HIRYU,
+    GlobalUnitsModel.japanCarriers.SORYU,
+  ]
+
   static gameTurn = 1;
+
+  static currentCarrier = 0
 
   static airOperationPoints = {
     japan: 0,
@@ -48,6 +57,13 @@ export default class GlobalGameState {
 
   static gamePhase = this.PHASE.SETUP
   static setupPhase = 0;
+
+  static getCarrier = () => {
+    console.log("FUCKING OIN HERE>................carriers = ", this.JAPAN_CARRIERS)
+    console.log("PISS FUCK     GlobalUnitsModel.AKAGI = ", GlobalUnitsModel.japanCarriers.AKAGI)
+
+    return this.JAPAN_CARRIERS[this.setupPhase]
+  }
 
   static getSetupMessage = () => {
     return this.SETUP_MESSAGES[this.setupPhase]

@@ -26,7 +26,7 @@ export default class GameStatePanel extends React.Component {
     return (
       <>
         <div
-          class="accordion border border-success p-2 mb-2  me-2"
+          class="accordion border border-success"
           id="accordionExample"
           style={{ width: "500px" }}
         >
@@ -40,7 +40,7 @@ export default class GameStatePanel extends React.Component {
                 aria-expanded="true"
                 aria-controls="collapseOne"
               >
-                <p class="text-center fs-2">Game State</p>
+                <p class="text-center fs-2" >Game State</p>
               </button>
             </h2>
             <div

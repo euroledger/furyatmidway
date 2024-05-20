@@ -12,6 +12,13 @@ export default class BoxModels {
 
         this.offboard = new Array()
 
+        this.japanCarrierMap = new Map() // key = carrier name, value = array of air units
+        this.japanCarrierMap.set("Akagi", new Array())
+        this.japanCarrierMap.set("Kaga", new Array())
+        this.japanCarrierMap.set("Hiryu", new Array())
+        this.japanCarrierMap.set("Soryu", new Array())
+        
+
         // map of air unit boxes, each item is a zone within the air box represented
         // as an array. Each element in th array may or may not contain an air unit
         this.boxMap = new Map()
@@ -73,9 +80,28 @@ export default class BoxModels {
         return Array.from(box.values()).filter(n => n)
     }
 
+    getAirUnitInBox = (boxName, index) => {
+        const box = this.boxMap.get(boxName)
+        if (!box) {
+            return null
+        }
+        console.log("box[index] = ", box[index])
+        return box[index]
+    }
+
     isAirUnitInBox = (boxName, name) => {
         const units = this.getAllAirUnitsInBox(boxName)
         const found = units.find(unit => unit.name === name)
         return found != undefined ? true : false
+    }
+
+    addAirUnitToCarrier(carrier, value) {
+        const airUnitsArray = this.japanCarrierMap.get(carrier)
+        airUnitsArray.push(value)
+        this.japanCarrierMap.set(carrier, airUnitsArray)
+    }
+
+    getAirUnitsForCarrier(carrier) {
+        return this.japanCarrierMap.get(carrier)
     }
 }
