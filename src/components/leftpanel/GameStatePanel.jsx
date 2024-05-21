@@ -31,7 +31,7 @@ export default class GameStatePanel extends React.Component {
           style={{ width: "500px" }}
         >
           <div class="accordion-item">
-            <h2 class="accordion-header" id="headingOne">
+            <h4 class="accordion-header" id="headingOne">
               <button
                 class="accordion-button"
                 type="button"
@@ -42,7 +42,7 @@ export default class GameStatePanel extends React.Component {
               >
                 <p class="text-center fs-2" >Game State</p>
               </button>
-            </h2>
+            </h4>
             <div
               id="collapseOne"
               class="accordion-collapse collapse show"

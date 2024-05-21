@@ -3,8 +3,8 @@ import "../../board.css";
 import AirCounter from "./AirCounter";
 
 function AirCounters({ controller, onDrag, onStop, getAirBox, setAirBox, counterData }) {
-  const vals = Array.from(counterData.values())
-  const airCounters = vals.map((airUnit) => {
+  const counters = Array.from(counterData.values())
+  const airCounters = counters.map((airUnit) => {
     if (airUnit.constructor.name === 'AirUnit') {
       return (
         <AirCounter

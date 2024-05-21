@@ -48,6 +48,12 @@ export default class GlobalGameState {
     "June 5, 1942 Evening",
   ];
 
+  static finishedSetUp = false
+
+  static updateGlobalState = () => {
+    this.stateHandler();
+  }
+
   static log = (message) => {
     this.logItems.push(message);
     this.stateHandler();
@@ -59,9 +65,6 @@ export default class GlobalGameState {
   static setupPhase = 0;
 
   static getCarrier = () => {
-    console.log("FUCKING OIN HERE>................carriers = ", this.JAPAN_CARRIERS)
-    console.log("PISS FUCK     GlobalUnitsModel.AKAGI = ", GlobalUnitsModel.japanCarriers.AKAGI)
-
     return this.JAPAN_CARRIERS[this.setupPhase]
   }
 

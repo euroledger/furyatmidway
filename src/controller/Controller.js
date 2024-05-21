@@ -39,6 +39,10 @@ class Controller {
     getAirUnitsForCarrier(carrier) {
        return this.BoxModel.getAirUnitsForCarrier (carrier)
     }
+
+    getAirUnitsDeployed(carrier) {
+        return this.BoxModel.getAirUnitsDeployed (carrier)
+    }
 }
 
 export default Controller

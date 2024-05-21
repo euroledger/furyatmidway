@@ -61,13 +61,11 @@ function App() {
             </p>
 
             <Nav>
-              {/* <p class="navbar-text">Some text</p> */}
-
               <Button
                 className="me-1"
                 variant="secondary"
                 onClick={() => zoomIn()}
-                disabled={true}
+                disabled={!GlobalGameState.finishedSetUp}
                 style={{ background: "#9e1527" }}
               >
                 Next Action

@@ -104,4 +104,9 @@ export default class BoxModels {
     getAirUnitsForCarrier(carrier) {
         return this.japanCarrierMap.get(carrier)
     }
+
+    getAirUnitsDeployed(carrier) {
+        const airUnitsArray = this.japanCarrierMap.get(carrier)
+        return airUnitsArray.filter((airUnit) => this.getAirUnitLocation(airUnit.name).boxName != GlobalUnitsModel.AirBoxes.OFFBOARD)
+    }
 }
