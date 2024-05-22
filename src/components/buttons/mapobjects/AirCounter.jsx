@@ -1,59 +1,63 @@
 import React, { useState } from "react";
 import "../../board.css";
-import MoveCommand from "../../../commands/MoveCommand";
-import COMMAND_TYPE from "../../../commands/COMMAND_TYPE";
-import GlobalGameState from "../../../model/GlobalGameState";
+import Controller from "../../../controller/Controller";
 import GlobalUnitsModel from "../../../model/GlobalUnitsModel";
 
-function AirCounter({ controller, onDrag, onStop, getAirBox, setAirBox, counterData }) {
+function AirCounter({
+  controller,
+  onDrag,
+  onStop,
+  getAirBox,
+  setAirBox,
+  counterData,
+}) {
   const [position, setPosition] = useState({
     left: counterData.position.left,
     top: counterData.position.top,
   });
 
-  //  TODO if this is a cap box and the air unit is not a fighter unit => disallow drop 
-  // (and display error message)
   const handleDrop = (event) => {
     event.preventDefault();
 
-    const { name, offsets, index } = getAirBox()
-
+    const { name, offsets, index } = getAirBox();
     if (!offsets) {
-      return
+      return;
     }
 
-    const { boxName, boxIndex } = controller.getAirUnitLocation(counterData.name)
+    //  TODO if this is a cap box and the air unit is not a fighter unit => disallow drop
+    // (and display error message)
+    // attack is true if the air unit is torpedo or dive bomber, i.e., not a fighter
+    const airUnit = controller.getAirUnit(counterData.name)
+    if (!airUnit) {
+      // error
+      return
+    }
+    console.log("data = ", airUnit);
+    if (airUnit.attack && name === GlobalUnitsModel.AirBox.JP_CD_CAP1) {
+      console.log(
+        "*** Air Unit is not a figher unit -> Cannot be used for CAP!"
+      );
 
-    const from = boxName === GlobalUnitsModel.AirBoxes.OFFBOARD ? "OFFBOARD" : boxName + " - box " + boxIndex
-
-    const to = `${name} - box ${index}`
-
+      // TODO display error popup
+      return;
+    }
     setPosition({
       ...position,
       left: offsets.left + "%",
       top: offsets.top - 0.2 + "%",
     });
 
-    controller.addAirUnitToBox(name, index, counterData)
+    controller.viewEventHandler({
+      type: Controller.EventTypes.AIR_UNIT_SETUP,
+      data: {
+        name,
+        counterData,
+        index,
+      },
+    });
 
-    let command = new MoveCommand(COMMAND_TYPE.MOVE, counterData.longName, from, to)
-    GlobalGameState.log(`Command: ${command.toString()}`)
-
-    // set air unit location to new location (to)
-    // 1. add air unit to box - this automatically updates the map of locations (and removes from old box)
-
-    // 2. set the state of prev box index to enabled and new (to) box index to disabled
-    // pass this state into here from above as it will be used to re-render the drag and drop objects
-    // this prevents more than one counter being dropped into the same drop zone
-    setAirBox({})
-
-    const airUnitsDeployed = controller.getAirUnitsDeployed(counterData.carrier)
-
-    if (airUnitsDeployed.length === 4) {
-      // all units deployed -> activate button
-      GlobalGameState.finishedSetUp = true;
-      GlobalGameState.updateGlobalState();
-    }
+    // reset air box for next counter
+    setAirBox({});
   };
 
   return (
@@ -67,7 +71,7 @@ function AirCounter({ controller, onDrag, onStop, getAirBox, setAirBox, counterD
           width: counterData.width,
           left: position.left,
           top: position.top,
-          zIndex: 10
+          zIndex: 10,
         }}
         id="saveForm2"
         onMouseEnter={onDrag}

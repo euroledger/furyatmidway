@@ -1,48 +1,68 @@
-import BoxModel from '../model/BoxModel'
+import BoxModel from "../model/BoxModel";
+import GlobalUnitsModel from "../model/GlobalUnitsModel";
+import ViewEventAirUnitSetupHandler from './ViewEventAirUnitSetupHandler'
 
-// We should have a controller to propagate view changes to the model and
-// vice versa
+export default class Controller {
+  static EventTypes = {
+    AIR_UNIT_SETUP: "AirUnitSetup",
+  };
 
-class Controller {
-    constructor() {
-        this.BoxModel = new BoxModel()
+  constructor() {
+    this.boxModel = new BoxModel();
+    this.airUnitSetupHandler = new ViewEventAirUnitSetupHandler(this)
+  }
+
+  addAirUnitToBox = (boxName, index, value) => {
+    this.boxModel.addAirUnitToBox(boxName, index, value);
+  };
+
+  removeAirUnitFromBox = (boxName, index) => {
+    this.boxModel.removeAirUnitFromBox(boxName, index);
+  };
+
+  getAllAirUnitsInBox = (boxName) => {
+    return this.boxModel.getAllAirUnitsInBox(boxName);
+  };
+
+  getAirUnitInBox = (boxName, index) => {
+    return this.boxModel.getAirUnitInBox(boxName, index);
+  };
+
+  isAirUnitInBox = (boxName, airUnitName) => {
+    return this.boxModel.isAirUnitInBox(boxName, airUnitName);
+  };
+
+  getAirUnitLocation = (airUnitName) => {
+    return this.boxModel.getAirUnitLocation(airUnitName);
+  };
+
+  addAirUnitToCarrier(carrier, value) {
+    this.boxModel.addAirUnitToCarrier(carrier, value);
+  }
+
+  getAirUnitsForCarrier(carrier) {
+    return this.boxModel.getAirUnitsForCarrier(carrier);
+  }
+
+  getAirUnitsDeployed(carrier) {
+    return this.boxModel.getAirUnitsDeployed(carrier);
+  }
+
+  getAirUnit(name) {
+    return GlobalUnitsModel.jpAirUnits.get(name)
+  }
+  
+  viewEventHandler(event) {
+    // event contains type and data
+
+    // TODO for air unit move events, check if it is initial set up or not
+    switch (event.type) {
+      case Controller.EventTypes.AIR_UNIT_SETUP:
+        this.airUnitSetupHandler.handleEvent(event)
+        break;
+
+      default:
+        console.log(`Unknown event type: ${event.type}`);
     }
-
-    addAirUnitToBox = (boxName, index, value) => {
-        this.BoxModel.addAirUnitToBox (boxName, index, value)
-    }
-
-    removeAirUnitFromBox = (boxName, index) => {
-        this.BoxModel.removeAirUnitFromBox (boxName, index)
-    }
-
-    getAllAirUnitsInBox = (boxName) => {
-        return this.BoxModel.getAllAirUnitsInBox(boxName)
-    }
-
-    getAirUnitInBox = (boxName, index) => {
-        return this.BoxModel.getAirUnitInBox(boxName, index)
-    }
-
-    isAirUnitInBox = (boxName, airUnitName) => {
-        return this.BoxModel.isAirUnitInBox(boxName, airUnitName)
-    }
-
-    getAirUnitLocation = (airUnitName) => {
-        return this.BoxModel.getAirUnitLocation(airUnitName)
-    }
-
-    addAirUnitToCarrier(carrier, value) {
-        this.BoxModel.addAirUnitToCarrier (carrier, value)
-    }
-
-    getAirUnitsForCarrier(carrier) {
-       return this.BoxModel.getAirUnitsForCarrier (carrier)
-    }
-
-    getAirUnitsDeployed(carrier) {
-        return this.BoxModel.getAirUnitsDeployed (carrier)
-    }
+  }
 }
-
-export default Controller

@@ -12,10 +12,12 @@ import MIFOffsets from "./MIFBoxOffsets";
 import MGTOffsets from "./MGTBoxOffsets";
 import FleetCounter from "./buttons/mapobjects/FleetCounter";
 import AirCounters from "./buttons/mapobjects/AirCounters";
-import loadCounters from "../Loader";
-import JapanAirBoxOffsets from '../components/buttons/mapobjects/JapanAirBoxOffsets'
-import GlobalUnitsModel from '../model/GlobalUnitsModel'
-import GlobalGameState from "../model/GlobalGameState";
+import JapanAirBoxOffsets from "../components/buttons/mapobjects/JapanAirBoxOffsets";
+import GlobalUnitsModel from "../model/GlobalUnitsModel";
+import GlobalInit from "../model/GlobalInit";
+import Modal from "react-bootstrap/Modal";
+import Button from 'react-bootstrap/Button';
+
 
 function Board({ controller, onDrag, onStop, scale }) {
   let zProps = { us: 0, japan: 0 };
@@ -25,7 +27,6 @@ function Board({ controller, onDrag, onStop, scale }) {
   const initialMGFPosition = { left: 77.5, top: 6.2 };
 
   const [zone, setZone] = useState(0);
-  const [loaded, setLoaded] = useState(false)
   const [currentHex, setCurrentHex] = useState({});
   const [mifzone, setMIFZone] = useState(5);
   const [mgfzone, setMGFZone] = useState(6);
@@ -58,19 +59,19 @@ function Board({ controller, onDrag, onStop, scale }) {
     event.preventDefault();
     event.stopPropagation();
 
-    const unit = controller.getAirUnitInBox(name, index)
-    console.log("...and unit here is", unit)
-    const airZones = JapanAirBoxOffsets.find((o => o.name === name));
+    const unit = controller.getAirUnitInBox(name, index);
+    console.log("...and unit here is", unit);
+    const airZones = JapanAirBoxOffsets.find((o) => o.name === name);
 
-    const offsets = airZones.offsets[index]
-    setAirBox({ name, offsets, index })
-  }
+    const offsets = airZones.offsets[index];
+    setAirBox({ name, offsets, index });
+  };
   const getZone = () => zone;
   const getMIFZone = () => mifzone;
   const getMGFZone = () => mgfzone;
   const getAirBox = () => {
     return airBox;
-  }
+  };
 
   const incrementZIndex = (side, increment) => {
     if (side === "japan") {
@@ -80,13 +81,19 @@ function Board({ controller, onDrag, onStop, scale }) {
     }
   };
 
-  const japan1DCapZones = JapanAirBoxOffsets.find((o => o.name === GlobalUnitsModel.AirBoxes.JP_CD_CAP1));
-  const japan1DCapReturningZones = JapanAirBoxOffsets.find((o => o.name === GlobalUnitsModel.AirBoxes.JP_CAP_RETURN1));
-  const japan1DHangarZones = JapanAirBoxOffsets.find((o => o.name === GlobalUnitsModel.AirBoxes.JP_1CD_HANGER));
+  const japan1DCapZones = JapanAirBoxOffsets.find(
+    (o) => o.name === GlobalUnitsModel.AirBox.JP_CD_CAP1
+  );
+  const japan1DCapReturningZones = JapanAirBoxOffsets.find(
+    (o) => o.name === GlobalUnitsModel.AirBox.JP_CAP_RETURN1
+  );
+  const japan1DHangarZones = JapanAirBoxOffsets.find(
+    (o) => o.name === GlobalUnitsModel.AirBox.JP_1CD_HANGER
+  );
 
   return (
     <>
-      <div >
+      <div>
         <img
           src="/images/bb.jpg"
           alt="test"
@@ -107,7 +114,8 @@ function Board({ controller, onDrag, onStop, scale }) {
             setCurrentCoords={setCurrentCoords}
           ></CanvasHex>
         </div>
-        <div id="canvas"
+        <div
+          id="canvas"
           // className="border"
           style={{
             position: "absolute",
@@ -180,19 +188,14 @@ function Board({ controller, onDrag, onStop, scale }) {
           onStop={onStop}
           currentHex={currentHex}
           id="1AF"
-          counterData={GlobalGameState.counters.get("1AF")}
+          counterData={GlobalInit.counters.get("1AF")}
         ></FleetCounter>
-        {/* <AirCounter
-          onDrag={onDrag}
-          onStop={onStop}
-          counterData={counters.get("Akagi-A6M-2b-1")}
-          getAirBox={getAirBox}
-        ></AirCounter> */}
-          <AirCounters
+
+        <AirCounters
           controller={controller}
           onDrag={onDrag}
           onStop={onStop}
-          counterData={GlobalGameState.counters}
+          counterData={GlobalInit.counters}
           getAirBox={getAirBox}
           setAirBox={setAirBox}
         ></AirCounters>
@@ -205,7 +208,9 @@ function Board({ controller, onDrag, onStop, scale }) {
         </div>
         <div>
           <DragAndDropSmall
-            handleDragEnter={(e) => handleAirBoxDragEnter(e, 0, japan1DCapReturningZones.name)}
+            handleDragEnter={(e) =>
+              handleAirBoxDragEnter(e, 0, japan1DCapReturningZones.name)
+            }
             zones={japan1DCapReturningZones.offsets}
           ></DragAndDropSmall>
         </div>
@@ -216,7 +221,6 @@ function Board({ controller, onDrag, onStop, scale }) {
             zones={japan1DHangarZones.offsets}
           ></DragAndDropSmall>
         </div>
-
       </div>
     </>
   );

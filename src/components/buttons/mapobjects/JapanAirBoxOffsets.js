@@ -6,9 +6,11 @@ import GlobalUnitsModel from "../../../model/GlobalUnitsModel";
 
 //   AirBoxes = {
 //       JP_CD_CAP1:
+
+// TODO create a map of TF/CarDiv or Carrier -> list of boxes that units from that parent formation/carrier can use
 const JapanBoxOffsets = [
   {
-    name: GlobalUnitsModel.AirBoxes.JP_CD_CAP1,
+    name: GlobalUnitsModel.AirBox.JP_CD_CAP1,
     offsets: [
       {
         left: 15.4,
@@ -29,7 +31,7 @@ const JapanBoxOffsets = [
     ],
   },
   {
-    name: GlobalUnitsModel.AirBoxes.JP_CAP_RETURN1,
+    name: GlobalUnitsModel.AirBox.JP_CAP_RETURN1,
     offsets: [
       {
         left: 10.3,
@@ -38,7 +40,7 @@ const JapanBoxOffsets = [
     ],
   },
   {
-    name: GlobalUnitsModel.AirBoxes.JP_1CD_HANGER,
+    name: GlobalUnitsModel.AirBox.JP_1CD_HANGER,
     offsets: [
       {
         left: 14.7,

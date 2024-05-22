@@ -12,6 +12,8 @@ import {
 } from "react-zoom-pan-pinch";
 import GameStatePanel from "./components/leftpanel/GameStatePanel";
 import GlobalGameState from "./model/GlobalGameState";
+import GlobalInit from "./model/GlobalInit";
+import ModalAlert from "./components/dialogs/modalAlert";
 
 import "./style.css";
 
@@ -19,8 +21,10 @@ function App() {
   const [gameState, setGameState] = useState(false);
   const [isMoveable, setIsMoveable] = useState(false);
   const [scale, setScale] = useState(1);
+  const [modalShow, setModalShow] = useState(true);
 
-  // this class will take a set of preset commands and run them in sequence in 
+
+  // this class will take a set of preset commands and run them in sequence in
   // order to test the React App
   // const uiTester = new UITester()
 
@@ -65,7 +69,7 @@ function App() {
                 className="me-1"
                 variant="secondary"
                 onClick={() => zoomIn()}
-                disabled={!GlobalGameState.finishedSetUp}
+                disabled={!GlobalGameState.phaseCompleted}
                 style={{ background: "#9e1527" }}
               >
                 Next Action
@@ -109,18 +113,31 @@ function App() {
 
   GlobalGameState.stateHandler = gameStateHandler;
 
-
   // disable browser zoom (ctrl+ ctrl-)
-  window.addEventListener('keydown', function (e) {
-    if ((e.ctrlKey || e.metaKey) && (e.which === 61 || e.which === 107 || e.which === 173 || e.which === 109 || e.which === 187 || e.which === 189)) {
-      e.preventDefault();
-    }
-  }, false);
+  window.addEventListener(
+    "keydown",
+    function (e) {
+      if (
+        (e.ctrlKey || e.metaKey) &&
+        (e.which === 61 ||
+          e.which === 107 ||
+          e.which === 173 ||
+          e.which === 109 ||
+          e.which === 187 ||
+          e.which === 189)
+      ) {
+        e.preventDefault();
+      }
+    },
+    false
+  );
 
   // usage
-  window.addEventListener('devicepixelratiochange', function (e) {
+  window.addEventListener("devicepixelratiochange", function (e) {
     // note: change of devicePixelRatio means change of page zoom, but devicePixelRatio itself doesn't mean page zoom
-    console.log('devicePixelRatio changed from ' + e.oldValue + ' to ' + e.newValue);
+    console.log(
+      "devicePixelRatio changed from " + e.oldValue + " to " + e.newValue
+    );
   });
 
   // window height
@@ -131,6 +148,10 @@ function App() {
 
   return (
     <>
+      <ModalAlert
+        show={modalShow}
+        onHide={() => setModalShow(false)}
+      />
       <TransformWrapper
         initialScale={1}
         disabled={isMoveable}
@@ -142,18 +163,18 @@ function App() {
         <Controls />
 
         <div class="d-flex p-2">
-            <GameStatePanel gameState={gameState} />
+          <GameStatePanel gameState={gameState} />
           <div
             style={{
               minHeight: "648px",
               minWidth: "1080px",
               maxHeight: "648px",
-              maxWidth: "1080px"
+              maxWidth: "1080px",
             }}
           >
             <TransformComponent>
               <Board
-                controller={GlobalGameState.controller}
+                controller={GlobalInit.controller}
                 gameStateHandler={gameStateHandler}
                 onDrag={onDrag}
                 onStop={onStop}
@@ -161,7 +182,6 @@ function App() {
               />
             </TransformComponent>
           </div>
-
         </div>
       </TransformWrapper>
     </>

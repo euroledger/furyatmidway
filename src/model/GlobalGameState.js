@@ -17,10 +17,10 @@ export default class GlobalGameState {
   ]
 
   static JAPAN_CARRIERS = [
-    GlobalUnitsModel.japanCarriers.AKAGI,
-    GlobalUnitsModel.japanCarriers.KAGA,
-    GlobalUnitsModel.japanCarriers.HIRYU,
-    GlobalUnitsModel.japanCarriers.SORYU,
+    GlobalUnitsModel.Carrier.AKAGI,
+    GlobalUnitsModel.Carrier.KAGA,
+    GlobalUnitsModel.Carrier.HIRYU,
+    GlobalUnitsModel.Carrier.SORYU,
   ]
 
   static gameTurn = 1;
@@ -32,7 +32,7 @@ export default class GlobalGameState {
     us: 0,
   };
 
-  static stateHandler;
+  static stateHandler = () => {};
 
   static midwayInvasionLevel = 5;
 
@@ -48,7 +48,7 @@ export default class GlobalGameState {
     "June 5, 1942 Evening",
   ];
 
-  static finishedSetUp = false
+  static phaseCompleted = false
 
   static updateGlobalState = () => {
     this.stateHandler();
@@ -71,6 +71,4 @@ export default class GlobalGameState {
   static getSetupMessage = () => {
     return this.SETUP_MESSAGES[this.setupPhase]
   }
-  static controller = new Controller()
-  static counters = loadCounters(this.controller)
 }

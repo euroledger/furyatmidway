@@ -18,13 +18,36 @@ export default class BoxModels {
         this.japanCarrierMap.set("Hiryu", new Array())
         this.japanCarrierMap.set("Soryu", new Array())
         
+        // TODO
+        // 1. map side -> TaskForceMap (contains two entries, one for each cardiv)
+        //      "japan" -> taskForceMap
+        // 2. within each TaskForceMap,
+        //      "carDiv1" -> cardiv1Map
+        //      "carDiv2" -> cardiv2Map
+        // 3. within each CarDivMap (each contains two entries, one for each carrier)
+        //          cardiv1:
+        //              "akagi" -> akagiBoxMap
+        //              "kaga"  -> kagaBoxMap
+        //          cardiv2:
+        //              "hiryu" -> hiryuBoxMap
+        //              "soryu" -> soryuBoxMap
+        //  4. within each CarrierMap (each contains 5 entries, one for each box)
+        //              akagi:
+        //                  "capBox"        -> [list of boxes]
+        //                  "return1Box"    -> [list of boxes]
+        //                  "return2Box"    -> [list of boxes]
+        //                  "hangarBox"     -> [list of boxes]
+        //                  "flightDeckBox" -> [list of boxes]
+        //              
+        //          ....etc.
+
 
         // map of air unit boxes, each item is a zone within the air box represented
         // as an array. Each element in th array may or may not contain an air unit
         this.boxMap = new Map()
-        this.boxMap.set(GlobalUnitsModel.AirBoxes.OFFBOARD, this.offboard)
-        this.boxMap.set(GlobalUnitsModel.AirBoxes.JP_CD_CAP1, this.japanDiv1CapBoxes)
-        this.boxMap.set(GlobalUnitsModel.AirBoxes.JP_CAP_RETURN1, this.japanDiv1CapReturn)
+        this.boxMap.set(GlobalUnitsModel.AirBox.OFFBOARD, this.offboard)
+        this.boxMap.set(GlobalUnitsModel.AirBox.JP_CD_CAP1, this.japanDiv1CapBoxes)
+        this.boxMap.set(GlobalUnitsModel.AirBox.JP_CAP_RETURN1, this.japanDiv1CapReturn)
 
         // map of air unit -> location
         // This maps the name of an air unit to its location (ie box name, index)
@@ -46,7 +69,7 @@ export default class BoxModels {
         if (prevLocation != undefined) {
             this.removeAirUnitFromBox(prevLocation.boxName, prevLocation.boxIndex)
         }
-        if (boxName === GlobalUnitsModel.AirBoxes.OFFBOARD) {
+        if (boxName === GlobalUnitsModel.AirBox.OFFBOARD) {
             box.push(value)
         } else {
             box[index] = value
@@ -107,6 +130,6 @@ export default class BoxModels {
 
     getAirUnitsDeployed(carrier) {
         const airUnitsArray = this.japanCarrierMap.get(carrier)
-        return airUnitsArray.filter((airUnit) => this.getAirUnitLocation(airUnit.name).boxName != GlobalUnitsModel.AirBoxes.OFFBOARD)
+        return airUnitsArray.filter((airUnit) => this.getAirUnitLocation(airUnit.name).boxName != GlobalUnitsModel.AirBox.OFFBOARD)
     }
 }
