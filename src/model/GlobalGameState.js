@@ -1,5 +1,3 @@
-import loadCounters from "../Loader";
-import Controller from "../controller/Controller";
 import GlobalUnitsModel from './GlobalUnitsModel';
 
 export default class GlobalGameState {

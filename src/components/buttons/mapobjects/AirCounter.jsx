@@ -2,6 +2,7 @@ import React, { useState } from "react";
 import "../../board.css";
 import Controller from "../../../controller/Controller";
 import GlobalUnitsModel from "../../../model/GlobalUnitsModel";
+import GlobalGameState from "../../../model/GlobalGameState";
 
 function AirCounter({
   controller,
@@ -19,6 +20,14 @@ function AirCounter({
   const handleDrop = (event) => {
     event.preventDefault();
 
+    if (
+      counterData.carrier != GlobalGameState.getCarrier() &&
+      GlobalGameState.gamePhase === GlobalGameState.PHASE.SETUP
+    ) {
+      // cannot move units from carrier other than the current one being set up
+      return;
+    }
+
     const { name, offsets, index } = getAirBox();
     if (!offsets) {
       return;
@@ -27,13 +36,12 @@ function AirCounter({
     //  TODO if this is a cap box and the air unit is not a fighter unit => disallow drop
     // (and display error message)
     // attack is true if the air unit is torpedo or dive bomber, i.e., not a fighter
-    const airUnit = controller.getAirUnit(counterData.name)
+    const airUnit = controller.getAirUnit(counterData.name);
     if (!airUnit) {
       // error
-      return
+      return;
     }
-    console.log("data = ", airUnit);
-    if (airUnit.attack && name === GlobalUnitsModel.AirBox.JP_CD_CAP1) {
+    if (airUnit.attack && name === GlobalUnitsModel.AirBox.JP_CD1_CAP) {
       console.log(
         "*** Air Unit is not a figher unit -> Cannot be used for CAP!"
       );

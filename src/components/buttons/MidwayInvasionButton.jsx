@@ -1,7 +1,7 @@
 import React, { useRef, useState } from "react";
 import GlobalGameState from "../../model/GlobalGameState";
 import "./button.css";
-import MIFOffsets from "../MIFBoxOffsets";
+import MIFOffsets from "../draganddrop/MIFBoxOffsets";
 
 function MidwayInvasionButton({
   image,

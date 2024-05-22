@@ -7,12 +7,17 @@ export default class GlobalUnitsModel {
         KAGA: "Kaga",
         HIRYU: "Hiryu",
         SORYU: "Soryu",
+        ENTERPRISE: "Enterprise",
+        HORNET: "Hornet",
+        YORKTOWN: "Yorktown"
     }
     static AirBox = {
         OFFBOARD: "OFFBOARD",
-        JP_CD_CAP1: "1CD CAP",
-        JP_CAP_RETURN1: "1CD CAP RETURNING",
-        JP_1CD_HANGER: "1CD HANGAR",
+        JP_CD1_CAP: "1CD CAP",
+        JP_AKAGI_CAP_RETURN1: "AKAGI CAP RETURNING (1)",
+        JP_AKAGI_CAP_RETURN2: "AKAGI CAP RETURNING (2)",
+        JP_AKAGI_HANGER: "AKAGI HANGAR",
+        JP_AKAGI_FLIGHT_DECK: "AKAGI FLIGHT DECK",
     }
 
     static Side = {
@@ -30,5 +35,27 @@ export default class GlobalUnitsModel {
     static jpFleetUnits = new Map()
     static usFleetUnits = new Map()
     static jpAirUnits = new Map()
+    static usAirUnits = new Map()
+
+
+    static unitMap = new Map();
+
+    static japanTaskForceMap = new Map()
+    static usTaskForceMap = new Map()
+    
+    static carrierDiv1Map = new Map()
+    static carrierDiv2Map = new Map()
+    static taskForce16Map = new Map()
+    static taskForce17Map = new Map()
+
+
+    static akagiMap = new Map()
+    static kagaMap = new Map()
+    static hiryuMap = new Map()
+    static soryuMap = new Map()
+
+    static enterpriseMap = new Map()
+    static hornetMap = new Map()
+    static yorktownMap = new Map()
 
 }

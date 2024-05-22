@@ -1,7 +1,7 @@
 import React, { useState } from "react";
 import GlobalGameState from "../../model/GlobalGameState";
 import "./button.css";
-import AOPOffsets from "../AopBoxOffsets";
+import AOPOffsets from "../draganddrop/AopBoxOffsets";
 
 export const AOP_MARKER_SIDE = {
   JAPAN: "japan",

@@ -46,8 +46,8 @@ export default class BoxModels {
         // as an array. Each element in th array may or may not contain an air unit
         this.boxMap = new Map()
         this.boxMap.set(GlobalUnitsModel.AirBox.OFFBOARD, this.offboard)
-        this.boxMap.set(GlobalUnitsModel.AirBox.JP_CD_CAP1, this.japanDiv1CapBoxes)
-        this.boxMap.set(GlobalUnitsModel.AirBox.JP_CAP_RETURN1, this.japanDiv1CapReturn)
+        this.boxMap.set(GlobalUnitsModel.AirBox.JP_CD1_CAP, this.japanDiv1CapBoxes)
+        this.boxMap.set(GlobalUnitsModel.AirBox.JP_AKAGI_CAP_RETURN1, this.japanDiv1CapReturn)
 
         // map of air unit -> location
         // This maps the name of an air unit to its location (ie box name, index)
@@ -108,7 +108,6 @@ export default class BoxModels {
         if (!box) {
             return null
         }
-        console.log("box[index] = ", box[index])
         return box[index]
     }
 

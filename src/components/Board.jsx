@@ -3,21 +3,18 @@ import TurnMarkerButton from "./buttons/TurnMarkerButton";
 import AOPMarkerButton from "./buttons/AOPMarkerButton";
 import MidwayInvasionButton from "./buttons/MidwayInvasionButton";
 import MidwayGarrisonButton from "./buttons/MidwayGarrisonButton";
-import DragAndDrop from "./DragAndDrop";
-import DragAndDropSmall from "./DragAndDropSmall";
+import DragAndDrop from "./draganddrop/DragAndDrop";
 import CanvasHex from "./CanvasHex";
-import "./board.css";
-import AOPOffsets from "./AopBoxOffsets";
-import MIFOffsets from "./MIFBoxOffsets";
-import MGTOffsets from "./MGTBoxOffsets";
+import AOPOffsets from "./draganddrop/AopBoxOffsets";
+import MIFOffsets from "./draganddrop/MIFBoxOffsets";
+import MGTOffsets from "./draganddrop/MGTBoxOffsets";
 import FleetCounter from "./buttons/mapobjects/FleetCounter";
 import AirCounters from "./buttons/mapobjects/AirCounters";
-import JapanAirBoxOffsets from "../components/buttons/mapobjects/JapanAirBoxOffsets";
-import GlobalUnitsModel from "../model/GlobalUnitsModel";
+import JapanAirBoxOffsets from "./draganddrop/JapanAirBoxOffsets";
 import GlobalInit from "../model/GlobalInit";
+import CarrierDropZones from "./draganddrop/CarrierDropZones";
 import Modal from "react-bootstrap/Modal";
-import Button from 'react-bootstrap/Button';
-
+import Button from "react-bootstrap/Button";
 
 function Board({ controller, onDrag, onStop, scale }) {
   let zProps = { us: 0, japan: 0 };
@@ -60,7 +57,6 @@ function Board({ controller, onDrag, onStop, scale }) {
     event.stopPropagation();
 
     const unit = controller.getAirUnitInBox(name, index);
-    console.log("...and unit here is", unit);
     const airZones = JapanAirBoxOffsets.find((o) => o.name === name);
 
     const offsets = airZones.offsets[index];
@@ -81,15 +77,15 @@ function Board({ controller, onDrag, onStop, scale }) {
     }
   };
 
-  const japan1DCapZones = JapanAirBoxOffsets.find(
-    (o) => o.name === GlobalUnitsModel.AirBox.JP_CD_CAP1
-  );
-  const japan1DCapReturningZones = JapanAirBoxOffsets.find(
-    (o) => o.name === GlobalUnitsModel.AirBox.JP_CAP_RETURN1
-  );
-  const japan1DHangarZones = JapanAirBoxOffsets.find(
-    (o) => o.name === GlobalUnitsModel.AirBox.JP_1CD_HANGER
-  );
+  // const japan1DCapZones = JapanAirBoxOffsets.find(
+  //   (o) => o.name === GlobalUnitsModel.AirBox.JP_CD1_CAP
+  // );
+  // const japan1DCapReturningZones = JapanAirBoxOffsets.find(
+  //   (o) => o.name === GlobalUnitsModel.AirBox.JP_AKAGI_CAP_RETURN1
+  // );
+  // const japan1DHangarZones = JapanAirBoxOffsets.find(
+  //   (o) => o.name === GlobalUnitsModel.AirBox.JP_AKAGI_HANGER
+  // );
 
   return (
     <>
@@ -199,7 +195,10 @@ function Board({ controller, onDrag, onStop, scale }) {
           getAirBox={getAirBox}
           setAirBox={setAirBox}
         ></AirCounters>
-        <div>
+        <CarrierDropZones
+          handleDragEnter={handleAirBoxDragEnter}
+        ></CarrierDropZones>
+        {/* <div>
           <DragAndDropSmall
             name={japan1DCapZones.name}
             handleDragEnter={handleAirBoxDragEnter}
@@ -220,7 +219,7 @@ function Board({ controller, onDrag, onStop, scale }) {
             handleDragEnter={handleAirBoxDragEnter}
             zones={japan1DHangarZones.offsets}
           ></DragAndDropSmall>
-        </div>
+        </div> */}
       </div>
     </>
   );

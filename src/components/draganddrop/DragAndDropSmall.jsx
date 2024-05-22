@@ -1,13 +1,16 @@
 import React from "react";
-import "./board.css";
+import "../board.css";
 
-function DragAndDropSmall({ name, handleDragEnter, zones }) {
+function DragAndDropSmall({ name, handleDragEnter, zones, enabled }) {
   const onDragOver = (e) => {
     e.stopPropagation();
     e.preventDefault();
   };
 
-  const myZones = zones.map((p, index) => {
+ const myZones = zones.map((p, index) => {
+    if (!enabled) {
+      return <></>
+    }
     return (
       <div
         key={index}

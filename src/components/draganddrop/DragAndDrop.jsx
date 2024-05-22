@@ -1,5 +1,5 @@
 import React from "react";
-import "./board.css";
+import "../board.css";
 
 function DragAndDrop({ name, handleDragEnter, zones }) {
   const onDragOver = (e) => {

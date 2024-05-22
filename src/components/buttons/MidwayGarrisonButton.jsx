@@ -1,7 +1,7 @@
 import React, { useRef, useState } from "react";
 import GlobalGameState from "../../model/GlobalGameState";
 import "./button.css";
-import MGTOffsets from "../MGTBoxOffsets";
+import MGTOffsets from "../draganddrop/MGTBoxOffsets";
 
 function MidwayGarrisonButton({
   image,

@@ -16,35 +16,35 @@ describe("Controller tests", () => {
     const af = counters.get("Akagi-A6M-2b-2");
 
     // add this air unit to the CAP box
-    controller.addAirUnitToBox(GlobalUnitsModel.AirBox.JP_CD_CAP1, 0, af);
+    controller.addAirUnitToBox(GlobalUnitsModel.AirBox.JP_CD1_CAP, 0, af);
 
     // return all air units in this box, make sure we get back the same air unit (only)
     let airUnits = controller.getAllAirUnitsInBox(
-      GlobalUnitsModel.AirBox.JP_CD_CAP1
+      GlobalUnitsModel.AirBox.JP_CD1_CAP
     );
 
     expect(airUnits.length).toBe(1);
     expect(airUnits[0].name).toBe("Akagi-A6M-2b-2");
 
-    controller.removeAirUnitFromBox(GlobalUnitsModel.AirBox.JP_CD_CAP1, 0);
+    controller.removeAirUnitFromBox(GlobalUnitsModel.AirBox.JP_CD1_CAP, 0);
     airUnits = controller.getAllAirUnitsInBox(
-      GlobalUnitsModel.AirBox.JP_CD_CAP1
+      GlobalUnitsModel.AirBox.JP_CD1_CAP
     );
     expect(airUnits.length).toBe(0);
   });
 
   test("Test to see if air unit is present in a particular box", () => {
     const af = counters.get("Akagi-A6M-2b-2");
-    controller.addAirUnitToBox(GlobalUnitsModel.AirBox.JP_CD_CAP1, 0, af);
+    controller.addAirUnitToBox(GlobalUnitsModel.AirBox.JP_CD1_CAP, 0, af);
 
     let found = controller.isAirUnitInBox(
-      GlobalUnitsModel.AirBox.JP_CD_CAP1,
+      GlobalUnitsModel.AirBox.JP_CD1_CAP,
       "Akagi-A6M-2b-2"
     );
     expect(found).toBe(true);
 
     found = controller.isAirUnitInBox(
-      GlobalUnitsModel.AirBox.JP_CD_CAP1,
+      GlobalUnitsModel.AirBox.JP_CD1_CAP,
       "Akagi-A6M-2b-1"
     );
     expect(found).toBe(false);
@@ -66,12 +66,12 @@ describe("Controller tests", () => {
 
   test("Test the air unit location (box name and index", () => {
     const af = counters.get("Akagi-A6M-2b-2");
-    controller.addAirUnitToBox(GlobalUnitsModel.AirBox.JP_CD_CAP1, 2, af);
+    controller.addAirUnitToBox(GlobalUnitsModel.AirBox.JP_CD1_CAP, 2, af);
 
     const { boxName, boxIndex } =
       controller.getAirUnitLocation("Akagi-A6M-2b-2");
 
-    expect(boxName).toBe(GlobalUnitsModel.AirBox.JP_CD_CAP1);
+    expect(boxName).toBe(GlobalUnitsModel.AirBox.JP_CD1_CAP);
     expect(boxIndex).toBe(2);
   });
 
@@ -81,25 +81,25 @@ describe("Controller tests", () => {
 
     // loader adds units to OFFBOARD during load process
 
-    controller.addAirUnitToBox(GlobalUnitsModel.AirBox.JP_CD_CAP1, 2, af1);
-    controller.addAirUnitToBox(GlobalUnitsModel.AirBox.JP_CD_CAP1, 3, af2);
+    controller.addAirUnitToBox(GlobalUnitsModel.AirBox.JP_CD1_CAP, 2, af1);
+    controller.addAirUnitToBox(GlobalUnitsModel.AirBox.JP_CD1_CAP, 3, af2);
 
     controller.addAirUnitToBox(
-      GlobalUnitsModel.AirBox.JP_CAP_RETURN1,
+      GlobalUnitsModel.AirBox.JP_AKAGI_CAP_RETURN1,
       0,
       af1
     );
 
     let location = controller.getAirUnitLocation("Akagi-A6M-2b-1");
-    expect(location.boxName).toBe(GlobalUnitsModel.AirBox.JP_CAP_RETURN1);
+    expect(location.boxName).toBe(GlobalUnitsModel.AirBox.JP_AKAGI_CAP_RETURN1);
     expect(location.boxIndex).toBe(0);
 
     location = controller.getAirUnitLocation("Akagi-A6M-2b-2");
-    expect(location.boxName).toBe(GlobalUnitsModel.AirBox.JP_CD_CAP1);
+    expect(location.boxName).toBe(GlobalUnitsModel.AirBox.JP_CD1_CAP);
     expect(location.boxIndex).toBe(3);
 
     let airUnits = controller.getAllAirUnitsInBox(
-      GlobalUnitsModel.AirBox.JP_CD_CAP1
+      GlobalUnitsModel.AirBox.JP_CD1_CAP
     );
     expect(airUnits.length).toBe(1);
   });
@@ -117,17 +117,17 @@ describe("Controller tests", () => {
   test("Move Air Unit event in View Event Handler", () => {
     const af1 = counters.get("Akagi-A6M-2b-1");
 
-    controller.addAirUnitToBox(GlobalUnitsModel.AirBox.JP_CD_CAP1, 2, af1);
+    controller.addAirUnitToBox(GlobalUnitsModel.AirBox.JP_CD1_CAP, 2, af1);
 
     let location = controller.getAirUnitLocation("Akagi-A6M-2b-1");
-    expect(location.boxName).toBe(GlobalUnitsModel.AirBox.JP_CD_CAP1);
+    expect(location.boxName).toBe(GlobalUnitsModel.AirBox.JP_CD1_CAP);
     expect(location.boxIndex).toBe(2);
 
     const counterData =  counters.get("Akagi-A6M-2b-1")
     controller.viewEventHandler({
       type: Controller.EventTypes.AIR_UNIT_SETUP,
       data: {
-        name: GlobalUnitsModel.AirBox.JP_CD_CAP1,
+        name: GlobalUnitsModel.AirBox.JP_CD1_CAP,
         counterData,
         index: 2,
       },

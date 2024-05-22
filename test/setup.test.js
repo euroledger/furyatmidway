@@ -68,13 +68,13 @@ describe("Controller tests", () => {
 
   test("check Drop Zone offsets", () => {
     const japanCapZones = JapanAirBoxOffsets.find(
-      (box) => box.name === GlobalUnitsModel.AirBox.JP_CD_CAP1
+      (box) => box.name === GlobalUnitsModel.AirBox.JP_CD1_CAP
     );
     expect(japanCapZones.offsets.length).toBe(4);
     expect(japanCapZones.offsets[0].left).toBe(15.4);
     expect(japanCapZones.offsets[0].top).toBe(68.3);
     const japanReturningCapZones = JapanAirBoxOffsets.find(
-      (box) => box.name === GlobalUnitsModel.AirBox.JP_CAP_RETURN1
+      (box) => box.name === GlobalUnitsModel.AirBox.JP_AKAGI_CAP_RETURN1
     );
     expect(japanReturningCapZones.offsets.length).toBe(1);
   });

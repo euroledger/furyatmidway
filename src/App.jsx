@@ -148,10 +148,10 @@ function App() {
 
   return (
     <>
-      <ModalAlert
+      {/* <ModalAlert
         show={modalShow}
         onHide={() => setModalShow(false)}
-      />
+      /> */}
       <TransformWrapper
         initialScale={1}
         disabled={isMoveable}
