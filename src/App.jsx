@@ -35,6 +35,13 @@ function App() {
     setIsMoveable(false);
   };
 
+  const nextAction = () => {
+    GlobalGameState.phaseCompleted = false
+    GlobalGameState.setupPhase++;
+    GlobalGameState.currentCarrier++;
+    GlobalGameState.updateGlobalState();
+  }
+
   const Controls = () => {
     const { zoomIn, zoomOut, resetTransform } = useControls();
     return (
@@ -53,22 +60,33 @@ function App() {
               <Nav.Link href="/">Japan Hand</Nav.Link>
               <Nav.Link href="/about">Roll Dice</Nav.Link>
             </Nav>
+
             <p
               className="navbar-text"
               style={{
-                marginLeft: "200px",
+                marginLeft: "100px",
                 marginTop: "17px",
-                marginRight: "5px",
+                marginRight: "45px",
               }}
-            >
+            > 
+              Japan Setup
+            </p>    
+            <p
+              className="navbar-text"
+              style={{
+                marginLeft: "10px",
+                marginTop: "17px",
+                marginRight: "15px",
+              }}
+            > 
               {GlobalGameState.getSetupMessage()}
             </p>
-
+          
             <Nav>
               <Button
                 className="me-1"
                 variant="secondary"
-                onClick={() => zoomIn()}
+                onClick={() => nextAction()}
                 disabled={!GlobalGameState.phaseCompleted}
                 style={{ background: "#9e1527" }}
               >

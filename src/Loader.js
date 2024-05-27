@@ -111,6 +111,79 @@ const airUnits = [
       diveBomber: false,
     },
   },
+
+  {
+    name: "Kaga-A6M-2b-1",
+    longName: "Japanese A6M-2b (Kaga) 1",
+    position: {
+      left: 10,
+      top: 430,
+    },
+    offsets: { x: 66, y: 80 },
+    image: "/images/aircounters/kaga-a6m-front.png",
+    width: "2.1%",
+    carrier: GlobalUnitsModel.Carrier.KAGA,
+    aircraftUnit: {
+      strength: 3,
+      movement: 3,
+      attack: false,
+      diveBomber: false,
+    },
+  },
+  {
+    name: "Kaga-A6M-2b-2",
+    longName: "Japanese A6M-2b (Kaga) 2",
+    position: {
+      left: 10,
+      top: 455,
+    },
+    offsets: { x: 66, y: 80 },
+    image: "/images/aircounters/kaga-a6m-front.png",
+    width: "2.1%",
+    carrier: GlobalUnitsModel.Carrier.KAGA,
+    aircraftUnit: {
+      strength: 3,
+      movement: 3,
+      attack: false,
+      diveBomber: false,
+    },
+  },
+  {
+    name: "Kaga-D3A-1",
+    longName: "Japanese D3A-1 (Kaga)",
+    position: {
+      left: 10,
+      top: 480,
+    },
+    offsets: { x: 66, y: 80 },
+    image: "/images/aircounters/kaga-d3a-front.png",
+    width: "2.1%",
+    carrier: GlobalUnitsModel.Carrier.KAGA,
+    aircraftUnit: {
+      strength: 3,
+      movement: 3,
+      attack: true,
+      diveBomber: true,
+    },
+  },
+  {
+    name: "Kaga-B5N-2",
+    longName: "Japanese B5N-2 (Kaga)",
+    position: {
+      left: 10,
+      top: 505,
+    },
+    offsets: { x: 66, y: 80 },
+    image: "/images/aircounters/Kaga-b5n-front.png",
+    width: "2.1%",
+    carrier: GlobalUnitsModel.Carrier.KAGA,
+    aircraftUnit: {
+      strength: 3,
+      movement: 3,
+      attack: true,
+      diveBomber: false,
+    },
+  },
 ];
 
 function loadAirCounters(controller, counters) {

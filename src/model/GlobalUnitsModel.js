@@ -18,6 +18,11 @@ export default class GlobalUnitsModel {
         JP_AKAGI_CAP_RETURN2: "AKAGI CAP RETURNING (2)",
         JP_AKAGI_HANGER: "AKAGI HANGAR",
         JP_AKAGI_FLIGHT_DECK: "AKAGI FLIGHT DECK",
+        JP_CAP_RETURN1: "KAGA CAP RETURNING (1)",
+        JP_CAP_RETURN2: "KAGA CAP RETURNING (2)",
+        JP_KAGA_HANGER: "KAGA HANGAR",
+        JP_KAGA_FLIGHT_DECK: "KAGA FLIGHT DECK",
+        JP_CD2_CAP: "2CD CAP",
     }
 
     static Side = {

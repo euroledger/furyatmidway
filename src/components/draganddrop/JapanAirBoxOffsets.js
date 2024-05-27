@@ -2,18 +2,11 @@
 
 import GlobalUnitsModel from "../../model/GlobalUnitsModel";
 
-// GlobalUnitsModel {
-
-//   AirBoxes = {
-//       JP_CD_CAP1:
-
-
-// TODO create a map of TF/CarDiv or Carrier -> list of boxes that units from that parent formation/carrier can use
 const JapanAirBoxOffsets = [
   {
     name: GlobalUnitsModel.AirBox.JP_CD1_CAP,
     taskForce: GlobalUnitsModel.TaskForce.CARRIER_DIV_1,
-    carriers: [ GlobalUnitsModel.Carrier.AKAGI, GlobalUnitsModel.Carrier.KAGA ],
+    carriers: [GlobalUnitsModel.Carrier.AKAGI, GlobalUnitsModel.Carrier.KAGA],
     offsets: [
       {
         left: 15.4,
@@ -34,55 +27,9 @@ const JapanAirBoxOffsets = [
     ],
   },
   {
-    name: GlobalUnitsModel.AirBox.JP_AKAGI_CAP_RETURN1,
-    taskForce: GlobalUnitsModel.TaskForce.CARRIER_DIV_1,
-    carriers: [ GlobalUnitsModel.Carrier.AKAGI ],
-    offsets: [
-      {
-        left: 5.3,
-        top: 83.0,
-      },
-      {
-        left: 7.5,
-        top: 83.0,
-      },
-      {
-        left: 9.7,
-        top: 83.0,
-      },
-      {
-        left: 11.9,
-        top: 83.0,
-      },
-    ],
-  },
-  {
-    name: GlobalUnitsModel.AirBox.JP_AKAGI_CAP_RETURN2,
-    taskForce: GlobalUnitsModel.TaskForce.CARRIER_DIV_1,
-    carriers: [ GlobalUnitsModel.Carrier.AKAGI ],
-    offsets: [
-      {
-        left: 5.3,
-        top: 92.0,
-      },
-      {
-        left: 7.5,
-        top: 92.0,
-      },
-      {
-        left: 9.7,
-        top: 92.0,
-      },
-      {
-        left: 11.9,
-        top: 92.0,
-      },
-    ],
-  },
-  {
     name: GlobalUnitsModel.AirBox.JP_AKAGI_HANGER,
     taskForce: GlobalUnitsModel.TaskForce.CARRIER_DIV_1,
-    carriers: [ GlobalUnitsModel.Carrier.AKAGI ],
+    carriers: [GlobalUnitsModel.Carrier.AKAGI],
     offsets: [
       {
         left: 14.7,
@@ -105,7 +52,7 @@ const JapanAirBoxOffsets = [
   {
     name: GlobalUnitsModel.AirBox.JP_AKAGI_FLIGHT_DECK,
     taskForce: GlobalUnitsModel.TaskForce.CARRIER_DIV_1,
-    carriers: [ GlobalUnitsModel.Carrier.AKAGI ],
+    carriers: [GlobalUnitsModel.Carrier.AKAGI],
     offsets: [
       {
         left: 15.7,
@@ -115,7 +62,90 @@ const JapanAirBoxOffsets = [
         left: 15.7,
         top: 79.5,
       },
-
+    ],
+  },
+  {
+    name: GlobalUnitsModel.AirBox.JP_CAP_RETURN1,
+    taskForce: GlobalUnitsModel.TaskForce.CARRIER_DIV_1,
+    carriers: [GlobalUnitsModel.Carrier.KAGA, GlobalUnitsModel.Carrier.KAGA],
+    offsets: [
+      {
+        left: 5.3,
+        top: 83.0,
+      },
+      {
+        left: 7.5,
+        top: 83.0,
+      },
+      {
+        left: 9.7,
+        top: 83.0,
+      },
+      {
+        left: 11.9,
+        top: 83.0,
+      },
+    ],
+  },
+  {
+    name: GlobalUnitsModel.AirBox.JP_CAP_RETURN2,
+    taskForce: GlobalUnitsModel.TaskForce.CARRIER_DIV_1,
+    carriers: [GlobalUnitsModel.Carrier.KAGA, GlobalUnitsModel.Carrier.KAGA],
+    offsets: [
+      {
+        left: 5.3,
+        top: 92.0,
+      },
+      {
+        left: 7.5,
+        top: 92.0,
+      },
+      {
+        left: 9.7,
+        top: 92.0,
+      },
+      {
+        left: 11.9,
+        top: 92.0,
+      },
+    ],
+  },
+  {
+    name: GlobalUnitsModel.AirBox.JP_KAGA_HANGER,
+    taskForce: GlobalUnitsModel.TaskForce.CARRIER_DIV_1,
+    carriers: [GlobalUnitsModel.Carrier.KAGA],
+    offsets: [
+      {
+        left: 20.7,
+        top: 90.5,
+      },
+      {
+        left: 20.7,
+        top: 93.7,
+      },
+      {
+        left: 22.9,
+        top: 90.5,
+      },
+      {
+        left: 22.9,
+        top: 93.7,
+      },
+    ],
+  },
+  {
+    name: GlobalUnitsModel.AirBox.JP_KAGA_FLIGHT_DECK,
+    taskForce: GlobalUnitsModel.TaskForce.CARRIER_DIV_1,
+    carriers: [GlobalUnitsModel.Carrier.KAGA],
+    offsets: [
+      {
+        left: 22.1,
+        top: 86.0,
+      },
+      {
+        left: 22.1,
+        top: 79.5,
+      },
     ],
   },
 ];
