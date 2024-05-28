@@ -260,6 +260,47 @@ const JapanAirBoxOffsets = [
       },
     ],
   },
+
+  // SORYU
+  {
+    name: GlobalUnitsModel.AirBox.JP_SORYU_HANGER,
+    taskForce: GlobalUnitsModel.TaskForce.CARRIER_DIV_2,
+    carriers: [GlobalUnitsModel.Carrier.SORYU],
+    offsets: [
+      {
+        left: 39.7,
+        top: 90.5,
+      },
+     
+      {
+        left: 41.9,
+        top: 90.5,
+      },
+      {
+        left: 39.7,
+        top: 93.7,
+      },
+      {
+        left: 41.9,
+        top: 93.7,
+      },
+    ],
+  },
+  {
+    name: GlobalUnitsModel.AirBox.JP_SORYU_FLIGHT_DECK,
+    taskForce: GlobalUnitsModel.TaskForce.CARRIER_DIV_2,
+    carriers: [GlobalUnitsModel.Carrier.SORYU],
+    offsets: [
+      {
+        left: 40.9,
+        top: 86.0,
+      },
+      {
+        left: 40.9,
+        top: 79.5,
+      },
+    ],
+  },
 ];
 
 export default JapanAirBoxOffsets;

@@ -18,7 +18,7 @@ function AirCounters({
     );
     if (
       carrierIndex > GlobalGameState.currentCarrier &&
-      GlobalGameState.gamePhase === GlobalGameState.PHASE.SETUP
+      GlobalGameState.gamePhase === GlobalGameState.PHASE.JAPAN_SETUP
     ) {
       return;
     }

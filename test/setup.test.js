@@ -23,7 +23,7 @@ describe("Controller tests", () => {
     expect(GlobalUnitsModel.usFleetUnits.get("CSF")).toBeTruthy();
     expect(GlobalUnitsModel.usFleetUnits.get("DMCV")).toBeTruthy();
 
-    expect(GlobalUnitsModel.jpAirUnits.size).toBe(12);
+    expect(GlobalUnitsModel.jpAirUnits.size).toBe(16);
   });
 
   test("check fleet unit values", () => {
@@ -64,6 +64,10 @@ describe("Controller tests", () => {
     GlobalGameState.setupPhase++;
     message = GlobalGameState.getSetupMessage();
     expect(message).toBe("Place Soryu Air Units");
+
+    GlobalGameState.setupPhase++;
+    message = GlobalGameState.getSetupMessage();
+    expect(message).toBe("Draw 3 x Japan Cards");
   });
 
   test("check Drop Zone offsets", () => {
@@ -88,7 +92,13 @@ describe("Controller tests", () => {
     expect(af.width).toBe("2.1%");
     expect(af.carrier).toBe(GlobalUnitsModel.Carrier.AKAGI);
 
-    const db = GlobalUnitsModel.jpAirUnits.get("Akagi-D3A-1");
+    let db = GlobalUnitsModel.jpAirUnits.get("Akagi-D3A-1");
+    expect(db.movement).toBe(3);
+    expect(db.strength).toBe(3);
+    expect(db.attack).toBe(true);
+    expect(db.diveBomber).toBe(true);
+
+    db = GlobalUnitsModel.jpAirUnits.get("Soryu-D3A-1");
     expect(db.movement).toBe(3);
     expect(db.strength).toBe(3);
     expect(db.attack).toBe(true);

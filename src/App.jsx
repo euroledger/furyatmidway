@@ -53,12 +53,21 @@ function App() {
   };
 
   const nextAction = () => {
-    GlobalGameState.phaseCompleted = false;
-    GlobalGameState.setupPhase++;
-    GlobalGameState.currentCarrier++;
+    if (GlobalGameState.currentCarrier <= 2) {
+      console.log("QUACK BAD")
+      GlobalGameState.phaseCompleted = false;
+      GlobalGameState.setupPhase++;
+      GlobalGameState.currentCarrier++;
+      GlobalGameState.currentCarrierDivision =
+        GlobalGameState.currentCarrier <= 1 ? 1 : 2;
 
-    GlobalGameState.currentCarrierDivision = GlobalGameState.currentCarrier <= 1 ? 1 : 2
-
+    } else {
+      // end of Japanes Setup
+      // next phase is Card Draw
+      GlobalGameState.phaseCompleted = false;
+      GlobalGameState.setupPhase++;
+      GlobalGameState.gamePhase = GlobalGameState.PHASE.JAPAN_CARD_DRAW
+    }
     GlobalGameState.updateGlobalState();
   };
 
@@ -165,51 +174,94 @@ function App() {
     await delay(500);
     nextAction();
 
-      // Hiryu
-      boxName = GlobalUnitsModel.AirBox.JP_CD2_CAP;
-      let position9 = JapanAirBoxOffsets.find((box) => box.name === boxName);
-      setAirUnitUpdate({
-        name: "Hiryu-A6M-2b-1",
-        position: position9.offsets[0],
-        boxName,
-        index: 0,
-      });
-  
-      await delay(500);
-  
-      boxName = GlobalUnitsModel.AirBox.JP_HIRYU_HANGER;
-      let position10 = JapanAirBoxOffsets.find((box) => box.name === boxName);
-      setAirUnitUpdate({
-        name: "Hiryu-A6M-2b-2",
-        position: position10.offsets[0],
-        boxName,
-        index: 0,
-      });
-  
-      await delay(500);
-  
-      boxName = GlobalUnitsModel.AirBox.JP_HIRYU_HANGER;
-      let position11 = JapanAirBoxOffsets.find((box) => box.name === boxName);
-      setAirUnitUpdate({
-        name: "Hiryu-D3A-1",
-        position: position11.offsets[2],
-        boxName,
-        index: 2,
-      });
-  
-      await delay(500);
-  
-      boxName = GlobalUnitsModel.AirBox.JP_HIRYU_HANGER;
-      let position12 = JapanAirBoxOffsets.find((box) => box.name === boxName);
-      setAirUnitUpdate({
-        name: "Hiryu-B5N-2",
-        position: position12.offsets[3],
-        boxName,
-        index: 3,
-      });
-  
-      await delay(500);
-      nextAction();
+    // Hiryu
+    boxName = GlobalUnitsModel.AirBox.JP_CD2_CAP;
+    let position9 = JapanAirBoxOffsets.find((box) => box.name === boxName);
+    setAirUnitUpdate({
+      name: "Hiryu-A6M-2b-1",
+      position: position9.offsets[0],
+      boxName,
+      index: 0,
+    });
+
+    await delay(500);
+
+    boxName = GlobalUnitsModel.AirBox.JP_HIRYU_HANGER;
+    let position10 = JapanAirBoxOffsets.find((box) => box.name === boxName);
+    setAirUnitUpdate({
+      name: "Hiryu-A6M-2b-2",
+      position: position10.offsets[0],
+      boxName,
+      index: 0,
+    });
+
+    await delay(500);
+
+    boxName = GlobalUnitsModel.AirBox.JP_HIRYU_HANGER;
+    let position11 = JapanAirBoxOffsets.find((box) => box.name === boxName);
+    setAirUnitUpdate({
+      name: "Hiryu-D3A-1",
+      position: position11.offsets[2],
+      boxName,
+      index: 2,
+    });
+
+    await delay(500);
+
+    boxName = GlobalUnitsModel.AirBox.JP_HIRYU_HANGER;
+    let position12 = JapanAirBoxOffsets.find((box) => box.name === boxName);
+    setAirUnitUpdate({
+      name: "Hiryu-B5N-2",
+      position: position12.offsets[3],
+      boxName,
+      index: 3,
+    });
+
+    await delay(500);
+    nextAction();
+
+    // Soryu
+    boxName = GlobalUnitsModel.AirBox.JP_SORYU_HANGER;
+    let position13 = JapanAirBoxOffsets.find((box) => box.name === boxName);
+    setAirUnitUpdate({
+      name: "Soryu-A6M-2b-1",
+      position: position13.offsets[0],
+      boxName,
+      index: 0,
+    });
+
+    await delay(500);
+
+    boxName = GlobalUnitsModel.AirBox.JP_SORYU_HANGER;
+    let position14 = JapanAirBoxOffsets.find((box) => box.name === boxName);
+    setAirUnitUpdate({
+      name: "Soryu-A6M-2b-2",
+      position: position14.offsets[1],
+      boxName,
+      index: 1,
+    });
+
+    await delay(500);
+
+    boxName = GlobalUnitsModel.AirBox.JP_SORYU_FLIGHT_DECK;
+    let position15 = JapanAirBoxOffsets.find((box) => box.name === boxName);
+    setAirUnitUpdate({
+      name: "Soryu-D3A-1",
+      position: position15.offsets[0],
+      boxName,
+      index: 0,
+    });
+
+    await delay(500);
+
+    boxName = GlobalUnitsModel.AirBox.JP_SORYU_FLIGHT_DECK;
+    let position16 = JapanAirBoxOffsets.find((box) => box.name === boxName);
+    setAirUnitUpdate({
+      name: "Soryu-B5N-2",
+      position: position16.offsets[1],
+      boxName,
+      index: 1,
+    });
   };
 
   var v = process.env.REACT_APP_MYVAR || "arse";
@@ -251,7 +303,7 @@ function App() {
                 marginRight: "45px",
               }}
             >
-              Japan Setup
+              {GlobalGameState.gamePhase}
             </p>
             <p
               className="navbar-text"

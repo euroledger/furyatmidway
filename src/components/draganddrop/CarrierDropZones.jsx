@@ -9,18 +9,20 @@ function CarrierDropZones({ handleDragEnter }) {
   const japanZones = JapanAirBoxOffsets.map((box, index) => {
     let enabled = true;
 
-    if (GlobalGameState.gamePhase === GlobalGameState.PHASE.SETUP) {
+    console.log("CURRENT PHASE = ", GlobalGameState.gamePhase)
+    if (GlobalGameState.gamePhase === GlobalGameState.PHASE.JAPAN_SETUP) {
+      console.log("box name= ", box.name)
       if (
         !box.name.includes(GlobalGameState.getCarrier().toUpperCase()) &&
         box.name != GlobalUnitsModel.AirBox.JP_CD1_CAP &&
         box.name != GlobalUnitsModel.AirBox.JP_CD2_CAP
       ) {
-        // console.log(
-        //   ">>>>>>>>>>>>> DO NOT DISPLAY, carrier = ",
-        //   GlobalGameState.getCarrier().toUpperCase(),
-        //   ", box name = ",
-        //   box.name
-        // );
+        console.log(
+          ">>>>>>>>>>>>> DO NOT DISPLAY, carrier = ",
+          GlobalGameState.getCarrier().toUpperCase(),
+          ", box name = ",
+          box.name
+        );
         return;
       }
       // console.log(">>>>>>>>>>>>>>>>>>>>> CARRIER DIV= ", GlobalGameState.currentCarrierDivision, "BOX NAME = ", box.name)
@@ -40,9 +42,10 @@ function CarrierDropZones({ handleDragEnter }) {
       if (box.name.includes("RETURN")) {
         enabled = false;
       }
+    } else {
+      enabled = true
     }
-
-    // console.log(`+++++++++ box name: ${box.name}, enabled = ${enabled}`);
+    console.log(`+++++++++ box name: ${box.name}, enabled = ${enabled}`);
     return (
       <DragAndDropSmall
         key={index}

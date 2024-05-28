@@ -59,7 +59,7 @@ function AirCounter({
 
     if (
       counterData.carrier != GlobalGameState.getCarrier() &&
-      GlobalGameState.gamePhase === GlobalGameState.PHASE.SETUP
+      GlobalGameState.gamePhase === GlobalGameState.PHASE.JAPAN_SETUP
     ) {
       // cannot move units from carrier other than the current one being set up
       return;

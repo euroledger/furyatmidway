@@ -258,6 +258,80 @@ const airUnits = [
       diveBomber: false,
     },
   },
+
+  // SORYU AIR UNITS
+  {
+    name: "Soryu-A6M-2b-1",
+    longName: "Japanese A6M-2b (Soryu) 1",
+    position: {
+      left: 10,
+      top: 430,
+    },
+    offsets: { x: 66, y: 80 },
+    image: "/images/aircounters/soryu-a6m-front.png",
+    width: "2.1%",
+    carrier: GlobalUnitsModel.Carrier.SORYU,
+    aircraftUnit: {
+      strength: 3,
+      movement: 3,
+      attack: false,
+      diveBomber: false,
+    },
+  },
+  {
+    name: "Soryu-A6M-2b-2",
+    longName: "Japanese A6M-2b (Soryu) 2",
+    position: {
+      left: 10,
+      top: 455,
+    },
+    offsets: { x: 66, y: 80 },
+    image: "/images/aircounters/soryu-a6m-front.png",
+    width: "2.1%",
+    carrier: GlobalUnitsModel.Carrier.SORYU,
+    aircraftUnit: {
+      strength: 3,
+      movement: 3,
+      attack: false,
+      diveBomber: false,
+    },
+  },
+  {
+    name: "Soryu-D3A-1",
+    longName: "Japanese D3A-1 (Soryu)",
+    position: {
+      left: 10,
+      top: 480,
+    },
+    offsets: { x: 66, y: 80 },
+    image: "/images/aircounters/soryu-d3a-front.png",
+    width: "2.1%",
+    carrier: GlobalUnitsModel.Carrier.SORYU,
+    aircraftUnit: {
+      strength: 3,
+      movement: 3,
+      attack: true,
+      diveBomber: true,
+    },
+  },
+  {
+    name: "Soryu-B5N-2",
+    longName: "Japanese B5N-2 (Soryu)",
+    position: {
+      left: 10,
+      top: 505,
+    },
+    offsets: { x: 66, y: 80 },
+    image: "/images/aircounters/soryu-b5n-front.png",
+    width: "2.1%",
+    carrier: GlobalUnitsModel.Carrier.SORYU,
+    aircraftUnit: {
+      strength: 3,
+      movement: 3,
+      attack: true,
+      diveBomber: false,
+    },
+  },
 ];
 
 function loadAirCounters(controller, counters) {
@@ -291,6 +365,5 @@ function loadAirCounters(controller, counters) {
     controller.addAirUnitToCarrier(unit.carrier, airUnitCounter);
   }
 }
-
 
 export default loadCounters;

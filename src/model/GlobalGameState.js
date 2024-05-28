@@ -3,15 +3,19 @@ import GlobalUnitsModel from './GlobalUnitsModel';
 export default class GlobalGameState {
 
   static PHASE = {
-    SETUP: 1,
-    MOVE: 2
+    JAPAN_SETUP: "Japan Setup",
+    JAPAN_CARD_DRAW: "Japan Card Draw",
+    US_SETUP: 3,
+    US_CARD_DRAW: 4
   }
+
 
   static SETUP_MESSAGES = [
     'Place Akagi Air Units',
     'Place Kaga Air Units',
     'Place Hiryu Air Units',
-    'Place Soryu Air Units'
+    'Place Soryu Air Units',
+    'Draw 3 x Japan Cards'
   ]
 
   static JAPAN_CARRIERS = [
@@ -60,7 +64,7 @@ export default class GlobalGameState {
 
   static logItems = ["Logging begin..."];
 
-  static gamePhase = this.PHASE.SETUP
+  static gamePhase = this.PHASE.JAPAN_SETUP
   static setupPhase = 0;
 
   static getCarrier = () => {
