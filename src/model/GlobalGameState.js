@@ -24,6 +24,7 @@ export default class GlobalGameState {
   static gameTurn = 1;
 
   static currentCarrier = 0
+  static currentCarrierDivision = 1
 
   static airOperationPoints = {
     japan: 0,

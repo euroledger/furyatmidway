@@ -16,7 +16,14 @@ import CarrierDropZones from "./draganddrop/CarrierDropZones";
 import Modal from "react-bootstrap/Modal";
 import Button from "react-bootstrap/Button";
 
-function Board({ controller, onDrag, onStop, scale }) {
+function Board({
+  controller,
+  onDrag,
+  onStop,
+  scale,
+  airUnitUpdate,
+  setAirUnitUpdate,
+}) {
   let zProps = { us: 0, japan: 0 };
   const initialJpAopPosition = { left: 2.7, top: 7 };
   const initialUSAopPosition = { left: 3.5, top: 6.1 };
@@ -194,32 +201,11 @@ function Board({ controller, onDrag, onStop, scale }) {
           counterData={GlobalInit.counters}
           getAirBox={getAirBox}
           setAirBox={setAirBox}
+          airUnitUpdate={airUnitUpdate}
         ></AirCounters>
         <CarrierDropZones
           handleDragEnter={handleAirBoxDragEnter}
         ></CarrierDropZones>
-        {/* <div>
-          <DragAndDropSmall
-            name={japan1DCapZones.name}
-            handleDragEnter={handleAirBoxDragEnter}
-            zones={japan1DCapZones.offsets}
-          ></DragAndDropSmall>
-        </div>
-        <div>
-          <DragAndDropSmall
-            handleDragEnter={(e) =>
-              handleAirBoxDragEnter(e, 0, japan1DCapReturningZones.name)
-            }
-            zones={japan1DCapReturningZones.offsets}
-          ></DragAndDropSmall>
-        </div>
-        <div>
-          <DragAndDropSmall
-            name={japan1DHangarZones.name}
-            handleDragEnter={handleAirBoxDragEnter}
-            zones={japan1DHangarZones.offsets}
-          ></DragAndDropSmall>
-        </div> */}
       </div>
     </>
   );

@@ -2,7 +2,7 @@ import { default as FleetUnit } from "../src/model/FleetUnit";
 import GlobalUnitsModel from "../src/model/GlobalUnitsModel";
 import loadCounters from "../src/Loader";
 import GlobalGameState from "../src/model/GlobalGameState";
-import JapanAirBoxOffsets from "../src/components/buttons/mapobjects/JapanAirBoxOffsets";
+import JapanAirBoxOffsets from "../src/components/draganddrop/JapanAirBoxOffsets";
 import Controller from "../src/controller/Controller";
 
 describe("Controller tests", () => {
@@ -23,7 +23,7 @@ describe("Controller tests", () => {
     expect(GlobalUnitsModel.usFleetUnits.get("CSF")).toBeTruthy();
     expect(GlobalUnitsModel.usFleetUnits.get("DMCV")).toBeTruthy();
 
-    expect(GlobalUnitsModel.jpAirUnits.size).toBe(4);
+    expect(GlobalUnitsModel.jpAirUnits.size).toBe(12);
   });
 
   test("check fleet unit values", () => {
@@ -74,9 +74,9 @@ describe("Controller tests", () => {
     expect(japanCapZones.offsets[0].left).toBe(15.4);
     expect(japanCapZones.offsets[0].top).toBe(68.3);
     const japanReturningCapZones = JapanAirBoxOffsets.find(
-      (box) => box.name === GlobalUnitsModel.AirBox.JP_AKAGI_CAP_RETURN1
+      (box) => box.name === GlobalUnitsModel.AirBox.JP_KAGA_CAP_RETURN1
     );
-    expect(japanReturningCapZones.offsets.length).toBe(1);
+    expect(japanReturningCapZones.offsets.length).toBe(4);
   });
 
   test("check air unit counter values", () => {

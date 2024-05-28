@@ -3,6 +3,7 @@ import "../../board.css";
 import Controller from "../../../controller/Controller";
 import GlobalUnitsModel from "../../../model/GlobalUnitsModel";
 import GlobalGameState from "../../../model/GlobalGameState";
+import JapanAirBoxOffsets from "../../draganddrop/JapanAirBoxOffsets";
 
 function AirCounter({
   controller,
@@ -11,12 +12,48 @@ function AirCounter({
   getAirBox,
   setAirBox,
   counterData,
+  airUnitUpdate,
 }) {
   const [position, setPosition] = useState({
     left: counterData.position.left,
     top: counterData.position.top,
   });
 
+  if (
+    counterData.name === airUnitUpdate.name &&
+    position.left !== airUnitUpdate.position.left + "%" &&
+    position.top !== airUnitUpdate.position.top + "%"
+  ) {
+    console.log(
+      "I am ",
+      counterData.name,
+      " -> AIR UNIT UPDATE = ",
+      airUnitUpdate
+    );
+
+    const unit = controller.getAirUnitInBox(
+      airUnitUpdate.boxName,
+      airUnitUpdate.index
+    );
+    if (unit) {
+      alert(
+        `ERROR unit already there -> ${airUnitUpdate.boxName}, index ${airUnitUpdate.index}`);
+      return;
+    }
+    setPosition({
+      left: airUnitUpdate.position.left + "%",
+      top: airUnitUpdate.position.top - 0.2 + "%",
+    });
+
+    controller.viewEventHandler({
+      type: Controller.EventTypes.AIR_UNIT_SETUP,
+      data: {
+        name: airUnitUpdate.boxName,
+        counterData,
+        index: airUnitUpdate.index,
+      },
+    });
+  }
   const handleDrop = (event) => {
     event.preventDefault();
 
@@ -33,8 +70,6 @@ function AirCounter({
       return;
     }
 
-    //  TODO if this is a cap box and the air unit is not a fighter unit => disallow drop
-    // (and display error message)
     // attack is true if the air unit is torpedo or dive bomber, i.e., not a fighter
     const airUnit = controller.getAirUnit(counterData.name);
     if (!airUnit) {
@@ -50,7 +85,6 @@ function AirCounter({
       return;
     }
     setPosition({
-      ...position,
       left: offsets.left + "%",
       top: offsets.top - 0.2 + "%",
     });

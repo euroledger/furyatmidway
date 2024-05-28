@@ -174,9 +174,83 @@ const airUnits = [
       top: 505,
     },
     offsets: { x: 66, y: 80 },
-    image: "/images/aircounters/Kaga-b5n-front.png",
+    image: "/images/aircounters/kaga-b5n-front.png",
     width: "2.1%",
     carrier: GlobalUnitsModel.Carrier.KAGA,
+    aircraftUnit: {
+      strength: 3,
+      movement: 3,
+      attack: true,
+      diveBomber: false,
+    },
+  },
+
+  // HIRYU AIR UNITS
+  {
+    name: "Hiryu-A6M-2b-1",
+    longName: "Japanese A6M-2b (Hiryu) 1",
+    position: {
+      left: 10,
+      top: 430,
+    },
+    offsets: { x: 66, y: 80 },
+    image: "/images/aircounters/hiryu-a6m-front.png",
+    width: "2.1%",
+    carrier: GlobalUnitsModel.Carrier.HIRYU,
+    aircraftUnit: {
+      strength: 3,
+      movement: 3,
+      attack: false,
+      diveBomber: false,
+    },
+  },
+  {
+    name: "Hiryu-A6M-2b-2",
+    longName: "Japanese A6M-2b (Hiryu) 2",
+    position: {
+      left: 10,
+      top: 455,
+    },
+    offsets: { x: 66, y: 80 },
+    image: "/images/aircounters/hiryu-a6m-front.png",
+    width: "2.1%",
+    carrier: GlobalUnitsModel.Carrier.HIRYU,
+    aircraftUnit: {
+      strength: 3,
+      movement: 3,
+      attack: false,
+      diveBomber: false,
+    },
+  },
+  {
+    name: "Hiryu-D3A-1",
+    longName: "Japanese D3A-1 (Hiryu)",
+    position: {
+      left: 10,
+      top: 480,
+    },
+    offsets: { x: 66, y: 80 },
+    image: "/images/aircounters/hiryu-d3a-front.png",
+    width: "2.1%",
+    carrier: GlobalUnitsModel.Carrier.HIRYU,
+    aircraftUnit: {
+      strength: 3,
+      movement: 3,
+      attack: true,
+      diveBomber: true,
+    },
+  },
+  {
+    name: "Hiryu-B5N-2",
+    longName: "Japanese B5N-2 (Hiryu)",
+    position: {
+      left: 10,
+      top: 505,
+    },
+    offsets: { x: 66, y: 80 },
+    image: "/images/aircounters/hiryu-b5n-front.png",
+    width: "2.1%",
+    carrier: GlobalUnitsModel.Carrier.HIRYU,
     aircraftUnit: {
       strength: 3,
       movement: 3,
@@ -218,100 +292,5 @@ function loadAirCounters(controller, counters) {
   }
 }
 
-// function loadAirCounters(controller, counters) {
-//   // Akagi Air Counters
-//   // A6M-2b 1
-//   let position = {
-//     hexCoords: {},
-//     left: 10,
-//     top: 430,
-//   };
-//   const af1 = new AirUnit(
-//     "Akagi-A6M-2b-1",
-//     "Japanese A6M-2b (Akagi) 1",
-//     position,
-//     { x: 66, y: 80 },
-//     "/images/aircounters/akagi-a6m-front.png",
-//     "2.1%",
-//     GlobalUnitsModel.Carrier.AKAGI
-//   );
-//   counters.set("Akagi-A6M-2b-1", af1);
-
-//   GlobalUnitsModel.jpAirUnits.set(
-//     "Akagi-A6M-2b-1",
-//     new AircraftUnit("Akagi-A6M-2b-1", 3, 3, false, false)
-//   );
-//   controller.addAirUnitToBox(GlobalUnitsModel.AirBox.OFFBOARD, 0, af1);
-//   controller.addAirUnitToCarrier("Akagi", af1);
-
-//   // A6M-2b 2
-//   position = {
-//     hexCoords: {},
-//     left: 10,
-//     top: 455,
-//   };
-//   const af2 = new AirUnit(
-//     "Akagi-A6M-2b-2",
-//     "Japanese A6M-2b (Akagi) 2",
-//     position,
-//     { x: 66, y: 80 },
-//     "/images/aircounters/akagi-a6m-front.png",
-//     "2.1%",
-//     GlobalUnitsModel.Carrier.AKAGI
-//   );
-//   counters.set("Akagi-A6M-2b-2", af2);
-//   GlobalUnitsModel.jpAirUnits.set(
-//     "Akagi-A6M-2b-2",
-//     new AircraftUnit("Akagi-A6M-2b-2", 3, 3, false, false)
-//   );
-//   controller.addAirUnitToBox(GlobalUnitsModel.AirBox.OFFBOARD, 0, af2);
-//   controller.addAirUnitToCarrier("Akagi", af2);
-
-//   // D3A-1
-//   position = {
-//     hexCoords: {},
-//     left: 10,
-//     top: 480,
-//   };
-//   const d3a = new AirUnit(
-//     "Akagi-D3A-1",
-//     "Japanese D3A-1 (Akagi)",
-//     position,
-//     { x: 66, y: 80 },
-//     "/images/aircounters/akagi-d3a-front.png",
-//     "2.1%",
-//     GlobalUnitsModel.Carrier.AKAGI
-//   );
-//   counters.set("Akagi-D3A-1", d3a);
-//   GlobalUnitsModel.jpAirUnits.set(
-//     "Akagi-D3A-1",
-//     new AircraftUnit("Akagi-D3A-1", 3, 3, true, true)
-//   );
-//   controller.addAirUnitToBox(GlobalUnitsModel.AirBox.OFFBOARD, 0, d3a);
-//   controller.addAirUnitToCarrier("Akagi", d3a);
-
-//   // B5N-2
-//   position = {
-//     hexCoords: {},
-//     left: 10,
-//     top: 505,
-//   };
-//   const b5n = new AirUnit(
-//     "Akagi-B5N-2",
-//     "Japanese B5N-2 (Akagi)",
-//     position,
-//     { x: 66, y: 80 },
-//     "/images/aircounters/akagi-b5n-front.png",
-//     "2.1%",
-//     GlobalUnitsModel.Carrier.AKAGI
-//   );
-//   counters.set("Akagi-B5N-2", b5n);
-//   GlobalUnitsModel.jpAirUnits.set(
-//     "Akagi-B5N-2",
-//     new AircraftUnit("Akagi-B5N-2", 3, 3, true, false)
-//   );
-//   controller.addAirUnitToBox(GlobalUnitsModel.AirBox.OFFBOARD, 0, b5n);
-//   controller.addAirUnitToCarrier("Akagi", b5n);
-// }
 
 export default loadCounters;

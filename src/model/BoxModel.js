@@ -9,12 +9,19 @@ export default class BoxModels {
         this.japanDiv2CapBoxes = new Array(4)
         this.japanAkagiCapReturn1 = new Array(4)
         this.japanKagaCapReturn1 = new Array(4)
-        this.japanAkagiCapReturn2 = new Array(4)
-        this.japanKagaCapReturn2 = new Array(4)
+        this.japanCD1CapReturn2 = new Array(4)
+        this.japanCD2CapReturn2 = new Array(4)
         this.japanAkagiHangar = new Array(4)
         this.japanKagaHangar = new Array(4)
         this.japanAkagiFlightDeck = new Array(4)
         this.japanKagaFlightDeck = new Array(4)
+
+        this.japanHiryuCapReturn1 = new Array(4)
+        this.japanSoryuCapReturn1 = new Array(4)
+        this.japanHiryuHangar = new Array(4)
+        this.japanSoryuHangar = new Array(4)
+        this.japanHiryuFlightDeck = new Array(4)
+        this.japanSoryuFlightDeck = new Array(4)
         this.offboard = new Array()
 
         this.japanCarrierMap = new Map() // key = carrier name, value = array of air units
@@ -52,19 +59,27 @@ export default class BoxModels {
         this.boxMap = new Map()
         this.boxMap.set(GlobalUnitsModel.AirBox.OFFBOARD, this.offboard)
         this.boxMap.set(GlobalUnitsModel.AirBox.JP_CD1_CAP, this.japanDiv1CapBoxes)
+        this.boxMap.set(GlobalUnitsModel.AirBox.JP_CD2_CAP, this.japanDiv2CapBoxes)
+
 
         this.boxMap.set(GlobalUnitsModel.AirBox.JP_AKAGI_CAP_RETURN1, this.japanAkagiCapReturn1)
-        this.boxMap.set(GlobalUnitsModel.AirBox.JP_AKAGI_CAP_RETURN2, this.japanAkagiCapReturn2)
+        this.boxMap.set(GlobalUnitsModel.AirBox.JP_KAGA_CAP_RETURN1, this.japanKagaCapReturn1)
 
-        this.boxMap.set(GlobalUnitsModel.AirBox.JP_CAP_RETURN1, this.japanKagaCapReturn1)
-        this.boxMap.set(GlobalUnitsModel.AirBox.JP_CAP_RETURN2, this.japanAkagiCapReturn2)
-
+        this.boxMap.set(GlobalUnitsModel.AirBox.JP_CD1_CAP_RETURN2, this.japanCD1CapReturn2) // shared
+        this.boxMap.set(GlobalUnitsModel.AirBox.JP_CD2_CAP_RETURN2, this.japanCD1CapReturn2) // shared
 
         this.boxMap.set(GlobalUnitsModel.AirBox.JP_AKAGI_HANGER, this.japanAkagiHangar)
         this.boxMap.set(GlobalUnitsModel.AirBox.JP_AKAGI_FLIGHT_DECK, this.japanAkagiFlightDeck)
 
         this.boxMap.set(GlobalUnitsModel.AirBox.JP_KAGA_HANGER, this.japanKagaHangar)
         this.boxMap.set(GlobalUnitsModel.AirBox.JP_KAGA_FLIGHT_DECK, this.japanKagaFlightDeck)
+
+        
+        this.boxMap.set(GlobalUnitsModel.AirBox.JP_HIRYU_HANGER, this.japanHiryuHangar)
+        this.boxMap.set(GlobalUnitsModel.AirBox.JP_HIRYU_FLIGHT_DECK, this.japanHiryuFlightDeck)
+
+        this.boxMap.set(GlobalUnitsModel.AirBox.JP_SORYU_HANGER, this.japanSoryuHangar)
+        this.boxMap.set(GlobalUnitsModel.AirBox.JP_SORYU_FLIGHT_DECK, this.japanSoryuFlightDeck)
 
         // map of air unit -> location
         // This maps the name of an air unit to its location (ie box name, index)
@@ -145,10 +160,13 @@ export default class BoxModels {
 
     getAirUnitsForCarrier(carrier) {
         return this.japanCarrierMap.get(carrier)
-    }
+    } 
 
     getAirUnitsDeployed(carrier) {
         const airUnitsArray = this.japanCarrierMap.get(carrier)
-        return airUnitsArray.filter((airUnit) => this.getAirUnitLocation(airUnit.name).boxName != GlobalUnitsModel.AirBox.OFFBOARD)
+        return airUnitsArray.filter((airUnit) => {
+            const location = this.getAirUnitLocation(airUnit.name)
+           return this.getAirUnitLocation(airUnit.name).boxName != GlobalUnitsModel.AirBox.OFFBOARD
+        })
     }
 }

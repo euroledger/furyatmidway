@@ -9,20 +9,13 @@ function AirCounters({
   getAirBox,
   setAirBox,
   counterData,
+  airUnitUpdate
 }) {
   const counters = Array.from(counterData.values());
   const airCounters = counters.map((airUnit) => {
-    // console.log(
-    //   ">>>>>>>>>>>>>>>> airUnit.carrier= ",
-    //   airUnit.carrier,
-    //   "; current setup carrier = ",
-    //   GlobalGameState.getCarrier()
-    // );
-
-    console.log("++++++++++++++ Index of this air unit's carrier in array is ", GlobalGameState.JAPAN_CARRIERS.indexOf(airUnit.carrier))
-    console.log("++++++++++++++ Carrier index = ", GlobalGameState.currentCarrier)
-
-    const carrierIndex = GlobalGameState.JAPAN_CARRIERS.indexOf(airUnit.carrier)
+    const carrierIndex = GlobalGameState.JAPAN_CARRIERS.indexOf(
+      airUnit.carrier
+    );
     if (
       carrierIndex > GlobalGameState.currentCarrier &&
       GlobalGameState.gamePhase === GlobalGameState.PHASE.SETUP
@@ -39,10 +32,12 @@ function AirCounters({
           counterData={airUnit}
           getAirBox={getAirBox}
           setAirBox={setAirBox}
+          airUnitUpdate={airUnitUpdate}
         ></AirCounter>
       );
     }
   });
+
   return <>{airCounters}</>;
 }
 

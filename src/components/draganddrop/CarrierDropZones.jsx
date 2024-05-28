@@ -15,16 +15,34 @@ function CarrierDropZones({ handleDragEnter }) {
         box.name != GlobalUnitsModel.AirBox.JP_CD1_CAP &&
         box.name != GlobalUnitsModel.AirBox.JP_CD2_CAP
       ) {
-        // console.log(">>>>>>>>>>>>> RETURN, box name = ", box.name);
+        // console.log(
+        //   ">>>>>>>>>>>>> DO NOT DISPLAY, carrier = ",
+        //   GlobalGameState.getCarrier().toUpperCase(),
+        //   ", box name = ",
+        //   box.name
+        // );
         return;
       }
-      if (box.name.indexOf("RETURN") != -1) {
+      // console.log(">>>>>>>>>>>>>>>>>>>>> CARRIER DIV= ", GlobalGameState.currentCarrierDivision, "BOX NAME = ", box.name)
+
+      if (
+        box.name === GlobalUnitsModel.AirBox.JP_CD2_CAP &&
+        GlobalGameState.currentCarrierDivision === 1
+      ) {
+        return;
+      }
+      if (
+        box.name === GlobalUnitsModel.AirBox.JP_CD1_CAP &&
+        GlobalGameState.currentCarrierDivision === 2
+      ) {
+        return;
+      }
+      if (box.name.includes("RETURN")) {
         enabled = false;
       }
     }
 
-    console.log(">>>>>>>>>>>>> Carrier name = ", GlobalGameState.getCarrier());
-
+    // console.log(`+++++++++ box name: ${box.name}, enabled = ${enabled}`);
     return (
       <DragAndDropSmall
         key={index}
