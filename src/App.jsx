@@ -450,9 +450,9 @@ function App() {
           <div
             style={{
               // marginTop: "70px",
-              minHeight: "700px",
+              minHeight: "670px",
               minWidth: "1280px",
-              maxHeight: "700px",
+              maxHeight: "670px",
               maxWidth: "1280px",
               position: 'absolute',
                left: '50%',
