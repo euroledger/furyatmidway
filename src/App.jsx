@@ -449,11 +449,11 @@ function App() {
           {/* <GameStatePanel show={gameStateShow} gameState={gameState} /> */}
           <div
             style={{
-              // marginLeft: "30px",
-              minHeight: "780px",
-              minWidth: "1350px",
-              maxHeight: "780px",
-              maxWidth: "1350px",
+              // marginTop: "70px",
+              minHeight: "700px",
+              minWidth: "1280px",
+              maxHeight: "700px",
+              maxWidth: "1280px",
               position: 'absolute',
                left: '50%',
                top: '50%',
