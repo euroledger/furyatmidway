@@ -2,31 +2,36 @@ import { React, useState } from "react";
 import Container from "react-bootstrap/Container";
 import Nav from "react-bootstrap/Nav";
 import Navbar from "react-bootstrap/Navbar";
+import Col from "react-bootstrap/Col";
+import Image from "react-bootstrap/Image";
+import Row from "react-bootstrap/Row";
 import Board from "./components/Board";
 import Button from "react-bootstrap/Button";
 import ButtonGroup from "react-bootstrap/ButtonGroup";
-import {
-  TransformWrapper,
-  TransformComponent,
-  useControls,
-} from "react-zoom-pan-pinch";
+import { TransformWrapper, TransformComponent, useControls } from "react-zoom-pan-pinch";
 import GameStatePanel from "./components/leftpanel/GameStatePanel";
 import GlobalGameState from "./model/GlobalGameState";
 import GlobalInit from "./model/GlobalInit";
-import ModalAlert from "./components/dialogs/modalAlert";
+import ModalAlert from "./components/dialogs/ModalAlert";
 import { useAirUnitStore } from "./store/airUnitStore";
 import JapanAirBoxOffsets from "./components/draganddrop/JapanAirBoxOffsets";
 import GlobalUnitsModel from "./model/GlobalUnitsModel";
 import TestComponent from "./components/TestComponent";
 
 import "./style.css";
+import CardPanel from "./components/dialogs/CardPanel";
+import ModalSplash from "./components/dialogs/ModalSplash";
+import SplashScreen from "./components/dialogs/SplashScreen";
 
 function App() {
+  const [splash, setSplash] = useState(true);
   const [gameState, setGameState] = useState(false);
   const [isMoveable, setIsMoveable] = useState(false);
   const [scale, setScale] = useState(1);
   const [testClicked, setTestClicked] = useState(false);
   const [modalShow, setModalShow] = useState(true);
+  const [jpHandShow, setjpHandShow] = useState(false);
+  const [usHandShow, setusHandShow] = useState(false);
 
   const [airUnitUpdate, setAirUnitUpdate] = useState({
     name: "",
@@ -54,19 +59,16 @@ function App() {
 
   const nextAction = () => {
     if (GlobalGameState.currentCarrier <= 2) {
-      console.log("QUACK BAD")
       GlobalGameState.phaseCompleted = false;
       GlobalGameState.setupPhase++;
       GlobalGameState.currentCarrier++;
-      GlobalGameState.currentCarrierDivision =
-        GlobalGameState.currentCarrier <= 1 ? 1 : 2;
-
+      GlobalGameState.currentCarrierDivision = GlobalGameState.currentCarrier <= 1 ? 1 : 2;
     } else {
       // end of Japanes Setup
       // next phase is Card Draw
       GlobalGameState.phaseCompleted = false;
       GlobalGameState.setupPhase++;
-      GlobalGameState.gamePhase = GlobalGameState.PHASE.JAPAN_CARD_DRAW
+      GlobalGameState.gamePhase = GlobalGameState.PHASE.JAPAN_CARD_DRAW;
     }
     GlobalGameState.updateGlobalState();
   };
@@ -272,29 +274,25 @@ function App() {
   const Controls = () => {
     const { zoomIn, zoomOut, resetTransform } = useControls();
     return (
-      <Navbar
-        bg="black"
-        data-bs-theme="dark"
-        sticky="top"
-        className="justify-content-between"
-      >
+      <Navbar bg="black" data-bs-theme="dark" sticky="top" className="justify-content-between">
         <Container>
-          <Navbar.Brand href="/">Save Game</Navbar.Brand>
+          <Navbar.Brand href="/">Save</Navbar.Brand>
+          <Navbar.Brand href="/">Load</Navbar.Brand>
           <Navbar.Toggle aria-controls="responsive-navbar-nav" />
           <Navbar.Collapse id="responsive-navbar-nav">
             <Nav className="mr-auto">
-              <Nav.Link href="/">US Hand</Nav.Link>
-              <Nav.Link href="/">Japan Hand</Nav.Link>
-              <Nav.Link href="/about">Roll Dice</Nav.Link>
+              <Button className="me-1" variant="outline-primary" onClick={() => setusHandShow(true)}>
+                US Hand
+              </Button>
+              <Button className="me-1" variant="outline-danger" onClick={() => setjpHandShow(true)}>
+                Japan Hand
+              </Button>
+              <Button className="me-1" variant="outline-light">
+                Roll Dice
+              </Button>
             </Nav>
 
-            <img
-              src="/images/japanflag.jpg"
-              alt="test"
-              style={{ marginLeft: "100px" }}
-              width="40px"
-              height="30px"
-            />
+            <img src="/images/japanflag.jpg" alt="test" style={{ marginLeft: "50px" }} width="40px" height="30px" />
             <p
               className="navbar-text"
               style={{
@@ -338,32 +336,18 @@ function App() {
                 >
                   TEST
                 </Button>
-                {testClicked && (
-                  <TestComponent testClicked={testClicked}></TestComponent>
-                )}
+                {testClicked && <TestComponent testClicked={testClicked}></TestComponent>}
               </Nav>
             )}
 
             <ButtonGroup className="ms-auto" aria-label="Basic example">
-              <Button
-                className="me-1"
-                variant="secondary"
-                onClick={() => zoomIn()}
-              >
+              <Button className="me-1" variant="secondary" onClick={() => zoomIn()}>
                 Zoom In
               </Button>
-              <Button
-                className="me-1"
-                variant="secondary"
-                onClick={() => zoomOut()}
-              >
+              <Button className="me-1" variant="secondary" onClick={() => zoomOut()}>
                 Zoom Out
               </Button>
-              <Button
-                className="me-1"
-                variant="secondary"
-                onClick={() => resetTransform()}
-              >
+              <Button className="me-1" variant="secondary" onClick={() => resetTransform()}>
                 Reset
               </Button>
             </ButtonGroup>
@@ -388,12 +372,7 @@ function App() {
     function (e) {
       if (
         (e.ctrlKey || e.metaKey) &&
-        (e.which === 61 ||
-          e.which === 107 ||
-          e.which === 173 ||
-          e.which === 109 ||
-          e.which === 187 ||
-          e.which === 189)
+        (e.which === 61 || e.which === 107 || e.which === 173 || e.which === 109 || e.which === 187 || e.which === 189)
       ) {
         e.preventDefault();
       }
@@ -404,23 +383,39 @@ function App() {
   // usage
   window.addEventListener("devicepixelratiochange", function (e) {
     // note: change of devicePixelRatio means change of page zoom, but devicePixelRatio itself doesn't mean page zoom
-    console.log(
-      "devicePixelRatio changed from " + e.oldValue + " to " + e.newValue
-    );
+    console.log("devicePixelRatio changed from " + e.oldValue + " to " + e.newValue);
   });
 
+  function onSplash() {
+    setSplash(false)
+  }
   // window height
   const height = window.innerHeight;
 
   // window width
   const width = window.innerWidth;
 
+  if (splash) {
+    return (
+      <>
+        {/* <ModalSplash show={splash} onHide={() => setSplash(false)}></ModalSplash> */}
+        <SplashScreen show={splash} onSplash={onSplash}></SplashScreen>
+      </>
+    );
+  }
   return (
     <>
       {/* <ModalAlert
         show={modalShow}
         onHide={() => setModalShow(false)}
       /> */}
+      <CardPanel
+        cardArray={[5, 6, 12, 13,1,2]}
+        show={jpHandShow}
+        side={"Japan"}
+        onHide={() => setjpHandShow(false)}
+      ></CardPanel>
+      <CardPanel cardArray={[13, 3, 8, 2]} show={usHandShow} side={"US"} onHide={() => setusHandShow(false)}></CardPanel>
       <TransformWrapper
         initialScale={1}
         disabled={isMoveable}
@@ -431,7 +426,7 @@ function App() {
       >
         <Controls />
 
-        <div class="d-flex p-2">
+        <div className="d-flex p-2">
           <GameStatePanel gameState={gameState} />
           <div
             style={{

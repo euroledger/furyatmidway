@@ -38,7 +38,8 @@ export default class GlobalUnitsModel {
 
     static Side = {
         JAPAN: "Japan",
-        US:    "US"
+        US:    "US",
+        BOTH:  "Both" // for cards
     }
 
     static TaskForce = {
@@ -53,6 +54,10 @@ export default class GlobalUnitsModel {
     static jpAirUnits = new Map()
     static usAirUnits = new Map()
 
+    static cards = new Array()
+
+    static jpCards = new Array()
+    static usCards = new Array()
 
     static unitMap = new Map();
 

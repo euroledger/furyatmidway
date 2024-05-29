@@ -1,6 +1,6 @@
 # Fury at Midway, (c) Revolution Games
 
-An attempt to create a PC version of the board game _Fury at Midway_ with AI to allow solitaire play.
+An attempt to create a PC version of the board game _Fury at Midway_ by Yasushi Nakaguro with AI to allow solitaire play.
 The intention is to have an AI control either the Japanese or US fleets (or both).
 
 # Installation (Windows)

@@ -1,6 +1,6 @@
 import Controller from "../src/controller/Controller";
 import GlobalUnitsModel from "../src/model/GlobalUnitsModel";
-import loadCounters from "../src/Loader";
+import loadCounters from "../src/CounterLoader";
 
 describe("Air Box tests", () => {
   let controller;

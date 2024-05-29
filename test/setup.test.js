@@ -1,6 +1,6 @@
 import { default as FleetUnit } from "../src/model/FleetUnit";
 import GlobalUnitsModel from "../src/model/GlobalUnitsModel";
-import loadCounters from "../src/Loader";
+import loadCounters from "../src/CounterLoader";
 import GlobalGameState from "../src/model/GlobalGameState";
 import JapanAirBoxOffsets from "../src/components/draganddrop/JapanAirBoxOffsets";
 import Controller from "../src/controller/Controller";

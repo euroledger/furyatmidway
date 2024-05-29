@@ -6,6 +6,7 @@ import AircraftUnit from "./model/AircraftUnit";
 
 function loadCounters(controller) {
   let counters = new Map();
+  let cards = new Map();
 
   // 1AF Counter
   let position = {
@@ -34,7 +35,6 @@ function loadCounters(controller) {
   GlobalUnitsModel.usFleetUnits.set("DMCV", new FleetUnit("DMCV", false));
 
   loadAirCounters(controller, counters);
-
   return counters;
 }
 
@@ -333,6 +333,7 @@ const airUnits = [
     },
   },
 ];
+
 
 function loadAirCounters(controller, counters) {
   for (const unit of airUnits) {
