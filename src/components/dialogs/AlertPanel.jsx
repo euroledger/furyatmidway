@@ -2,7 +2,7 @@ import Modal from "react-bootstrap/Modal";
 import Button from "react-bootstrap/Button";
 import "./modal.css";
 
-function ModalAlert(props) {
+function AlertPanel(props) {
   // TODO set different colors/header for different alert level, info, warning etc
   const bg = "#FFCCCC"
   return (
@@ -25,4 +25,4 @@ function ModalAlert(props) {
   );
 }
 
-export default ModalAlert;
+export default AlertPanel;

@@ -3,7 +3,7 @@ import Button from "react-bootstrap/Button";
 import GameStatePanel from "../leftpanel/GameStatePanel"
 import "./modal.css";
 
-function ModalGamePanel(props) {
+function GameStatusPanel(props) {
   // TODO set different colors/header for different alert level, info, warning etc
   const bg = "#FFCCCC";
   return (
@@ -16,4 +16,4 @@ function ModalGamePanel(props) {
   );
 }
 
-export default ModalGamePanel;
+export default GameStatusPanel;

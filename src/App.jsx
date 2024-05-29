@@ -12,7 +12,7 @@ import { TransformWrapper, TransformComponent, useControls } from "react-zoom-pa
 // import GameStatePanel from "./components/leftpanel/GameStatePanel";
 import GlobalGameState from "./model/GlobalGameState";
 import GlobalInit from "./model/GlobalInit";
-import ModalAlert from "./components/dialogs/ModalAlert";
+import AlertPanel from "./components/dialogs/AlertPanel";
 import { useAirUnitStore } from "./store/airUnitStore";
 import JapanAirBoxOffsets from "./components/draganddrop/JapanAirBoxOffsets";
 import GlobalUnitsModel from "./model/GlobalUnitsModel";
@@ -20,7 +20,7 @@ import TestComponent from "./components/TestComponent";
 
 import "./style.css";
 import CardPanel from "./components/dialogs/CardPanel";
-import ModalGamePanel from "./components/dialogs/ModalGamePanel";
+import GameStatusPanel from "./components/dialogs/GameStatusPanel";
 import ModalSplash from "./components/dialogs/ModalSplash";
 import SplashScreen from "./components/dialogs/SplashScreen";
 
@@ -416,7 +416,7 @@ function App() {
         show={modalShow}
         onHide={() => setModalShow(false)}
       /> */}
-      <ModalGamePanel show={gameStateShow} gameState={gameState} onHide={() => setGameStateShow(false)}/>
+      <GameStatusPanel show={gameStateShow} gameState={gameState} onHide={() => setGameStateShow(false)}/>
       <CardPanel
         cardArray={[5, 6, 12, 13, 1, 2]}
         show={jpHandShow}
