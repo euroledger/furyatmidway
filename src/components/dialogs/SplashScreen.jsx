@@ -7,16 +7,19 @@ function SplashScreen(props) {
   return (
     <Modal
       {...props}
-      style={{ width: "1480px" }}
+      // style={{ width: "1480px" }}
       aria-labelledby="contained-modal-title-vcenter"
       centered
       backdrop="false"
     >
       <div
         style={{
-          display: "flex",
-          justifyContent: "center",
-          alignItems: "center",
+          // marginLeft: "30px",
+         
+          position: 'absolute',
+           left: '50%',
+           top: '50%',
+           transform: 'translate(-50%, -50%)'
         }}
       >
         <img src="/images/furysplash.jpg"/>;

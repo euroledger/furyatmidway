@@ -404,10 +404,16 @@ function App() {
 
   if (splash) {
     return (
-      <>
+      <div  
+      style={{       
+        position: 'absolute',
+         left: '50%',
+         top: '50%',
+         transform: 'translate(-50%, -50%)'
+      }}>
         {/* <ModalSplash show={splash} onHide={() => setSplash(false)}></ModalSplash> */}
         <SplashScreen show={splash} onSplash={onSplash}></SplashScreen>
-      </>
+      </div>
     );
   }
   return (
@@ -443,11 +449,15 @@ function App() {
           {/* <GameStatePanel show={gameStateShow} gameState={gameState} /> */}
           <div
             style={{
-              marginLeft: "30px",
+              // marginLeft: "30px",
               minHeight: "780px",
               minWidth: "1350px",
               maxHeight: "780px",
               maxWidth: "1350px",
+              position: 'absolute',
+               left: '50%',
+               top: '50%',
+               transform: 'translate(-50%, -50%)'
             }}
           >
             <TransformComponent>
