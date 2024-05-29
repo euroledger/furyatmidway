@@ -9,7 +9,7 @@ import Board from "./components/Board";
 import Button from "react-bootstrap/Button";
 import ButtonGroup from "react-bootstrap/ButtonGroup";
 import { TransformWrapper, TransformComponent, useControls } from "react-zoom-pan-pinch";
-import GameStatePanel from "./components/leftpanel/GameStatePanel";
+// import GameStatePanel from "./components/leftpanel/GameStatePanel";
 import GlobalGameState from "./model/GlobalGameState";
 import GlobalInit from "./model/GlobalInit";
 import ModalAlert from "./components/dialogs/ModalAlert";
@@ -20,6 +20,7 @@ import TestComponent from "./components/TestComponent";
 
 import "./style.css";
 import CardPanel from "./components/dialogs/CardPanel";
+import ModalGamePanel from "./components/dialogs/ModalGamePanel";
 import ModalSplash from "./components/dialogs/ModalSplash";
 import SplashScreen from "./components/dialogs/SplashScreen";
 
@@ -32,6 +33,9 @@ function App() {
   const [modalShow, setModalShow] = useState(true);
   const [jpHandShow, setjpHandShow] = useState(false);
   const [usHandShow, setusHandShow] = useState(false);
+  const [gameStateShow, setGameStateShow] = useState(false);
+
+  setGameStateShow;
 
   const [airUnitUpdate, setAirUnitUpdate] = useState({
     name: "",
@@ -276,11 +280,14 @@ function App() {
     return (
       <Navbar bg="black" data-bs-theme="dark" sticky="top" className="justify-content-between">
         <Container>
-          <Navbar.Brand href="/">Save</Navbar.Brand>
-          <Navbar.Brand href="/">Load</Navbar.Brand>
+          {/* <Navbar.Brand href="/">Save</Navbar.Brand>
+          <Navbar.Brand href="/">Load</Navbar.Brand> */}
           <Navbar.Toggle aria-controls="responsive-navbar-nav" />
           <Navbar.Collapse id="responsive-navbar-nav">
             <Nav className="mr-auto">
+              <Button className="me-1" variant="outline-secondary" onClick={() => setGameStateShow(true)}>
+                Game State
+              </Button>
               <Button className="me-1" variant="outline-primary" onClick={() => setusHandShow(true)}>
                 US Hand
               </Button>
@@ -387,7 +394,7 @@ function App() {
   });
 
   function onSplash() {
-    setSplash(false)
+    setSplash(false);
   }
   // window height
   const height = window.innerHeight;
@@ -409,13 +416,19 @@ function App() {
         show={modalShow}
         onHide={() => setModalShow(false)}
       /> */}
+      <ModalGamePanel show={gameStateShow} gameState={gameState} onHide={() => setGameStateShow(false)}/>
       <CardPanel
-        cardArray={[5, 6, 12, 13,1,2]}
+        cardArray={[5, 6, 12, 13, 1, 2]}
         show={jpHandShow}
         side={"Japan"}
         onHide={() => setjpHandShow(false)}
       ></CardPanel>
-      <CardPanel cardArray={[13, 3, 8, 2]} show={usHandShow} side={"US"} onHide={() => setusHandShow(false)}></CardPanel>
+      <CardPanel
+        cardArray={[13, 3, 8, 2]}
+        show={usHandShow}
+        side={"US"}
+        onHide={() => setusHandShow(false)}
+      ></CardPanel>
       <TransformWrapper
         initialScale={1}
         disabled={isMoveable}
@@ -427,13 +440,14 @@ function App() {
         <Controls />
 
         <div className="d-flex p-2">
-          <GameStatePanel gameState={gameState} />
+          {/* <GameStatePanel show={gameStateShow} gameState={gameState} /> */}
           <div
             style={{
-              minHeight: "648px",
-              minWidth: "1080px",
-              maxHeight: "648px",
-              maxWidth: "1080px",
+              marginLeft: "30px",
+              minHeight: "780px",
+              minWidth: "1350px",
+              maxHeight: "780px",
+              maxWidth: "1350px",
             }}
           >
             <TransformComponent>
@@ -453,5 +467,6 @@ function App() {
     </>
   );
 }
+80;
 
 export default App;

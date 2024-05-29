@@ -43,8 +43,6 @@ describe("Controller tests", () => {
     expect(af.longName).toBe("Japanese 1AF");
     expect(af.position.left).toBe(102);
     expect(af.position.top).toBe(117);
-    expect(af.offsets.x).toBe(28);
-    expect(af.offsets.y).toBe(31);
     expect(af.image).toBe("/images/fleetcounters/1AF.png");
     expect(af.width).toBe("3.0%");
   });

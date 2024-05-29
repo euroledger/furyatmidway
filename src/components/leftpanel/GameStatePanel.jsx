@@ -18,7 +18,7 @@ export default class GameStatePanel extends React.Component {
 
     return (
       <>
-        <div className="accordion border border-success" id="accordionExample" style={{ width: "500px" }}>             
+        <div className="accordion border border-success" id="accordionExample">             
           <div className="accordion-item">
             <h4 className="accordion-header" id="headingOne">
               <button
@@ -26,7 +26,6 @@ export default class GameStatePanel extends React.Component {
                 type="button"
                 data-bs-toggle="collapse"
                 data-bs-target="#collapseOne"
-                aria-expanded="true"
                 aria-controls="collapseOne"
               >
                 <p className="text-center fs-2">Game State</p>
@@ -45,7 +44,6 @@ export default class GameStatePanel extends React.Component {
             </div>
           </div>
           <GameLog initialLogItems={initialLogItems}></GameLog>
-          <SequenceOfPlay></SequenceOfPlay>
         </div>
       </>
     );

@@ -21,7 +21,7 @@ function loadCounters(controller) {
       "1AF",
       "Japanese 1AF",
       position,
-      { x: 28, y: 31 }, // offsets
+      { x: 57, y: 67}, // offsets
       "/images/fleetcounters/1AF.png",
       "3.0%"
     )
@@ -38,14 +38,30 @@ function loadCounters(controller) {
   return counters;
 }
 
+const startPosition1 = {
+  left: "2%",
+  top: "65%",
+};
+
+const startPosition2 = {
+  left: "2%",
+  top: "69%",
+};
+
+const startPosition3 = {
+  left: "2%",
+  top: "73%",
+};
+
+const startPosition4 = {
+  left: "2%",
+  top: "77%",
+};
 const airUnits = [
   {
     name: "Akagi-A6M-2b-1",
     longName: "Japanese A6M-2b (Akagi) 1",
-    position: {
-      left: 10,
-      top: 430,
-    },
+    position: startPosition1,
     offsets: { x: 66, y: 80 },
     image: "/images/aircounters/akagi-a6m-front.png",
     width: "2.1%",
@@ -60,10 +76,7 @@ const airUnits = [
   {
     name: "Akagi-A6M-2b-2",
     longName: "Japanese A6M-2b (Akagi) 2",
-    position: {
-      left: 10,
-      top: 455,
-    },
+    position: startPosition2,
     offsets: { x: 66, y: 80 },
     image: "/images/aircounters/akagi-a6m-front.png",
     width: "2.1%",
@@ -78,10 +91,7 @@ const airUnits = [
   {
     name: "Akagi-D3A-1",
     longName: "Japanese D3A-1 (Akagi)",
-    position: {
-      left: 10,
-      top: 480,
-    },
+    position: startPosition3,
     offsets: { x: 66, y: 80 },
     image: "/images/aircounters/akagi-d3a-front.png",
     width: "2.1%",
@@ -96,10 +106,7 @@ const airUnits = [
   {
     name: "Akagi-B5N-2",
     longName: "Japanese B5N-2 (Akagi)",
-    position: {
-      left: 10,
-      top: 505,
-    },
+    position: startPosition4,
     offsets: { x: 66, y: 80 },
     image: "/images/aircounters/akagi-b5n-front.png",
     width: "2.1%",
@@ -115,10 +122,7 @@ const airUnits = [
   {
     name: "Kaga-A6M-2b-1",
     longName: "Japanese A6M-2b (Kaga) 1",
-    position: {
-      left: 10,
-      top: 430,
-    },
+    position: startPosition1,
     offsets: { x: 66, y: 80 },
     image: "/images/aircounters/kaga-a6m-front.png",
     width: "2.1%",
@@ -133,10 +137,7 @@ const airUnits = [
   {
     name: "Kaga-A6M-2b-2",
     longName: "Japanese A6M-2b (Kaga) 2",
-    position: {
-      left: 10,
-      top: 455,
-    },
+    position: startPosition2,
     offsets: { x: 66, y: 80 },
     image: "/images/aircounters/kaga-a6m-front.png",
     width: "2.1%",
@@ -151,10 +152,7 @@ const airUnits = [
   {
     name: "Kaga-D3A-1",
     longName: "Japanese D3A-1 (Kaga)",
-    position: {
-      left: 10,
-      top: 480,
-    },
+    position: startPosition3,
     offsets: { x: 66, y: 80 },
     image: "/images/aircounters/kaga-d3a-front.png",
     width: "2.1%",
@@ -169,10 +167,7 @@ const airUnits = [
   {
     name: "Kaga-B5N-2",
     longName: "Japanese B5N-2 (Kaga)",
-    position: {
-      left: 10,
-      top: 505,
-    },
+    position: startPosition4,
     offsets: { x: 66, y: 80 },
     image: "/images/aircounters/kaga-b5n-front.png",
     width: "2.1%",
@@ -189,10 +184,7 @@ const airUnits = [
   {
     name: "Hiryu-A6M-2b-1",
     longName: "Japanese A6M-2b (Hiryu) 1",
-    position: {
-      left: 10,
-      top: 430,
-    },
+    position: startPosition1,
     offsets: { x: 66, y: 80 },
     image: "/images/aircounters/hiryu-a6m-front.png",
     width: "2.1%",
@@ -207,10 +199,7 @@ const airUnits = [
   {
     name: "Hiryu-A6M-2b-2",
     longName: "Japanese A6M-2b (Hiryu) 2",
-    position: {
-      left: 10,
-      top: 455,
-    },
+    position:startPosition2,
     offsets: { x: 66, y: 80 },
     image: "/images/aircounters/hiryu-a6m-front.png",
     width: "2.1%",
@@ -225,10 +214,7 @@ const airUnits = [
   {
     name: "Hiryu-D3A-1",
     longName: "Japanese D3A-1 (Hiryu)",
-    position: {
-      left: 10,
-      top: 480,
-    },
+    position: startPosition3,
     offsets: { x: 66, y: 80 },
     image: "/images/aircounters/hiryu-d3a-front.png",
     width: "2.1%",
@@ -243,10 +229,7 @@ const airUnits = [
   {
     name: "Hiryu-B5N-2",
     longName: "Japanese B5N-2 (Hiryu)",
-    position: {
-      left: 10,
-      top: 505,
-    },
+    position:startPosition4,
     offsets: { x: 66, y: 80 },
     image: "/images/aircounters/hiryu-b5n-front.png",
     width: "2.1%",
@@ -263,10 +246,7 @@ const airUnits = [
   {
     name: "Soryu-A6M-2b-1",
     longName: "Japanese A6M-2b (Soryu) 1",
-    position: {
-      left: 10,
-      top: 430,
-    },
+    position: startPosition1,
     offsets: { x: 66, y: 80 },
     image: "/images/aircounters/soryu-a6m-front.png",
     width: "2.1%",
@@ -281,10 +261,7 @@ const airUnits = [
   {
     name: "Soryu-A6M-2b-2",
     longName: "Japanese A6M-2b (Soryu) 2",
-    position: {
-      left: 10,
-      top: 455,
-    },
+    position: startPosition2,
     offsets: { x: 66, y: 80 },
     image: "/images/aircounters/soryu-a6m-front.png",
     width: "2.1%",
@@ -299,10 +276,7 @@ const airUnits = [
   {
     name: "Soryu-D3A-1",
     longName: "Japanese D3A-1 (Soryu)",
-    position: {
-      left: 10,
-      top: 480,
-    },
+    position: startPosition3,
     offsets: { x: 66, y: 80 },
     image: "/images/aircounters/soryu-d3a-front.png",
     width: "2.1%",
@@ -317,10 +291,7 @@ const airUnits = [
   {
     name: "Soryu-B5N-2",
     longName: "Japanese B5N-2 (Soryu)",
-    position: {
-      left: 10,
-      top: 505,
-    },
+    position: startPosition4,
     offsets: { x: 66, y: 80 },
     image: "/images/aircounters/soryu-b5n-front.png",
     width: "2.1%",
@@ -333,7 +304,6 @@ const airUnits = [
     },
   },
 ];
-
 
 function loadAirCounters(controller, counters) {
   for (const unit of airUnits) {
@@ -358,11 +328,7 @@ function loadAirCounters(controller, counters) {
         unit.aircraftUnit.diveBomber
       )
     );
-    controller.addAirUnitToBox(
-      GlobalUnitsModel.AirBox.OFFBOARD,
-      0,
-      airUnitCounter
-    );
+    controller.addAirUnitToBox(GlobalUnitsModel.AirBox.OFFBOARD, 0, airUnitCounter);
     controller.addAirUnitToCarrier(unit.carrier, airUnitCounter);
   }
 }

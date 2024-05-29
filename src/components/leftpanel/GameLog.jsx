@@ -24,7 +24,7 @@ function GameLog() {
             type="button"
             data-bs-toggle="collapse"
             data-bs-target="#collapseTwo"
-            aria-expanded="false"
+            aria-expanded="true"
             aria-controls="collapseTwo"
           >
             <p class="text-center fs-2">Game Log</p>
