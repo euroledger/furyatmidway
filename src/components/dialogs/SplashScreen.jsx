@@ -24,7 +24,7 @@ function SplashScreen(props) {
       >
         <img src="/images/furysplash.jpg"/>;
         <Button className="button-88" size="lg" onClick={props.onSplash} style={{width: "190px", position:"absolute", top: "68%", right:"61%"}}>LOAD GAME</Button>
-        <Button className="button-88" size="lg" onClick={props.onSplash} style={{width: "190px", position:"absolute", top: "68%", right:"1%"}}>NEW GAME</Button>
+        <Button className="button-88" size="lg" onClick={props.onSplash} style={{width: "190px", position:"absolute", top: "68%", right:"7%"}}>NEW GAME</Button>
       </div>
     </Modal>
   );

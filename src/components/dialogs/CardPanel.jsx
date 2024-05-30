@@ -6,7 +6,7 @@ import Button from "react-bootstrap/Button";
 import "./modal.css";
 
 function CardPanel(props) {
-  const bg = "#f0f0f5";
+  const bg = "#293a4b";
   const header = `Hand of Cards: ${props.side}`
   const rowClass = `g-${props.cardArray.length}`
   const sizey = props.cardArray.length >= 4 ? "xl" : "lg"
@@ -18,7 +18,8 @@ function CardPanel(props) {
           display: "flex",
           justifyContent: "center",
           alignItems: "center",
-          background: `${bg}`
+          background: `${bg}`,
+          color: "white"
         }}
       >
         <p className="text-center">{header}</p>

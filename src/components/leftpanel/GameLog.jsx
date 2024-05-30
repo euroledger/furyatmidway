@@ -34,6 +34,7 @@ function GameLog() {
           id="collapseTwo"
           class="accordion-collapse collapse"
           aria-labelledby="headingTwo"
+          aria-expanded="true"
         >
           <div
             class="accordion-body"

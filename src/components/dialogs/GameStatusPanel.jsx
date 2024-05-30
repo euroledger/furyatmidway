@@ -9,7 +9,7 @@ function GameStatusPanel(props) {
   return (
     <Modal {...props} size="lg" aria-labelledby="contained-modal-title-vcenter" centered>
       <GameStatePanel gameState={props.gameState} />
-      <Modal.Footer style={{color: 'black' }}>
+      <Modal.Footer style={{backgroundColor: '#293a4b', color: 'black' }}>
         <Button onClick={props.onHide}>Close</Button>
       </Modal.Footer>
     </Modal>

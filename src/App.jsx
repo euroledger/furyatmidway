@@ -285,21 +285,21 @@ function App() {
           <Navbar.Toggle aria-controls="responsive-navbar-nav" />
           <Navbar.Collapse id="responsive-navbar-nav">
             <Nav className="mr-auto">
-              <Button className="me-1" variant="outline-secondary" onClick={() => setGameStateShow(true)}>
+              <Button className="me-1" size="sm" variant="outline-secondary" onClick={() => setGameStateShow(true)}>
                 Game State
               </Button>
-              <Button className="me-1" variant="outline-primary" onClick={() => setusHandShow(true)}>
+              <Button className="me-1" size="sm" variant="outline-primary" onClick={() => setusHandShow(true)}>
                 US Hand
               </Button>
-              <Button className="me-1" variant="outline-danger" onClick={() => setjpHandShow(true)}>
+              <Button className="me-1" size="sm" variant="outline-danger" onClick={() => setjpHandShow(true)}>
                 Japan Hand
               </Button>
-              <Button className="me-1" variant="outline-light">
+              <Button className="me-1" size="sm" variant="outline-light">
                 Roll Dice
               </Button>
             </Nav>
 
-            <img src="/images/japanflag.jpg" alt="test" style={{ marginLeft: "50px" }} width="40px" height="30px" />
+            <img src="/images/japanflag.jpg" alt="test" style={{ marginLeft: "200px" }} width="40px" height="30px" />
             <p
               className="navbar-text"
               style={{
@@ -323,6 +323,7 @@ function App() {
 
             <Nav>
               <Button
+                size="sm"
                 className="me-1"
                 variant="secondary"
                 onClick={() => nextAction()}
@@ -335,6 +336,7 @@ function App() {
             {test && (
               <Nav>
                 <Button
+                  size="sm"
                   className="me-1"
                   variant="secondary"
                   onClick={(e) => testUi(e)}
@@ -348,13 +350,13 @@ function App() {
             )}
 
             <ButtonGroup className="ms-auto" aria-label="Basic example">
-              <Button className="me-1" variant="secondary" onClick={() => zoomIn()}>
+              <Button className="me-1"  size="sm" variant="secondary" onClick={() => zoomIn()}>
                 Zoom In
               </Button>
-              <Button className="me-1" variant="secondary" onClick={() => zoomOut()}>
+              <Button className="me-1"  size="sm" variant="secondary" onClick={() => zoomOut()}>
                 Zoom Out
               </Button>
-              <Button className="me-1" variant="secondary" onClick={() => resetTransform()}>
+              <Button className="me-1" size="sm" variant="secondary" onClick={() => resetTransform()}>
                 Reset
               </Button>
             </ButtonGroup>
@@ -404,13 +406,14 @@ function App() {
 
   if (splash) {
     return (
-      <div  
-      style={{       
-        position: 'absolute',
-         left: '50%',
-         top: '50%',
-         transform: 'translate(-50%, -50%)'
-      }}>
+      <div
+        style={{
+          position: "absolute",
+          left: "50%",
+          top: "50%",
+          transform: "translate(-50%, -50%)",
+        }}
+      >
         {/* <ModalSplash show={splash} onHide={() => setSplash(false)}></ModalSplash> */}
         <SplashScreen show={splash} onSplash={onSplash}></SplashScreen>
       </div>
@@ -422,7 +425,7 @@ function App() {
         show={modalShow}
         onHide={() => setModalShow(false)}
       /> */}
-      <GameStatusPanel show={gameStateShow} gameState={gameState} onHide={() => setGameStateShow(false)}/>
+      <GameStatusPanel show={gameStateShow} gameState={gameState} onHide={() => setGameStateShow(false)} />
       <CardPanel
         cardArray={[5, 6, 12, 13, 1, 2]}
         show={jpHandShow}
@@ -454,10 +457,10 @@ function App() {
               minWidth: "1280px",
               maxHeight: "670px",
               maxWidth: "1280px",
-              position: 'absolute',
-               left: '50%',
-               top: '50%',
-               transform: 'translate(-50%, -50%)'
+              position: "absolute",
+              left: "50%",
+              top: "50%",
+              transform: "translate(-50%, -50%)",
             }}
           >
             <TransformComponent>
