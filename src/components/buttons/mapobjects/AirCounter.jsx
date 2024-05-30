@@ -25,12 +25,12 @@ function AirCounter({
     position.left !== airUnitUpdate.position.left + "%" &&
     position.top !== airUnitUpdate.position.top + "%"
   ) {
-    console.log(
-      "I am ",
-      counterData.name,
-      " -> AIR UNIT UPDATE = ",
-      airUnitUpdate
-    );
+    // console.log(
+    //   "I am ",
+    //   counterData.name,
+    //   " -> AIR UNIT UPDATE = ",
+    //   airUnitUpdate
+    // );
 
     const unit = controller.getAirUnitInBox(
       airUnitUpdate.boxName,

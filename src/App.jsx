@@ -9,12 +9,11 @@ import { TransformWrapper, TransformComponent, useControls } from "react-zoom-pa
 import GlobalGameState from "./model/GlobalGameState"
 import GlobalInit from "./model/GlobalInit"
 import AlertPanel from "./components/dialogs/AlertPanel"
-import JapanAirBoxOffsets from "./components/draganddrop/JapanAirBoxOffsets"
-import GlobalUnitsModel from "./model/GlobalUnitsModel"
 import CardPanel from "./components/dialogs/CardPanel"
 import GameStatusPanel from "./components/dialogs/GameStatusPanel"
 import SplashScreen from "./components/dialogs/SplashScreen"
 import "./style.css"
+import calcTestData from "./AirUnitTestData"
 
 export default App
 export function App() {
@@ -79,186 +78,16 @@ export function App() {
 
   const testUi = async (e) => {
     setTestClicked(true)
-    // set state in order of commands for air units
-    let boxName = GlobalUnitsModel.AirBox.JP_CD1_CAP
-    let position1 = JapanAirBoxOffsets.find((box) => box.name === boxName)
-    setAirUnitUpdate({
-      name: "Akagi-A6M-2b-1",
-      position: position1.offsets[0],
-      boxName,
-      index: 0,
-    })
+    const data = calcTestData()
 
-    await delay(500)
+    for (const update of data) {
+      setAirUnitUpdate(update)
+      await delay(500)
+      if (update.nextAction) {
+        nextAction()
+      }
+    }
 
-    boxName = GlobalUnitsModel.AirBox.JP_AKAGI_FLIGHT_DECK
-    let position2 = JapanAirBoxOffsets.find((box) => box.name === boxName)
-    setAirUnitUpdate({
-      name: "Akagi-A6M-2b-2",
-      position: position2.offsets[0],
-      boxName,
-      index: 0,
-    })
-
-    await delay(500)
-
-    boxName = GlobalUnitsModel.AirBox.JP_AKAGI_FLIGHT_DECK
-    let position3 = JapanAirBoxOffsets.find((box) => box.name === boxName)
-    setAirUnitUpdate({
-      name: "Akagi-D3A-1",
-      position: position3.offsets[1],
-      boxName,
-      index: 1,
-    })
-
-    await delay(500)
-
-    boxName = GlobalUnitsModel.AirBox.JP_AKAGI_HANGER
-    let position4 = JapanAirBoxOffsets.find((box) => box.name === boxName)
-    setAirUnitUpdate({
-      name: "Akagi-B5N-2",
-      position: position4.offsets[0],
-      boxName,
-      index: 0,
-    })
-
-    await delay(500)
-    nextAction()
-
-    // Kaga
-    boxName = GlobalUnitsModel.AirBox.JP_CD1_CAP
-    let position5 = JapanAirBoxOffsets.find((box) => box.name === boxName)
-    setAirUnitUpdate({
-      name: "Kaga-A6M-2b-1",
-      position: position5.offsets[1],
-      boxName,
-      index: 1,
-    })
-
-    await delay(500)
-
-    boxName = GlobalUnitsModel.AirBox.JP_KAGA_FLIGHT_DECK
-    let position6 = JapanAirBoxOffsets.find((box) => box.name === boxName)
-    setAirUnitUpdate({
-      name: "Kaga-A6M-2b-2",
-      position: position6.offsets[0],
-      boxName,
-      index: 0,
-    })
-
-    await delay(500)
-
-    boxName = GlobalUnitsModel.AirBox.JP_KAGA_FLIGHT_DECK
-    let position7 = JapanAirBoxOffsets.find((box) => box.name === boxName)
-    setAirUnitUpdate({
-      name: "Kaga-D3A-1",
-      position: position7.offsets[1],
-      boxName,
-      index: 1,
-    })
-
-    await delay(500)
-
-    boxName = GlobalUnitsModel.AirBox.JP_KAGA_HANGER
-    let position8 = JapanAirBoxOffsets.find((box) => box.name === boxName)
-    setAirUnitUpdate({
-      name: "Kaga-B5N-2",
-      position: position8.offsets[0],
-      boxName,
-      index: 0,
-    })
-
-    await delay(500)
-    nextAction()
-
-    // Hiryu
-    boxName = GlobalUnitsModel.AirBox.JP_CD2_CAP
-    let position9 = JapanAirBoxOffsets.find((box) => box.name === boxName)
-    setAirUnitUpdate({
-      name: "Hiryu-A6M-2b-1",
-      position: position9.offsets[0],
-      boxName,
-      index: 0,
-    })
-
-    await delay(500)
-
-    boxName = GlobalUnitsModel.AirBox.JP_HIRYU_HANGER
-    let position10 = JapanAirBoxOffsets.find((box) => box.name === boxName)
-    setAirUnitUpdate({
-      name: "Hiryu-A6M-2b-2",
-      position: position10.offsets[0],
-      boxName,
-      index: 0,
-    })
-
-    await delay(500)
-
-    boxName = GlobalUnitsModel.AirBox.JP_HIRYU_HANGER
-    let position11 = JapanAirBoxOffsets.find((box) => box.name === boxName)
-    setAirUnitUpdate({
-      name: "Hiryu-D3A-1",
-      position: position11.offsets[2],
-      boxName,
-      index: 2,
-    })
-
-    await delay(500)
-
-    boxName = GlobalUnitsModel.AirBox.JP_HIRYU_HANGER
-    let position12 = JapanAirBoxOffsets.find((box) => box.name === boxName)
-    setAirUnitUpdate({
-      name: "Hiryu-B5N-2",
-      position: position12.offsets[3],
-      boxName,
-      index: 3,
-    })
-
-    await delay(500)
-    nextAction()
-
-    // Soryu
-    boxName = GlobalUnitsModel.AirBox.JP_SORYU_HANGER
-    let position13 = JapanAirBoxOffsets.find((box) => box.name === boxName)
-    setAirUnitUpdate({
-      name: "Soryu-A6M-2b-1",
-      position: position13.offsets[0],
-      boxName,
-      index: 0,
-    })
-
-    await delay(500)
-
-    boxName = GlobalUnitsModel.AirBox.JP_SORYU_HANGER
-    let position14 = JapanAirBoxOffsets.find((box) => box.name === boxName)
-    setAirUnitUpdate({
-      name: "Soryu-A6M-2b-2",
-      position: position14.offsets[1],
-      boxName,
-      index: 1,
-    })
-
-    await delay(500)
-
-    boxName = GlobalUnitsModel.AirBox.JP_SORYU_FLIGHT_DECK
-    let position15 = JapanAirBoxOffsets.find((box) => box.name === boxName)
-    setAirUnitUpdate({
-      name: "Soryu-D3A-1",
-      position: position15.offsets[0],
-      boxName,
-      index: 0,
-    })
-
-    await delay(500)
-
-    boxName = GlobalUnitsModel.AirBox.JP_SORYU_FLIGHT_DECK
-    let position16 = JapanAirBoxOffsets.find((box) => box.name === boxName)
-    setAirUnitUpdate({
-      name: "Soryu-B5N-2",
-      position: position16.offsets[1],
-      boxName,
-      index: 1,
-    })
   }
 
   var v = process.env.REACT_APP_MYVAR || "arse"
