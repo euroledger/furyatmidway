@@ -1,287 +1,278 @@
-import { React, useState } from "react";
-import Container from "react-bootstrap/Container";
-import Nav from "react-bootstrap/Nav";
-import Navbar from "react-bootstrap/Navbar";
-import Col from "react-bootstrap/Col";
-import Image from "react-bootstrap/Image";
-import Row from "react-bootstrap/Row";
-import Board from "./components/Board";
-import Button from "react-bootstrap/Button";
-import ButtonGroup from "react-bootstrap/ButtonGroup";
-import { TransformWrapper, TransformComponent, useControls } from "react-zoom-pan-pinch";
-// import GameStatePanel from "./components/leftpanel/GameStatePanel";
-import GlobalGameState from "./model/GlobalGameState";
-import GlobalInit from "./model/GlobalInit";
-import AlertPanel from "./components/dialogs/AlertPanel";
-import { useAirUnitStore } from "./store/airUnitStore";
-import JapanAirBoxOffsets from "./components/draganddrop/JapanAirBoxOffsets";
-import GlobalUnitsModel from "./model/GlobalUnitsModel";
-import TestComponent from "./components/TestComponent";
+import { React, useState } from "react"
+import Container from "react-bootstrap/Container"
+import Nav from "react-bootstrap/Nav"
+import Navbar from "react-bootstrap/Navbar"
+import Board from "./components/Board"
+import Button from "react-bootstrap/Button"
+import ButtonGroup from "react-bootstrap/ButtonGroup"
+import { TransformWrapper, TransformComponent, useControls } from "react-zoom-pan-pinch"
+import GlobalGameState from "./model/GlobalGameState"
+import GlobalInit from "./model/GlobalInit"
+import AlertPanel from "./components/dialogs/AlertPanel"
+import JapanAirBoxOffsets from "./components/draganddrop/JapanAirBoxOffsets"
+import GlobalUnitsModel from "./model/GlobalUnitsModel"
+import CardPanel from "./components/dialogs/CardPanel"
+import GameStatusPanel from "./components/dialogs/GameStatusPanel"
+import SplashScreen from "./components/dialogs/SplashScreen"
+import "./style.css"
 
-import "./style.css";
-import CardPanel from "./components/dialogs/CardPanel";
-import GameStatusPanel from "./components/dialogs/GameStatusPanel";
-import ModalSplash from "./components/dialogs/ModalSplash";
-import SplashScreen from "./components/dialogs/SplashScreen";
-
-function App() {
-  const [splash, setSplash] = useState(true);
-  const [gameState, setGameState] = useState(false);
-  const [isMoveable, setIsMoveable] = useState(false);
-  const [scale, setScale] = useState(1);
-  const [testClicked, setTestClicked] = useState(false);
-  const [modalShow, setModalShow] = useState(true);
-  const [jpHandShow, setjpHandShow] = useState(false);
-  const [usHandShow, setusHandShow] = useState(false);
-  const [gameStateShow, setGameStateShow] = useState(false);
-
-  setGameStateShow;
+export default App
+export function App() {
+  const [splash, setSplash] = useState(true)
+  const [gameState, setGameState] = useState(false)
+  const [isMoveable, setIsMoveable] = useState(false)
+  const [scale, setScale] = useState(1)
+  const [testClicked, setTestClicked] = useState(false)
+  const [alertShow, setAlertShow] = useState(false) // TO DO param should be an object with boolean and alert text
+  // const [alertShow, setAlertShow] = useState({
+  //   display: false,
+  //   alertText: ""
+  // })
+  const [jpHandShow, setjpHandShow] = useState(false)
+  const [usHandShow, setusHandShow] = useState(false)
+  const [gameStateShow, setGameStateShow] = useState(false)
 
   const [airUnitUpdate, setAirUnitUpdate] = useState({
     name: "",
     position: {},
     boxName: "",
     index: -1,
-  });
+  })
 
   // this class will take a set of preset commands and run them in sequence in
   // order to test the React App
   // const uiTester = new UITester()
-
   // const { airUnitMap, updateMap } = useAirUnitStore((state) => ({
   //   airUnitMap: state.airUnitMap,
   //   updateMap: state.updateMap,
   // }));
-
   // console.log("******** Got air unit map -> ", airUnitMap);
   const onDrag = () => {
-    setIsMoveable(true);
-  };
+    setIsMoveable(true)
+  }
   const onStop = () => {
-    setIsMoveable(false);
-  };
+    setIsMoveable(false)
+  }
 
   const nextAction = () => {
     if (GlobalGameState.currentCarrier <= 2) {
-      GlobalGameState.phaseCompleted = false;
-      GlobalGameState.setupPhase++;
-      GlobalGameState.currentCarrier++;
-      GlobalGameState.currentCarrierDivision = GlobalGameState.currentCarrier <= 1 ? 1 : 2;
+      GlobalGameState.phaseCompleted = false
+      GlobalGameState.setupPhase++
+      GlobalGameState.currentCarrier++
+      GlobalGameState.currentCarrierDivision = GlobalGameState.currentCarrier <= 1 ? 1 : 2
     } else {
       // end of Japanes Setup
       // next phase is Card Draw
-      GlobalGameState.phaseCompleted = false;
-      GlobalGameState.setupPhase++;
-      GlobalGameState.gamePhase = GlobalGameState.PHASE.JAPAN_CARD_DRAW;
+      GlobalGameState.phaseCompleted = false
+      GlobalGameState.setupPhase++
+      GlobalGameState.gamePhase = GlobalGameState.PHASE.JAPAN_CARD_DRAW
     }
-    GlobalGameState.updateGlobalState();
-  };
+    GlobalGameState.updateGlobalState()
+  }
 
   // set up initial zustand air counter list
-
   function delay(ms) {
     return new Promise((resolve) => {
-      setTimeout(resolve, ms);
-    });
+      setTimeout(resolve, ms)
+    })
   }
 
   const testUi = async (e) => {
-    setTestClicked(true);
+    setTestClicked(true)
     // set state in order of commands for air units
-
-    let boxName = GlobalUnitsModel.AirBox.JP_CD1_CAP;
-    let position1 = JapanAirBoxOffsets.find((box) => box.name === boxName);
+    let boxName = GlobalUnitsModel.AirBox.JP_CD1_CAP
+    let position1 = JapanAirBoxOffsets.find((box) => box.name === boxName)
     setAirUnitUpdate({
       name: "Akagi-A6M-2b-1",
       position: position1.offsets[0],
       boxName,
       index: 0,
-    });
+    })
 
-    await delay(500);
+    await delay(500)
 
-    boxName = GlobalUnitsModel.AirBox.JP_AKAGI_FLIGHT_DECK;
-    let position2 = JapanAirBoxOffsets.find((box) => box.name === boxName);
+    boxName = GlobalUnitsModel.AirBox.JP_AKAGI_FLIGHT_DECK
+    let position2 = JapanAirBoxOffsets.find((box) => box.name === boxName)
     setAirUnitUpdate({
       name: "Akagi-A6M-2b-2",
       position: position2.offsets[0],
       boxName,
       index: 0,
-    });
+    })
 
-    await delay(500);
+    await delay(500)
 
-    boxName = GlobalUnitsModel.AirBox.JP_AKAGI_FLIGHT_DECK;
-    let position3 = JapanAirBoxOffsets.find((box) => box.name === boxName);
+    boxName = GlobalUnitsModel.AirBox.JP_AKAGI_FLIGHT_DECK
+    let position3 = JapanAirBoxOffsets.find((box) => box.name === boxName)
     setAirUnitUpdate({
       name: "Akagi-D3A-1",
       position: position3.offsets[1],
       boxName,
       index: 1,
-    });
+    })
 
-    await delay(500);
+    await delay(500)
 
-    boxName = GlobalUnitsModel.AirBox.JP_AKAGI_HANGER;
-    let position4 = JapanAirBoxOffsets.find((box) => box.name === boxName);
+    boxName = GlobalUnitsModel.AirBox.JP_AKAGI_HANGER
+    let position4 = JapanAirBoxOffsets.find((box) => box.name === boxName)
     setAirUnitUpdate({
       name: "Akagi-B5N-2",
       position: position4.offsets[0],
       boxName,
       index: 0,
-    });
+    })
 
-    await delay(500);
-    nextAction();
+    await delay(500)
+    nextAction()
 
     // Kaga
-    boxName = GlobalUnitsModel.AirBox.JP_CD1_CAP;
-    let position5 = JapanAirBoxOffsets.find((box) => box.name === boxName);
+    boxName = GlobalUnitsModel.AirBox.JP_CD1_CAP
+    let position5 = JapanAirBoxOffsets.find((box) => box.name === boxName)
     setAirUnitUpdate({
       name: "Kaga-A6M-2b-1",
       position: position5.offsets[1],
       boxName,
       index: 1,
-    });
+    })
 
-    await delay(500);
+    await delay(500)
 
-    boxName = GlobalUnitsModel.AirBox.JP_KAGA_FLIGHT_DECK;
-    let position6 = JapanAirBoxOffsets.find((box) => box.name === boxName);
+    boxName = GlobalUnitsModel.AirBox.JP_KAGA_FLIGHT_DECK
+    let position6 = JapanAirBoxOffsets.find((box) => box.name === boxName)
     setAirUnitUpdate({
       name: "Kaga-A6M-2b-2",
       position: position6.offsets[0],
       boxName,
       index: 0,
-    });
+    })
 
-    await delay(500);
+    await delay(500)
 
-    boxName = GlobalUnitsModel.AirBox.JP_KAGA_FLIGHT_DECK;
-    let position7 = JapanAirBoxOffsets.find((box) => box.name === boxName);
+    boxName = GlobalUnitsModel.AirBox.JP_KAGA_FLIGHT_DECK
+    let position7 = JapanAirBoxOffsets.find((box) => box.name === boxName)
     setAirUnitUpdate({
       name: "Kaga-D3A-1",
       position: position7.offsets[1],
       boxName,
       index: 1,
-    });
+    })
 
-    await delay(500);
+    await delay(500)
 
-    boxName = GlobalUnitsModel.AirBox.JP_KAGA_HANGER;
-    let position8 = JapanAirBoxOffsets.find((box) => box.name === boxName);
+    boxName = GlobalUnitsModel.AirBox.JP_KAGA_HANGER
+    let position8 = JapanAirBoxOffsets.find((box) => box.name === boxName)
     setAirUnitUpdate({
       name: "Kaga-B5N-2",
       position: position8.offsets[0],
       boxName,
       index: 0,
-    });
+    })
 
-    await delay(500);
-    nextAction();
+    await delay(500)
+    nextAction()
 
     // Hiryu
-    boxName = GlobalUnitsModel.AirBox.JP_CD2_CAP;
-    let position9 = JapanAirBoxOffsets.find((box) => box.name === boxName);
+    boxName = GlobalUnitsModel.AirBox.JP_CD2_CAP
+    let position9 = JapanAirBoxOffsets.find((box) => box.name === boxName)
     setAirUnitUpdate({
       name: "Hiryu-A6M-2b-1",
       position: position9.offsets[0],
       boxName,
       index: 0,
-    });
+    })
 
-    await delay(500);
+    await delay(500)
 
-    boxName = GlobalUnitsModel.AirBox.JP_HIRYU_HANGER;
-    let position10 = JapanAirBoxOffsets.find((box) => box.name === boxName);
+    boxName = GlobalUnitsModel.AirBox.JP_HIRYU_HANGER
+    let position10 = JapanAirBoxOffsets.find((box) => box.name === boxName)
     setAirUnitUpdate({
       name: "Hiryu-A6M-2b-2",
       position: position10.offsets[0],
       boxName,
       index: 0,
-    });
+    })
 
-    await delay(500);
+    await delay(500)
 
-    boxName = GlobalUnitsModel.AirBox.JP_HIRYU_HANGER;
-    let position11 = JapanAirBoxOffsets.find((box) => box.name === boxName);
+    boxName = GlobalUnitsModel.AirBox.JP_HIRYU_HANGER
+    let position11 = JapanAirBoxOffsets.find((box) => box.name === boxName)
     setAirUnitUpdate({
       name: "Hiryu-D3A-1",
       position: position11.offsets[2],
       boxName,
       index: 2,
-    });
+    })
 
-    await delay(500);
+    await delay(500)
 
-    boxName = GlobalUnitsModel.AirBox.JP_HIRYU_HANGER;
-    let position12 = JapanAirBoxOffsets.find((box) => box.name === boxName);
+    boxName = GlobalUnitsModel.AirBox.JP_HIRYU_HANGER
+    let position12 = JapanAirBoxOffsets.find((box) => box.name === boxName)
     setAirUnitUpdate({
       name: "Hiryu-B5N-2",
       position: position12.offsets[3],
       boxName,
       index: 3,
-    });
+    })
 
-    await delay(500);
-    nextAction();
+    await delay(500)
+    nextAction()
 
     // Soryu
-    boxName = GlobalUnitsModel.AirBox.JP_SORYU_HANGER;
-    let position13 = JapanAirBoxOffsets.find((box) => box.name === boxName);
+    boxName = GlobalUnitsModel.AirBox.JP_SORYU_HANGER
+    let position13 = JapanAirBoxOffsets.find((box) => box.name === boxName)
     setAirUnitUpdate({
       name: "Soryu-A6M-2b-1",
       position: position13.offsets[0],
       boxName,
       index: 0,
-    });
+    })
 
-    await delay(500);
+    await delay(500)
 
-    boxName = GlobalUnitsModel.AirBox.JP_SORYU_HANGER;
-    let position14 = JapanAirBoxOffsets.find((box) => box.name === boxName);
+    boxName = GlobalUnitsModel.AirBox.JP_SORYU_HANGER
+    let position14 = JapanAirBoxOffsets.find((box) => box.name === boxName)
     setAirUnitUpdate({
       name: "Soryu-A6M-2b-2",
       position: position14.offsets[1],
       boxName,
       index: 1,
-    });
+    })
 
-    await delay(500);
+    await delay(500)
 
-    boxName = GlobalUnitsModel.AirBox.JP_SORYU_FLIGHT_DECK;
-    let position15 = JapanAirBoxOffsets.find((box) => box.name === boxName);
+    boxName = GlobalUnitsModel.AirBox.JP_SORYU_FLIGHT_DECK
+    let position15 = JapanAirBoxOffsets.find((box) => box.name === boxName)
     setAirUnitUpdate({
       name: "Soryu-D3A-1",
       position: position15.offsets[0],
       boxName,
       index: 0,
-    });
+    })
 
-    await delay(500);
+    await delay(500)
 
-    boxName = GlobalUnitsModel.AirBox.JP_SORYU_FLIGHT_DECK;
-    let position16 = JapanAirBoxOffsets.find((box) => box.name === boxName);
+    boxName = GlobalUnitsModel.AirBox.JP_SORYU_FLIGHT_DECK
+    let position16 = JapanAirBoxOffsets.find((box) => box.name === boxName)
     setAirUnitUpdate({
       name: "Soryu-B5N-2",
       position: position16.offsets[1],
       boxName,
       index: 1,
-    });
-  };
+    })
+  }
 
-  var v = process.env.REACT_APP_MYVAR || "arse";
-  let test = false;
+  var v = process.env.REACT_APP_MYVAR || "arse"
+  let test = false
   if (v === "test") {
-    test = true;
+    test = true
   }
   const Controls = () => {
-    const { zoomIn, zoomOut, resetTransform } = useControls();
+    const { zoomIn, zoomOut, resetTransform } = useControls()
     return (
       <Navbar bg="black" data-bs-theme="dark" sticky="top" className="justify-content-between">
         <Container>
           {/* <Navbar.Brand href="/">Save</Navbar.Brand>
-          <Navbar.Brand href="/">Load</Navbar.Brand> */}
+                <Navbar.Brand href="/">Load</Navbar.Brand> */}
           <Navbar.Toggle aria-controls="responsive-navbar-nav" />
           <Navbar.Collapse id="responsive-navbar-nav">
             <Nav className="mr-auto">
@@ -345,15 +336,15 @@ function App() {
                 >
                   TEST
                 </Button>
-                {testClicked && <TestComponent testClicked={testClicked}></TestComponent>}
+                {/* {testClicked && <TestComponent testClicked={testClicked}></TestComponent>} */}
               </Nav>
             )}
 
             <ButtonGroup className="ms-auto" aria-label="Basic example">
-              <Button className="me-1"  size="sm" variant="secondary" onClick={() => zoomIn()}>
+              <Button className="me-1" size="sm" variant="secondary" onClick={() => zoomIn()}>
                 Zoom In
               </Button>
-              <Button className="me-1"  size="sm" variant="secondary" onClick={() => zoomOut()}>
+              <Button className="me-1" size="sm" variant="secondary" onClick={() => zoomOut()}>
                 Zoom Out
               </Button>
               <Button className="me-1" size="sm" variant="secondary" onClick={() => resetTransform()}>
@@ -363,17 +354,17 @@ function App() {
           </Navbar.Collapse>
         </Container>
       </Navbar>
-    );
-  };
+    )
+  }
   function gameStateHandler() {
-    setGameState(!gameState);
+    setGameState(!gameState)
   }
 
   function handleScaleChange(event) {
-    setScale(event.instance.transformState.scale);
+    setScale(event.instance.transformState.scale)
   }
 
-  GlobalGameState.stateHandler = gameStateHandler;
+  GlobalGameState.stateHandler = gameStateHandler
 
   // disable browser zoom (ctrl+ ctrl-)
   window.addEventListener(
@@ -383,26 +374,26 @@ function App() {
         (e.ctrlKey || e.metaKey) &&
         (e.which === 61 || e.which === 107 || e.which === 173 || e.which === 109 || e.which === 187 || e.which === 189)
       ) {
-        e.preventDefault();
+        e.preventDefault()
       }
     },
     false
-  );
+  )
 
   // usage
   window.addEventListener("devicepixelratiochange", function (e) {
     // note: change of devicePixelRatio means change of page zoom, but devicePixelRatio itself doesn't mean page zoom
-    console.log("devicePixelRatio changed from " + e.oldValue + " to " + e.newValue);
-  });
+    console.log("devicePixelRatio changed from " + e.oldValue + " to " + e.newValue)
+  })
 
   function onSplash() {
-    setSplash(false);
+    setSplash(false)
   }
   // window height
-  const height = window.innerHeight;
+  const height = window.innerHeight
 
   // window width
-  const width = window.innerWidth;
+  const width = window.innerWidth
 
   if (splash) {
     return (
@@ -417,14 +408,11 @@ function App() {
         {/* <ModalSplash show={splash} onHide={() => setSplash(false)}></ModalSplash> */}
         <SplashScreen show={splash} onSplash={onSplash}></SplashScreen>
       </div>
-    );
+    )
   }
   return (
     <>
-      {/* <ModalAlert
-        show={modalShow}
-        onHide={() => setModalShow(false)}
-      /> */}
+      <AlertPanel show={alertShow} onHide={() => setAlertShow(false)} />
       <GameStatusPanel show={gameStateShow} gameState={gameState} onHide={() => setGameStateShow(false)} />
       <CardPanel
         cardArray={[5, 6, 12, 13, 1, 2]}
@@ -472,14 +460,12 @@ function App() {
                 scale={scale}
                 airUnitUpdate={airUnitUpdate}
                 setAirUnitUpdate={setAirUnitUpdate}
+                setAlertShow={setAlertShow}
               />
             </TransformComponent>
           </div>
         </div>
       </TransformWrapper>
     </>
-  );
+  )
 }
-80;
-
-export default App;

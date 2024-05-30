@@ -4,7 +4,7 @@ import "./modal.css";
 
 function AlertPanel(props) {
   // TODO set different colors/header for different alert level, info, warning etc
-  const bg = "#FFCCCC"
+  const bg = "#293a4b";
   return (
     <Modal
       {...props}
@@ -12,7 +12,7 @@ function AlertPanel(props) {
       aria-labelledby="contained-modal-title-vcenter"
       centered
     >
-      <Modal.Body style={{ background: `${bg}`, color: 'black'}}>
+      <Modal.Body style={{ background: `${bg}`, color: 'white'}}>
         <h4>ALERT</h4>
         <p>
           This air unit is not a fighter unit so cannot be used for CAP.

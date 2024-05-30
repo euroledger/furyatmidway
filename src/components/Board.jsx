@@ -23,6 +23,7 @@ function Board({
   scale,
   airUnitUpdate,
   setAirUnitUpdate,
+  setAlertShow
 }) {
   let zProps = { us: 0, japan: 0 };
   const initialJpAopPosition = { left: 2.7, top: 7 };
@@ -202,6 +203,7 @@ function Board({
           getAirBox={getAirBox}
           setAirBox={setAirBox}
           airUnitUpdate={airUnitUpdate}
+          setAlertShow={setAlertShow}
         ></AirCounters>
         <CarrierDropZones
           handleDragEnter={handleAirBoxDragEnter}

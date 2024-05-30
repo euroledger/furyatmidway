@@ -13,6 +13,7 @@ function AirCounter({
   setAirBox,
   counterData,
   airUnitUpdate,
+  setAlertShow
 }) {
   const [position, setPosition] = useState({
     left: counterData.position.left,
@@ -81,6 +82,7 @@ function AirCounter({
         "*** Air Unit is not a figher unit -> Cannot be used for CAP!"
       );
 
+      setAlertShow(true)
       // TODO display error popup
       return;
     }

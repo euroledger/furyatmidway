@@ -9,7 +9,8 @@ function AirCounters({
   getAirBox,
   setAirBox,
   counterData,
-  airUnitUpdate
+  airUnitUpdate,
+  setAlertShow
 }) {
   const counters = Array.from(counterData.values());
   const airCounters = counters.map((airUnit) => {
@@ -33,6 +34,7 @@ function AirCounters({
           getAirBox={getAirBox}
           setAirBox={setAirBox}
           airUnitUpdate={airUnitUpdate}
+          setAlertShow={setAlertShow}
         ></AirCounter>
       );
     }

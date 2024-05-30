@@ -16,8 +16,6 @@ export default class GameStatePanel extends React.Component {
     const logRows = GlobalGameState.logItems.map((logItem, index) => {
       return <div key={index}>{logItem}</div>;
     });
-    const initialLogItems = ["Logging Here buggy"];
-
     const mg = GlobalGameState.midwayGarrisonLevel > 0 ? GlobalGameState.midwayGarrisonLevel : "X";
     const mif = GlobalGameState.midwayInvasionLevel > 0 ? GlobalGameState.midwayInvasionLevel : "X";
 
