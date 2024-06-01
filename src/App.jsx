@@ -8,6 +8,7 @@ import ButtonGroup from "react-bootstrap/ButtonGroup"
 import { TransformWrapper, TransformComponent, useControls } from "react-zoom-pan-pinch"
 import GlobalGameState from "./model/GlobalGameState"
 import GlobalInit from "./model/GlobalInit"
+import GlobalUnitsModel from "./model/GlobalUnitsModel"
 import AlertPanel from "./components/dialogs/AlertPanel"
 import CardPanel from "./components/dialogs/CardPanel"
 import GameStatusPanel from "./components/dialogs/GameStatusPanel"
@@ -18,6 +19,7 @@ import calcTestData from "./AirUnitTestData"
 export default App
 export function App() {
   const [splash, setSplash] = useState(true)
+  const [showZones, setShowZones] = useState(true)
   const [gameState, setGameState] = useState(false)
   const [isMoveable, setIsMoveable] = useState(false)
   const [scale, setScale] = useState(1)
@@ -29,6 +31,7 @@ export function App() {
   // })
   const [jpHandShow, setjpHandShow] = useState(false)
   const [usHandShow, setusHandShow] = useState(false)
+
   const [gameStateShow, setGameStateShow] = useState(false)
 
   const [airUnitUpdate, setAirUnitUpdate] = useState({
@@ -37,15 +40,7 @@ export function App() {
     boxName: "",
     index: -1,
   })
-
-  // this class will take a set of preset commands and run them in sequence in
-  // order to test the React App
-  // const uiTester = new UITester()
-  // const { airUnitMap, updateMap } = useAirUnitStore((state) => ({
-  //   airUnitMap: state.airUnitMap,
-  //   updateMap: state.updateMap,
-  // }));
-  // console.log("******** Got air unit map -> ", airUnitMap);
+  
   const onDrag = () => {
     setIsMoveable(true)
   }
@@ -54,17 +49,25 @@ export function App() {
   }
 
   const nextAction = () => {
-    if (GlobalGameState.currentCarrier <= 2) {
+    if (GlobalGameState.gamePhase === GlobalGameState.PHASE.JAPAN_SETUP) {
+      if (GlobalGameState.currentCarrier <= 2) {
+        GlobalGameState.phaseCompleted = false
+        GlobalGameState.setupPhase++
+        GlobalGameState.currentCarrier++
+        GlobalGameState.currentCarrierDivision = GlobalGameState.currentCarrier <= 1 ? 1 : 2
+      } else {
+        // end of Japanes Setup
+        // next phase is Card Draw
+        GlobalGameState.phaseCompleted = false
+        GlobalGameState.setupPhase++
+        GlobalGameState.gamePhase = GlobalGameState.PHASE.JAPAN_CARD_DRAW
+        GlobalInit.controller.drawJapanCards(3, true)
+      }
+    } else if (GlobalGameState.gamePhase === GlobalGameState.PHASE.JAPAN_CARD_DRAW) {
       GlobalGameState.phaseCompleted = false
       GlobalGameState.setupPhase++
-      GlobalGameState.currentCarrier++
-      GlobalGameState.currentCarrierDivision = GlobalGameState.currentCarrier <= 1 ? 1 : 2
-    } else {
-      // end of Japanes Setup
-      // next phase is Card Draw
-      GlobalGameState.phaseCompleted = false
-      GlobalGameState.setupPhase++
-      GlobalGameState.gamePhase = GlobalGameState.PHASE.JAPAN_CARD_DRAW
+      GlobalGameState.gamePhase = GlobalGameState.PHASE.US_SETUP
+      GlobalGameState.currentCarrier = 0
     }
     GlobalGameState.updateGlobalState()
   }
@@ -87,7 +90,6 @@ export function App() {
         nextAction()
       }
     }
-
   }
 
   var v = process.env.REACT_APP_MYVAR || "arse"
@@ -97,8 +99,16 @@ export function App() {
   }
   const Controls = () => {
     const { zoomIn, zoomOut, resetTransform } = useControls()
+    let image = "/images/usaflag.jpg"
+    if (
+      GlobalGameState.gamePhase === GlobalGameState.PHASE.JAPAN_SETUP ||
+      GlobalGameState.gamePhase === GlobalGameState.PHASE.JAPAN_CARD_DRAW
+    ) {
+      image = "/images/japanflag.jpg"
+    }
+
     return (
-      <Navbar bg="black" data-bs-theme="dark" sticky="top" className="justify-content-between">
+      <Navbar bg="black" data-bs-theme="dark" fixed="top" className="justify-content-between navbar-fixed-top">
         <Container>
           {/* <Navbar.Brand href="/">Save</Navbar.Brand>
                 <Navbar.Brand href="/">Load</Navbar.Brand> */}
@@ -108,18 +118,47 @@ export function App() {
               <Button className="me-1" size="sm" variant="outline-secondary" onClick={() => setGameStateShow(true)}>
                 Game State
               </Button>
-              <Button className="me-1" size="sm" variant="outline-primary" onClick={() => setusHandShow(true)}>
+              <Button
+                className="me-1"
+                size="sm"
+                variant="outline-primary"
+                disabled={!GlobalGameState.usCardsDrawn}
+                onClick={() => setusHandShow(true)}
+              >
                 US Hand
               </Button>
-              <Button className="me-1" size="sm" variant="outline-danger" onClick={() => setjpHandShow(true)}>
+              <Button
+                className="me-1"
+                size="sm"
+                variant="outline-danger"
+                disabled={
+                  !GlobalGameState.jpCardsDrawn && GlobalGameState.gamePhase !== GlobalGameState.PHASE.JAPAN_CARD_DRAW
+                }
+                onClick={() => {
+                  GlobalGameState.phaseCompleted = true
+                  GlobalGameState.jpCardsDrawn = true
+                  nextAction()
+                  setjpHandShow(true)
+                }}
+              >
                 Japan Hand
               </Button>
               <Button className="me-1" size="sm" variant="outline-light">
                 Roll Dice
               </Button>
+              <Button
+                className="me-1"
+                size="sm"
+                variant="outline-light"
+                onClick={() => {
+                  setShowZones(!showZones)
+                }}
+              >
+                {showZones ? "Hide" : "Show"}
+              </Button>
             </Nav>
 
-            <img src="/images/japanflag.jpg" alt="test" style={{ marginLeft: "200px" }} width="40px" height="30px" />
+            <img src={image} alt="test" style={{ marginLeft: "150px" }} width="40px" height="30px" />
             <p
               className="navbar-text"
               style={{
@@ -234,25 +273,22 @@ export function App() {
           transform: "translate(-50%, -50%)",
         }}
       >
-        {/* <ModalSplash show={splash} onHide={() => setSplash(false)}></ModalSplash> */}
         <SplashScreen show={splash} onSplash={onSplash}></SplashScreen>
       </div>
     )
   }
   return (
     <>
-      <AlertPanel show={alertShow} onHide={() => setAlertShow(false)} />
+      <AlertPanel show={alertShow} onHide={() => setAlertShow(false)}>
+        <h4>ALERT</h4>
+        <p>This air unit is not a fighter unit so cannot be used for CAP.</p>
+      </AlertPanel>
       <GameStatusPanel show={gameStateShow} gameState={gameState} onHide={() => setGameStateShow(false)} />
-      <CardPanel
-        cardArray={[5, 6, 12, 13, 1, 2]}
-        show={jpHandShow}
-        side={"Japan"}
-        onHide={() => setjpHandShow(false)}
-      ></CardPanel>
+      <CardPanel show={jpHandShow} side={GlobalUnitsModel.Side.JAPAN} onHide={() => setjpHandShow(false)}></CardPanel>
       <CardPanel
         cardArray={[13, 3, 8, 2]}
         show={usHandShow}
-        side={"US"}
+        side={GlobalUnitsModel.Side.US}
         onHide={() => setusHandShow(false)}
       ></CardPanel>
       <TransformWrapper
@@ -290,6 +326,7 @@ export function App() {
                 airUnitUpdate={airUnitUpdate}
                 setAirUnitUpdate={setAirUnitUpdate}
                 setAlertShow={setAlertShow}
+                showZones={showZones}
               />
             </TransformComponent>
           </div>

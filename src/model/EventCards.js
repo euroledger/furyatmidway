@@ -1,8 +1,9 @@
-export default class Card {
-    constructor(number, title, side) {
+export default class EventCard {
+    constructor(number, title, side, playable) {
         this.number = number;
         this.title = title;
         this.side = side;
+        this.playable = playable
     };
 
     set number(n) {
@@ -12,13 +13,21 @@ export default class Card {
     set title(t) {
         this._title = t;
     }
+
+    set side(s) {
+        this._side = s
+    }
+
+    set playable(p) {
+        this._playable = p
+    }
     
     get number() {
         return this._number
     }
-
-    set side(s) {
-        this._side = s
+    
+    get playable() {
+        return this._.playable
     }
 
     get title() {

@@ -11,7 +11,7 @@ describe("Controller tests", () => {
     counters = loadCounters(controller);
   });
 
-  test("check air units can be added, retrieved and removed to/from model", () => {
+  test("Check air units can be added, retrieved and removed to/from model", () => {
     // get air unit from data store
     const af = counters.get("Akagi-A6M-2b-2");
 
@@ -85,13 +85,13 @@ describe("Controller tests", () => {
     controller.addAirUnitToBox(GlobalUnitsModel.AirBox.JP_CD1_CAP, 3, af2);
 
     controller.addAirUnitToBox(
-      GlobalUnitsModel.AirBox.JP_AKAGI_CAP_RETURN1,
+      GlobalUnitsModel.AirBox.JP_CD1_RETURN2,
       0,
       af1
     );
 
     let location = controller.getAirUnitLocation("Akagi-A6M-2b-1");
-    expect(location.boxName).toBe(GlobalUnitsModel.AirBox.JP_AKAGI_CAP_RETURN1);
+    expect(location.boxName).toBe(GlobalUnitsModel.AirBox.JP_CD1_RETURN2);
     expect(location.boxIndex).toBe(0);
 
     location = controller.getAirUnitLocation("Akagi-A6M-2b-2");

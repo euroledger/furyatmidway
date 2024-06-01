@@ -7,17 +7,20 @@ export default class BoxModels {
     constructor() {
         this.japanDiv1CapBoxes = new Array(4)
         this.japanDiv2CapBoxes = new Array(4)
-        this.japanAkagiCapReturn1 = new Array(4)
-        this.japanKagaCapReturn1 = new Array(4)
-        this.japanCD1CapReturn2 = new Array(4)
-        this.japanCD2CapReturn2 = new Array(4)
+
+        this.japanCD1Return1 = new Array(4)
+        this.japanCD1Return2 = new Array(4)
+        this.japanCD1CapReturn = new Array(4)
+
         this.japanAkagiHangar = new Array(4)
         this.japanKagaHangar = new Array(4)
         this.japanAkagiFlightDeck = new Array(4)
         this.japanKagaFlightDeck = new Array(4)
 
-        this.japanHiryuCapReturn1 = new Array(4)
-        this.japanSoryuCapReturn1 = new Array(4)
+        this.japanCD2Return1 = new Array(4)
+        this.japanCD2Return2 = new Array(4)
+        this.japanCD2CapReturn = new Array(4)
+
         this.japanHiryuHangar = new Array(4)
         this.japanSoryuHangar = new Array(4)
         this.japanHiryuFlightDeck = new Array(4)
@@ -62,11 +65,15 @@ export default class BoxModels {
         this.boxMap.set(GlobalUnitsModel.AirBox.JP_CD2_CAP, this.japanDiv2CapBoxes)
 
 
-        this.boxMap.set(GlobalUnitsModel.AirBox.JP_AKAGI_CAP_RETURN1, this.japanAkagiCapReturn1)
-        this.boxMap.set(GlobalUnitsModel.AirBox.JP_KAGA_CAP_RETURN1, this.japanKagaCapReturn1)
+        this.boxMap.set(GlobalUnitsModel.AirBox.JP_CD1_RETURN2, this.japanCD1Return2)
+        this.boxMap.set(GlobalUnitsModel.AirBox.JP_CD1_RETURN1, this.japanCD1Return1)
 
-        this.boxMap.set(GlobalUnitsModel.AirBox.JP_CD1_CAP_RETURN2, this.japanCD1CapReturn2) // shared
-        this.boxMap.set(GlobalUnitsModel.AirBox.JP_CD2_CAP_RETURN2, this.japanCD1CapReturn2) // shared
+        this.boxMap.set(GlobalUnitsModel.AirBox.JP_CD2_RETURN2, this.japanCD2Return2) 
+        this.boxMap.set(GlobalUnitsModel.AirBox.JP_CD2_RETURN1, this.japanCD2Return1) 
+
+        
+        this.boxMap.set(GlobalUnitsModel.AirBox.JP_CD1_CAP_RETURN, this.japanCD1CapReturn) 
+        this.boxMap.set(GlobalUnitsModel.AirBox.JP_CD2_CAP_RETURN, this.japanCD2CapReturn) 
 
         this.boxMap.set(GlobalUnitsModel.AirBox.JP_AKAGI_HANGER, this.japanAkagiHangar)
         this.boxMap.set(GlobalUnitsModel.AirBox.JP_AKAGI_FLIGHT_DECK, this.japanAkagiFlightDeck)

@@ -1,52 +1,121 @@
-import Controller from "../src/controller/Controller";
-import GlobalUnitsModel from "../src/model/GlobalUnitsModel";
-import loadCounters from "../src/CounterLoader";
+import Controller from "../src/controller/Controller"
+import GlobalUnitsModel from "../src/model/GlobalUnitsModel"
+import loadCounters from "../src/CounterLoader"
 
 describe("Air Box tests", () => {
-  let controller;
-  let counters;
+  let controller
+  let counters
 
   beforeEach(() => {
-    controller = new Controller();
-    counters = loadCounters(controller);
-  });
+    controller = new Controller()
+    counters = loadCounters(controller)
+  })
 
-  test("check air units can be added to various carrier air boxes", () => {
+  test("check CD1 air units can be added to various carrier air boxes", () => {
     // get all Akagi air units from data store
-    const af1 = counters.get("Akagi-A6M-2b-1");
-    const af2 = counters.get("Akagi-A6M-2b-2");
-    const db = counters.get("Akagi-D3A-1");
-    const tb = counters.get("Akagi-B5N-2");
+    const kaf1 = counters.get("Kaga-A6M-2b-1")
+    const kaf2 = counters.get("Kaga-A6M-2b-2")
+    const kdb = counters.get("Kaga-D3A-1")
+    const ktb = counters.get("Kaga-B5N-2")
 
-    // add one fighter to cap, one fighter to return1, other two units to hanger
-    controller.addAirUnitToBox(GlobalUnitsModel.AirBox.JP_CD1_CAP, 0, af1);
-    controller.addAirUnitToBox(
-      GlobalUnitsModel.AirBox.JP_AKAGI_CAP_RETURN1,
-      0,
-      af2
-    );
-    controller.addAirUnitToBox(GlobalUnitsModel.AirBox.JP_AKAGI_HANGER, 0, db);
-    controller.addAirUnitToBox(GlobalUnitsModel.AirBox.JP_AKAGI_HANGER, 1, tb);
+    const aaf1 = counters.get("Akagi-A6M-2b-1")
+    const aaf2 = counters.get("Akagi-A6M-2b-2")
+    const adb = counters.get("Akagi-D3A-1")
+    const atb = counters.get("Akagi-B5N-2")
 
-    // return all air units in this box, make sure we get back the same air unit (only)
-    let airUnits = controller.getAllAirUnitsInBox(
-      GlobalUnitsModel.AirBox.JP_CD1_CAP
-    );
+    controller.addAirUnitToBox(GlobalUnitsModel.AirBox.JP_CD1_CAP, 0, aaf1)
+    controller.addAirUnitToBox(GlobalUnitsModel.AirBox.JP_CD1_CAP, 1, kaf1)
 
-    expect(airUnits.length).toBe(1);
-    expect(airUnits[0].name).toBe("Akagi-A6M-2b-1");
+    controller.addAirUnitToBox(GlobalUnitsModel.AirBox.JP_CD1_CAP_RETURN, 0, aaf2)
+    controller.addAirUnitToBox(GlobalUnitsModel.AirBox.JP_CD1_CAP_RETURN, 1, kaf2)
 
-    airUnits = controller.getAllAirUnitsInBox(
-      GlobalUnitsModel.AirBox.JP_AKAGI_CAP_RETURN1
-    );
-    expect(airUnits.length).toBe(1);
-    expect(airUnits[0].name).toBe("Akagi-A6M-2b-2");
+    controller.addAirUnitToBox(GlobalUnitsModel.AirBox.JP_KAGA_HANGER, 0, kdb)
+    controller.addAirUnitToBox(GlobalUnitsModel.AirBox.JP_KAGA_HANGER, 1, ktb)
 
-    airUnits = controller.getAllAirUnitsInBox(
-        GlobalUnitsModel.AirBox.JP_AKAGI_HANGER
-      );
-      expect(airUnits.length).toBe(2);
-      expect(airUnits[0].name).toBe("Akagi-D3A-1");
-      expect(airUnits[1].name).toBe("Akagi-B5N-2");
-  });
-});
+    controller.addAirUnitToBox(GlobalUnitsModel.AirBox.JP_CD1_RETURN1, 0, adb)
+    controller.addAirUnitToBox(GlobalUnitsModel.AirBox.JP_CD1_RETURN2, 1, atb)
+
+    // return all air units in these boxes, make sure we get back the same air unit (only)
+    let airUnits = controller.getAllAirUnitsInBox(GlobalUnitsModel.AirBox.JP_CD1_CAP)
+
+    expect(airUnits.length).toBe(2)
+    expect(airUnits[0].name).toBe("Akagi-A6M-2b-1")
+    expect(airUnits[1].name).toBe("Kaga-A6M-2b-1")
+
+    airUnits = controller.getAllAirUnitsInBox(GlobalUnitsModel.AirBox.JP_CD1_CAP_RETURN)
+
+    expect(airUnits.length).toBe(2)
+    expect(airUnits[0].name).toBe("Akagi-A6M-2b-2")
+    expect(airUnits[1].name).toBe("Kaga-A6M-2b-2")
+
+    airUnits = controller.getAllAirUnitsInBox(GlobalUnitsModel.AirBox.JP_KAGA_HANGER)
+
+    expect(airUnits.length).toBe(2)
+    expect(airUnits[0].name).toBe("Kaga-D3A-1")
+    expect(airUnits[1].name).toBe("Kaga-B5N-2")
+
+    airUnits = controller.getAllAirUnitsInBox(GlobalUnitsModel.AirBox.JP_CD1_RETURN1)
+
+    expect(airUnits.length).toBe(1)
+    expect(airUnits[0].name).toBe("Akagi-D3A-1")
+
+    airUnits = controller.getAllAirUnitsInBox(GlobalUnitsModel.AirBox.JP_CD1_RETURN2)
+
+    expect(airUnits.length).toBe(1)
+    expect(airUnits[0].name).toBe("Akagi-B5N-2")
+  })
+
+  test("check CD2 air units can be added to various carrier air boxes", () => {
+    // get all Akagi air units from data store
+    const haf1 = counters.get("Hiryu-A6M-2b-1")
+    const haf2 = counters.get("Hiryu-A6M-2b-2")
+    const hdb = counters.get("Hiryu-D3A-1")
+    const htb = counters.get("Hiryu-B5N-2")
+
+    const saf1 = counters.get("Soryu-A6M-2b-1")
+    const saf2 = counters.get("Soryu-A6M-2b-2")
+    const sdb = counters.get("Soryu-D3A-1")
+    const stb = counters.get("Soryu-B5N-2")
+
+    controller.addAirUnitToBox(GlobalUnitsModel.AirBox.JP_CD2_CAP, 0, haf1)
+    controller.addAirUnitToBox(GlobalUnitsModel.AirBox.JP_CD2_CAP, 1, saf1)
+
+    controller.addAirUnitToBox(GlobalUnitsModel.AirBox.JP_CD2_CAP_RETURN, 0, haf2)
+    controller.addAirUnitToBox(GlobalUnitsModel.AirBox.JP_CD2_CAP_RETURN, 1, saf2)
+
+    controller.addAirUnitToBox(GlobalUnitsModel.AirBox.JP_HIRYU_HANGER, 0, hdb)
+    controller.addAirUnitToBox(GlobalUnitsModel.AirBox.JP_HIRYU_HANGER, 1, htb)
+
+    controller.addAirUnitToBox(GlobalUnitsModel.AirBox.JP_CD2_RETURN1, 0, sdb)
+    controller.addAirUnitToBox(GlobalUnitsModel.AirBox.JP_CD2_RETURN2, 1, stb)
+
+    // return all air units in these boxes, make sure we get back the same air unit (only)
+    let airUnits = controller.getAllAirUnitsInBox(GlobalUnitsModel.AirBox.JP_CD2_CAP)
+
+    expect(airUnits.length).toBe(2)
+    expect(airUnits[0].name).toBe("Hiryu-A6M-2b-1")
+    expect(airUnits[1].name).toBe("Soryu-A6M-2b-1")
+
+    airUnits = controller.getAllAirUnitsInBox(GlobalUnitsModel.AirBox.JP_CD2_CAP_RETURN)
+
+    expect(airUnits.length).toBe(2)
+    expect(airUnits[0].name).toBe("Hiryu-A6M-2b-2")
+    expect(airUnits[1].name).toBe("Soryu-A6M-2b-2")
+
+    airUnits = controller.getAllAirUnitsInBox(GlobalUnitsModel.AirBox.JP_HIRYU_HANGER)
+
+    expect(airUnits.length).toBe(2)
+    expect(airUnits[0].name).toBe("Hiryu-D3A-1")
+    expect(airUnits[1].name).toBe("Hiryu-B5N-2")
+
+    airUnits = controller.getAllAirUnitsInBox(GlobalUnitsModel.AirBox.JP_CD2_RETURN1)
+
+    expect(airUnits.length).toBe(1)
+    expect(airUnits[0].name).toBe("Soryu-D3A-1")
+
+    airUnits = controller.getAllAirUnitsInBox(GlobalUnitsModel.AirBox.JP_CD2_RETURN2)
+
+    expect(airUnits.length).toBe(1)
+    expect(airUnits[0].name).toBe("Soryu-B5N-2")
+  })
+})

@@ -5,8 +5,8 @@ export default class GlobalGameState {
   static PHASE = {
     JAPAN_SETUP: "Japan Setup",
     JAPAN_CARD_DRAW: "Japan Card Draw",
-    US_SETUP: 3,
-    US_CARD_DRAW: 4
+    US_SETUP: "US Setup",
+    US_CARD_DRAW: "US Card Draw"
   }
 
 
@@ -15,14 +15,24 @@ export default class GlobalGameState {
     'Place Kaga Air Units',
     'Place Hiryu Air Units',
     'Place Soryu Air Units',
-    'Draw 3 x Japan Cards'
+    'Draw 3 x Japan Cards',
+    'Place Enterprise Air Units',
+    'Place Hornet Air Units',
+    'Place Yorkton Air Units',
+    'Draw 3 x US Cards'
   ]
 
   static JAPAN_CARRIERS = [
     GlobalUnitsModel.Carrier.AKAGI,
     GlobalUnitsModel.Carrier.KAGA,
     GlobalUnitsModel.Carrier.HIRYU,
-    GlobalUnitsModel.Carrier.SORYU,
+    GlobalUnitsModel.Carrier.SORYU
+  ]
+
+  static US_CARRIERS = [
+    GlobalUnitsModel.Carrier.ENTERPRISE,
+    GlobalUnitsModel.Carrier.HORNET,
+    GlobalUnitsModel.Carrier.YORKTOWN
   ]
 
   static gameTurn = 1;
@@ -51,6 +61,9 @@ export default class GlobalGameState {
     "June 5, 1942 Evening",
   ];
 
+  static jpCardsDrawn = false
+  static usCardsDrawn = false
+
   static phaseCompleted = false
 
   static updateGlobalState = () => {
@@ -67,8 +80,12 @@ export default class GlobalGameState {
   static gamePhase = this.PHASE.JAPAN_SETUP
   static setupPhase = 0;
 
-  static getCarrier = () => {
+  static getJapanCarrier = () => {
     return this.JAPAN_CARRIERS[this.setupPhase]
+  }
+
+  static getUSCarrier = () => {
+    return this.US_CARRIERS[this.setupPhase -5]
   }
 
   static getSetupMessage = () => {

@@ -5,15 +5,15 @@ import "../board.css";
 import GlobalGameState from "../../model/GlobalGameState";
 import GlobalUnitsModel from "../../model/GlobalUnitsModel";
 
-function CarrierDropZones({ handleDragEnter }) {
+function CarrierDropZones({ handleDragEnter, show }) {
   const japanZones = JapanAirBoxOffsets.map((box, index) => {
     let enabled = true;
 
     // console.log("CURRENT PHASE = ", GlobalGameState.gamePhase)
-    if (GlobalGameState.gamePhase === GlobalGameState.PHASE.JAPAN_SETUP) {
+   if (GlobalGameState.gamePhase === GlobalGameState.PHASE.JAPAN_SETUP) {
       // console.log("box name= ", box.name)
       if (
-        !box.name.includes(GlobalGameState.getCarrier().toUpperCase()) &&
+        !box.name.includes(GlobalGameState.getJapanCarrier().toUpperCase()) &&
         box.name != GlobalUnitsModel.AirBox.JP_CD1_CAP &&
         box.name != GlobalUnitsModel.AirBox.JP_CD2_CAP
       ) {
@@ -52,7 +52,7 @@ function CarrierDropZones({ handleDragEnter }) {
         name={box.name}
         handleDragEnter={handleDragEnter}
         zones={box.offsets}
-        enabled={enabled}
+        enabled={enabled && show}
       ></DragAndDropSmall>
     );
   });

@@ -1,4 +1,5 @@
 import BoxModel from "../model/BoxModel";
+import CardModel from "../model/CardModel";
 import GlobalUnitsModel from "../model/GlobalUnitsModel";
 import ViewEventAirUnitSetupHandler from './ViewEventAirUnitSetupHandler'
 
@@ -9,6 +10,7 @@ export default class Controller {
 
   constructor() {
     this.boxModel = new BoxModel();
+    this.cardModel = new CardModel();
     this.airUnitSetupHandler = new ViewEventAirUnitSetupHandler(this)
   }
 
@@ -52,6 +54,14 @@ export default class Controller {
     return GlobalUnitsModel.jpAirUnits.get(name)
   }
   
+  drawJapanCards(num, initial) {
+    this.cardModel.drawJapanCards(num, initial)
+  }
+
+  drawUSCards(num, initial) {
+    this.cardModel.drawUSCards(num, initial)
+  }
+
   viewEventHandler(event) {
     // event contains type and data
 

@@ -1,15 +1,36 @@
-import Modal from "react-bootstrap/Modal";
-import Card from "react-bootstrap/Card";
-import Col from "react-bootstrap/Col";
-import Row from "react-bootstrap/Row";
-import Button from "react-bootstrap/Button";
-import "./modal.css";
+import Modal from "react-bootstrap/Modal"
+import Card from "react-bootstrap/Card"
+import Col from "react-bootstrap/Col"
+import Row from "react-bootstrap/Row"
+import Button from "react-bootstrap/Button"
+import GlobalUnitsModel from "../../model/GlobalUnitsModel"
+import "./modal.css"
 
+function CentredButton() {
+  return (
+    <p
+      style={{
+        display: "flex",
+        justifyContent: "center",
+        alignItems: "center",
+      }}
+    >
+      <Button className="justify-content-center btn btn-success btn-sm" disabled="true" style={{ marginTop: "10px" }}>
+        Play
+      </Button>
+    </p>
+  )
+}
 function CardPanel(props) {
-  const bg = "#293a4b";
+  const cardArray =
+    props.side === GlobalUnitsModel.Side.JAPAN
+      ? GlobalUnitsModel.jpCards.map((c) => c.number)
+      : GlobalUnitsModel.usCards.map((c) => c.number)
+
+  const bg = "#293a4b"
   const header = `Hand of Cards: ${props.side}`
-  const rowClass = `g-${props.cardArray.length}`
-  const sizey = props.cardArray.length >= 4 ? "xl" : "lg"
+  const rowClass = `g-${GlobalUnitsModel.jpCards.length}`
+  const sizey = cardArray.length >= 4 ? "xl" : "lg"
   return (
     <Modal {...props} size={sizey} aria-labelledby="contained-modal-title-vcenter" centered>
       <Modal.Header
@@ -19,16 +40,19 @@ function CardPanel(props) {
           justifyContent: "center",
           alignItems: "center",
           background: `${bg}`,
-          color: "white"
+          color: "white",
         }}
       >
         <p className="text-center">{header}</p>
       </Modal.Header>
       <Modal.Body style={{ background: `${bg}`, color: "black" }}>
-        <Row xs={1} md={props.cardArray.length} className={rowClass}>
-          {Array.from({ length: props.cardArray.length }).map((_, idx) => {
-            const cardIndex = props.cardArray[idx] < 10 ? "0" + props.cardArray[idx] : "" + props.cardArray[idx];
-            const image = `/images/cards/MID_Card${cardIndex}.gif`;
+        <Row xs={1} md={cardArray.length} className={rowClass}>
+          {Array.from({ length: cardArray.length }).map((_, idx) => {
+            const cardIndex =
+              cardArray[idx] < 10
+                ? "0" + cardArray[idx]
+                : "" + cardArray[idx]
+            const image = `/images/cards/MID_Card${cardIndex}.gif`
             return (
               <Col key={idx}>
                 <Card>
@@ -37,23 +61,9 @@ function CardPanel(props) {
                     <Card.Title>Card title</Card.Title>
                   </Card.Body> */}
                 </Card>
-                <p
-                  style={{
-                    display: "flex",
-                    justifyContent: "center",
-                    alignItems: "center",
-                  }}
-                >
-                  <Button
-                    className="justify-content-center btn btn-success btn-sm"
-                    disabled="true"
-                    style={{ marginTop: "10px" }}
-                  >
-                    Play
-                  </Button>
-                </p>
+                <CentredButton />
               </Col>
-            );
+            )
           })}
         </Row>
       </Modal.Body>
@@ -61,7 +71,7 @@ function CardPanel(props) {
         <Button onClick={props.onHide}>Close</Button>
       </Modal.Footer>
     </Modal>
-  );
+  )
 }
 
-export default CardPanel;
+export default CardPanel

@@ -76,7 +76,7 @@ describe("Controller tests", () => {
     expect(japanCapZones.offsets[0].left).toBe(15.4);
     expect(japanCapZones.offsets[0].top).toBe(68.3);
     const japanReturningCapZones = JapanAirBoxOffsets.find(
-      (box) => box.name === GlobalUnitsModel.AirBox.JP_KAGA_CAP_RETURN1
+      (box) => box.name === GlobalUnitsModel.AirBox.JP_CD1_CAP_RETURN
     );
     expect(japanReturningCapZones.offsets.length).toBe(4);
   });

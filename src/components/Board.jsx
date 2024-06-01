@@ -23,7 +23,8 @@ function Board({
   scale,
   airUnitUpdate,
   setAirUnitUpdate,
-  setAlertShow
+  setAlertShow,
+  showZones
 }) {
   let zProps = { us: 0, japan: 0 };
   const initialJpAopPosition = { left: 2.7, top: 7 };
@@ -84,16 +85,6 @@ function Board({
       setZIndex({ ...zProps, us: zProps[side] + increment });
     }
   };
-
-  // const japan1DCapZones = JapanAirBoxOffsets.find(
-  //   (o) => o.name === GlobalUnitsModel.AirBox.JP_CD1_CAP
-  // );
-  // const japan1DCapReturningZones = JapanAirBoxOffsets.find(
-  //   (o) => o.name === GlobalUnitsModel.AirBox.JP_AKAGI_CAP_RETURN1
-  // );
-  // const japan1DHangarZones = JapanAirBoxOffsets.find(
-  //   (o) => o.name === GlobalUnitsModel.AirBox.JP_AKAGI_HANGER
-  // );
 
   return (
     <>
@@ -207,6 +198,7 @@ function Board({
         ></AirCounters>
         <CarrierDropZones
           handleDragEnter={handleAirBoxDragEnter}
+          show={showZones}
         ></CarrierDropZones>
       </div>
     </>
