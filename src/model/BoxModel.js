@@ -1,179 +1,196 @@
 import GlobalUnitsModel from "./GlobalUnitsModel"
+import JapanAirBoxOffsets from "../components/draganddrop/JapanAirBoxOffsets"
 
 export default class BoxModels {
-    // data structures for each box on the map
+  getNumberOfZones(boxName) {
+    const box = JapanAirBoxOffsets.filter((b) => b.name === boxName)
+    return box[0].offsets.length
+  }
+  // data structures for each box on the map
 
-    // eg CAP boxes, hangar boxes
-    constructor() {
-        this.japanDiv1CapBoxes = new Array(4)
-        this.japanDiv2CapBoxes = new Array(4)
+  // eg CAP boxes, hangar boxes
+  constructor() {
+    this.japanDiv1CapBoxes = new Array(this.getNumberOfZones(GlobalUnitsModel.AirBox.JP_CD1_CAP))
+    this.japanDiv2CapBoxes = new Array(this.getNumberOfZones(GlobalUnitsModel.AirBox.JP_CD2_CAP))
 
-        this.japanCD1Return1 = new Array(4)
-        this.japanCD1Return2 = new Array(4)
-        this.japanCD1CapReturn = new Array(4)
+    this.japanCD1Return1 = new Array(this.getNumberOfZones(GlobalUnitsModel.AirBox.JP_CD1_RETURN1))
+    this.japanCD1Return2 = new Array(this.getNumberOfZones(GlobalUnitsModel.AirBox.JP_CD1_RETURN2))
+    this.japanCD1CapReturn = new Array(this.getNumberOfZones(GlobalUnitsModel.AirBox.JP_CD1_CAP_RETURN))
 
-        this.japanAkagiHangar = new Array(4)
-        this.japanKagaHangar = new Array(4)
-        this.japanAkagiFlightDeck = new Array(4)
-        this.japanKagaFlightDeck = new Array(4)
+    this.japanAkagiHangar = new Array(this.getNumberOfZones(GlobalUnitsModel.AirBox.JP_AKAGI_HANGER))
+    this.japanKagaHangar = new Array(this.getNumberOfZones(GlobalUnitsModel.AirBox.JP_KAGA_HANGER))
+    this.japanAkagiFlightDeck = new Array(this.getNumberOfZones(GlobalUnitsModel.AirBox.JP_AKAGI_FLIGHT_DECK))
+    this.japanKagaFlightDeck = new Array(this.getNumberOfZones(GlobalUnitsModel.AirBox.JP_KAGA_FLIGHT_DECK))
 
-        this.japanCD2Return1 = new Array(4)
-        this.japanCD2Return2 = new Array(4)
-        this.japanCD2CapReturn = new Array(4)
+    this.japanCD2Return1 = new Array(this.getNumberOfZones(GlobalUnitsModel.AirBox.JP_CD2_RETURN1))
+    this.japanCD2Return2 = new Array(this.getNumberOfZones(GlobalUnitsModel.AirBox.JP_CD2_RETURN2))
+    this.japanCD2CapReturn = new Array(this.getNumberOfZones(GlobalUnitsModel.AirBox.JP_CD2_CAP_RETURN))
 
-        this.japanHiryuHangar = new Array(4)
-        this.japanSoryuHangar = new Array(4)
-        this.japanHiryuFlightDeck = new Array(4)
-        this.japanSoryuFlightDeck = new Array(4)
-        this.offboard = new Array()
+    this.japanHiryuHangar = new Array(this.getNumberOfZones(GlobalUnitsModel.AirBox.JP_HIRYU_HANGER))
+    this.japanSoryuHangar = new Array(this.getNumberOfZones(GlobalUnitsModel.AirBox.JP_SORYU_HANGER))
+    this.japanHiryuFlightDeck = new Array(this.getNumberOfZones(GlobalUnitsModel.AirBox.JP_HIRYU_FLIGHT_DECK))
+    this.japanSoryuFlightDeck = new Array(this.getNumberOfZones(GlobalUnitsModel.AirBox.JP_SORYU_FLIGHT_DECK))
+    this.offboard = new Array()
 
-        this.japanCarrierMap = new Map() // key = carrier name, value = array of air units
-        this.japanCarrierMap.set(GlobalUnitsModel.Carrier.AKAGI, new Array())
-        this.japanCarrierMap.set(GlobalUnitsModel.Carrier.KAGA, new Array())
-        this.japanCarrierMap.set(GlobalUnitsModel.Carrier.HIRYU, new Array())
-        this.japanCarrierMap.set(GlobalUnitsModel.Carrier.SORYU, new Array())
-        
-        // TODO
-        // 1. map side -> TaskForceMap (contains two entries, one for each cardiv)
-        //      "japan" -> taskForceMap
-        // 2. within each TaskForceMap,
-        //      "carDiv1" -> cardiv1Map
-        //      "carDiv2" -> cardiv2Map
-        // 3. within each CarDivMap (each contains two entries, one for each carrier)
-        //          cardiv1:
-        //              "akagi" -> akagiBoxMap
-        //              "kaga"  -> kagaBoxMap
-        //          cardiv2:
-        //              "hiryu" -> hiryuBoxMap
-        //              "soryu" -> soryuBoxMap
-        //  4. within each CarrierMap (each contains 5 entries, one for each box)
-        //              akagi:
-        //                  "capBox"        -> [list of boxes]
-        //                  "return1Box"    -> [list of boxes]
-        //                  "return2Box"    -> [list of boxes]
-        //                  "hangarBox"     -> [list of boxes]
-        //                  "flightDeckBox" -> [list of boxes]
-        //              
-        //          ....etc.
+    this.japanCarrierMap = new Map() // key = carrier name, value = array of air units
+    this.japanCarrierMap.set(GlobalUnitsModel.Carrier.AKAGI, new Array())
+    this.japanCarrierMap.set(GlobalUnitsModel.Carrier.KAGA, new Array())
+    this.japanCarrierMap.set(GlobalUnitsModel.Carrier.HIRYU, new Array())
+    this.japanCarrierMap.set(GlobalUnitsModel.Carrier.SORYU, new Array())
 
+    // TODO
+    // 1. map side -> TaskForceMap (contains two entries, one for each cardiv)
+    //      "japan" -> taskForceMap
+    // 2. within each TaskForceMap,
+    //      "carDiv1" -> cardiv1Map
+    //      "carDiv2" -> cardiv2Map
+    // 3. within each CarDivMap (each contains two entries, one for each carrier)
+    //          cardiv1:
+    //              "akagi" -> akagiBoxMap
+    //              "kaga"  -> kagaBoxMap
+    //          cardiv2:
+    //              "hiryu" -> hiryuBoxMap
+    //              "soryu" -> soryuBoxMap
+    //  4. within each CarrierMap (each contains 5 entries, one for each box)
+    //              akagi:
+    //                  "capBox"        -> [list of boxes]
+    //                  "return1Box"    -> [list of boxes]
+    //                  "return2Box"    -> [list of boxes]
+    //                  "hangarBox"     -> [list of boxes]
+    //                  "flightDeckBox" -> [list of boxes]
+    //
+    //          ....etc.
 
-        // map of air unit boxes, each item is a zone within the air box represented
-        // as an array. Each element in th array may or may not contain an air unit
-        this.boxMap = new Map()
-        this.boxMap.set(GlobalUnitsModel.AirBox.OFFBOARD, this.offboard)
-        this.boxMap.set(GlobalUnitsModel.AirBox.JP_CD1_CAP, this.japanDiv1CapBoxes)
-        this.boxMap.set(GlobalUnitsModel.AirBox.JP_CD2_CAP, this.japanDiv2CapBoxes)
+    // map of air unit boxes, each item is a zone within the air box represented
+    // as an array. Each element in th array may or may not contain an air unit
+    this.boxMap = new Map()
+    this.boxMap.set(GlobalUnitsModel.AirBox.OFFBOARD, this.offboard)
+    this.boxMap.set(GlobalUnitsModel.AirBox.JP_CD1_CAP, this.japanDiv1CapBoxes)
+    this.boxMap.set(GlobalUnitsModel.AirBox.JP_CD2_CAP, this.japanDiv2CapBoxes)
 
+    this.boxMap.set(GlobalUnitsModel.AirBox.JP_CD1_RETURN2, this.japanCD1Return2)
+    this.boxMap.set(GlobalUnitsModel.AirBox.JP_CD1_RETURN1, this.japanCD1Return1)
 
-        this.boxMap.set(GlobalUnitsModel.AirBox.JP_CD1_RETURN2, this.japanCD1Return2)
-        this.boxMap.set(GlobalUnitsModel.AirBox.JP_CD1_RETURN1, this.japanCD1Return1)
+    this.boxMap.set(GlobalUnitsModel.AirBox.JP_CD2_RETURN2, this.japanCD2Return2)
+    this.boxMap.set(GlobalUnitsModel.AirBox.JP_CD2_RETURN1, this.japanCD2Return1)
 
-        this.boxMap.set(GlobalUnitsModel.AirBox.JP_CD2_RETURN2, this.japanCD2Return2) 
-        this.boxMap.set(GlobalUnitsModel.AirBox.JP_CD2_RETURN1, this.japanCD2Return1) 
+    this.boxMap.set(GlobalUnitsModel.AirBox.JP_CD1_CAP_RETURN, this.japanCD1CapReturn)
+    this.boxMap.set(GlobalUnitsModel.AirBox.JP_CD2_CAP_RETURN, this.japanCD2CapReturn)
 
-        
-        this.boxMap.set(GlobalUnitsModel.AirBox.JP_CD1_CAP_RETURN, this.japanCD1CapReturn) 
-        this.boxMap.set(GlobalUnitsModel.AirBox.JP_CD2_CAP_RETURN, this.japanCD2CapReturn) 
+    this.boxMap.set(GlobalUnitsModel.AirBox.JP_AKAGI_HANGER, this.japanAkagiHangar)
+    this.boxMap.set(GlobalUnitsModel.AirBox.JP_AKAGI_FLIGHT_DECK, this.japanAkagiFlightDeck)
 
-        this.boxMap.set(GlobalUnitsModel.AirBox.JP_AKAGI_HANGER, this.japanAkagiHangar)
-        this.boxMap.set(GlobalUnitsModel.AirBox.JP_AKAGI_FLIGHT_DECK, this.japanAkagiFlightDeck)
+    this.boxMap.set(GlobalUnitsModel.AirBox.JP_KAGA_HANGER, this.japanKagaHangar)
+    this.boxMap.set(GlobalUnitsModel.AirBox.JP_KAGA_FLIGHT_DECK, this.japanKagaFlightDeck)
 
-        this.boxMap.set(GlobalUnitsModel.AirBox.JP_KAGA_HANGER, this.japanKagaHangar)
-        this.boxMap.set(GlobalUnitsModel.AirBox.JP_KAGA_FLIGHT_DECK, this.japanKagaFlightDeck)
+    this.boxMap.set(GlobalUnitsModel.AirBox.JP_HIRYU_HANGER, this.japanHiryuHangar)
+    this.boxMap.set(GlobalUnitsModel.AirBox.JP_HIRYU_FLIGHT_DECK, this.japanHiryuFlightDeck)
 
-        
-        this.boxMap.set(GlobalUnitsModel.AirBox.JP_HIRYU_HANGER, this.japanHiryuHangar)
-        this.boxMap.set(GlobalUnitsModel.AirBox.JP_HIRYU_FLIGHT_DECK, this.japanHiryuFlightDeck)
+    this.boxMap.set(GlobalUnitsModel.AirBox.JP_SORYU_HANGER, this.japanSoryuHangar)
+    this.boxMap.set(GlobalUnitsModel.AirBox.JP_SORYU_FLIGHT_DECK, this.japanSoryuFlightDeck)
 
-        this.boxMap.set(GlobalUnitsModel.AirBox.JP_SORYU_HANGER, this.japanSoryuHangar)
-        this.boxMap.set(GlobalUnitsModel.AirBox.JP_SORYU_FLIGHT_DECK, this.japanSoryuFlightDeck)
+    // map of air unit -> location
+    // This maps the name of an air unit to its location (ie box name, index)
+    this.airUnitLocationMap = new Map()
+  }
 
-        // map of air unit -> location
-        // This maps the name of an air unit to its location (ie box name, index)
-        this.airUnitLocationMap = new Map()
+  getBoxMapObject = (key) => {
+    return this.boxMap.get(key)
+  }
+
+  addAirUnitToBox = (boxName, index, value) => {
+    const box = this.boxMap.get(boxName)
+    if (!box) {
+      return null
+    }
+    // remove from previous location
+    const prevLocation = this.getAirUnitLocation(value.name)
+
+    if (prevLocation != undefined) {
+      // console.log(` => Air Unit ${value.name}: remove from box ${prevLocation.boxName}`)
+      this.removeAirUnitFromBox(prevLocation.boxName, prevLocation.boxIndex)
+    }
+    if (boxName === GlobalUnitsModel.AirBox.OFFBOARD) {
+      box.push(value)
+    } else {
+      box[index] = value
     }
 
-    getBoxMapObject = (key) => {
-        return this.boxMap.get(key)
+    // console.log(` => Air Unit ${value.name}: add to box ${boxName}`)
+
+    this.setAirUnitLocation(value.name, boxName, index)
+  }
+
+  setAirUnitLocation = (airUnitName, boxName, boxIndex) => {
+    this.airUnitLocationMap.set(airUnitName, { boxName, boxIndex })
+  }
+
+  getAirUnitLocation = (airUnitName) => {
+    const loc = this.airUnitLocationMap.get(airUnitName)
+    return this.airUnitLocationMap.get(airUnitName)
+  }
+
+  removeAirUnitFromBox = (boxName, index) => {
+    const box = this.boxMap.get(boxName)
+    if (!box) {
+      return null
     }
+    box[index] = undefined
+  }
 
-    addAirUnitToBox = (boxName, index, value) => {
-        const box = this.boxMap.get(boxName)
-        if (!box) {
-            return null
-        }
-        // remove from previous location
-        const prevLocation = this.getAirUnitLocation(value.name)
-
-        if (prevLocation != undefined) {
-            // console.log(` => Air Unit ${value.name}: remove from box ${prevLocation.boxName}`)
-            this.removeAirUnitFromBox(prevLocation.boxName, prevLocation.boxIndex)
-        }
-        if (boxName === GlobalUnitsModel.AirBox.OFFBOARD) {
-            box.push(value)
-        } else {
-            box[index] = value
-        }
-
-        // console.log(` => Air Unit ${value.name}: add to box ${boxName}`)
-
-        this.setAirUnitLocation(value.name, boxName, index)
+  getAllAirUnitsInBox = (boxName) => {
+    const box = this.boxMap.get(boxName)
+    if (!box) {
+      return null
     }
+    return Array.from(box.values()).filter((n) => n)
+  }
 
-    setAirUnitLocation = (airUnitName, boxName, boxIndex) => {
-        this.airUnitLocationMap.set(airUnitName, { boxName, boxIndex })
+  getAirUnitInBox = (boxName, index) => {
+    const box = this.boxMap.get(boxName)
+    if (!box) {
+      return null
     }
+    return box[index]
+  }
 
-    getAirUnitLocation = (airUnitName) => {
-        const loc = this.airUnitLocationMap.get(airUnitName)
-        return this.airUnitLocationMap.get(airUnitName)
+  isAirUnitInBox = (boxName, name) => {
+    const units = this.getAllAirUnitsInBox(boxName)
+    const found = units.find((unit) => unit.name === name)
+    return found != undefined ? true : false
+  }
+
+  addAirUnitToCarrier(carrier, value) {
+    const airUnitsArray = this.japanCarrierMap.get(carrier)
+    airUnitsArray.push(value)
+    this.japanCarrierMap.set(carrier, airUnitsArray)
+  }
+
+  getAirUnitsForCarrier(carrier) {
+    return this.japanCarrierMap.get(carrier)
+  }
+
+  getAirUnitsDeployed(carrier) {
+    const airUnitsArray = this.japanCarrierMap.get(carrier)
+    return airUnitsArray.filter((airUnit) => {
+      const location = this.getAirUnitLocation(airUnit.name)
+      return this.getAirUnitLocation(airUnit.name).boxName != GlobalUnitsModel.AirBox.OFFBOARD
+    })
+  }
+
+  getNumberOfZonesInBox(boxName) {
+    const box = this.boxMap.get(boxName)
+    if (!box) {
+      return null
     }
+    return box.length
+  }
 
-    removeAirUnitFromBox = (boxName, index) => {
-        const box = this.boxMap.get(boxName)
-        if (!box) {
-            return null
-        }
-        box[index] = undefined
-    }
-
-    getAllAirUnitsInBox = (boxName) => {
-        const box = this.boxMap.get(boxName)
-        if (!box) {
-            return null
-        }
-        return Array.from(box.values()).filter(n => n)
-    }
-
-    getAirUnitInBox = (boxName, index) => {
-        const box = this.boxMap.get(boxName)
-        if (!box) {
-            return null
-        }
-        return box[index]
-    }
-
-    isAirUnitInBox = (boxName, name) => {
-        const units = this.getAllAirUnitsInBox(boxName)
-        const found = units.find(unit => unit.name === name)
-        return found != undefined ? true : false
-    }
-
-    addAirUnitToCarrier(carrier, value) {
-        const airUnitsArray = this.japanCarrierMap.get(carrier)
-        airUnitsArray.push(value)
-        this.japanCarrierMap.set(carrier, airUnitsArray)
-    }
-
-    getAirUnitsForCarrier(carrier) {
-        return this.japanCarrierMap.get(carrier)
-    } 
-
-    getAirUnitsDeployed(carrier) {
-        const airUnitsArray = this.japanCarrierMap.get(carrier)
-        return airUnitsArray.filter((airUnit) => {
-            const location = this.getAirUnitLocation(airUnit.name)
-           return this.getAirUnitLocation(airUnit.name).boxName != GlobalUnitsModel.AirBox.OFFBOARD
-        })
-    }
+  getBoxNamesForCarrier(carrier, includeReturnBoxes) {
+    return includeReturnBoxes
+      ? JapanAirBoxOffsets.filter((b) => b.carriers.includes(carrier)).map((bn) => bn.name)
+      : JapanAirBoxOffsets.filter((b) => b.carriers.includes(carrier))
+          .map((bn) => bn.name)
+          .filter((n) => !n.includes("RETURN"))
+  }
 }

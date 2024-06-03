@@ -14,8 +14,9 @@ import CardPanel from "./components/dialogs/CardPanel"
 import GameStatusPanel from "./components/dialogs/GameStatusPanel"
 import SplashScreen from "./components/dialogs/SplashScreen"
 import "./style.css"
-import calcTestData from "./AirUnitTestData"
-
+import calcRandomTestData from "./AirUnitTestData"
+import JapanAirBoxOffsets from "./components/draganddrop/JapanAirBoxOffsets"
+import { airUnitData } from "./AirUnitTestData"
 export default App
 export function App() {
   const [splash, setSplash] = useState(true)
@@ -40,7 +41,7 @@ export function App() {
     boxName: "",
     index: -1,
   })
-  
+
   const onDrag = () => {
     setIsMoveable(true)
   }
@@ -81,9 +82,13 @@ export function App() {
 
   const testUi = async (e) => {
     setTestClicked(true)
-    const data = calcTestData()
 
-    for (const update of data) {
+    let update
+    for (const unit of airUnitData) {
+      update = calcRandomTestData(unit, GlobalInit.controller)
+      update.index = GlobalInit.controller.getFirstAvailableZone(update.boxName)
+      let position1 = JapanAirBoxOffsets.find((box) => box.name === update.boxName)
+      update.position = position1.offsets[update.index],
       setAirUnitUpdate(update)
       await delay(500)
       if (update.nextAction) {

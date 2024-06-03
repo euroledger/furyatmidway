@@ -6,7 +6,6 @@ import AircraftUnit from "./model/AircraftUnit"
 
 function loadCounters(controller) {
   let counters = new Map()
-  let cards = new Map()
 
   // 1AF Counter
   let position = {
@@ -330,6 +329,7 @@ function loadAirCounters(controller, counters) {
     )
     controller.addAirUnitToBox(GlobalUnitsModel.AirBox.OFFBOARD, 0, airUnitCounter)
     controller.addAirUnitToCarrier(unit.carrier, airUnitCounter)
+    controller.setCounters(counters)
   }
 }
 

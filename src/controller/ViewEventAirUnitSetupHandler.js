@@ -19,6 +19,8 @@ class ViewEventAirUnitSetupHandler {
         ? "OFFBOARD"
         : boxName + " - box " + boxIndex;
     const to = `${name} - box ${index}`;
+
+    // console.log(`Add air unit ${counte rData.name} to box ${name}, index ${index}`)
     this.controller.addAirUnitToBox(name, index, counterData);
     let command = new MoveCommand(
       COMMAND_TYPE.MOVE,
@@ -26,6 +28,7 @@ class ViewEventAirUnitSetupHandler {
       from,
       to
     );
+    // console.log("Next free zone -> ", this.controller.getFirstAvailableZone(name))
     const airUnitsDeployed = this.controller.getAirUnitsDeployed(
       counterData.carrier
     );

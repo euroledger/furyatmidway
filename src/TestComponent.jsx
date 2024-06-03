@@ -4,7 +4,6 @@ import JapanAirBoxOffsets from "./components/draganddrop/JapanAirBoxOffsets"
 
 function TestComponent({ testClicked, setAirUnitUpdate }) {
   const testUi = async () => {
-    console.log("I AM TESTING!")
     // set state in order of commands for air units
     let boxName = GlobalUnitsModel.AirBox.JP_CD1_CAP
     let position1 = JapanAirBoxOffsets.find((box) => box.name === boxName)
