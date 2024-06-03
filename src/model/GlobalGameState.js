@@ -16,6 +16,7 @@ export default class GlobalGameState {
     'Place Hiryu Air Units',
     'Place Soryu Air Units',
     'Draw 3 x Japan Cards',
+    'Place US CSF Fleet Unit',
     'Place Enterprise Air Units',
     'Place Hornet Air Units',
     'Place Yorkton Air Units',

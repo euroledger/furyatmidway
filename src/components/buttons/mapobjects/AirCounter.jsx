@@ -59,7 +59,10 @@ function AirCounter({ controller, onDrag, onStop, getAirBox, setAirBox, counterD
       // error
       return
     }
-    if (airUnit.attack && name === GlobalUnitsModel.AirBox.JP_CD1_CAP) {
+    if (
+      airUnit.attack &&
+      (name === GlobalUnitsModel.AirBox.JP_CD1_CAP || name === GlobalUnitsModel.AirBox.JP_CD2_CAP)
+    ) {
       console.log("*** Air Unit is not a figher unit -> Cannot be used for CAP!")
 
       setAlertShow(true)

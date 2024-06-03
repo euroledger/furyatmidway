@@ -28,7 +28,7 @@ function CardPanel(props) {
       : GlobalUnitsModel.usCards.map((c) => c.number)
 
   const bg = "#293a4b"
-  const header = `Hand of Cards: ${props.side}`
+  const header = `${props.side} Hand`
   const rowClass = `g-${GlobalUnitsModel.jpCards.length}`
   const sizey = cardArray.length >= 4 ? "xl" : "lg"
   return (
