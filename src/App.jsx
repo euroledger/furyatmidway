@@ -63,8 +63,10 @@ export function App() {
         GlobalGameState.setupPhase++
         GlobalGameState.gamePhase = GlobalGameState.PHASE.JAPAN_CARD_DRAW
         GlobalInit.controller.drawJapanCards(3, true)
+        GlobalGameState.jpCardsDrawn = true
       }
     } else if (GlobalGameState.gamePhase === GlobalGameState.PHASE.JAPAN_CARD_DRAW) {
+      console.log("END OF THE JAPAN DRAW PHASE!")
       GlobalGameState.phaseCompleted = false
       GlobalGameState.setupPhase++
       GlobalGameState.gamePhase = GlobalGameState.PHASE.US_SETUP
@@ -88,8 +90,7 @@ export function App() {
       update = calcRandomTestData(unit, GlobalInit.controller)
       update.index = GlobalInit.controller.getFirstAvailableZone(update.boxName)
       let position1 = JapanAirBoxOffsets.find((box) => box.name === update.boxName)
-      update.position = position1.offsets[update.index],
-      setAirUnitUpdate(update)
+      ;(update.position = position1.offsets[update.index]), setAirUnitUpdate(update)
       await delay(500)
       if (update.nextAction) {
         nextAction()
@@ -142,7 +143,9 @@ export function App() {
                 onClick={() => {
                   GlobalGameState.phaseCompleted = true
                   GlobalGameState.jpCardsDrawn = true
-                  nextAction()
+                  if (GlobalGameState.gamePhase === GlobalGameState.PHASE.JAPAN_CARD_DRAW) {
+                    nextAction()
+                  }
                   setjpHandShow(true)
                 }}
               >
