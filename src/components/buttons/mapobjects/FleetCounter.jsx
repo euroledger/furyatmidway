@@ -18,6 +18,8 @@ function FleetCounter({ onDrag, onStop, id, currentHex, counterData }) {
     if (position.initial) {
       command = new HexCommand(COMMAND_TYPE.PLACE, id, HexCommand.OFFBOARD, {currentHex});
     }
+
+  console.log(">>>>>>>>>>>>>>>> SIDE= ", currentHex.side)
    
     setPosition({
       initial: false,
@@ -42,8 +44,6 @@ function FleetCounter({ onDrag, onStop, id, currentHex, counterData }) {
         }}
         onMouseEnter={onDrag}
         onMouseLeave={onStop}
-        draggabble="true"
-        onDragStart={onDrag}
         onDragEnd={handleDrop}
       />
     </div>

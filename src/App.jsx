@@ -166,7 +166,7 @@ export function App() {
               </Button>
             </Nav>
 
-            <img src={image} alt="test" style={{ marginLeft: "150px" }} width="40px" height="30px" />
+            <img src={image} alt="test" style={{ marginLeft: "120px" }} width="40px" height="30px" />
             <p
               className="navbar-text"
               style={{

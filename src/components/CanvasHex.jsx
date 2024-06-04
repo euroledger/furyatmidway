@@ -24,7 +24,7 @@ export default class CanvasHex extends React.Component {
     this.hexParameters =
       hexType === POINTY
         ? this.getPointyHexParameters()
-        : this.getPointyHexParameters();
+        : this.getFlatHexParameters();
 
     this.setState({
       canvasSize: { canvasWidth: 460, canvasHeight: 385 },
@@ -352,11 +352,10 @@ export default class CanvasHex extends React.Component {
 
   // convert the axial coordinates to the offset coordinates (as printed on the game map)
   convertCoords = (q, r) => {
-    const r1 = q >= 2 ? r + Math.floor(q/2) : r
+    const r1 = q >= 2 ? r + Math.floor(q / 2) : r;
 
     const row = String.fromCharCode(q - 1 + "A".charCodeAt(0));
-    return { q1: row, r1}
-
+    return { q1: row, r1 };
   };
 
   handleMouseLeave = (e) => {
@@ -384,7 +383,7 @@ export default class CanvasHex extends React.Component {
 
       const { x, y } = this.pointyHexToPixel({ q, r });
       this.setState({
-        currentHex: { q, r, x, y },
+        currentHex: { ...this.state.currentHex, q, r, x, y },
       });
     } else {
       const { q, r } = this.cubeRound(this.pixelToFlatHex({ x: mx, y: my }));
@@ -395,22 +394,22 @@ export default class CanvasHex extends React.Component {
 
       const index = Math.floor(q / 2);
 
-      // for the midway map, restrict hex selection to the displayed 
-      if (q===1 && r>=7)  {
-        return
+      // for the midway map, restrict hex selection to the displayed
+      if (q === 1 && r >= 7) {
+        return;
       }
-      if (q===3 && r>=6)  {
-        return
+      if (q === 3 && r >= 6) {
+        return;
       }
-      if (q===5 && r>=5)  {
-        return
+      if (q === 5 && r >= 5) {
+        return;
       }
-      
-      if (q===7 && r>=4)  {
-        return
+
+      if (q === 7 && r >= 4) {
+        return;
       }
-      if (q===9 && r>=3)  {
-        return
+      if (q === 9 && r >= 3) {
+        return;
       }
       if (
         q === 0 ||
@@ -427,7 +426,7 @@ export default class CanvasHex extends React.Component {
 
       const { q1, r1 } = this.convertCoords(q, r);
       this.setState({
-        currentHex: { q, r, x, y, row: q1, col: r1 }, // row col are the midway map coords
+        currentHex: { ...this.state.currentHex, q, r, x, y, row: q1, col: r1 }, // row col are the midway map coords
       });
     }
   };
@@ -435,7 +434,15 @@ export default class CanvasHex extends React.Component {
   handleDragOver(e) {
     e.preventDefault();
     this.determineMousePosition(e);
-    this.props.setCurrentCoords(this.state.currentHex)
+    this.props.setCurrentCoords(this.state.currentHex);
+  }
+
+  handleDragEnd(e) {
+    e.preventDefault();
+
+    this.setState({
+      currentHex: { ...this.state.currentHex, side: this.state.side },
+    });
   }
   render() {
     return (
@@ -447,6 +454,7 @@ export default class CanvasHex extends React.Component {
           }
           onMouseMove={this.handleMouseMove}
           onMouseLeave={this.handleMouseLeave}
+          onDrop={(e) => this.handleDragEnd(e)}
           onDragOver={(e) => this.handleDragOver(e)}
         ></canvas>
       </div>

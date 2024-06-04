@@ -26,6 +26,24 @@ function loadCounters(controller) {
     )
   )
 
+  position = {
+    hexCoords: {},
+    left: 602,
+    top: 117,
+  }
+
+  counters.set(
+    "CSF",
+    new BaseUnit(
+      "CSF",
+      "US Carrier Strike Force",
+      position,
+      { x: -3, y: 88 }, // offsets
+      "/images/fleetcounters/CSF.png",
+      "3.0%"
+    )
+  )
+
   GlobalUnitsModel.jpFleetUnits.set("1AF", new FleetUnit("1AF", false))
   GlobalUnitsModel.jpFleetUnits.set("MIF", new FleetUnit("MIF", false))
   GlobalUnitsModel.jpFleetUnits.set("DMCV", new FleetUnit("DMCV", false))

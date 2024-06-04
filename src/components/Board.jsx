@@ -24,7 +24,7 @@ function Board({
   airUnitUpdate,
   setAirUnitUpdate,
   setAlertShow,
-  showZones
+  showZones,
 }) {
   let zProps = { us: 0, japan: 0 };
   const initialJpAopPosition = { left: 2.7, top: 7 };
@@ -33,14 +33,19 @@ function Board({
   const initialMGFPosition = { left: 77.5, top: 6.2 };
 
   const [zone, setZone] = useState(0);
-  const [currentHex, setCurrentHex] = useState({});
+  const [currentJapanHex, setCurrentJapanHex] = useState({});
+  const [currentUSHex, setCurrentUSHex] = useState({});
   const [mifzone, setMIFZone] = useState(5);
   const [mgfzone, setMGFZone] = useState(6);
   const [airBox, setAirBox] = useState({});
   const [zIndex, setZIndex] = useState(zProps);
 
-  const setCurrentCoords = (currentHex) => {
-    setCurrentHex(currentHex);
+  const setCurrentJapanCoords = (currentHex) => {
+    setCurrentJapanHex(currentHex);
+  };
+
+  const setCurrentUSCoords = (currentHex) => {
+    setCurrentUSHex(currentHex);
   };
 
   const handleDragEnter = (event, zone) => {
@@ -106,7 +111,7 @@ function Board({
           <CanvasHex
             scale={scale}
             side="japan"
-            setCurrentCoords={setCurrentCoords}
+            setCurrentCoords={setCurrentJapanCoords}
           ></CanvasHex>
         </div>
         <div
@@ -122,7 +127,7 @@ function Board({
           <CanvasHex
             scale={scale}
             side="us"
-            setCurrentCoords={setCurrentCoords}
+            setCurrentCoords={setCurrentUSCoords}
           ></CanvasHex>
         </div>
         <TurnMarkerButton image="/images/markers/turnmarker.png" />
@@ -181,11 +186,17 @@ function Board({
         <FleetCounter
           onDrag={onDrag}
           onStop={onStop}
-          currentHex={currentHex}
+          currentHex={currentJapanHex}
           id="1AF"
           counterData={GlobalInit.counters.get("1AF")}
         ></FleetCounter>
-
+        <FleetCounter
+          onDrag={onDrag}
+          onStop={onStop}
+          currentHex={currentUSHex}
+          id="CSF"
+          counterData={GlobalInit.counters.get("CSF")}
+        ></FleetCounter>
         <AirCounters
           controller={controller}
           onDrag={onDrag}
