@@ -31,6 +31,10 @@ function FleetCounter({ onDrag, onStop, id, currentHex, counterData }) {
     // GlobalGameState.log(`${counterData.longName} moves to ${currentHex.row}-${currentHex.col}`)
   };
 
+  const handleClick = (event) => {
+    console.log("You clicked on a fleet counter!")
+  }
+
   return (
     <div>
       <input
@@ -45,6 +49,7 @@ function FleetCounter({ onDrag, onStop, id, currentHex, counterData }) {
         onMouseEnter={onDrag}
         onMouseLeave={onStop}
         onDragEnd={handleDrop}
+        onClick={handleClick}
       />
     </div>
   );

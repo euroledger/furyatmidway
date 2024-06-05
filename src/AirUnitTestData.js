@@ -1,6 +1,7 @@
 import JapanAirBoxOffsets from "./components/draganddrop/JapanAirBoxOffsets"
 import GlobalUnitsModel from "./model/GlobalUnitsModel"
 import GlobalInit from "./model/GlobalInit"
+import GlobalGameState from "./model/GlobalGameState"
 
 export const airUnitData = [
   {
@@ -97,6 +98,9 @@ function calcRandomTestData(unit, controller) {
   const airCounters = units.filter((unit) => unit.constructor.name === "AirUnit")
   // for (const unit of airUnitData) {
   let carrier = controller.getCarrierForAirUnit(unit.name)
+  if (carrier != GlobalGameState.JAPAN_CARRIERS[GlobalGameState.currentCarrier]) {
+    return undefined
+  }
   let boxes = controller.getBoxesForCarrier(carrier, false)
 
   // 1. if this is an attack aircraft, remove CAP from list
