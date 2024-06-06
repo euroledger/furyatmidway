@@ -105,7 +105,12 @@ function Board({
             top: `22.9%`,
           }}
         >
-          <CanvasHex scale={scale} side="japan" setCurrentCoords={setCurrentJapanCoords} usRegions={USMapRegions}></CanvasHex>
+          <CanvasHex
+            scale={scale}
+            side="japan"
+            setCurrentCoords={setCurrentJapanCoords}
+            usRegions={USMapRegions}
+          ></CanvasHex>
         </div>
         <div
           id="canvas"
@@ -164,6 +169,7 @@ function Board({
           getZone={getMGFZone}
         />
         <FleetCounter
+          controller={controller}
           onDrag={onDrag}
           onStop={onStop}
           currentHex={currentJapanHex}
@@ -172,6 +178,7 @@ function Board({
           enabled={true}
         ></FleetCounter>
         <FleetCounter
+          controller={controller}
           onDrag={onDrag}
           onStop={onStop}
           currentHex={currentUSHex}

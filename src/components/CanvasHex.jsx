@@ -36,7 +36,6 @@ export default class CanvasHex extends React.Component {
   }
 
   UNSAFE_componentWillReceiveProps (nextProps) {
-    console.log("QUACK!!!!!!!!!!!!!!!!,  nextProps.usRegions = ", nextProps.usRegions)
     this.setState({
       usRegions: nextProps.usRegions
     });
@@ -88,6 +87,7 @@ export default class CanvasHex extends React.Component {
     return false
   }
 
+  // TODO Move to HexMap Utils (to share with model)
   cubeDirection = (direction) => {
     const cubeDirection = [
       { q: +1, r: 0 },

@@ -3,16 +3,19 @@ import BoxModel from "../model/BoxModel"
 import CardModel from "../model/CardModel"
 import GlobalUnitsModel from "../model/GlobalUnitsModel"
 import ViewEventAirUnitSetupHandler from "./ViewEventAirUnitSetupHandler"
+import ViewEventFleetUnitSetupHandler from "./ViewEventFleetUnitSetupHandler"
 
 export default class Controller {
   static EventTypes = {
     AIR_UNIT_SETUP: "AirUnitSetup",
+    FLEET_SETUP: "FleetSetup"
   }
 
   constructor() {
     this.boxModel = new BoxModel()
     this.cardModel = new CardModel()
     this.airUnitSetupHandler = new ViewEventAirUnitSetupHandler(this)
+    this.fleetUnitSetupHandler = new ViewEventFleetUnitSetupHandler(this)
   }
 
   setCounters(counters) {
@@ -47,8 +50,8 @@ export default class Controller {
   getNumberZonesInBox = (boxName) => {
     return this.boxModel.getNumberOfZonesInBox(boxName)
   }
-  
-  // returns array of free slots 
+
+  // returns array of free slots
   getAllFreeZonesInBox = (boxName) => {
     const numZones = this.getNumberZonesInBox(boxName)
     const zones = new Array()
@@ -104,7 +107,7 @@ export default class Controller {
   getBoxesForCarrier(carrier, includeReturnBoxes) {
     return this.boxModel.getBoxNamesForCarrier(carrier, includeReturnBoxes)
   }
-  
+
   drawJapanCards(num, initial) {
     this.cardModel.drawJapanCards(num, initial)
   }
@@ -120,6 +123,9 @@ export default class Controller {
     switch (event.type) {
       case Controller.EventTypes.AIR_UNIT_SETUP:
         this.airUnitSetupHandler.handleEvent(event)
+        break
+      case Controller.EventTypes.FLEET_SETUP:
+        this.fleetUnitSetupHandler.handleEvent(event)
         break
 
       default:

@@ -3,7 +3,6 @@ import "../../board.css"
 import Controller from "../../../controller/Controller"
 import GlobalUnitsModel from "../../../model/GlobalUnitsModel"
 import GlobalGameState from "../../../model/GlobalGameState"
-import JapanAirBoxOffsets from "../../draganddrop/JapanAirBoxOffsets"
 
 function AirCounter({ controller, onDrag, onStop, getAirBox, setAirBox, counterData, airUnitUpdate, setAlertShow }) {
   const [position, setPosition] = useState({
@@ -11,6 +10,7 @@ function AirCounter({ controller, onDrag, onStop, getAirBox, setAirBox, counterD
     top: counterData.position.top,
   })
 
+  // This code for the test mode air unit updates
   if (
     counterData.name === airUnitUpdate.name &&
     position.left !== airUnitUpdate.position.left + "%" &&
@@ -103,6 +103,7 @@ function AirCounter({ controller, onDrag, onStop, getAirBox, setAirBox, counterD
           left: position.left,
           top: position.top,
           zIndex: 10,
+          // transform: 'rotate(270deg)'
         }}
         id="saveForm2"
         onMouseEnter={onDrag}
