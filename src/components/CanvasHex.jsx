@@ -10,7 +10,12 @@ const hexOrigin = {
 }
 
 const hexType = FLAT
-const japanAF1StartHexes = [{ q: 1, r: 1}, { q: 1, r: 2}, { q: 1, r: 3}]
+const japanAF1StartHexes = [
+  { q: 1, r: 1 },
+  { q: 1, r: 2 },
+  { q: 1, r: 3 },
+]
+
 export default class CanvasHex extends React.Component {
   constructor(props) {
     super(props)
@@ -18,6 +23,7 @@ export default class CanvasHex extends React.Component {
       hexSize: 29.07,
       scale: props.scale,
       side: props.side,
+      usRegions: props.usRegions
     }
     this.handleMouseMove = this.handleMouseMove.bind(this)
   }
@@ -29,6 +35,13 @@ export default class CanvasHex extends React.Component {
     })
   }
 
+  UNSAFE_componentWillReceiveProps (nextProps) {
+    console.log("QUACK!!!!!!!!!!!!!!!!,  nextProps.usRegions = ", nextProps.usRegions)
+    this.setState({
+      usRegions: nextProps.usRegions
+    });
+    this.clearCanvas(nextProps.usRegions)
+  }
   componentDidMount() {
     this.setState({
       canvasPosition: { left: 0, right: 0, top: 0, bottom: 0 },
@@ -46,11 +59,16 @@ export default class CanvasHex extends React.Component {
     }
   }
 
-  clearCanvas() {
+  clearCanvas(usRegions) {
     const { canvasWidth, canvasHeight } = this.state.canvasSize
     const ctx = this.canvasCoordinates.getContext("2d")
     ctx.clearRect(0, 0, canvasWidth, canvasHeight) // clears the canvas
-    this.drawRegions("japan", japanAF1StartHexes)
+    this.drawRegions("japan", japanAF1StartHexes, "rgba(223, 71,71, 0.6)")
+    if (usRegions || (this.state.usRegions && this.state.usRegions.length > 0)) {
+      const regs = usRegions ? usRegions : this.state.usRegions
+      this.drawRegions("us", regs, "rgba(102, 178,255, 0.4)")
+      this.forceUpdate()
+    }
   }
 
   shouldComponentUpdate(nextProps, nextState) {
@@ -123,13 +141,13 @@ export default class CanvasHex extends React.Component {
     return true
   }
 
-  drawRegions = (side, hexes) => {
+  drawRegions = (side, hexes, color) => {
     if (side != this.state.side) {
       return
     }
     for (let hex of hexes) {
       const { x, y } = this.flatHexToPixel({ q: hex.q, r: hex.r })
-      this.drawAndFillHex(this.canvasCoordinates, { x, y }, "rgba(223, 71,71, 0.6)")
+      this.drawAndFillHex(this.canvasCoordinates, { x, y }, color)
     }
   }
   drawNeighbours = (h) => {
@@ -322,7 +340,7 @@ export default class CanvasHex extends React.Component {
   }
 
   drawFlatHex = (canvasID, { x, y }, color, width) => {
-    for (let i = 0; i <= 5; i++) { 
+    for (let i = 0; i <= 5; i++) {
       let start = this.getFlatHexCornerCoord({ x, y }, i)
       let end = this.getFlatHexCornerCoord({ x, y }, i + 1)
       this.drawLine(canvasID, { x: start.x, y: start.y }, { x: end.x, y: end.y }, color, width)
@@ -340,7 +358,6 @@ export default class CanvasHex extends React.Component {
       ctx.strokeStyle = color
       // ctx.lineWidth = width
       ctx.lineTo(end.x, end.y)
-    
 
       // this.drawLine(canvasID, { x: start.x, y: start.y }, { x: end.x, y: end.y })
     }
@@ -454,35 +471,6 @@ export default class CanvasHex extends React.Component {
       if (!this.displayHex(q, r)) {
         return
       }
-      // const odd = [7, 6, 5, 4, 3]
-      // const oddTop = [0, -1, -2, -3, -4]
-
-      // const index = Math.floor(q / 2)
-
-      // // for the midway map, restrict hex selection to the displayed
-      // if (q === 1 && r >= 7) {
-      //   return
-      // }
-      // if (q === 3 && r >= 6) {
-      //   return
-      // }
-      // if (q === 5 && r >= 5) {
-      //   return
-      // }
-
-      // if (q === 7 && r >= 4) {
-      //   return
-      // }
-      // if (q === 9 && r >= 3) {
-      //   return
-      // }
-      // if (q === 0 || q >= 10 || (q % 2 === 1 && r === odd[index]) || (q % 2 === 0 && r >= odd[index])) {
-      //   return
-      // }
-
-      // if (r === oddTop[index]) {
-      //   return
-      // }
 
       const { q1, r1 } = this.convertCoords(q, r)
       this.setState({
@@ -505,7 +493,6 @@ export default class CanvasHex extends React.Component {
     })
   }
   handleClick = (e) => {
-    console.log("CLICKETY CLICK!!")
     const { q, r } = this.state.currentHex
     this.drawNeighbours({ q, r })
   }

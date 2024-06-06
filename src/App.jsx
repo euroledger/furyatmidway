@@ -17,6 +17,8 @@ import "./style.css"
 import calcRandomTestData from "./AirUnitTestData"
 import JapanAirBoxOffsets from "./components/draganddrop/JapanAirBoxOffsets"
 import { airUnitData } from "./AirUnitTestData"
+import usCSFStartHexes from "./components/MapRegions"
+
 export default App
 export function App() {
   const [splash, setSplash] = useState(true)
@@ -25,11 +27,14 @@ export function App() {
   const [isMoveable, setIsMoveable] = useState(false)
   const [scale, setScale] = useState(1)
   const [testClicked, setTestClicked] = useState(false)
+  const [csfAlertShow, setCsfAlertShow] = useState(false) // TO DO param should be an object with boolean and alert text
+
   const [alertShow, setAlertShow] = useState(false) // TO DO param should be an object with boolean and alert text
   // const [alertShow, setAlertShow] = useState({
   //   display: false,
   //   alertText: ""
   // })
+
   const [jpHandShow, setjpHandShow] = useState(false)
   const [usHandShow, setusHandShow] = useState(false)
 
@@ -41,6 +46,8 @@ export function App() {
     boxName: "",
     index: -1,
   })
+  const [USMapRegions, setUSMapRegions] = useState([])
+  const [japanMapRegions, setjapanMapRegions] = useState([])
 
   const onDrag = () => {
     setIsMoveable(true)
@@ -52,26 +59,36 @@ export function App() {
   const nextAction = () => {
     if (GlobalGameState.gamePhase === GlobalGameState.PHASE.JAPAN_SETUP) {
       if (GlobalGameState.currentCarrier <= 2) {
-        GlobalGameState.phaseCompleted = false
-        GlobalGameState.setupPhase++
         GlobalGameState.currentCarrier++
         GlobalGameState.currentCarrierDivision = GlobalGameState.currentCarrier <= 1 ? 1 : 2
       } else {
-        // end of Japanes Setup
-        // next phase is Card Draw
-        GlobalGameState.phaseCompleted = false
-        GlobalGameState.setupPhase++
         GlobalGameState.gamePhase = GlobalGameState.PHASE.JAPAN_CARD_DRAW
         GlobalInit.controller.drawJapanCards(3, true)
         GlobalGameState.jpCardsDrawn = true
       }
     } else if (GlobalGameState.gamePhase === GlobalGameState.PHASE.JAPAN_CARD_DRAW) {
-      GlobalGameState.phaseCompleted = false
-      GlobalGameState.setupPhase++
-      GlobalGameState.gamePhase = GlobalGameState.PHASE.US_SETUP
+      GlobalGameState.gamePhase = GlobalGameState.PHASE.US_SETUP_FLEET
       GlobalGameState.currentCarrier = 0
+      setUSMapRegions(usCSFStartHexes)
+      setCsfAlertShow(true)
+    } else if (GlobalGameState.gamePhase === GlobalGameState.PHASE.US_SETUP_FLEET) {
+      GlobalGameState.gamePhase = GlobalGameState.PHASE.US_SETUP_AIR
+      GlobalGameState.usFleetPlaced = true
+      setUSMapRegions([])
     }
+    GlobalGameState.phaseCompleted = false
+    GlobalGameState.setupPhase++
     GlobalGameState.updateGlobalState()
+  }
+
+  function listAllPositions() {
+    const units = Array.from(GlobalInit.counters.values())
+    const airCounters = units.filter((unit) => unit.constructor.name === "AirUnit")
+    for (let airUnit of airCounters) {
+      const { boxName, boxIndex } = GlobalInit.controller.getAirUnitLocation(airUnit.name)
+
+      console.log(`Air Unit ${airUnit.name} => location ${boxName}[${boxIndex}]`)
+    }
   }
 
   // set up initial zustand air counter list
@@ -98,6 +115,7 @@ export function App() {
         nextAction()
       }
     }
+    
   }
 
   var v = process.env.REACT_APP_MYVAR || "arse"
@@ -293,6 +311,10 @@ export function App() {
         <h4>ALERT</h4>
         <p>This air unit is not a fighter unit so cannot be used for CAP.</p>
       </AlertPanel>
+      <AlertPanel show={!testClicked && csfAlertShow} onHide={() => setCsfAlertShow(false)}>
+        <h4>INFO</h4>
+        <p>Drag the US CSF Fleet Unit to any hex in the shaded blue area of the map.</p>
+      </AlertPanel>
       <GameStatusPanel show={gameStateShow} gameState={gameState} onHide={() => setGameStateShow(false)} />
       <CardPanel show={jpHandShow} side={GlobalUnitsModel.Side.JAPAN} onHide={() => setjpHandShow(false)}></CardPanel>
       <CardPanel
@@ -337,6 +359,8 @@ export function App() {
                 setAirUnitUpdate={setAirUnitUpdate}
                 setAlertShow={setAlertShow}
                 showZones={showZones}
+                USMapRegions={USMapRegions}
+                japanMapRegions={japanMapRegions}
               />
             </TransformComponent>
           </div>

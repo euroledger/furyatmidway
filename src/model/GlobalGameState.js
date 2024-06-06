@@ -5,7 +5,8 @@ export default class GlobalGameState {
   static PHASE = {
     JAPAN_SETUP: "Japan Setup",
     JAPAN_CARD_DRAW: "Japan Card Draw",
-    US_SETUP: "US Setup",
+    US_SETUP_FLEET: "US Setup (Naval)",
+    US_SETUP_AIR: "US Setup (Air)",
     US_CARD_DRAW: "US Card Draw"
   }
 
@@ -64,6 +65,8 @@ export default class GlobalGameState {
 
   static jpCardsDrawn = false
   static usCardsDrawn = false
+
+  static usFleetPlaced = false
 
   static phaseCompleted = false
 

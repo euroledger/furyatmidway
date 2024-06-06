@@ -23,10 +23,14 @@ function AirCounter({ controller, onDrag, onStop, getAirBox, setAirBox, counterD
       alert(`ERROR unit already there -> ${airUnitUpdate.boxName}, index ${airUnitUpdate.index}`)
       return
     }
-    setPosition({
+    // setPosition({
+    //   left: airUnitUpdate.position.left + "%",
+    //   top: airUnitUpdate.position.top - 0.2 + "%",
+    // })
+    setPosition(() => ({
       left: airUnitUpdate.position.left + "%",
       top: airUnitUpdate.position.top - 0.2 + "%",
-    })
+    }))
 
     controller.viewEventHandler({
       type: Controller.EventTypes.AIR_UNIT_SETUP,
