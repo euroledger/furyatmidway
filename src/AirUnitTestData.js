@@ -101,7 +101,7 @@ function calcRandomTestData(unit, controller) {
   if (carrier != GlobalGameState.JAPAN_CARRIERS[GlobalGameState.currentCarrier]) {
     return undefined
   }
-  let boxes = controller.getBoxesForCarrier(carrier, false)
+  let boxes = controller.getBoxesForJapaneseCarrier(carrier, false)
 
   // 1. if this is an attack aircraft, remove CAP from list
   const aircraftUnit = controller.getAirUnit(unit.name)

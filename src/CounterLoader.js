@@ -55,145 +55,161 @@ function loadCounters(controller) {
   return counters
 }
 
-const startPosition1 = {
+const jpStartPosition1 = {
   left: "2%",
   top: "65%",
 }
 
-const startPosition2 = {
+const jpStartPosition2 = {
   left: "2%",
   top: "69%",
 }
 
-const startPosition3 = {
+const jpStartPosition3 = {
   left: "2%",
   top: "73%",
 }
 
-const startPosition4 = {
+const jpStartPosition4 = {
   left: "2%",
   top: "77%",
 }
-const airUnits = [
+const japanAirUnits = [
   {
     name: "Akagi-A6M-2b-1",
     longName: "Japanese A6M-2b (Akagi) 1",
-    position: startPosition1,
+    position: jpStartPosition1,
     offsets: { x: 66, y: 80 },
     image: "/images/aircounters/akagi-a6m-front.png",
     width: "2.1%",
     carrier: GlobalUnitsModel.Carrier.AKAGI,
+    side: GlobalUnitsModel.Side.JAPAN,
     aircraftUnit: {
       strength: 3,
       movement: 3,
       attack: false,
       diveBomber: false,
+      steps: 2,
     },
   },
   {
     name: "Akagi-A6M-2b-2",
     longName: "Japanese A6M-2b (Akagi) 2",
-    position: startPosition2,
+    position: jpStartPosition2,
     offsets: { x: 66, y: 80 },
     image: "/images/aircounters/akagi-a6m-front.png",
     width: "2.1%",
     carrier: GlobalUnitsModel.Carrier.AKAGI,
+    side: GlobalUnitsModel.Side.JAPAN,
     aircraftUnit: {
       strength: 3,
       movement: 3,
       attack: false,
       diveBomber: false,
+      steps: 2,
     },
   },
   {
     name: "Akagi-D3A-1",
     longName: "Japanese D3A-1 (Akagi)",
-    position: startPosition3,
+    position: jpStartPosition3,
     offsets: { x: 66, y: 80 },
     image: "/images/aircounters/akagi-d3a-front.png",
     width: "2.1%",
     carrier: GlobalUnitsModel.Carrier.AKAGI,
+    side: GlobalUnitsModel.Side.JAPAN,
     aircraftUnit: {
       strength: 3,
       movement: 3,
       attack: true,
       diveBomber: true,
+      steps: 2,
     },
   },
   {
     name: "Akagi-B5N-2",
     longName: "Japanese B5N-2 (Akagi)",
-    position: startPosition4,
+    position: jpStartPosition4,
     offsets: { x: 66, y: 80 },
     image: "/images/aircounters/akagi-b5n-front.png",
     width: "2.1%",
     carrier: GlobalUnitsModel.Carrier.AKAGI,
+    side: GlobalUnitsModel.Side.JAPAN,
     aircraftUnit: {
       strength: 3,
       movement: 3,
       attack: true,
       diveBomber: false,
+      steps: 2,
     },
   },
 
   {
     name: "Kaga-A6M-2b-1",
     longName: "Japanese A6M-2b (Kaga) 1",
-    position: startPosition1,
+    position: jpStartPosition1,
     offsets: { x: 66, y: 80 },
     image: "/images/aircounters/kaga-a6m-front.png",
     width: "2.1%",
     carrier: GlobalUnitsModel.Carrier.KAGA,
+    side: GlobalUnitsModel.Side.JAPAN,
     aircraftUnit: {
       strength: 3,
       movement: 3,
       attack: false,
       diveBomber: false,
+      steps: 2,
     },
   },
   {
     name: "Kaga-A6M-2b-2",
     longName: "Japanese A6M-2b (Kaga) 2",
-    position: startPosition2,
+    position: jpStartPosition2,
     offsets: { x: 66, y: 80 },
     image: "/images/aircounters/kaga-a6m-front.png",
     width: "2.1%",
     carrier: GlobalUnitsModel.Carrier.KAGA,
+    side: GlobalUnitsModel.Side.JAPAN,
     aircraftUnit: {
       strength: 3,
       movement: 3,
       attack: false,
       diveBomber: false,
+      steps: 2,
     },
   },
   {
     name: "Kaga-D3A-1",
     longName: "Japanese D3A-1 (Kaga)",
-    position: startPosition3,
+    position: jpStartPosition3,
     offsets: { x: 66, y: 80 },
     image: "/images/aircounters/kaga-d3a-front.png",
     width: "2.1%",
     carrier: GlobalUnitsModel.Carrier.KAGA,
+    side: GlobalUnitsModel.Side.JAPAN,
     aircraftUnit: {
       strength: 3,
       movement: 3,
       attack: true,
       diveBomber: true,
+      steps: 2,
     },
   },
   {
     name: "Kaga-B5N-2",
     longName: "Japanese B5N-2 (Kaga)",
-    position: startPosition4,
+    position: jpStartPosition4,
     offsets: { x: 66, y: 80 },
     image: "/images/aircounters/kaga-b5n-front.png",
     width: "2.1%",
     carrier: GlobalUnitsModel.Carrier.KAGA,
+    side: GlobalUnitsModel.Side.JAPAN,
     aircraftUnit: {
       strength: 3,
       movement: 3,
       attack: true,
       diveBomber: false,
+      steps: 2,
     },
   },
 
@@ -201,61 +217,69 @@ const airUnits = [
   {
     name: "Hiryu-A6M-2b-1",
     longName: "Japanese A6M-2b (Hiryu) 1",
-    position: startPosition1,
+    position: jpStartPosition1,
     offsets: { x: 66, y: 80 },
     image: "/images/aircounters/hiryu-a6m-front.png",
     width: "2.1%",
     carrier: GlobalUnitsModel.Carrier.HIRYU,
+    side: GlobalUnitsModel.Side.JAPAN,
     aircraftUnit: {
       strength: 3,
       movement: 3,
       attack: false,
       diveBomber: false,
+      steps: 2,
     },
   },
   {
     name: "Hiryu-A6M-2b-2",
     longName: "Japanese A6M-2b (Hiryu) 2",
-    position: startPosition2,
+    position: jpStartPosition2,
     offsets: { x: 66, y: 80 },
     image: "/images/aircounters/hiryu-a6m-front.png",
     width: "2.1%",
     carrier: GlobalUnitsModel.Carrier.HIRYU,
+    side: GlobalUnitsModel.Side.JAPAN,
     aircraftUnit: {
       strength: 3,
       movement: 3,
       attack: false,
       diveBomber: false,
+      steps: 2,
     },
   },
   {
     name: "Hiryu-D3A-1",
     longName: "Japanese D3A-1 (Hiryu)",
-    position: startPosition3,
+    position: jpStartPosition3,
     offsets: { x: 66, y: 80 },
     image: "/images/aircounters/hiryu-d3a-front.png",
     width: "2.1%",
     carrier: GlobalUnitsModel.Carrier.HIRYU,
+    side: GlobalUnitsModel.Side.JAPAN,
     aircraftUnit: {
       strength: 3,
       movement: 3,
       attack: true,
       diveBomber: true,
+      steps: 2,
     },
   },
   {
     name: "Hiryu-B5N-2",
     longName: "Japanese B5N-2 (Hiryu)",
-    position: startPosition4,
+    position: jpStartPosition4,
     offsets: { x: 66, y: 80 },
     image: "/images/aircounters/hiryu-b5n-front.png",
     width: "2.1%",
     carrier: GlobalUnitsModel.Carrier.HIRYU,
+    side: GlobalUnitsModel.Side.JAPAN,
     aircraftUnit: {
       strength: 3,
       movement: 3,
       attack: true,
       diveBomber: false,
+      steps: 2,
     },
   },
 
@@ -263,67 +287,359 @@ const airUnits = [
   {
     name: "Soryu-A6M-2b-1",
     longName: "Japanese A6M-2b (Soryu) 1",
-    position: startPosition1,
+    position: jpStartPosition1,
     offsets: { x: 66, y: 80 },
     image: "/images/aircounters/soryu-a6m-front.png",
     width: "2.1%",
     carrier: GlobalUnitsModel.Carrier.SORYU,
+    side: GlobalUnitsModel.Side.JAPAN,
     aircraftUnit: {
       strength: 3,
       movement: 3,
       attack: false,
       diveBomber: false,
+      steps: 2,
     },
   },
   {
     name: "Soryu-A6M-2b-2",
     longName: "Japanese A6M-2b (Soryu) 2",
-    position: startPosition2,
+    position: jpStartPosition2,
     offsets: { x: 66, y: 80 },
     image: "/images/aircounters/soryu-a6m-front.png",
     width: "2.1%",
     carrier: GlobalUnitsModel.Carrier.SORYU,
+    side: GlobalUnitsModel.Side.JAPAN,
     aircraftUnit: {
       strength: 3,
       movement: 3,
       attack: false,
       diveBomber: false,
+      steps: 2,
     },
   },
   {
     name: "Soryu-D3A-1",
     longName: "Japanese D3A-1 (Soryu)",
-    position: startPosition3,
+    position: jpStartPosition3,
     offsets: { x: 66, y: 80 },
     image: "/images/aircounters/soryu-d3a-front.png",
     width: "2.1%",
     carrier: GlobalUnitsModel.Carrier.SORYU,
+    side: GlobalUnitsModel.Side.JAPAN,
     aircraftUnit: {
+
       strength: 3,
       movement: 3,
       attack: true,
       diveBomber: true,
+      steps: 2,
     },
   },
   {
     name: "Soryu-B5N-2",
     longName: "Japanese B5N-2 (Soryu)",
-    position: startPosition4,
+    position: jpStartPosition4,
     offsets: { x: 66, y: 80 },
     image: "/images/aircounters/soryu-b5n-front.png",
     width: "2.1%",
     carrier: GlobalUnitsModel.Carrier.SORYU,
+    side: GlobalUnitsModel.Side.JAPAN,
     aircraftUnit: {
       strength: 3,
       movement: 3,
       attack: true,
       diveBomber: false,
+      steps: 2,
     },
   },
 ]
 
+const usStartPosition1 = {
+  left: "90%",
+  top: "65%",
+}
+
+const usStartPosition2 = {
+  left: "90%",
+  top: "69%",
+}
+
+const usStartPosition3 = {
+  left: "90%",
+  top: "73%",
+}
+
+const usStartPosition4 = {
+  left: "90%",
+  top: "77%",
+}
+const usStartPosition5 = {
+  left: "90%",
+  top: "81%",
+}
+const usAirUnits = [
+  {
+    name: "Enterprise-F4F4-1",
+    longName: "US F4F-4 (Enterprise) 1",
+    position: usStartPosition1,
+    offsets: { x: 66, y: 80 },
+    image: "/images/aircounters/enterprise-f4f-front.png",
+    width: "2.1%",
+    carrier: GlobalUnitsModel.Carrier.ENTERPRISE,
+    side: GlobalUnitsModel.Side.US,
+    aircraftUnit: {
+      strength: 3,
+      movement: 3,
+      attack: false,
+      diveBomber: false,
+      steps: 2,
+    },
+  },
+  {
+    name: "Enterprise-F4F4-2",
+    longName: "US F4F-4 (Enterprise) 2",
+    position: usStartPosition2,
+    offsets: { x: 66, y: 80 },
+    image: "/images/aircounters/enterprise-f4f-front.png",
+    width: "2.1%",
+    carrier: GlobalUnitsModel.Carrier.ENTERPRISE,
+    side: GlobalUnitsModel.Side.US,
+    aircraftUnit: {
+      strength: 3,
+      movement: 3,
+      attack: false,
+      diveBomber: false,
+      steps: 2,
+    },
+  },
+  {
+    name: "Enterprise-TBD1",
+    longName: "US TBD1 (Enterprise)",
+    position: usStartPosition3,
+    offsets: { x: 66, y: 80 },
+    image: "/images/aircounters/enterprise-tbd-front.png",
+    width: "2.1%",
+    carrier: GlobalUnitsModel.Carrier.ENTERPRISE,
+    side: GlobalUnitsModel.Side.US,
+    aircraftUnit: {
+      strength: 2,
+      movement: 2,
+      attack: true,
+      diveBomber: false,
+      steps: 2,
+    },
+  },
+  {
+    name: "Enterprise-SBD3-1",
+    longName: "US SBD3 (Enterprise) 1",
+    position: usStartPosition4,
+    offsets: { x: 66, y: 80 },
+    image: "/images/aircounters/enterprise-sbd-front.png",
+    width: "2.1%",
+    carrier: GlobalUnitsModel.Carrier.ENTERPRISE,
+    side: GlobalUnitsModel.Side.US,
+    aircraftUnit: {
+      strength: 2,
+      movement: 2,
+      attack: true,
+      diveBomber: true,
+      steps: 2,
+    },
+  },
+  {
+    name: "Enterprise-SBD3-2",
+    longName: "US SBD3 (Enterprise) 2",
+    position: usStartPosition5,
+    offsets: { x: 66, y: 80 },
+    image: "/images/aircounters/enterprise-sbd-front.png",
+    width: "2.1%",
+    carrier: GlobalUnitsModel.Carrier.ENTERPRISE,
+    side: GlobalUnitsModel.Side.US,
+    aircraftUnit: {
+      strength: 2,
+      movement: 2,
+      attack: true,
+      diveBomber: true,
+      steps: 2,
+    },
+  },
+   // HORNET AIR UNITS
+   {
+    name: "Hornet-F4F4-1",
+    longName: "US F4F-4 (Hornet) 1",
+    position: usStartPosition1,
+    offsets: { x: 66, y: 80 },
+    image: "/images/aircounters/hornet-f4f-front.png",
+    width: "2.1%",
+    carrier: GlobalUnitsModel.Carrier.HORNET,
+    side: GlobalUnitsModel.Side.US,
+    aircraftUnit: {
+      strength: 3,
+      movement: 3,
+      attack: false,
+      diveBomber: false,
+      steps: 2,
+    },
+  },
+  {
+    name: "Hornet-F4F4-2",
+    longName: "US F4F-4 (Hornet) 2",
+    position: usStartPosition2,
+    offsets: { x: 66, y: 80 },
+    image: "/images/aircounters/hornet-f4f-front.png",
+    width: "2.1%",
+    carrier: GlobalUnitsModel.Carrier.HORNET,
+    side: GlobalUnitsModel.Side.US,
+    aircraftUnit: {
+      strength: 3,
+      movement: 3,
+      attack: false,
+      diveBomber: false,
+      steps: 2,
+    },
+  },
+  {
+    name: "Hornet-TBD1",
+    longName: "US TBD1 (Hornet)",
+    position: usStartPosition3,
+    offsets: { x: 66, y: 80 },
+    image: "/images/aircounters/hornet-tbd-front.png",
+    width: "2.1%",
+    carrier: GlobalUnitsModel.Carrier.HORNET,
+    side: GlobalUnitsModel.Side.US,
+    aircraftUnit: {
+      strength: 2,
+      movement: 2,
+      attack: true,
+      diveBomber: false,
+      steps: 2,
+    },
+  },
+  {
+    name: "Hornet-SBD3-1",
+    longName: "US SBD3 (Hornet) 1",
+    position: usStartPosition4,
+    offsets: { x: 66, y: 80 },
+    image: "/images/aircounters/hornet-sbd-front.png",
+    width: "2.1%",
+    carrier: GlobalUnitsModel.Carrier.HORNET,
+    side: GlobalUnitsModel.Side.US,
+    aircraftUnit: {
+      strength: 2,
+      movement: 2,
+      attack: true,
+      diveBomber: true,
+      steps: 2,
+    },
+  },
+  {
+    name: "Hornet-SBD3-2",
+    longName: "US SBD3 (Hornet) 2",
+    position: usStartPosition5,
+    offsets: { x: 66, y: 80 },
+    image: "/images/aircounters/hornet-sbd-front.png",
+    width: "2.1%",
+    carrier: GlobalUnitsModel.Carrier.HORNET,
+    side: GlobalUnitsModel.Side.US,
+    aircraftUnit: {
+      strength: 2,
+      movement: 2,
+      attack: true,
+      diveBomber: true,
+      steps: 2,
+    },
+  },
+
+  // YORKTOWN AIR UNITS
+  {
+    name: "Yorktown-F4F4-1",
+    longName: "US F4F-4 (Yorktown) 1",
+    position: usStartPosition1,
+    offsets: { x: 66, y: 80 },
+    image: "/images/aircounters/yorktown-f4f-front.png",
+    width: "2.1%",
+    carrier: GlobalUnitsModel.Carrier.YORKTOWN,
+    side: GlobalUnitsModel.Side.US,
+    aircraftUnit: {
+      strength: 3,
+      movement: 3,
+      attack: false,
+      diveBomber: false,
+      steps: 2,
+    },
+  },
+  {
+    name: "Yorktown-F4F4-2",
+    longName: "US F4F-4 (Yorktown) 2",
+    position: usStartPosition2,
+    offsets: { x: 66, y: 80 },
+    image: "/images/aircounters/yorktown-f4f-front.png",
+    width: "2.1%",
+    carrier: GlobalUnitsModel.Carrier.YORKTOWN,
+    side: GlobalUnitsModel.Side.US,
+    aircraftUnit: {
+      strength: 3,
+      movement: 3,
+      attack: false,
+      diveBomber: false,
+      steps: 2,
+    },
+  },
+  {
+    name: "Yorktown-TBD1",
+    longName: "US TBD1 (Yorktown)",
+    position: usStartPosition3,
+    offsets: { x: 66, y: 80 },
+    image: "/images/aircounters/yorktown-tbd-front.png",
+    width: "2.1%",
+    carrier: GlobalUnitsModel.Carrier.YORKTOWN,
+    side: GlobalUnitsModel.Side.US,
+    aircraftUnit: {
+      strength: 2,
+      movement: 2,
+      attack: true,
+      diveBomber: false,
+      steps: 2,
+    },
+  },
+  {
+    name: "Yorktown-SBD3-1",
+    longName: "US SBD3 (Yorktown) 1",
+    position: usStartPosition4,
+    offsets: { x: 66, y: 80 },
+    image: "/images/aircounters/yorktown-sbd-front.png",
+    width: "2.1%",
+    carrier: GlobalUnitsModel.Carrier.YORKTOWN,
+    side: GlobalUnitsModel.Side.US,
+    aircraftUnit: {
+      strength: 2,
+      movement: 2,
+      attack: true,
+      diveBomber: true,
+      steps: 2,
+    },
+  },
+  {
+    name: "Yorktown-SBD3-2",
+    longName: "US SBD3 (Yorktown) 2",
+    position: usStartPosition5,
+    offsets: { x: 66, y: 80 },
+    image: "/images/aircounters/yorktown-sbd-front.png",
+    width: "2.1%",
+    carrier: GlobalUnitsModel.Carrier.YORKTOWN,
+    side: GlobalUnitsModel.Side.US,
+    aircraftUnit: {
+      strength: 2,
+      movement: 2,
+      attack: true,
+      diveBomber: true,
+      steps: 2,
+    },
+  },
+]
 function loadAirCounters(controller, counters) {
-  for (const unit of airUnits) {
+  for (const unit of japanAirUnits) {
     const airUnitCounter = new AirUnit(
       unit.name,
       unit.longName,
@@ -331,7 +647,8 @@ function loadAirCounters(controller, counters) {
       unit.offsets,
       unit.image,
       unit.width,
-      unit.carrier
+      unit.carrier,
+      unit.side
     )
     counters.set(unit.name, airUnitCounter)
 
@@ -346,7 +663,36 @@ function loadAirCounters(controller, counters) {
       )
     )
     controller.addAirUnitToBox(GlobalUnitsModel.AirBox.OFFBOARD, 0, airUnitCounter)
-    controller.addAirUnitToCarrier(unit.carrier, airUnitCounter)
+    controller.addAirUnitToJapaneseCarrier(unit.carrier, airUnitCounter)
+    controller.setCounters(counters)
+  }
+
+  for (const unit of usAirUnits) {
+    const airUnitCounter = new AirUnit(
+      unit.name,
+      unit.longName,
+      unit.position,
+      unit.offsets,
+      unit.image,
+      unit.width,
+      unit.carrier,
+      unit.side
+    )
+    counters.set(unit.name, airUnitCounter)
+
+    GlobalUnitsModel.usAirUnits.set(
+      unit.name,
+      new AircraftUnit(
+        unit.name,
+        unit.aircraftUnit.strength,
+        unit.aircraftUnit.movement,
+        unit.aircraftUnit.attack,
+        unit.aircraftUnit.diveBomber,
+        unit.aircraftUnit.steps
+      )
+    )
+    controller.addAirUnitToBox(GlobalUnitsModel.AirBox.OFFBOARD, 0, airUnitCounter)
+    controller.addAirUnitToUSCarrier(unit.carrier, airUnitCounter)
     controller.setCounters(counters)
   }
 }

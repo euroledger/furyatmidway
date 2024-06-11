@@ -4,6 +4,10 @@ import JapanAirBoxOffsets from "../components/draganddrop/JapanAirBoxOffsets"
 export default class BoxModels {
   getNumberOfZones(boxName) {
     const box = JapanAirBoxOffsets.filter((b) => b.name === boxName)
+    if (box.length === 0) {
+      // TODO remove, this is temporary hack until US boxes exist
+      return 0
+    }
     return box[0].offsets.length
   }
   // data structures for each box on the map
@@ -38,28 +42,39 @@ export default class BoxModels {
     this.japanCarrierMap.set(GlobalUnitsModel.Carrier.HIRYU, new Array())
     this.japanCarrierMap.set(GlobalUnitsModel.Carrier.SORYU, new Array())
 
-    // TODO
-    // 1. map side -> TaskForceMap (contains two entries, one for each cardiv)
-    //      "japan" -> taskForceMap
-    // 2. within each TaskForceMap,
-    //      "carDiv1" -> cardiv1Map
-    //      "carDiv2" -> cardiv2Map
-    // 3. within each CarDivMap (each contains two entries, one for each carrier)
-    //          cardiv1:
-    //              "akagi" -> akagiBoxMap
-    //              "kaga"  -> kagaBoxMap
-    //          cardiv2:
-    //              "hiryu" -> hiryuBoxMap
-    //              "soryu" -> soryuBoxMap
-    //  4. within each CarrierMap (each contains 5 entries, one for each box)
-    //              akagi:
-    //                  "capBox"        -> [list of boxes]
-    //                  "return1Box"    -> [list of boxes]
-    //                  "return2Box"    -> [list of boxes]
-    //                  "hangarBox"     -> [list of boxes]
-    //                  "flightDeckBox" -> [list of boxes]
-    //
-    //          ....etc.
+    // US Model
+    this.usTF16CapBoxes = new Array(this.getNumberOfZones(GlobalUnitsModel.AirBox.US_TF16_CAP))
+    this.usTF17CapBoxes = new Array(this.getNumberOfZones(GlobalUnitsModel.AirBox.US_TF17_CAP))
+    this.usMidwayCapBoxes = new Array(this.getNumberOfZones(GlobalUnitsModel.AirBox.US_MIDWAY_CAP))
+
+    this.usTF16Return1 = new Array(this.getNumberOfZones(GlobalUnitsModel.AirBox.US_TF16_RETURN1))
+    this.usTF16Return2 = new Array(this.getNumberOfZones(GlobalUnitsModel.AirBox.US_TF16_RETURN2))
+    this.usTF16CapReturn = new Array(this.getNumberOfZones(GlobalUnitsModel.AirBox.US_TF16_CAP_RETURN))
+
+    this.usEnterpriseHangar = new Array(this.getNumberOfZones(GlobalUnitsModel.AirBox.US_ENTERPRISE_HANGER))
+    this.usHornetHangar = new Array(this.getNumberOfZones(GlobalUnitsModel.AirBox.US_HORNET_HANGER))
+    this.usEnterpriseFlightDeck = new Array(this.getNumberOfZones(GlobalUnitsModel.AirBox.US_ENTERPRISE_FLIGHT_DECK))
+    this.usHornetFlightDeck = new Array(this.getNumberOfZones(GlobalUnitsModel.AirBox.US_HORNET_FLIGHT_DECK))
+
+    this.usTF17Return1 = new Array(this.getNumberOfZones(GlobalUnitsModel.AirBox.US_TF17_RETURN1))
+    this.usTF17Return2 = new Array(this.getNumberOfZones(GlobalUnitsModel.AirBox.US_TF17_RETURN2))
+    this.usTF17CapReturn = new Array(this.getNumberOfZones(GlobalUnitsModel.AirBox.US_TF17_CAP_RETURN))
+
+    this.usMidwayReturn1 = new Array(this.getNumberOfZones(GlobalUnitsModel.AirBox.US_MIDWAY_RETURN1))
+    this.usMidwayReturn2 = new Array(this.getNumberOfZones(GlobalUnitsModel.AirBox.US_MIDWAY_RETURN2))
+    this.usMidwayCapReturn = new Array(this.getNumberOfZones(GlobalUnitsModel.AirBox.US_MIDWAY_CAP_RETURN))
+
+    this.usYorktownHangar = new Array(this.getNumberOfZones(GlobalUnitsModel.AirBox.US_YORKTOWN_HANGER))
+    this.usMidwayHangar = new Array(this.getNumberOfZones(GlobalUnitsModel.AirBox.US_MIDWAY_HANGER))
+    this.usYorktownFlightDeck = new Array(this.getNumberOfZones(GlobalUnitsModel.AirBox.US_YORKTOWN_FLIGHT_DECK))
+    this.usMidwayFlightDeck = new Array(this.getNumberOfZones(GlobalUnitsModel.AirBox.US_MIDWAY_FLIGHT_DECK))
+    this.offboard = new Array()
+
+    this.usCarrierMap = new Map() // key = carrier name, value = array of air units
+    this.usCarrierMap.set(GlobalUnitsModel.Carrier.ENTERPRISE, new Array())
+    this.usCarrierMap.set(GlobalUnitsModel.Carrier.HORNET, new Array())
+    this.usCarrierMap.set(GlobalUnitsModel.Carrier.YORKTOWN, new Array())
+    this.usCarrierMap.set(GlobalUnitsModel.Carrier.MIDWAY, new Array())
 
     // map of air unit boxes, each item is a zone within the air box represented
     // as an array. Each element in th array may or may not contain an air unit
@@ -88,6 +103,36 @@ export default class BoxModels {
 
     this.boxMap.set(GlobalUnitsModel.AirBox.JP_SORYU_HANGER, this.japanSoryuHangar)
     this.boxMap.set(GlobalUnitsModel.AirBox.JP_SORYU_FLIGHT_DECK, this.japanSoryuFlightDeck)
+
+    // US BOX MAP
+    this.boxMap.set(GlobalUnitsModel.AirBox.US_TF16_CAP, this.usTF16CapBoxes)
+    this.boxMap.set(GlobalUnitsModel.AirBox.US_TF17_CAP, this.usTF17CapBoxes)
+    this.boxMap.set(GlobalUnitsModel.AirBox.US_MIDWAY_CAP, this.usMidwayCapBoxes)
+
+    this.boxMap.set(GlobalUnitsModel.AirBox.US_TF16_RETURN2, this.usTF16Return2)
+    this.boxMap.set(GlobalUnitsModel.AirBox.US_TF16_RETURN1, this.usTF16Return1)
+
+    this.boxMap.set(GlobalUnitsModel.AirBox.US_TF17_RETURN2, this.usTF17Return2)
+    this.boxMap.set(GlobalUnitsModel.AirBox.US_TF17_RETURN1, this.usTF17Return1)
+
+    this.boxMap.set(GlobalUnitsModel.AirBox.US_MIDWAY_RETURN2, this.usMidwayReturn2)
+    this.boxMap.set(GlobalUnitsModel.AirBox.US_MIDWAY_RETURN1, this.usMidwayReturn1)
+
+    this.boxMap.set(GlobalUnitsModel.AirBox.US_TF16_CAP_RETURN, this.usTF16CapReturn)
+    this.boxMap.set(GlobalUnitsModel.AirBox.US_TF17_CAP_RETURN, this.usTF17CapReturn)
+    this.boxMap.set(GlobalUnitsModel.AirBox.US_MIDWAY_CAP_RETURN, this.usMidwayCapReturn)
+
+    this.boxMap.set(GlobalUnitsModel.AirBox.US_ENTERPRISE_HANGER, this.usEnterpriseHangar)
+    this.boxMap.set(GlobalUnitsModel.AirBox.US_ENTERPRISE_FLIGHT_DECK, this.usEnterpriseFlightDeck)
+
+    this.boxMap.set(GlobalUnitsModel.AirBox.US_HORNET_HANGER, this.usHornetHangar)
+    this.boxMap.set(GlobalUnitsModel.AirBox.US_HORNET_FLIGHT_DECK, this.usHornetFlightDeck)
+
+    this.boxMap.set(GlobalUnitsModel.AirBox.US_YORKTOWN_HANGER, this.usYorktownHangar)
+    this.boxMap.set(GlobalUnitsModel.AirBox.US_YORKTOWN_FLIGHT_DECK, this.usYorktownFlightDeck)
+
+    this.boxMap.set(GlobalUnitsModel.AirBox.US_MIDWAY_HANGER, this.usMidwayHangar)
+    this.boxMap.set(GlobalUnitsModel.AirBox.US_MIDWAY_FLIGHT_DECK, this.usMidwayFlightDeck)
 
     // map of air unit -> location
     // This maps the name of an air unit to its location (ie box name, index)
@@ -160,20 +205,36 @@ export default class BoxModels {
     return found != undefined ? true : false
   }
 
-  addAirUnitToCarrier(carrier, value) {
+  addAirUnitToJapaneseCarrier(carrier, value) {
     const airUnitsArray = this.japanCarrierMap.get(carrier)
     airUnitsArray.push(value)
     this.japanCarrierMap.set(carrier, airUnitsArray)
   }
 
-  getAirUnitsForCarrier(carrier) {
+  addAirUnitToUSCarrier(carrier, value) {
+    const airUnitsArray = this.usCarrierMap.get(carrier)
+    airUnitsArray.push(value)
+    this.usCarrierMap.set(carrier, airUnitsArray)
+  }
+
+  getAirUnitsForJapaneseCarrier(carrier) {
     return this.japanCarrierMap.get(carrier)
   }
 
-  getAirUnitsDeployed(carrier) {
+  getAirUnitsForUSCarrier(carrier) {
+    return this.usCarrierMap.get(carrier)
+  }
+
+  getJapaneseAirUnitsDeployed(carrier) {
     const airUnitsArray = this.japanCarrierMap.get(carrier)
     return airUnitsArray.filter((airUnit) => {
-      const location = this.getAirUnitLocation(airUnit.name)
+      return this.getAirUnitLocation(airUnit.name).boxName != GlobalUnitsModel.AirBox.OFFBOARD
+    })
+  }
+
+  getUSAirUnitsDeployed(carrier) {
+    const airUnitsArray = this.usCarrierMap.get(carrier)
+    return airUnitsArray.filter((airUnit) => {
       return this.getAirUnitLocation(airUnit.name).boxName != GlobalUnitsModel.AirBox.OFFBOARD
     })
   }
@@ -186,7 +247,7 @@ export default class BoxModels {
     return box.length
   }
 
-  getBoxNamesForCarrier(carrier, includeReturnBoxes) {
+  getBoxNamesForJapaneseCarrier(carrier, includeReturnBoxes) {
     return includeReturnBoxes
       ? JapanAirBoxOffsets.filter((b) => b.carriers.includes(carrier)).map((bn) => bn.name)
       : JapanAirBoxOffsets.filter((b) => b.carriers.includes(carrier))

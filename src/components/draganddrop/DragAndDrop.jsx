@@ -11,7 +11,7 @@ function DragAndDrop({ name, handleDragEnter, zones }) {
     return (
       <div
         key={index}
-        class={"drag-drop-zone zone2"}
+        class={"drag-drop-zone"}
         style={{
           left: p.left + "%",
           top: p.top + "%",

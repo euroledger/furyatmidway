@@ -26,8 +26,8 @@ function MidwayGarrisonButton({
 
     setPosition({
       ...position,
-      left: MGTOffsets[getZone()].left + 0.2,
-      top: MGTOffsets[getZone()].top + 0.3,
+      left: MGTOffsets[getZone()].left + 0.5,
+      top: MGTOffsets[getZone()].top + 0.6,
     });
     GlobalGameState.stateHandler();
   };
@@ -42,7 +42,7 @@ function MidwayGarrisonButton({
           class={"button-pos dropdown-toggle"}
           style={{
             position: "absolute",
-            width: "3%",
+            width: "2.5%",
             left: `${position.left}%`,
             top: `${position.top}%`,
           }}

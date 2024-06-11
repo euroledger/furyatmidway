@@ -34,13 +34,16 @@ export default class GlobalGameState {
   static US_CARRIERS = [
     GlobalUnitsModel.Carrier.ENTERPRISE,
     GlobalUnitsModel.Carrier.HORNET,
-    GlobalUnitsModel.Carrier.YORKTOWN
+    GlobalUnitsModel.Carrier.YORKTOWN,
+    GlobalUnitsModel.Carrier.MIDWAY,
   ]
 
   static gameTurn = 1;
 
   static currentCarrier = 0
   static currentCarrierDivision = 1
+
+  static currentTaskForce = 1
 
   static airOperationPoints = {
     japan: 0,
@@ -81,16 +84,20 @@ export default class GlobalGameState {
 
   static logItems = ["Logging begin..."];
 
-  static gamePhase = this.PHASE.JAPAN_SETUP
-  static setupPhase = 0;
+  // static gamePhase = this.PHASE.US_SETUP_AIR // tmp: put back to Japan
+  static gamePhase = this.PHASE.JAPAN_SETUP // tmp: put back to Japan
+
+  // static setupPhase = 6; // tmp put back to 0
+  static setupPhase = 0; // tmp put back to 0
 
   static getJapanCarrier = () => {
     return this.JAPAN_CARRIERS[this.setupPhase]
   }
 
   static getUSCarrier = () => {
-    return this.US_CARRIERS[this.setupPhase -5]
+    return this.US_CARRIERS[this.setupPhase - 6]
   }
+
 
   static getSetupMessage = () => {
     return this.SETUP_MESSAGES[this.setupPhase]

@@ -23,8 +23,8 @@ function MidwayInvasionButton({
 
     setPosition({
       ...position,
-      left: MIFOffsets[getZone()].left + 0.3,
-      top: MIFOffsets[getZone()].top + 0.2,
+      left: MIFOffsets[getZone()].left + 0.6,
+      top: MIFOffsets[getZone()].top + 0.5,
     });
     GlobalGameState.stateHandler();
   };
@@ -39,7 +39,7 @@ function MidwayInvasionButton({
           class={"button-pos dropdown-toggle"}
           style={{
             position: "absolute",
-            width: "3%",
+            width: "2.5%",
             left: `${position.left}%`,
             top: `${position.top}%`,
           }}

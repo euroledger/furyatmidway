@@ -2,7 +2,7 @@ import Controller from "../src/controller/Controller"
 import GlobalUnitsModel from "../src/model/GlobalUnitsModel"
 import loadCounters from "../src/CounterLoader"
 
-describe("Air Box tests", () => {
+describe("Japan Air Box tests", () => {
   let controller
   let counters
 
@@ -11,7 +11,7 @@ describe("Air Box tests", () => {
     counters = loadCounters(controller)
   })
 
-  test("check CD1 air units can be added to various carrier air boxes", () => {
+  test("check Japanese CD1 air units can be added to various carrier air boxes", () => {
     // get all Akagi air units from data store
     const kaf1 = counters.get("Kaga-A6M-2b-1")
     const kaf2 = counters.get("Kaga-A6M-2b-2")
@@ -65,7 +65,7 @@ describe("Air Box tests", () => {
     expect(airUnits[0].name).toEqual("Akagi-B5N-2")
   })
 
-  test("check CD2 air units can be added to various carrier air boxes", () => {
+  test("check Japanese CD2 air units can be added to various carrier air boxes", () => {
     // get all Akagi air units from data store
     const haf1 = counters.get("Hiryu-A6M-2b-1")
     const haf2 = counters.get("Hiryu-A6M-2b-2")
@@ -119,7 +119,7 @@ describe("Air Box tests", () => {
     expect(airUnits[0].name).toEqual("Soryu-B5N-2")
   })
 
-  test("Check indexes of filled air boxes", () => {
+  test("Check indexes of filled Japan air boxes", () => {
     const haf1 = counters.get("Hiryu-A6M-2b-1")
     const haf2 = counters.get("Hiryu-A6M-2b-2")
     const hdb = counters.get("Hiryu-D3A-1")
@@ -138,7 +138,7 @@ describe("Air Box tests", () => {
     expect(zone).toEqual(-1)
   })
 
-  test("Add air units to box using next available slot", () => {
+  test("Add Japanese air units to box using next available slot", () => {
     let numZones = controller.getNumberZonesInBox(GlobalUnitsModel.AirBox.JP_CD1_CAP_RETURN)
     expect(numZones).toEqual(4)
 
@@ -161,7 +161,7 @@ describe("Air Box tests", () => {
     expect(units.length).toEqual(3)
   })
 
-  test("Free slots can be determined from the state of a box", () => {
+  test("Free slots can be determined from the state of a Japanese box", () => {
     const haf1 = counters.get("Hiryu-A6M-2b-1")
     const haf2 = counters.get("Hiryu-A6M-2b-2")
     const hdb = counters.get("Hiryu-D3A-1")

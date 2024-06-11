@@ -1,6 +1,7 @@
 import "../../board.css";
 import AirCounter from "./AirCounter";
 import GlobalGameState from "../../../model/GlobalGameState";
+import GlobalUnitsModel from "../../../model/GlobalUnitsModel";
 
 function AirCounters({
   controller,
@@ -10,19 +11,34 @@ function AirCounters({
   setAirBox,
   counterData,
   airUnitUpdate,
-  setAlertShow
+  setAlertShow, 
 }) {
   const counters = Array.from(counterData.values());
   const airCounters = counters.map((airUnit) => {
-    const carrierIndex = GlobalGameState.JAPAN_CARRIERS.indexOf(
-      airUnit.carrier
-    );
-    if (
-      carrierIndex > GlobalGameState.currentCarrier &&
-      GlobalGameState.gamePhase === GlobalGameState.PHASE.JAPAN_SETUP
-    ) {
-      return;
+    if (airUnit.side === GlobalUnitsModel.Side.JAPAN) {
+      const carrierIndex = GlobalGameState.JAPAN_CARRIERS.indexOf(
+        airUnit.carrier
+      );
+      if (
+        carrierIndex > GlobalGameState.currentCarrier &&
+        GlobalGameState.gamePhase === GlobalGameState.PHASE.JAPAN_SETUP
+      ) {
+        return;
+      }
+    } else {
+      const carrierIndex = GlobalGameState.US_CARRIERS.indexOf(
+        airUnit.carrier
+      );
+      if (
+        carrierIndex > GlobalGameState.currentCarrier &&
+        GlobalGameState.gamePhase === GlobalGameState.PHASE.US_SETUP_AIR
+      ) {
+        return;
+      }
     }
+ 
+   
+
     if (airUnit.constructor.name === "AirUnit") {
       return (
         <AirCounter
@@ -35,6 +51,7 @@ function AirCounters({
           setAirBox={setAirBox}
           airUnitUpdate={airUnitUpdate}
           setAlertShow={setAlertShow}
+          side={airUnit.side}
         ></AirCounter>
       );
     }

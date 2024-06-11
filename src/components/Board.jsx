@@ -11,11 +11,13 @@ import MGTOffsets from "./draganddrop/MGTBoxOffsets"
 import FleetCounter from "./buttons/mapobjects/FleetCounter"
 import AirCounters from "./buttons/mapobjects/AirCounters"
 import JapanAirBoxOffsets from "./draganddrop/JapanAirBoxOffsets"
+import USAirBoxOffsets from "./draganddrop/USAirBoxOffsets"
 import GlobalInit from "../model/GlobalInit"
-import CarrierDropZones from "./draganddrop/CarrierDropZones"
-import Modal from "react-bootstrap/Modal"
-import Button from "react-bootstrap/Button"
+import JapanCarrierDropZones from "./draganddrop/JapanCarrierDropZones"
+import USCarrierDropZones from "./draganddrop/USCarrierDropZones"
 import GlobalGameState from "../model/GlobalGameState"
+import StrikePanel from "./dialogs/StrikePanel"
+import GlobalUnitsModel from "../model/GlobalUnitsModel"
 
 function Board({
   controller,
@@ -32,8 +34,8 @@ function Board({
   let zProps = { us: 0, japan: 0 }
   const initialJpAopPosition = { left: 2.7, top: 7 }
   const initialUSAopPosition = { left: 3.5, top: 6.1 }
-  const initialMIFPosition = { left: 40.3, top: 6.2 }
-  const initialMGFPosition = { left: 77.5, top: 6.2 }
+  const initialMIFPosition = { left: 40.5, top: 6.6 }
+  const initialMGFPosition = { left: 77.5, top: 6.6 }
 
   const [zone, setZone] = useState(0)
   const [currentJapanHex, setCurrentJapanHex] = useState({})
@@ -73,10 +75,20 @@ function Board({
     event.preventDefault()
     event.stopPropagation()
 
-    const unit = controller.getAirUnitInBox(name, index)
     const airZones = JapanAirBoxOffsets.find((o) => o.name === name)
 
     const offsets = airZones.offsets[index]
+    setAirBox({ name, offsets, index })
+  }
+
+  const handleUSAirBoxDragEnter = (event, index, name) => {
+    event.preventDefault()
+    event.stopPropagation()
+
+    const airZones = USAirBoxOffsets.find((o) => o.name === name)
+
+    const offsets = airZones.offsets[index]
+    console.log(`YO setting US air box name ${name}, index ${index}`)
     setAirBox({ name, offsets, index })
   }
   const getZone = () => zone
@@ -197,7 +209,11 @@ function Board({
           airUnitUpdate={airUnitUpdate}
           setAlertShow={setAlertShow}
         ></AirCounters>
-        <CarrierDropZones handleDragEnter={handleAirBoxDragEnter} show={showZones}></CarrierDropZones>
+        <JapanCarrierDropZones handleDragEnter={handleAirBoxDragEnter} show={showZones}></JapanCarrierDropZones>
+        <USCarrierDropZones handleDragEnter={handleUSAirBoxDragEnter} show={showZones}></USCarrierDropZones>
+        
+        <StrikePanel side="Japan" enabled={false}></StrikePanel>
+        <StrikePanel side="US" enabled={false}></StrikePanel>
       </div>
     </>
   )

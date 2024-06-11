@@ -90,7 +90,7 @@ describe("Controller tests", () => {
   })
 
   test("Air units for carrier", () => {
-    const airUnits = controller.getAirUnitsForCarrier("Akagi")
+    const airUnits = controller.getAirUnitsForJapaneseCarrier("Akagi")
     expect(airUnits.length).toEqual(4)
 
     expect(airUnits[0].name).toEqual("Akagi-A6M-2b-1")
@@ -115,29 +115,30 @@ describe("Controller tests", () => {
         name: GlobalUnitsModel.AirBox.JP_CD1_CAP,
         counterData,
         index: 2,
+        side: GlobalUnitsModel.Side.JAPAN
       },
     })
-    const airUnitsDeployed = controller.getAirUnitsDeployed(counterData.carrier)
+    const airUnitsDeployed = controller.getJapaneseAirUnitsDeployed(counterData.carrier)
     expect(airUnitsDeployed.length).toEqual(1)
   })
 
   test("Can filter box names by carrier", () => {
-    let boxes = controller.getBoxesForCarrier(GlobalUnitsModel.Carrier.AKAGI, true)
+    let boxes = controller.getBoxesForJapaneseCarrier(GlobalUnitsModel.Carrier.AKAGI, true)
     expect(boxes.length).toEqual(6)
-    boxes = controller.getBoxesForCarrier(GlobalUnitsModel.Carrier.KAGA, true)
+    boxes = controller.getBoxesForJapaneseCarrier(GlobalUnitsModel.Carrier.KAGA, true)
     expect(boxes.length).toEqual(6)
-    boxes = controller.getBoxesForCarrier(GlobalUnitsModel.Carrier.HIRYU, true)
+    boxes = controller.getBoxesForJapaneseCarrier(GlobalUnitsModel.Carrier.HIRYU, true)
     expect(boxes.length).toEqual(6)
-    boxes = controller.getBoxesForCarrier(GlobalUnitsModel.Carrier.SORYU, true)
+    boxes = controller.getBoxesForJapaneseCarrier(GlobalUnitsModel.Carrier.SORYU, true)
     expect(boxes.length).toEqual(6)
 
-    boxes = controller.getBoxesForCarrier(GlobalUnitsModel.Carrier.AKAGI, false)
+    boxes = controller.getBoxesForJapaneseCarrier(GlobalUnitsModel.Carrier.AKAGI, false)
     expect(boxes.length).toEqual(3)
-    boxes = controller.getBoxesForCarrier(GlobalUnitsModel.Carrier.KAGA, false)
+    boxes = controller.getBoxesForJapaneseCarrier(GlobalUnitsModel.Carrier.KAGA, false)
     expect(boxes.length).toEqual(3)
-    boxes = controller.getBoxesForCarrier(GlobalUnitsModel.Carrier.HIRYU, false)
+    boxes = controller.getBoxesForJapaneseCarrier(GlobalUnitsModel.Carrier.HIRYU, false)
     expect(boxes.length).toEqual(3)
-    boxes = controller.getBoxesForCarrier(GlobalUnitsModel.Carrier.SORYU, false)
+    boxes = controller.getBoxesForJapaneseCarrier(GlobalUnitsModel.Carrier.SORYU, false)
     expect(boxes.length).toEqual(3)
   })
 

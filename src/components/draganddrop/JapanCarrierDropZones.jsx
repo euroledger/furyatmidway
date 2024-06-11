@@ -5,7 +5,7 @@ import "../board.css";
 import GlobalGameState from "../../model/GlobalGameState";
 import GlobalUnitsModel from "../../model/GlobalUnitsModel";
 
-function CarrierDropZones({ handleDragEnter, show }) {
+function JapanCarrierDropZones({ handleDragEnter, show }) {
   const japanZones = JapanAirBoxOffsets.map((box, index) => {
     let enabled = true;
 
@@ -59,4 +59,4 @@ function CarrierDropZones({ handleDragEnter, show }) {
   return <>{japanZones}</>;
 }
 
-export default CarrierDropZones;
+export default JapanCarrierDropZones;

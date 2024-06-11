@@ -88,25 +88,42 @@ export default class Controller {
     return this.boxModel.getAirUnitLocation(airUnitName)
   }
 
-  addAirUnitToCarrier(carrier, value) {
-    this.boxModel.addAirUnitToCarrier(carrier, value)
+  addAirUnitToJapaneseCarrier(carrier, value) {
+    this.boxModel.addAirUnitToJapaneseCarrier(carrier, value)
   }
 
-  getAirUnitsForCarrier(carrier) {
-    return this.boxModel.getAirUnitsForCarrier(carrier)
+  addAirUnitToUSCarrier(carrier, value) {
+    this.boxModel.addAirUnitToUSCarrier(carrier, value)
   }
 
-  getAirUnitsDeployed(carrier) {
-    return this.boxModel.getAirUnitsDeployed(carrier)
+  getAirUnitsForJapaneseCarrier(carrier) {
+    return this.boxModel.getAirUnitsForJapaneseCarrier(carrier)
+  }
+
+  getAirUnitsForUSCarrier(carrier) {
+    return this.boxModel.getAirUnitsForUSCarrier(carrier)
+  }
+
+  getJapaneseAirUnitsDeployed(carrier) {
+    return this.boxModel.getJapaneseAirUnitsDeployed(carrier)
+  }
+
+  getUSAirUnitsDeployed(carrier) {
+    return this.boxModel.getUSAirUnitsDeployed(carrier)
   }
 
   getAirUnit(name) {
     return GlobalUnitsModel.jpAirUnits.get(name)
   }
 
-  getBoxesForCarrier(carrier, includeReturnBoxes) {
-    return this.boxModel.getBoxNamesForCarrier(carrier, includeReturnBoxes)
+  getBoxesForJapaneseCarrier(carrier, includeReturnBoxes) {
+    return this.boxModel.getBoxNamesForJapaneseCarrier(carrier, includeReturnBoxes)
   }
+
+  getBoxesForUSCarrier(carrier, includeReturnBoxes) {
+    return this.boxModel.getBoxNamesForUSCarrier(carrier, includeReturnBoxes)
+  }
+
 
   drawJapanCards(num, initial) {
     this.cardModel.drawJapanCards(num, initial)
