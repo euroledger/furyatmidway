@@ -104,7 +104,7 @@ function calcRandomTestData(unit, controller) {
   let boxes = controller.getBoxesForJapaneseCarrier(carrier, false)
 
   // 1. if this is an attack aircraft, remove CAP from list
-  const aircraftUnit = controller.getAirUnit(unit.name)
+  const aircraftUnit = controller.getJapanAirUnit(unit.name)
 
   if (aircraftUnit.attack) {
     boxes = boxes.filter((b) => !b.includes("CAP"))

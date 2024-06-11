@@ -1,5 +1,6 @@
 import GlobalUnitsModel from "./GlobalUnitsModel"
 import JapanAirBoxOffsets from "../components/draganddrop/JapanAirBoxOffsets"
+import USAirBoxOffsets from "../components/draganddrop/USAirBoxOffsets"
 
 export default class BoxModels {
   getNumberOfZones(boxName) {
@@ -251,6 +252,14 @@ export default class BoxModels {
     return includeReturnBoxes
       ? JapanAirBoxOffsets.filter((b) => b.carriers.includes(carrier)).map((bn) => bn.name)
       : JapanAirBoxOffsets.filter((b) => b.carriers.includes(carrier))
+          .map((bn) => bn.name)
+          .filter((n) => !n.includes("RETURN"))
+  }
+
+  getBoxNamesForUSCarrier(carrier, includeReturnBoxes) {
+    return includeReturnBoxes
+      ? USAirBoxOffsets.filter((b) => b.carriers.includes(carrier)).map((bn) => bn.name)
+      : USAirBoxOffsets.filter((b) => b.carriers.includes(carrier))
           .map((bn) => bn.name)
           .filter((n) => !n.includes("RETURN"))
   }

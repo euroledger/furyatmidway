@@ -78,7 +78,7 @@ function Board({
     const airZones = JapanAirBoxOffsets.find((o) => o.name === name)
 
     const offsets = airZones.offsets[index]
-    setAirBox({ name, offsets, index })
+    setAirBox({ name, offsets, index, side: GlobalUnitsModel.Side.JAPAN })
   }
 
   const handleUSAirBoxDragEnter = (event, index, name) => {
@@ -88,8 +88,7 @@ function Board({
     const airZones = USAirBoxOffsets.find((o) => o.name === name)
 
     const offsets = airZones.offsets[index]
-    console.log(`YO setting US air box name ${name}, index ${index}`)
-    setAirBox({ name, offsets, index })
+    setAirBox({ name, offsets, index, side: GlobalUnitsModel.Side.US })
   }
   const getZone = () => zone
   const getMIFZone = () => mifzone

@@ -11,18 +11,17 @@ function USCarrierDropZones({ handleDragEnter, show }) {
 
     // console.log("CURRENT PHASE = ", GlobalGameState.gamePhase)
    if (GlobalGameState.gamePhase === GlobalGameState.PHASE.US_SETUP_AIR) {
-      console.log("box name= ", box.name)
       if (
         !box.name.includes(GlobalGameState.getUSCarrier().toUpperCase()) &&
         box.name != GlobalUnitsModel.AirBox.US_TF16_CAP &&
         box.name != GlobalUnitsModel.AirBox.US_TF17_CAP
       ) {
-        console.log(
-          ">>>>>>>>>>>>> DO NOT DISPLAY, carrier = ",
-          GlobalGameState.getUSCarrier().toUpperCase(),
-          ", box name = ",
-          box.name
-        );
+        // console.log(
+        //   ">>>>>>>>>>>>> DO NOT DISPLAY, carrier = ",
+        //   GlobalGameState.getUSCarrier().toUpperCase(),
+        //   ", box name = ",
+        //   box.name
+        // );
         return;
       }
     //   console.log(">>>>>>>>>>>>>>>>>>>>> CARRIER DIV= ", GlobalGameState.currentTaskForce, "BOX NAME = ", box.name)
@@ -43,7 +42,7 @@ function USCarrierDropZones({ handleDragEnter, show }) {
         enabled = false;
       }
     } else {
-      enabled = true
+      enabled = false
     }
     // console.log(`+++++++++ box name: ${box.name}, enabled = ${enabled}`);
     return (

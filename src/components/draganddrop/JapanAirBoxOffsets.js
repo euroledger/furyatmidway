@@ -31,22 +31,6 @@ const JapanAirBoxOffsets = [
     taskForce: GlobalUnitsModel.TaskForce.CARRIER_DIV_1,
     carriers: [GlobalUnitsModel.Carrier.AKAGI],
     offsets: [
-      // {
-      //   left: 14.7,
-      //   top: 90.5,
-      // },
-      // {
-      //   left: 14.7,
-      //   top: 93.7,
-      // },
-      // {
-      //   left: 16.9,
-      //   top: 90.5,
-      // },
-      // {
-      //   left: 16.9,
-      //   top: 93.7,
-      // },
       {
         left: 14.0,
         top: 90.5,
@@ -67,22 +51,6 @@ const JapanAirBoxOffsets = [
         left: 17.7,
         top: 91.9,
       },
-      // {
-      //   left: 13.7,
-      //   top: 94.5,
-      // },
-      // {
-      //   left: 14.7,
-      //   top: 93.5,
-      // },
-      // {
-      //   left: 15.7,
-      //   top: 92.5,
-      // },
-      // {
-      //   left: 16.7,
-      //   top: 91.7,
-      // },
     ],
   },
   {

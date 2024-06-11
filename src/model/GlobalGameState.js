@@ -7,7 +7,8 @@ export default class GlobalGameState {
     JAPAN_CARD_DRAW: "Japan Card Draw",
     US_SETUP_FLEET: "US Setup (Naval)",
     US_SETUP_AIR: "US Setup (Air)",
-    US_CARD_DRAW: "US Card Draw"
+    US_CARD_DRAW: "US Card Draw",
+    US_FLEET_MOVEMENT: "US FLEET MOVEMENT"
   }
 
 

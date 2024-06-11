@@ -3,6 +3,7 @@ import "../../board.css"
 import Controller from "../../../controller/Controller"
 import GlobalUnitsModel from "../../../model/GlobalUnitsModel"
 import GlobalGameState from "../../../model/GlobalGameState"
+import { counter } from "@fortawesome/fontawesome-svg-core"
 
 function AirCounter({
   controller,
@@ -61,24 +62,16 @@ function AirCounter({
       // cannot move units from carrier other than the current one being set up
       return false
     }
-
-    console.log("IN JAPAN DROP 2")
-
     const { name, offsets } = getAirBox()
     if (!offsets) {
       return false
     }
-
-    console.log("IN JAPAN DROP 3")
-
     // attack is true if the air unit is torpedo or dive bomber, i.e., not a fighter
-    const airUnit = controller.getAirUnit(counterData.name)
+    const airUnit = controller.getJapanAirUnit(counterData.name)
     if (!airUnit) {
       // error
       return false
     }
-    console.log("IN JAPAN DROP 4")
-
     if (
       airUnit.attack &&
       (name === GlobalUnitsModel.AirBox.JP_CD1_CAP || name === GlobalUnitsModel.AirBox.JP_CD2_CAP)
@@ -86,24 +79,71 @@ function AirCounter({
       console.log("*** Air Unit is not a figher unit -> Cannot be used for CAP!")
 
       setAlertShow(true)
-      // TODO display error popup
       return false
     }
-    console.log("IN JAPAN DROP 5")
+
+    return offsets
+  }
+
+  const usDrop = (counterData) => {
+    if (
+      counterData.carrier != GlobalGameState.getUSCarrier() ||
+      GlobalGameState.gamePhase !== GlobalGameState.PHASE.US_SETUP_AIR
+    ) {
+      // cannot move units from carrier other than the current one being set up
+      console.log("QUACK 1")
+      return false
+    }
+    const { name, offsets } = getAirBox()
+    if (!offsets) {
+      console.log("QUACK 2")
+
+      return false
+    }
+
+    // attack is true if the air unit is torpedo or dive bomber, i.e., not a fighter
+    console.log("GET unit: ", counterData.name)
+    const airUnit = controller.getUSAirUnit(counterData.name)
+    if (!airUnit) {
+      console.log("QUACK 3")
+
+      // error
+      return false
+    }
+    if (
+      airUnit.attack &&
+      (name === GlobalUnitsModel.AirBox.US_TF16_CAP || name === GlobalUnitsModel.AirBox.US_TF17_CAP ||
+      name === GlobalUnitsModel.AirBox.US_MIDWAY_CAP)
+    ) {
+      console.log("*** Air Unit is not a figher unit -> Cannot be used for CAP!")
+
+      setAlertShow(true)
+      return false
+    }
 
     return offsets
   }
   const handleDrop = (event) => {
     event.preventDefault()
 
-    const { name, offsets, index } = getAirBox()
+    const { name, offsets, index, side } = getAirBox()
 
     console.log("+++++++++++++++++++++++++++++++++++++ handle drop, side = ", theSide)
+    console.log("+++++++++++++++++++++++++++++++++++++ handle drop, box side = ", side)
+
+    if (side != theSide) {
+      return
+    }
     if (theSide === GlobalUnitsModel.Side.JAPAN) {
       if (!japanDrop(counterData)) {
         return
       }
+    } else {
+      if (!usDrop(counterData)) {
+        return
+      }
     }
+    console.log(">>>>>>>>DROP ", counterData.name, " ON TO BOX ", name)
     setPosition({
       left: offsets.left + "%",
       top: offsets.top - 0.2 + "%",
@@ -124,6 +164,13 @@ function AirCounter({
     setAirBox({})
   }
 
+  const handleClick = (e) => {
+      console.log('Left click');
+  }
+  const handleRightClick = (e) => {
+    e.preventDefault()
+    console.log('Right click');
+}
   return (
     <div>
       <input
@@ -144,6 +191,8 @@ function AirCounter({
         draggabble="true"
         onDragStart={onDrag}
         onDragEnd={handleDrop}
+        onClick={(e) => handleClick(e)}
+        onContextMenu={(e) => handleRightClick(e)}
       />
     </div>
   )

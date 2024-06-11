@@ -112,10 +112,13 @@ export default class Controller {
     return this.boxModel.getUSAirUnitsDeployed(carrier)
   }
 
-  getAirUnit(name) {
+  getJapanAirUnit(name) {
     return GlobalUnitsModel.jpAirUnits.get(name)
   }
 
+  getUSAirUnit(name) {
+    return GlobalUnitsModel.usAirUnits.get(name)
+  }
   getBoxesForJapaneseCarrier(carrier, includeReturnBoxes) {
     return this.boxModel.getBoxNamesForJapaneseCarrier(carrier, includeReturnBoxes)
   }
