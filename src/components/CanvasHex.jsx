@@ -1,13 +1,9 @@
 import React from "react"
 import "./main.scss"
+import { convertCoords, hexOrigin, hexSize, flatHexToPixel } from "./HexUtils"
 
 const POINTY = 0
 const FLAT = 1
-
-const hexOrigin = {
-  x: -15.3,
-  y: -20.5,
-}
 
 const hexType = FLAT
 const japanAF1StartHexes = [
@@ -20,7 +16,7 @@ export default class CanvasHex extends React.Component {
   constructor(props) {
     super(props)
     this.state = {
-      hexSize: 29.07,
+      hexSize: hexSize,
       scale: props.scale,
       side: props.side,
       usRegions: props.usRegions
@@ -146,14 +142,14 @@ export default class CanvasHex extends React.Component {
       return
     }
     for (let hex of hexes) {
-      const { x, y } = this.flatHexToPixel({ q: hex.q, r: hex.r })
+      const { x, y } = flatHexToPixel({ q: hex.q, r: hex.r })
       this.drawAndFillHex(this.canvasCoordinates, { x, y }, color)
     }
   }
   drawNeighbours = (h) => {
     for (let i = 0; i <= 5; i++) {
       const { q, r } = this.getCubeNeighbour({ q: h.q, r: h.r }, i)
-      const { x, y } = this.flatHexToPixel({ q, r })
+      const { x, y } = flatHexToPixel({ q, r })
       if (!this.displayHex(q, r)) {
         continue
       }
@@ -163,11 +159,11 @@ export default class CanvasHex extends React.Component {
     }
   }
 
-  flatHexToPixel = (hex) => {
-    const x = this.state.hexSize * ((3 / 2) * hex.q) + hexOrigin.x
-    const y = this.state.hexSize * ((Math.sqrt(3) / 2) * hex.q + Math.sqrt(3) * hex.r) + hexOrigin.y
-    return { x, y }
-  }
+  // flatHexToPixel = (hex) => {
+  //   const x = this.state.hexSize * ((3 / 2) * hex.q) + hexOrigin.x
+  //   const y = this.state.hexSize * ((Math.sqrt(3) / 2) * hex.q + Math.sqrt(3) * hex.r) + hexOrigin.y
+  //   return { x, y }
+  // }
 
   pixelToFlatHex = ({ x, y }) => {
     let q = ((x - hexOrigin.x) * 2) / 3 / (this.state.hexSize * this.props.scale)
@@ -250,7 +246,7 @@ export default class CanvasHex extends React.Component {
         if (q % 2 === 0 && q !== 0) {
           p++
         }
-        let { x, y } = this.flatHexToPixel({ q, r: r - p })
+        let { x, y } = flatHexToPixel({ q, r: r - p })
         if (
           x > hexWidth / 2 &&
           x < canvasWidth - hexWidth / 2 &&
@@ -259,7 +255,7 @@ export default class CanvasHex extends React.Component {
         ) {
           this.drawFlatHex(this.canvasHex, { x, y }, "rgba(50, 40, 0, 0)", 1)
 
-          const { q1, r1 } = this.convertCoords(q, r - p)
+          const { q1, r1 } = convertCoords(q, r - p)
           this.drawHexCoordinates(this.canvasHex, { x, y }, { q: q1, r: r1 })
         }
       }
@@ -271,7 +267,7 @@ export default class CanvasHex extends React.Component {
         if (q % 2 !== 0) {
           n++
         }
-        let { x, y } = this.flatHexToPixel({ q, r: r + n })
+        let { x, y } = flatHexToPixel({ q, r: r + n })
         if (
           x > hexWidth / 2 &&
           x < canvasWidth - hexWidth / 2 &&
@@ -430,12 +426,12 @@ export default class CanvasHex extends React.Component {
   }
 
   // convert the axial coordinates to the offset coordinates (as printed on the game map)
-  convertCoords = (q, r) => {
-    const r1 = q >= 2 ? r + Math.floor(q / 2) : r
+  // convertCoords = (q, r) => {
+  //   const r1 = q >= 2 ? r + Math.floor(q / 2) : r
 
-    const row = String.fromCharCode(q - 1 + "A".charCodeAt(0))
-    return { q1: row, r1 }
-  }
+  //   const row = String.fromCharCode(q - 1 + "A".charCodeAt(0))
+  //   return { q1: row, r1 }
+  // }
 
   handleMouseLeave = (e) => {
     this.clearCanvas()
@@ -466,13 +462,13 @@ export default class CanvasHex extends React.Component {
       })
     } else {
       const { q, r } = this.cubeRound(this.pixelToFlatHex({ x: mx, y: my }))
-      const { x, y } = this.flatHexToPixel({ q, r })
+      const { x, y } = flatHexToPixel({ q, r })
 
       if (!this.displayHex(q, r)) {
         return
       }
 
-      const { q1, r1 } = this.convertCoords(q, r)
+      const { q1, r1 } = convertCoords(q, r)
       this.setState({
         currentHex: { ...this.state.currentHex, q, r, x, y, row: q1, col: r1 }, // row col are the midway map coords
       })

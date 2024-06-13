@@ -128,9 +128,6 @@ function AirCounter({
 
     const { name, offsets, index, side } = getAirBox()
 
-    console.log("+++++++++++++++++++++++++++++++++++++ handle drop, side = ", theSide)
-    console.log("+++++++++++++++++++++++++++++++++++++ handle drop, box side = ", side)
-
     if (side != theSide) {
       return
     }
@@ -143,13 +140,13 @@ function AirCounter({
         return
       }
     }
-    console.log(">>>>>>>>DROP ", counterData.name, " ON TO BOX ", name)
+    // console.log(">>>>>>>>DROP ", counterData.name, " ON TO BOX ", name)
     setPosition({
       left: offsets.left + "%",
       top: offsets.top - 0.2 + "%",
     })
 
-    console.log("CALL viewEventHandler side = ", theSide)
+    // console.log("CALL viewEventHandler side = ", theSide)
     controller.viewEventHandler({
       type: Controller.EventTypes.AIR_UNIT_SETUP,
       data: {

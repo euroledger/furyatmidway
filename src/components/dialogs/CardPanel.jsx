@@ -22,6 +22,7 @@ function CentredButton() {
   )
 }
 function CardPanel(props) {
+
   const cardArray =
     props.side === GlobalUnitsModel.Side.JAPAN
       ? GlobalUnitsModel.jpCards.map((c) => c.number)
@@ -29,7 +30,7 @@ function CardPanel(props) {
 
   const bg = "#293a4b"
   const header = `${props.side} Hand`
-  const rowClass = `g-${GlobalUnitsModel.jpCards.length}`
+  const rowClass = `g-${cardArray.length}`
   const sizey = cardArray.length >= 4 ? "xl" : "lg"
   return (
     <Modal {...props} size={sizey} aria-labelledby="contained-modal-title-vcenter" centered>

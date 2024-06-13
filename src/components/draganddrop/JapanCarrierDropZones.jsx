@@ -43,7 +43,7 @@ function JapanCarrierDropZones({ handleDragEnter, show }) {
         enabled = false;
       }
     } else {
-      enabled = true
+      enabled = false
     }
     // console.log(`+++++++++ box name: ${box.name}, enabled = ${enabled}`);
     return (

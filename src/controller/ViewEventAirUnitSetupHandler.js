@@ -29,8 +29,8 @@ class ViewEventAirUnitSetupHandler {
       }
     } else {
       const airUnitsDeployed = this.controller.getUSAirUnitsDeployed(counterData.carrier)
-      // TODO check Midway here (it is not 5!)
-      if (airUnitsDeployed.length === 5) {
+      const numAirUnitsInCarrier = GlobalGameState.currentCarrier === 3 ? 7 : 5
+      if (airUnitsDeployed.length === numAirUnitsInCarrier) {
         // all units deployed -> activate button
         GlobalGameState.phaseCompleted = true
         GlobalGameState.updateGlobalState()

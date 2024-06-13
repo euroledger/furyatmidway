@@ -378,6 +378,46 @@ const usStartPosition5 = {
   left: "90%",
   top: "81%",
 }
+const usStartPosition6 = {
+  left: "90%",
+  top: "85%",
+}
+const usStartPosition7 = {
+  left: "90%",
+  top: "89%",
+}
+
+const usMidwayStartPosition1 = {
+  left: "95%",
+  top: "25%",
+}
+
+const usMidwayStartPosition2 = {
+  left: "95%",
+  top: "29%",
+}
+
+const usMidwayStartPosition3 = {
+  left: "95%",
+  top: "33%",
+}
+
+const usMidwayStartPosition4 = {
+  left: "95%",
+  top: "37%",
+}
+const usMidwayStartPosition5 = {
+  left: "95%",
+  top: "41%",
+}
+const usMidwayStartPosition6 = {
+  left: "95%",
+  top: "45%",
+}
+const usMidwayStartPosition7 = {
+  left: "95%",
+  top: "49%",
+}
 const usAirUnits = [
   {
     name: "Enterprise-F4F4-1",
@@ -634,6 +674,127 @@ const usAirUnits = [
       movement: 2,
       attack: true,
       diveBomber: true,
+      steps: 2,
+    },
+  },
+
+  // MIDWAY AIR UNITS
+  {
+    name: "Midway-F4F3",
+    longName: "US F4F-3 (Midway)",
+    position: usMidwayStartPosition1,
+    offsets: { x: 66, y: 80 },
+    image: "/images/aircounters/midway-f4f-back.png",
+    width: "2.1%",
+    carrier: GlobalUnitsModel.Carrier.MIDWAY,
+    side: GlobalUnitsModel.Side.US,
+    aircraftUnit: {
+      strength: 2,
+      movement: 3,
+      attack: false,
+      diveBomber: false,
+      steps: 1,
+    },
+  },
+  {
+    name: "Midway-F2A-3",
+    longName: "US F2A-3 (Midway)",
+    position: usMidwayStartPosition2,
+    offsets: { x: 66, y: 80 },
+    image: "/images/aircounters/midway-f2a-front.png",
+    width: "2.1%",
+    carrier: GlobalUnitsModel.Carrier.MIDWAY,
+    side: GlobalUnitsModel.Side.US,
+    aircraftUnit: {
+      strength: 1,
+      movement: 2,
+      attack: false,
+      diveBomber: false,
+      steps: 2,
+    },
+  },
+  {
+    name: "Midway-SBD-2",
+    longName: "US SBD-2 (Midway)",
+    position: usMidwayStartPosition3,
+    offsets: { x: 66, y: 80 },
+    image: "/images/aircounters/midway-sbd-front.png",
+    width: "2.1%",
+    carrier: GlobalUnitsModel.Carrier.MIDWAY,
+    side: GlobalUnitsModel.Side.US,
+    aircraftUnit: {
+      strength: 2,
+      movement: 2,
+      attack: true,
+      diveBomber: false,
+      steps: 2,
+    },
+  },
+  {
+    name: "Midway-SB2U-3",
+    longName: "US SB2U-3 (Midway)",
+    position: usMidwayStartPosition4,
+    offsets: { x: 66, y: 80 },
+    image: "/images/aircounters/midway-sb2u-back.png",
+    width: "2.1%",
+    carrier: GlobalUnitsModel.Carrier.MIDWAY,
+    side: GlobalUnitsModel.Side.US,
+    aircraftUnit: {
+      strength: 1,
+      movement: 2,
+      attack: true,
+      diveBomber: false,
+      steps: 1,
+    },
+  },
+  {
+    name: "Midway-TBF-1",
+    longName: "US TBF-1 (Midway)",
+    position: usMidwayStartPosition5,
+    offsets: { x: 66, y: 80 },
+    image: "/images/aircounters/midway-tbf-back.png",
+    width: "2.1%",
+    carrier: GlobalUnitsModel.Carrier.MIDWAY,
+    side: GlobalUnitsModel.Side.US,
+    aircraftUnit: {
+      strength: 2,
+      movement: 2,
+      attack: true,
+      diveBomber: false,
+      steps: 1,
+    },
+  },
+  {
+    name: "Midway-B26-B",
+    longName: "US B26-B (Midway)",
+    position: usMidwayStartPosition6,
+    offsets: { x: 66, y: 80 },
+    image: "/images/aircounters/midway-b26-back.png",
+    width: "2.1%",
+    carrier: GlobalUnitsModel.Carrier.MIDWAY,
+    side: GlobalUnitsModel.Side.US,
+    aircraftUnit: {
+      strength: 1,
+      movement: 3,
+      attack: true,
+      diveBomber: false,
+      steps: 1,
+    },
+  },
+  {
+    name: "Midway-B17-E",
+    longName: "US B17-E (Midway)",
+    position: usMidwayStartPosition7,
+    offsets: { x: 66, y: 80 },
+    image: "/images/aircounters/midway-b17-front.png",
+    width: "2.1%",
+    carrier: GlobalUnitsModel.Carrier.MIDWAY,
+    side: GlobalUnitsModel.Side.US,
+    aircraftUnit: {
+      strength: 0,
+      movement: 3,
+      attack: true,
+      diveBomber: false,
       steps: 2,
     },
   },

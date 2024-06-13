@@ -1,12 +1,20 @@
 import React, { useState } from "react"
 import "../../board.css"
-import GlobalGameState from "../../../model/GlobalGameState"
 import HexCommand from "../../../commands/HexCommand"
-import COMMAND_TYPE from "../../../commands/COMMAND_TYPE"
 import Controller from "../../../controller/Controller"
+import { flatHexToPixel, convertCoords } from "../../HexUtils"
 
-
-function FleetCounter({ controller, onDrag, onStop, id, currentHex, counterData, usRegions, enabled }) {
+function FleetCounter({
+  controller,
+  onDrag,
+  onStop,
+  id,
+  currentHex,
+  counterData,
+  fleetUnitUpdate,
+  usRegions,
+  enabled,
+}) {
   const [position, setPosition] = useState({
     initial: true,
     left: counterData.position.left,
@@ -14,14 +22,46 @@ function FleetCounter({ controller, onDrag, onStop, id, currentHex, counterData,
     currentHex: {},
   })
 
-  const handleDrop = (event) => {
+  let hex = fleetUnitUpdate.position.currentHex
 
-    const hex = ({q: currentHex.q, r: currentHex.r})
+  // This code for the test mode fleet unit updates
+  if (
+    counterData.name === fleetUnitUpdate.name &&
+    position.currentHex.q !== hex.q &&
+    position.currentHex.r !== hex.r
+  ) {
+   
+
+    console.log(
+      "I am ",
+      fleetUnitUpdate.name,
+      " -> FLEET UNIT UPDATE, move to ",
+      hex.q + ",",
+      hex.r
+    )
+
+
+    console.log(`\t => x = ${hex.x}, y = ${hex.y}`)
+    console.log(`\t => row = ${hex.row}, col = ${hex.col}`)
+    setPosition({
+      initial: false,
+      left: hex.x + counterData.position.left + counterData.offsets.x,
+      top: hex.y + counterData.position.top + counterData.offsets.y,
+      currentHex: hex,
+    })
+  }
+  const handleDrop = (event) => {
+    const hex = { q: currentHex.q, r: currentHex.r }
+
     let isThere = usRegions && usRegions.find((h) => h.q === hex.q && h.r === hex.r)
 
     if (!isThere) {
       return
     }
+
+    console.log(
+      `Fleet Unit ${counterData.name} moves to q:${hex.q}, r:${hex.r} => x:${currentHex.x},y:${currentHex.y}, row: ${currentHex.row}, col: ${currentHex.col}`
+    )
 
     setPosition({
       initial: false,
@@ -30,23 +70,21 @@ function FleetCounter({ controller, onDrag, onStop, id, currentHex, counterData,
       currentHex,
     })
 
-    let command = new HexCommand(COMMAND_TYPE.MOVE, id, { currentHex: position.currentHex }, { currentHex })
+    let from = { currentHex: position.currentHex }
+    let to = { currentHex }
     if (position.initial) {
-      command = new HexCommand(COMMAND_TYPE.PLACE, id, HexCommand.OFFBOARD, { currentHex })
+      from = HexCommand.OFFBOARD
     }
 
     controller.viewEventHandler({
       type: Controller.EventTypes.FLEET_SETUP,
       data: {
-        // name: airUnitUpdate.boxName,
-        // counterData,
-        // index: airUnitUpdate.index,
+        initial: position.initial,
+        id,
+        from,
+        to,
       },
     })
-    GlobalGameState.phaseCompleted = true
-
-    GlobalGameState.log(`Command: ${command.toString()}`)
-    // GlobalGameState.log(`${counterData.longName} moves to ${currentHex.row}-${currentHex.col}`)
   }
 
   const handleClick = (event) => {
@@ -73,7 +111,6 @@ function FleetCounter({ controller, onDrag, onStop, id, currentHex, counterData,
       )}
     </div>
   )
-  //   });
 }
 
 export default FleetCounter

@@ -14,9 +14,10 @@ import CardPanel from "./components/dialogs/CardPanel"
 import GameStatusPanel from "./components/dialogs/GameStatusPanel"
 import SplashScreen from "./components/dialogs/SplashScreen"
 import "./style.css"
-import calcRandomTestData from "./AirUnitTestData"
+import { calcRandomJapanTestData, getFleetUnitUpdateUS, calcTestDataUS } from "./AirUnitTestData"
 import JapanAirBoxOffsets from "./components/draganddrop/JapanAirBoxOffsets"
-import { airUnitData } from "./AirUnitTestData"
+import USAirBoxOffsets from "./components/draganddrop/USAirBoxOffsets"
+import { airUnitDataJapan, airUnitDataUS } from "./AirUnitTestData"
 import usCSFStartHexes from "./components/MapRegions"
 
 export default App
@@ -46,6 +47,12 @@ export function App() {
     boxName: "",
     index: -1,
   })
+
+  const [fleetUnitUpdate, setFleetUnitUpdate] = useState({
+    name: "",
+    position: {},
+  })
+
   const [USMapRegions, setUSMapRegions] = useState([])
   const [japanMapRegions, setjapanMapRegions] = useState([])
 
@@ -56,7 +63,8 @@ export function App() {
     setIsMoveable(false)
   }
 
-  const nextAction = () => {
+  const nextAction = (e) => {
+    e.preventDefault()
     if (GlobalGameState.gamePhase === GlobalGameState.PHASE.JAPAN_SETUP) {
       if (GlobalGameState.currentCarrier <= 2) {
         GlobalGameState.currentCarrier++
@@ -75,6 +83,23 @@ export function App() {
       GlobalGameState.gamePhase = GlobalGameState.PHASE.US_SETUP_AIR
       GlobalGameState.usFleetPlaced = true
       setUSMapRegions([])
+    } else if (GlobalGameState.gamePhase === GlobalGameState.PHASE.US_SETUP_AIR) {
+      GlobalGameState.currentCarrier++
+      GlobalGameState.currentTaskForce =
+        GlobalGameState.currentCarrier <= 1 ? 1 : GlobalGameState.currentCarrier === 2 ? 2 : 3 // 3 is Midway
+      if (GlobalGameState.currentCarrier === 4) {
+        GlobalGameState.gamePhase = GlobalGameState.PHASE.US_CARD_DRAW
+        GlobalGameState.usSetUpComplete = true
+      }
+    }
+    else if (GlobalGameState.gamePhase === GlobalGameState.PHASE.US_CARD_DRAW) {
+      GlobalInit.controller.drawUSCards(2, true)
+      GlobalGameState.usCardsDrawn = true
+      if (GlobalGameState.gameTurn != 1) {
+        GlobalGameState.gamePhase = GlobalGameState.PHASE.BOTH_CARD_DRAW
+      } else {
+        GlobalGameState.gamePhase = GlobalGameState.PHASE.JAPAN_MIDWAY
+      }
     }
     GlobalGameState.phaseCompleted = false
     GlobalGameState.setupPhase++
@@ -102,20 +127,48 @@ export function App() {
     setTestClicked(true)
 
     let update
-    for (const unit of airUnitData) {
-      update = calcRandomTestData(unit, GlobalInit.controller)
+    for (const unit of airUnitDataJapan) {
+      update = calcRandomJapanTestData(unit, GlobalInit.controller)
       if (!update) {
         continue
       }
       update.index = GlobalInit.controller.getFirstAvailableZone(update.boxName)
       let position1 = JapanAirBoxOffsets.find((box) => box.name === update.boxName)
-      ;(update.position = position1.offsets[update.index]), setAirUnitUpdate(update)
-      await delay(500)
+      update.position = position1.offsets[update.index]
+
+      console.log("** JAPAN UPDATE = ", update)
+
+      setAirUnitUpdate(update)
+      await delay(100)
       if (update.nextAction) {
-        nextAction()
+        nextAction(e)
       }
     }
-    
+    nextAction(e) // get past japan card draw
+
+    update = getFleetUnitUpdateUS("CSF")
+    setFleetUnitUpdate(update)
+
+    nextAction(e) // get past US Fleet Unit setup
+
+    for (const unit of airUnitDataUS) {
+      update = calcTestDataUS(unit, GlobalInit.controller)
+      if (!update) {
+        continue
+      }
+      update.index = GlobalInit.controller.getFirstAvailableZone(update.boxName)
+
+      let position1 = USAirBoxOffsets.find((box) => box.name === update.boxName)
+
+      update.position = position1.offsets[update.index]
+
+      setAirUnitUpdate(update)
+
+      await delay(100)
+      if (update.nextAction) {
+        nextAction(e)
+      }
+    }
   }
 
   var v = process.env.REACT_APP_MYVAR || "arse"
@@ -148,8 +201,17 @@ export function App() {
                 className="me-1"
                 size="sm"
                 variant="outline-primary"
-                disabled={!GlobalGameState.usCardsDrawn}
-                onClick={() => setusHandShow(true)}
+                disabled={
+                  !GlobalGameState.usCardsDrawn && GlobalGameState.gamePhase !== GlobalGameState.PHASE.US_CARD_DRAW
+                }
+                onClick={(e) => {
+                  GlobalGameState.phaseCompleted = true
+                  GlobalGameState.usCardsDrawn = true
+                  if (GlobalGameState.gamePhase === GlobalGameState.PHASE.US_CARD_DRAW) {
+                    nextAction(e)
+                  }
+                  setusHandShow(true)
+                }}
               >
                 US Hand
               </Button>
@@ -160,11 +222,11 @@ export function App() {
                 disabled={
                   !GlobalGameState.jpCardsDrawn && GlobalGameState.gamePhase !== GlobalGameState.PHASE.JAPAN_CARD_DRAW
                 }
-                onClick={() => {
+                onClick={(e) => {
                   GlobalGameState.phaseCompleted = true
                   GlobalGameState.jpCardsDrawn = true
                   if (GlobalGameState.gamePhase === GlobalGameState.PHASE.JAPAN_CARD_DRAW) {
-                    nextAction()
+                    nextAction(e)
                   }
                   setjpHandShow(true)
                 }}
@@ -213,7 +275,7 @@ export function App() {
                 size="sm"
                 className="me-1"
                 variant="secondary"
-                onClick={() => nextAction()}
+                onClick={(e) => nextAction(e)}
                 disabled={!GlobalGameState.phaseCompleted}
                 style={{ background: "#9e1527" }}
               >
@@ -317,12 +379,15 @@ export function App() {
       </AlertPanel>
       <GameStatusPanel show={gameStateShow} gameState={gameState} onHide={() => setGameStateShow(false)} />
       <CardPanel show={jpHandShow} side={GlobalUnitsModel.Side.JAPAN} onHide={() => setjpHandShow(false)}></CardPanel>
-      <CardPanel
+      <CardPanel show={usHandShow} side={GlobalUnitsModel.Side.US} onHide={() => setusHandShow(false)}></CardPanel>
+
+      
+      {/* <CardPanel
         cardArray={[13, 3, 8, 2]}
         show={usHandShow}
         side={GlobalUnitsModel.Side.US}
         onHide={() => setusHandShow(false)}
-      ></CardPanel>
+      ></CardPanel> */}
       <TransformWrapper
         initialScale={1}
         disabled={isMoveable}
@@ -356,7 +421,7 @@ export function App() {
                 onStop={onStop}
                 scale={scale}
                 airUnitUpdate={airUnitUpdate}
-                setAirUnitUpdate={setAirUnitUpdate}
+                fleetUnitUpdate={fleetUnitUpdate}
                 setAlertShow={setAlertShow}
                 showZones={showZones}
                 USMapRegions={USMapRegions}

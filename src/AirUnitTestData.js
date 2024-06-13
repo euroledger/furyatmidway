@@ -2,8 +2,9 @@ import JapanAirBoxOffsets from "./components/draganddrop/JapanAirBoxOffsets"
 import GlobalUnitsModel from "./model/GlobalUnitsModel"
 import GlobalInit from "./model/GlobalInit"
 import GlobalGameState from "./model/GlobalGameState"
+import { flatHexToPixel, convertCoords} from  "./components/HexUtils"
 
-export const airUnitData = [
+export const airUnitDataJapan = [
   {
     boxName: GlobalUnitsModel.AirBox.JP_CD1_CAP,
     name: "Akagi-A6M-2b-1",
@@ -75,28 +76,144 @@ export const airUnitData = [
 
 ]
 
-function calcTestData() {
-  const testData = []
-
-  for (const unit of airUnitData) {
-    let boxName = unit.boxName
-
-    let name = unit.name
-    let nextAction = unit.nextAction
-    testData.push({
-      name: name,
-      boxName: boxName,
-      nextAction: nextAction,
-    })
+export const airUnitDataUS = [
+  {
+    name: "Enterprise-F4F4-1",
+    boxName: GlobalUnitsModel.AirBox.US_TF16_CAP,
+  },
+  {
+    name: "Enterprise-F4F4-2",
+    boxName: GlobalUnitsModel.AirBox.US_ENTERPRISE_FLIGHT_DECK,
+  },
+  {
+    name: "Enterprise-SBD3-1",
+    boxName: GlobalUnitsModel.AirBox.US_ENTERPRISE_FLIGHT_DECK,
+  },
+  {
+    name: "Enterprise-SBD3-2",
+    boxName: GlobalUnitsModel.AirBox.US_ENTERPRISE_HANGER,
+  },
+  {
+    name: "Enterprise-TBD1",
+    boxName: GlobalUnitsModel.AirBox.US_ENTERPRISE_HANGER,
+    nextAction: true
+  },
+  {
+    name: "Hornet-F4F4-1",
+    boxName: GlobalUnitsModel.AirBox.US_TF16_CAP,
+  },
+  {
+    name: "Hornet-F4F4-2",
+    boxName: GlobalUnitsModel.AirBox.US_HORNET_FLIGHT_DECK,
+  },
+  {
+    name: "Hornet-SBD3-1",
+    boxName: GlobalUnitsModel.AirBox.US_HORNET_FLIGHT_DECK,
+  },
+  {
+    name: "Hornet-SBD3-2",
+    boxName: GlobalUnitsModel.AirBox.US_HORNET_HANGER,
+  },
+  {
+    name: "Hornet-TBD1",
+    boxName: GlobalUnitsModel.AirBox.US_HORNET_HANGER,
+    nextAction: true
+  },
+  {
+    name: "Yorktown-F4F4-1",
+    boxName: GlobalUnitsModel.AirBox.US_TF17_CAP,
+  },
+  {
+    name: "Yorktown-F4F4-2",
+    boxName: GlobalUnitsModel.AirBox.US_YORKTOWN_FLIGHT_DECK,
+  },
+  {
+    name: "Yorktown-SBD3-1",
+    boxName: GlobalUnitsModel.AirBox.US_YORKTOWN_FLIGHT_DECK,
+  },
+  {
+    name: "Yorktown-SBD3-2",
+    boxName: GlobalUnitsModel.AirBox.US_YORKTOWN_HANGER,
+  },
+  {
+    name: "Yorktown-TBD1",
+    boxName: GlobalUnitsModel.AirBox.US_YORKTOWN_HANGER,
+    nextAction: true
+  },
+  {
+    name: "Midway-F4F3",
+    boxName: GlobalUnitsModel.AirBox.US_MIDWAY_CAP,
+  },
+  {
+    name: "Midway-F2A-3",
+    boxName: GlobalUnitsModel.AirBox.US_MIDWAY_CAP,
+  },
+  {
+    name: "Midway-SBD-2",
+    boxName: GlobalUnitsModel.AirBox.US_MIDWAY_FLIGHT_DECK
+  },
+  {
+    name: "Midway-SB2U-3",
+    boxName: GlobalUnitsModel.AirBox.US_MIDWAY_HANGER
+  },
+  {
+    name: "Midway-TBF-1",
+    boxName: GlobalUnitsModel.AirBox.US_MIDWAY_FLIGHT_DECK
+  },
+  {
+    name: "Midway-B26-B",
+    boxName: GlobalUnitsModel.AirBox.US_MIDWAY_FLIGHT_DECK
+  },
+  {
+    name: "Midway-B17-E",
+    boxName: GlobalUnitsModel.AirBox.US_MIDWAY_HANGER,
+    nextAction: true
   }
+]
 
-  return testData
+export function calcTestDataUS(unit, controller) {
+  let carrier = controller.getCarrierForAirUnit(unit.name)
+  if (carrier != GlobalGameState.US_CARRIERS[GlobalGameState.currentCarrier]) {
+    return undefined
+  }
+  return {
+    name: unit.name,
+    boxName: unit.boxName,
+    nextAction: unit.nextAction,
+  }
 }
 
-function calcRandomTestData(unit, controller) {
-  const units = Array.from(GlobalInit.counters.values())
-  const airCounters = units.filter((unit) => unit.constructor.name === "AirUnit")
-  // for (const unit of airUnitData) {
+export function getFleetUnitUpdateUS(name) {
+   // 1. set x and y coords from this q, r update
+
+   let hex = {
+    q: 7,
+    r: 1
+   }
+
+   let { x, y } = flatHexToPixel({ q: hex.q, r: hex.r })
+
+   // 2. set row and col from this q, r update
+   const { q1, r1 } = convertCoords(hex.q, hex.r)
+
+   let cHex = {
+     q: hex.q,
+     r: hex.r,
+     x: x,
+     y: y,
+     row: q1,
+     col: r1,
+   }
+
+   return {
+    name: "CSF",
+    position: {
+      currentHex: cHex,
+    },
+  }
+}
+
+export function calcRandomJapanTestData(unit, controller) {
   let carrier = controller.getCarrierForAirUnit(unit.name)
   if (carrier != GlobalGameState.JAPAN_CARRIERS[GlobalGameState.currentCarrier]) {
     return undefined
@@ -135,5 +252,3 @@ function calcRandomTestData(unit, controller) {
     nextAction: nextAction,
   }
 }
-
-export default calcRandomTestData

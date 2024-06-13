@@ -3,38 +3,39 @@ import JapanAirBoxOffsets from "../components/draganddrop/JapanAirBoxOffsets"
 import USAirBoxOffsets from "../components/draganddrop/USAirBoxOffsets"
 
 export default class BoxModels {
-  getNumberOfZones(boxName) {
+  getNumberOfJapanZones(boxName) {
     const box = JapanAirBoxOffsets.filter((b) => b.name === boxName)
-    if (box.length === 0) {
-      // TODO remove, this is temporary hack until US boxes exist
-      return 0
-    }
+    return box[0].offsets.length
+  }
+
+  getNumberOfUSZones(boxName) {
+    const box = USAirBoxOffsets.filter((b) => b.name === boxName)
     return box[0].offsets.length
   }
   // data structures for each box on the map
 
   // eg CAP boxes, hangar boxes
   constructor() {
-    this.japanDiv1CapBoxes = new Array(this.getNumberOfZones(GlobalUnitsModel.AirBox.JP_CD1_CAP))
-    this.japanDiv2CapBoxes = new Array(this.getNumberOfZones(GlobalUnitsModel.AirBox.JP_CD2_CAP))
+    this.japanDiv1CapBoxes = new Array(this.getNumberOfJapanZones(GlobalUnitsModel.AirBox.JP_CD1_CAP))
+    this.japanDiv2CapBoxes = new Array(this.getNumberOfJapanZones(GlobalUnitsModel.AirBox.JP_CD2_CAP))
 
-    this.japanCD1Return1 = new Array(this.getNumberOfZones(GlobalUnitsModel.AirBox.JP_CD1_RETURN1))
-    this.japanCD1Return2 = new Array(this.getNumberOfZones(GlobalUnitsModel.AirBox.JP_CD1_RETURN2))
-    this.japanCD1CapReturn = new Array(this.getNumberOfZones(GlobalUnitsModel.AirBox.JP_CD1_CAP_RETURN))
+    this.japanCD1Return1 = new Array(this.getNumberOfJapanZones(GlobalUnitsModel.AirBox.JP_CD1_RETURN1))
+    this.japanCD1Return2 = new Array(this.getNumberOfJapanZones(GlobalUnitsModel.AirBox.JP_CD1_RETURN2))
+    this.japanCD1CapReturn = new Array(this.getNumberOfJapanZones(GlobalUnitsModel.AirBox.JP_CD1_CAP_RETURN))
 
-    this.japanAkagiHangar = new Array(this.getNumberOfZones(GlobalUnitsModel.AirBox.JP_AKAGI_HANGER))
-    this.japanKagaHangar = new Array(this.getNumberOfZones(GlobalUnitsModel.AirBox.JP_KAGA_HANGER))
-    this.japanAkagiFlightDeck = new Array(this.getNumberOfZones(GlobalUnitsModel.AirBox.JP_AKAGI_FLIGHT_DECK))
-    this.japanKagaFlightDeck = new Array(this.getNumberOfZones(GlobalUnitsModel.AirBox.JP_KAGA_FLIGHT_DECK))
+    this.japanAkagiHangar = new Array(this.getNumberOfJapanZones(GlobalUnitsModel.AirBox.JP_AKAGI_HANGER))
+    this.japanKagaHangar = new Array(this.getNumberOfJapanZones(GlobalUnitsModel.AirBox.JP_KAGA_HANGER))
+    this.japanAkagiFlightDeck = new Array(this.getNumberOfJapanZones(GlobalUnitsModel.AirBox.JP_AKAGI_FLIGHT_DECK))
+    this.japanKagaFlightDeck = new Array(this.getNumberOfJapanZones(GlobalUnitsModel.AirBox.JP_KAGA_FLIGHT_DECK))
 
-    this.japanCD2Return1 = new Array(this.getNumberOfZones(GlobalUnitsModel.AirBox.JP_CD2_RETURN1))
-    this.japanCD2Return2 = new Array(this.getNumberOfZones(GlobalUnitsModel.AirBox.JP_CD2_RETURN2))
-    this.japanCD2CapReturn = new Array(this.getNumberOfZones(GlobalUnitsModel.AirBox.JP_CD2_CAP_RETURN))
+    this.japanCD2Return1 = new Array(this.getNumberOfJapanZones(GlobalUnitsModel.AirBox.JP_CD2_RETURN1))
+    this.japanCD2Return2 = new Array(this.getNumberOfJapanZones(GlobalUnitsModel.AirBox.JP_CD2_RETURN2))
+    this.japanCD2CapReturn = new Array(this.getNumberOfJapanZones(GlobalUnitsModel.AirBox.JP_CD2_CAP_RETURN))
 
-    this.japanHiryuHangar = new Array(this.getNumberOfZones(GlobalUnitsModel.AirBox.JP_HIRYU_HANGER))
-    this.japanSoryuHangar = new Array(this.getNumberOfZones(GlobalUnitsModel.AirBox.JP_SORYU_HANGER))
-    this.japanHiryuFlightDeck = new Array(this.getNumberOfZones(GlobalUnitsModel.AirBox.JP_HIRYU_FLIGHT_DECK))
-    this.japanSoryuFlightDeck = new Array(this.getNumberOfZones(GlobalUnitsModel.AirBox.JP_SORYU_FLIGHT_DECK))
+    this.japanHiryuHangar = new Array(this.getNumberOfJapanZones(GlobalUnitsModel.AirBox.JP_HIRYU_HANGER))
+    this.japanSoryuHangar = new Array(this.getNumberOfJapanZones(GlobalUnitsModel.AirBox.JP_SORYU_HANGER))
+    this.japanHiryuFlightDeck = new Array(this.getNumberOfJapanZones(GlobalUnitsModel.AirBox.JP_HIRYU_FLIGHT_DECK))
+    this.japanSoryuFlightDeck = new Array(this.getNumberOfJapanZones(GlobalUnitsModel.AirBox.JP_SORYU_FLIGHT_DECK))
     this.offboard = new Array()
 
     this.japanCarrierMap = new Map() // key = carrier name, value = array of air units
@@ -44,31 +45,31 @@ export default class BoxModels {
     this.japanCarrierMap.set(GlobalUnitsModel.Carrier.SORYU, new Array())
 
     // US Model
-    this.usTF16CapBoxes = new Array(this.getNumberOfZones(GlobalUnitsModel.AirBox.US_TF16_CAP))
-    this.usTF17CapBoxes = new Array(this.getNumberOfZones(GlobalUnitsModel.AirBox.US_TF17_CAP))
-    this.usMidwayCapBoxes = new Array(this.getNumberOfZones(GlobalUnitsModel.AirBox.US_MIDWAY_CAP))
+    this.usTF16CapBoxes = new Array(this.getNumberOfUSZones(GlobalUnitsModel.AirBox.US_TF16_CAP))
+    this.usTF17CapBoxes = new Array(this.getNumberOfUSZones(GlobalUnitsModel.AirBox.US_TF17_CAP))
+    this.usMidwayCapBoxes = new Array(this.getNumberOfUSZones(GlobalUnitsModel.AirBox.US_MIDWAY_CAP))
 
-    this.usTF16Return1 = new Array(this.getNumberOfZones(GlobalUnitsModel.AirBox.US_TF16_RETURN1))
-    this.usTF16Return2 = new Array(this.getNumberOfZones(GlobalUnitsModel.AirBox.US_TF16_RETURN2))
-    this.usTF16CapReturn = new Array(this.getNumberOfZones(GlobalUnitsModel.AirBox.US_TF16_CAP_RETURN))
+    this.usTF16Return1 = new Array(this.getNumberOfUSZones(GlobalUnitsModel.AirBox.US_TF16_RETURN1))
+    this.usTF16Return2 = new Array(this.getNumberOfUSZones(GlobalUnitsModel.AirBox.US_TF16_RETURN2))
+    this.usTF16CapReturn = new Array(this.getNumberOfUSZones(GlobalUnitsModel.AirBox.US_TF16_CAP_RETURN))
 
-    this.usEnterpriseHangar = new Array(this.getNumberOfZones(GlobalUnitsModel.AirBox.US_ENTERPRISE_HANGER))
-    this.usHornetHangar = new Array(this.getNumberOfZones(GlobalUnitsModel.AirBox.US_HORNET_HANGER))
-    this.usEnterpriseFlightDeck = new Array(this.getNumberOfZones(GlobalUnitsModel.AirBox.US_ENTERPRISE_FLIGHT_DECK))
-    this.usHornetFlightDeck = new Array(this.getNumberOfZones(GlobalUnitsModel.AirBox.US_HORNET_FLIGHT_DECK))
+    this.usEnterpriseHangar = new Array(this.getNumberOfUSZones(GlobalUnitsModel.AirBox.US_ENTERPRISE_HANGER))
+    this.usHornetHangar = new Array(this.getNumberOfUSZones(GlobalUnitsModel.AirBox.US_HORNET_HANGER))
+    this.usEnterpriseFlightDeck = new Array(this.getNumberOfUSZones(GlobalUnitsModel.AirBox.US_ENTERPRISE_FLIGHT_DECK))
+    this.usHornetFlightDeck = new Array(this.getNumberOfUSZones(GlobalUnitsModel.AirBox.US_HORNET_FLIGHT_DECK))
 
-    this.usTF17Return1 = new Array(this.getNumberOfZones(GlobalUnitsModel.AirBox.US_TF17_RETURN1))
-    this.usTF17Return2 = new Array(this.getNumberOfZones(GlobalUnitsModel.AirBox.US_TF17_RETURN2))
-    this.usTF17CapReturn = new Array(this.getNumberOfZones(GlobalUnitsModel.AirBox.US_TF17_CAP_RETURN))
+    this.usTF17Return1 = new Array(this.getNumberOfUSZones(GlobalUnitsModel.AirBox.US_TF17_RETURN1))
+    this.usTF17Return2 = new Array(this.getNumberOfUSZones(GlobalUnitsModel.AirBox.US_TF17_RETURN2))
+    this.usTF17CapReturn = new Array(this.getNumberOfUSZones(GlobalUnitsModel.AirBox.US_TF17_CAP_RETURN))
 
-    this.usMidwayReturn1 = new Array(this.getNumberOfZones(GlobalUnitsModel.AirBox.US_MIDWAY_RETURN1))
-    this.usMidwayReturn2 = new Array(this.getNumberOfZones(GlobalUnitsModel.AirBox.US_MIDWAY_RETURN2))
-    this.usMidwayCapReturn = new Array(this.getNumberOfZones(GlobalUnitsModel.AirBox.US_MIDWAY_CAP_RETURN))
+    this.usMidwayReturn1 = new Array(this.getNumberOfUSZones(GlobalUnitsModel.AirBox.US_MIDWAY_RETURN1))
+    this.usMidwayReturn2 = new Array(this.getNumberOfUSZones(GlobalUnitsModel.AirBox.US_MIDWAY_RETURN2))
+    this.usMidwayCapReturn = new Array(this.getNumberOfUSZones(GlobalUnitsModel.AirBox.US_MIDWAY_CAP_RETURN))
 
-    this.usYorktownHangar = new Array(this.getNumberOfZones(GlobalUnitsModel.AirBox.US_YORKTOWN_HANGER))
-    this.usMidwayHangar = new Array(this.getNumberOfZones(GlobalUnitsModel.AirBox.US_MIDWAY_HANGER))
-    this.usYorktownFlightDeck = new Array(this.getNumberOfZones(GlobalUnitsModel.AirBox.US_YORKTOWN_FLIGHT_DECK))
-    this.usMidwayFlightDeck = new Array(this.getNumberOfZones(GlobalUnitsModel.AirBox.US_MIDWAY_FLIGHT_DECK))
+    this.usYorktownHangar = new Array(this.getNumberOfUSZones(GlobalUnitsModel.AirBox.US_YORKTOWN_HANGER))
+    this.usMidwayHangar = new Array(this.getNumberOfUSZones(GlobalUnitsModel.AirBox.US_MIDWAY_HANGER))
+    this.usYorktownFlightDeck = new Array(this.getNumberOfUSZones(GlobalUnitsModel.AirBox.US_YORKTOWN_FLIGHT_DECK))
+    this.usMidwayFlightDeck = new Array(this.getNumberOfUSZones(GlobalUnitsModel.AirBox.US_MIDWAY_FLIGHT_DECK))
     this.offboard = new Array()
 
     this.usCarrierMap = new Map() // key = carrier name, value = array of air units

@@ -1,16 +1,21 @@
-import React from "react";
-import DragAndDropSmall from "./DragAndDropSmall";
+import React from "react"
+import DragAndDropSmall from "./DragAndDropSmall"
 import USAirBoxOffsets from "./USAirBoxOffsets"
-import "../board.css";
-import GlobalGameState from "../../model/GlobalGameState";
-import GlobalUnitsModel from "../../model/GlobalUnitsModel";
+import "../board.css"
+import GlobalGameState from "../../model/GlobalGameState"
+import GlobalUnitsModel from "../../model/GlobalUnitsModel"
 
 function USCarrierDropZones({ handleDragEnter, show }) {
   const usZones = USAirBoxOffsets.map((box, index) => {
-    let enabled = true;
+    let enabled = true
 
-    // console.log("CURRENT PHASE = ", GlobalGameState.gamePhase)
-   if (GlobalGameState.gamePhase === GlobalGameState.PHASE.US_SETUP_AIR) {
+    console.log(
+      "Game phase = ",
+      GlobalGameState.gamePhase,
+      ", us air setup phase = ",
+      GlobalGameState.PHASE.US_SETUP_AIR
+    )
+    if (GlobalGameState.gamePhase === GlobalGameState.PHASE.US_SETUP_AIR) {
       if (
         !box.name.includes(GlobalGameState.getUSCarrier().toUpperCase()) &&
         box.name != GlobalUnitsModel.AirBox.US_TF16_CAP &&
@@ -22,24 +27,22 @@ function USCarrierDropZones({ handleDragEnter, show }) {
         //   ", box name = ",
         //   box.name
         // );
-        return;
+        return
       }
-    //   console.log(">>>>>>>>>>>>>>>>>>>>> CARRIER DIV= ", GlobalGameState.currentTaskForce, "BOX NAME = ", box.name)
+      // console.log(">>>>>>>>>>>>>>>>>>>>> TASK FORCE = ", GlobalGameState.currentTaskForce, "BOX NAME = ", box.name)
 
-      if (
-        box.name === GlobalUnitsModel.AirBox.US_TF17_CAP &&
-        GlobalGameState.currentTaskForce === 1
-      ) {
-        return;
+      if (box.name === GlobalUnitsModel.AirBox.US_TF16_CAP && GlobalGameState.currentTaskForce !== 1) {
+        return
       }
-      if (
-        box.name === GlobalUnitsModel.AirBox.US_TF16_CAP &&
-        GlobalGameState.currentTaskForce === 2
-      ) {
-        return;
+      if (box.name === GlobalUnitsModel.AirBox.US_TF17_CAP && GlobalGameState.currentTaskForce !== 2) {
+        return
+      }
+
+      if (box.name === GlobalUnitsModel.AirBox.US_MIDWAY_CAP && GlobalGameState.currentTaskForce !== 3) {
+        return
       }
       if (box.name.includes("RETURN")) {
-        enabled = false;
+        enabled = false
       }
     } else {
       enabled = false
@@ -53,9 +56,9 @@ function USCarrierDropZones({ handleDragEnter, show }) {
         zones={box.offsets}
         enabled={enabled && show}
       ></DragAndDropSmall>
-    );
-  });
-  return <>{usZones}</>;
+    )
+  })
+  return <>{usZones}</>
 }
 
-export default USCarrierDropZones;
+export default USCarrierDropZones

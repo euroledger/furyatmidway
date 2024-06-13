@@ -24,7 +24,7 @@ export default class CardModel {
   drawUSCards(num, initial) {
     let drawDeck = Array.from(GlobalUnitsModel.cards)
     if (initial) {
-      drawDeck = Array.from(GlobalUnitsModel.cards).filter((card) => card.side === GlobalUnitsModel.Side.US || card.side === GlobalUnitsModel.Side.US)
+      drawDeck = Array.from(GlobalUnitsModel.cards).filter((card) => card.side === GlobalUnitsModel.Side.US || card.side === GlobalUnitsModel.Side.BOTH)
     }
 
     for (let i = 0; i < num; i++) {

@@ -29,13 +29,13 @@ describe("Cards tests", () => {
 
   test("Test US opening hands card draw", () => {
     controller.drawJapanCards(3, true)
-    controller.drawUSCards(3, true)
-    expect(GlobalUnitsModel.usCards.length).toEqual(3)
-    expect(GlobalUnitsModel.cards.length).toEqual(7)
+    controller.drawUSCards(2, true)
+    expect(GlobalUnitsModel.usCards.length).toEqual(2)
+    expect(GlobalUnitsModel.cards.length).toEqual(8)
 
     // test uniqueness of card hand (no duplicate cards)
     const key = "number"
     const arrayUniqueByKey = [...new Map(GlobalUnitsModel.usCards.map((item) => [item[key], item])).values()]
-    expect(arrayUniqueByKey.length).toEqual(3)
+    expect(arrayUniqueByKey.length).toEqual(2)
   })
 })

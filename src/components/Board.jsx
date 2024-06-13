@@ -25,7 +25,7 @@ function Board({
   onStop,
   scale,
   airUnitUpdate,
-  setAirUnitUpdate,
+  fleetUnitUpdate,
   setAlertShow,
   showZones,
   USMapRegions,
@@ -186,6 +186,7 @@ function Board({
           currentHex={currentJapanHex}
           id="1AF"
           counterData={GlobalInit.counters.get("1AF")}
+          fleetUnitUpdate={fleetUnitUpdate}
           enabled={true}
         ></FleetCounter>
         <FleetCounter
@@ -196,6 +197,7 @@ function Board({
           id="CSF"
           counterData={GlobalInit.counters.get("CSF")}
           usRegions={USMapRegions}
+          fleetUnitUpdate={fleetUnitUpdate}
           enabled={GlobalGameState.gamePhase === GlobalGameState.PHASE.US_SETUP_FLEET || GlobalGameState.usFleetPlaced}
         ></FleetCounter>
         <AirCounters

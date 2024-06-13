@@ -8,9 +8,12 @@ export default class GlobalGameState {
     US_SETUP_FLEET: "US Setup (Naval)",
     US_SETUP_AIR: "US Setup (Air)",
     US_CARD_DRAW: "US Card Draw",
-    US_FLEET_MOVEMENT: "US FLEET MOVEMENT"
+    BOTH_CARD_DRAW: `Draw Cards`,
+    JAPAN_MIDWAY: `Japan Midway Attack Declaration`,
+    US_FLEET_MOVEMENT: `US Fleet Movement`
   }
 
+  static usSetUpComplete = false
 
   static SETUP_MESSAGES = [
     'Place Akagi Air Units',
@@ -21,7 +24,8 @@ export default class GlobalGameState {
     'Place US CSF Fleet Unit',
     'Place Enterprise Air Units',
     'Place Hornet Air Units',
-    'Place Yorkton Air Units',
+    'Place Yorktown Air Units',
+    'Place Midway Air Units',
     'Draw 3 x US Cards'
   ]
 

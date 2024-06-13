@@ -20,8 +20,9 @@ function AirCounters({ controller, onDrag, onStop, getAirBox, setAirBox, counter
     } else {
       const carrierIndex = GlobalGameState.US_CARRIERS.indexOf(airUnit.carrier)
       if (
-        carrierIndex > GlobalGameState.currentCarrier ||
-        GlobalGameState.gamePhase !== GlobalGameState.PHASE.US_SETUP_AIR
+        !GlobalGameState.usSetUpComplete &&
+        (carrierIndex > GlobalGameState.currentCarrier ||
+          GlobalGameState.gamePhase !== GlobalGameState.PHASE.US_SETUP_AIR)
       ) {
         return
       }

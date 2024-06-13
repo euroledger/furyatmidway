@@ -98,30 +98,30 @@ describe("Controller tests", () => {
     expect(airUnits[4].name).toEqual("Enterprise-SBD3-2")
   })
 
-  // test("Move air unit event in view event handler", () => {
-  //   const af1 = counters.get("Yorktown-F4F4-1")
+  test("Move air unit event in view event handler", () => {
+    const af1 = counters.get("Yorktown-F4F4-1")
 
-  //   controller.addAirUnitToBox(GlobalUnitsModel.AirBox.JP_CD1_CAP, 2, af1)
+    controller.addAirUnitToBox(GlobalUnitsModel.AirBox.US_TF17_CAP, 2, af1)
 
-  //   let location = controller.getAirUnitLocation("Akagi-A6M-2b-1")
-  //   expect(location.boxName).toEqual(GlobalUnitsModel.AirBox.JP_CD1_CAP)
-  //   expect(location.boxIndex).toEqual(2)
+    let location = controller.getAirUnitLocation("Yorktown-F4F4-1")
+    expect(location.boxName).toEqual(GlobalUnitsModel.AirBox.US_TF17_CAP)
+    expect(location.boxIndex).toEqual(2)
 
-  //   const counterData = counters.get("Akagi-A6M-2b-1")
-  //   controller.viewEventHandler({
-  //     type: Controller.EventTypes.AIR_UNIT_SETUP,
-  //     data: {
-  //       name: GlobalUnitsModel.AirBox.JP_CD1_CAP,
-  //       counterData,
-  //       index: 2,
-  //       side: GlobalUnitsModel.Side.JAPAN
-  //     },
-  //   })
-  //   const airUnitsDeployed = controller.getJapaneseAirUnitsDeployed(counterData.carrier)
-  //   expect(airUnitsDeployed.length).toEqual(1)
-  // })
+    const counterData = counters.get("Yorktown-F4F4-1")
+    controller.viewEventHandler({
+      type: Controller.EventTypes.AIR_UNIT_SETUP,
+      data: {
+        name: GlobalUnitsModel.AirBox.US_TF17_CAP,
+        counterData,
+        index: 2,
+        side: GlobalUnitsModel.Side.US
+      },
+    })
+    const airUnitsDeployed = controller.getUSAirUnitsDeployed(counterData.carrier)
+    expect(airUnitsDeployed.length).toEqual(1)
+  })
 
-  test.skip("Can filter box names by carrier", () => {
+  test("Can filter box names by carrier", () => {
     let boxes = controller.getBoxesForUSCarrier(GlobalUnitsModel.Carrier.ENTERPRISE, true)
     expect(boxes.length).toEqual(6)
     boxes = controller.getBoxesForUSCarrier(GlobalUnitsModel.Carrier.HORNET, true)
@@ -141,18 +141,18 @@ describe("Controller tests", () => {
     expect(boxes.length).toEqual(3)
   })
 
-  // test("Get the carrier for a US air unit", () => {
-  //   let carrier = controller.getCarrierForAirUnit("Akagi-A6M-2b-1")
-  //   expect(carrier).toEqual(GlobalUnitsModel.Carrier.AKAGI)
+  test("Get the carrier for a US air unit", () => {
+    let carrier = controller.getCarrierForAirUnit("Yorktown-F4F4-1")
+    expect(carrier).toEqual(GlobalUnitsModel.Carrier.YORKTOWN)
 
-  //   carrier = controller.getCarrierForAirUnit("Kaga-A6M-2b-1")
-  //   expect(carrier).toEqual(GlobalUnitsModel.Carrier.KAGA)
+    carrier = controller.getCarrierForAirUnit("Hornet-F4F4-1")
+    expect(carrier).toEqual(GlobalUnitsModel.Carrier.HORNET)
 
-  //   carrier = controller.getCarrierForAirUnit("Hiryu-A6M-2b-1")
-  //   expect(carrier).toEqual(GlobalUnitsModel.Carrier.HIRYU)
+    carrier = controller.getCarrierForAirUnit("Enterprise-F4F4-1")
+    expect(carrier).toEqual(GlobalUnitsModel.Carrier.ENTERPRISE)
 
-  //   carrier = controller.getCarrierForAirUnit("Soryu-A6M-2b-1")
-  //   expect(carrier).toEqual(GlobalUnitsModel.Carrier.SORYU)
-  // })
+    carrier = controller.getCarrierForAirUnit("Midway-F4F3")
+    expect(carrier).toEqual(GlobalUnitsModel.Carrier.MIDWAY)
+  })
 
 })
