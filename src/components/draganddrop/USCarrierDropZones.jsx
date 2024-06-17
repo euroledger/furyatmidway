@@ -9,12 +9,6 @@ function USCarrierDropZones({ handleDragEnter, show }) {
   const usZones = USAirBoxOffsets.map((box, index) => {
     let enabled = true
 
-    console.log(
-      "Game phase = ",
-      GlobalGameState.gamePhase,
-      ", us air setup phase = ",
-      GlobalGameState.PHASE.US_SETUP_AIR
-    )
     if (GlobalGameState.gamePhase === GlobalGameState.PHASE.US_SETUP_AIR) {
       if (
         !box.name.includes(GlobalGameState.getUSCarrier().toUpperCase()) &&

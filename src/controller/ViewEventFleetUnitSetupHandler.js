@@ -8,9 +8,13 @@ class ViewEventFleetUnitSetupHandler {
   }
   handleEvent(event) {
     // event contains type and data
-    console.log("Fleet Unit Event!")
+    const { initial, id, from, to, side } = event.data
 
-    const { initial, id, from, to } = event.data
+    // to = currentHex
+
+    // add fleet unit to map holding name -> current Hex
+
+    this.controller.setFleetUnitLocation(id, to, side)
 
     let cmdType = COMMAND_TYPE.MOVE
     if (initial) {

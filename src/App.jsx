@@ -19,16 +19,24 @@ import JapanAirBoxOffsets from "./components/draganddrop/JapanAirBoxOffsets"
 import USAirBoxOffsets from "./components/draganddrop/USAirBoxOffsets"
 import { airUnitDataJapan, airUnitDataUS } from "./AirUnitTestData"
 import usCSFStartHexes from "./components/MapRegions"
+import YesNoDialog from "./components/dialogs/YesNoDialog"
+import { saveGameState } from "./SaveLoadGame"
 
 export default App
 export function App() {
   const [splash, setSplash] = useState(true)
   const [showZones, setShowZones] = useState(true)
+
   const [gameState, setGameState] = useState(false)
+  // TODO set an effect hook on game state to trigger a game save
+
   const [isMoveable, setIsMoveable] = useState(false)
   const [scale, setScale] = useState(1)
   const [testClicked, setTestClicked] = useState(false)
   const [csfAlertShow, setCsfAlertShow] = useState(false) // TO DO param should be an object with boolean and alert text
+  const [saveAlertShow, setSaveAlertShow] = useState(false) // TO DO param should be an object with boolean and alert text
+
+  const [midwayDialogShow, setMidwayDialogShow] = useState(true)
 
   const [alertShow, setAlertShow] = useState(false) // TO DO param should be an object with boolean and alert text
   // const [alertShow, setAlertShow] = useState({
@@ -91,8 +99,7 @@ export function App() {
         GlobalGameState.gamePhase = GlobalGameState.PHASE.US_CARD_DRAW
         GlobalGameState.usSetUpComplete = true
       }
-    }
-    else if (GlobalGameState.gamePhase === GlobalGameState.PHASE.US_CARD_DRAW) {
+    } else if (GlobalGameState.gamePhase === GlobalGameState.PHASE.US_CARD_DRAW) {
       GlobalInit.controller.drawUSCards(2, true)
       GlobalGameState.usCardsDrawn = true
       if (GlobalGameState.gameTurn != 1) {
@@ -100,20 +107,13 @@ export function App() {
       } else {
         GlobalGameState.gamePhase = GlobalGameState.PHASE.JAPAN_MIDWAY
       }
+    } else if (GlobalGameState.gamePhase === GlobalGameState.PHASE.JAPAN_MIDWAY) {
+      setMidwayDialogShow(true)
+      GlobalGameState.gamePhase = GlobalGameState.PHASE.US_FLEET_MOVEMENT
     }
     GlobalGameState.phaseCompleted = false
     GlobalGameState.setupPhase++
     GlobalGameState.updateGlobalState()
-  }
-
-  function listAllPositions() {
-    const units = Array.from(GlobalInit.counters.values())
-    const airCounters = units.filter((unit) => unit.constructor.name === "AirUnit")
-    for (let airUnit of airCounters) {
-      const { boxName, boxIndex } = GlobalInit.controller.getAirUnitLocation(airUnit.name)
-
-      console.log(`Air Unit ${airUnit.name} => location ${boxName}[${boxIndex}]`)
-    }
   }
 
   // set up initial zustand air counter list
@@ -139,7 +139,7 @@ export function App() {
       console.log("** JAPAN UPDATE = ", update)
 
       setAirUnitUpdate(update)
-      await delay(100)
+      await delay(1)
       if (update.nextAction) {
         nextAction(e)
       }
@@ -164,7 +164,7 @@ export function App() {
 
       setAirUnitUpdate(update)
 
-      await delay(100)
+      await delay(1)
       if (update.nextAction) {
         nextAction(e)
       }
@@ -181,7 +181,8 @@ export function App() {
     let image = "/images/usaflag.jpg"
     if (
       GlobalGameState.gamePhase === GlobalGameState.PHASE.JAPAN_SETUP ||
-      GlobalGameState.gamePhase === GlobalGameState.PHASE.JAPAN_CARD_DRAW
+      GlobalGameState.gamePhase === GlobalGameState.PHASE.JAPAN_CARD_DRAW ||
+      GlobalGameState.gamePhase === GlobalGameState.PHASE.JAPAN_MIDWAY
     ) {
       image = "/images/japanflag.jpg"
     }
@@ -233,8 +234,16 @@ export function App() {
               >
                 Japan Hand
               </Button>
-              <Button className="me-1" size="sm" variant="outline-light">
-                Roll Dice
+              <Button
+                className="me-1"
+                size="sm"
+                variant="outline-light"
+                onClick={() => {
+                  saveGameState()
+                  setSaveAlertShow(true) // move this to App.js save button handler
+                }}
+              >
+                Save Game
               </Button>
               <Button
                 className="me-1"
@@ -377,11 +386,18 @@ export function App() {
         <h4>INFO</h4>
         <p>Drag the US CSF Fleet Unit to any hex in the shaded blue area of the map.</p>
       </AlertPanel>
+      <YesNoDialog show={midwayDialogShow} onHide={() => setMidwayDialogShow(false)}>
+        <h4>MIDWAY BASE ATTACK DECLARATION</h4>
+        <p>Do you want to attack Midway this turn?</p>
+      </YesNoDialog>
+      <AlertPanel show={saveAlertShow} onHide={() => setSaveAlertShow(false)}>
+        <h4>INFO</h4>
+        <p>Game State Successfully Saved!</p>
+      </AlertPanel>
       <GameStatusPanel show={gameStateShow} gameState={gameState} onHide={() => setGameStateShow(false)} />
       <CardPanel show={jpHandShow} side={GlobalUnitsModel.Side.JAPAN} onHide={() => setjpHandShow(false)}></CardPanel>
       <CardPanel show={usHandShow} side={GlobalUnitsModel.Side.US} onHide={() => setusHandShow(false)}></CardPanel>
 
-      
       {/* <CardPanel
         cardArray={[13, 3, 8, 2]}
         show={usHandShow}

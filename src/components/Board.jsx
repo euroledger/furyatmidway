@@ -188,6 +188,7 @@ function Board({
           counterData={GlobalInit.counters.get("1AF")}
           fleetUnitUpdate={fleetUnitUpdate}
           enabled={true}
+          side={GlobalUnitsModel.Side.JAPAN}
         ></FleetCounter>
         <FleetCounter
           controller={controller}
@@ -199,6 +200,7 @@ function Board({
           usRegions={USMapRegions}
           fleetUnitUpdate={fleetUnitUpdate}
           enabled={GlobalGameState.gamePhase === GlobalGameState.PHASE.US_SETUP_FLEET || GlobalGameState.usFleetPlaced}
+          side={GlobalUnitsModel.Side.US}
         ></FleetCounter>
         <AirCounters
           controller={controller}
@@ -212,7 +214,7 @@ function Board({
         ></AirCounters>
         <JapanCarrierDropZones handleDragEnter={handleAirBoxDragEnter} show={showZones}></JapanCarrierDropZones>
         <USCarrierDropZones handleDragEnter={handleUSAirBoxDragEnter} show={showZones}></USCarrierDropZones>
-        
+
         <StrikePanel side="Japan" enabled={false}></StrikePanel>
         <StrikePanel side="US" enabled={false}></StrikePanel>
       </div>

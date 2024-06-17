@@ -2,7 +2,6 @@ import React, { useState } from "react"
 import "../../board.css"
 import HexCommand from "../../../commands/HexCommand"
 import Controller from "../../../controller/Controller"
-import { flatHexToPixel, convertCoords } from "../../HexUtils"
 
 function FleetCounter({
   controller,
@@ -14,6 +13,7 @@ function FleetCounter({
   fleetUnitUpdate,
   usRegions,
   enabled,
+  side
 }) {
   const [position, setPosition] = useState({
     initial: true,
@@ -30,33 +30,47 @@ function FleetCounter({
     position.currentHex.q !== hex.q &&
     position.currentHex.r !== hex.r
   ) {
-   
-
-    console.log(
-      "I am ",
-      fleetUnitUpdate.name,
-      " -> FLEET UNIT UPDATE, move to ",
-      hex.q + ",",
-      hex.r
-    )
-
-
-    console.log(`\t => x = ${hex.x}, y = ${hex.y}`)
-    console.log(`\t => row = ${hex.row}, col = ${hex.col}`)
+    // console.log(
+    //   "I am ",
+    //   fleetUnitUpdate.name,
+    //   " -> FLEET UNIT UPDATE, move to ",
+    //   hex.q + ",",
+    //   hex.r
+    // )
     setPosition({
       initial: false,
       left: hex.x + counterData.position.left + counterData.offsets.x,
       top: hex.y + counterData.position.top + counterData.offsets.y,
       currentHex: hex,
     })
+
+    let from = currentHex
+    let to = { currentHex: hex }
+    if (position.initial) {
+      from = HexCommand.OFFBOARD
+    }
+
+    console.log(">>>>>>>>>>>>>>>>>> QUACK TO = ", to)
+    controller.viewEventHandler({
+      type: Controller.EventTypes.FLEET_SETUP,
+      data: {
+        initial: position.initial,
+        id: counterData.name,
+        from,
+        to,
+        side
+      },
+    })
   }
   const handleDrop = (event) => {
     const hex = { q: currentHex.q, r: currentHex.r }
 
-    let isThere = usRegions && usRegions.find((h) => h.q === hex.q && h.r === hex.r)
+    if (side === "US") {
+      let isThere = usRegions && usRegions.find((h) => h.q === hex.q && h.r === hex.r)
 
-    if (!isThere) {
-      return
+      if (!isThere) {
+        return
+      }
     }
 
     console.log(
@@ -83,6 +97,7 @@ function FleetCounter({
         id,
         from,
         to,
+        side
       },
     })
   }

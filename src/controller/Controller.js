@@ -1,6 +1,6 @@
-import JapanAirBoxOffsets from "../components/draganddrop/JapanAirBoxOffsets"
 import BoxModel from "../model/BoxModel"
 import CardModel from "../model/CardModel"
+import MapModel from "../model/MapModel"
 import GlobalUnitsModel from "../model/GlobalUnitsModel"
 import ViewEventAirUnitSetupHandler from "./ViewEventAirUnitSetupHandler"
 import ViewEventFleetUnitSetupHandler from "./ViewEventFleetUnitSetupHandler"
@@ -8,12 +8,13 @@ import ViewEventFleetUnitSetupHandler from "./ViewEventFleetUnitSetupHandler"
 export default class Controller {
   static EventTypes = {
     AIR_UNIT_SETUP: "AirUnitSetup",
-    FLEET_SETUP: "FleetSetup"
+    FLEET_SETUP: "FleetSetup",
   }
 
   constructor() {
     this.boxModel = new BoxModel()
     this.cardModel = new CardModel()
+    this.mapModel = new MapModel()
     this.airUnitSetupHandler = new ViewEventAirUnitSetupHandler(this)
     this.fleetUnitSetupHandler = new ViewEventFleetUnitSetupHandler(this)
   }
@@ -127,7 +128,6 @@ export default class Controller {
     return this.boxModel.getBoxNamesForUSCarrier(carrier, includeReturnBoxes)
   }
 
-
   drawJapanCards(num, initial) {
     this.cardModel.drawJapanCards(num, initial)
   }
@@ -136,6 +136,22 @@ export default class Controller {
     this.cardModel.drawUSCards(num, initial)
   }
 
+  setFleetUnitLocation(id, location, side) {
+    this.mapModel.setFleetUnitLocation(id, location, side)
+  }
+
+  getFleetLocation(id, side) {
+    return this.mapModel.getFleetLocation(id, side)
+  }
+
+  getJapanFleetLocations() {
+    return this.mapModel.getJapanFleetLocations()
+  }
+
+  getUSFleetLocations() {
+    return this.mapModel.getUSFleetLocations()
+  }
+  
   viewEventHandler(event) {
     // event contains type and data
 

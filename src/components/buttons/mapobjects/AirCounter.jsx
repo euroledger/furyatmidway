@@ -3,7 +3,6 @@ import "../../board.css"
 import Controller from "../../../controller/Controller"
 import GlobalUnitsModel from "../../../model/GlobalUnitsModel"
 import GlobalGameState from "../../../model/GlobalGameState"
-import { counter } from "@fortawesome/fontawesome-svg-core"
 
 function AirCounter({
   controller,
