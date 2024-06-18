@@ -33,7 +33,7 @@ function TurnMarkerButton({ image, gameStateHandler }) {
   const handleButtonChange = (event, userData) => {
     setDropdownVisible(false);
 
-    const yoffset = userData.delta[GlobalGameState.gameTurn - 1];
+    const yoffset = userData.delta[GlobalGameState.items.get('gameTurn') - 1];
 
     if (yoffset < 0) {
       GlobalGameState.gameTurn += 1;

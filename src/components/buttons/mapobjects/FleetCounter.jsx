@@ -50,7 +50,6 @@ function FleetCounter({
       from = HexCommand.OFFBOARD
     }
 
-    console.log(">>>>>>>>>>>>>>>>>> QUACK TO = ", to)
     controller.viewEventHandler({
       type: Controller.EventTypes.FLEET_SETUP,
       data: {

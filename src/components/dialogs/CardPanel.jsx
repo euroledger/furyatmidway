@@ -25,8 +25,8 @@ function CardPanel(props) {
 
   const cardArray =
     props.side === GlobalUnitsModel.Side.JAPAN
-      ? GlobalUnitsModel.jpCards.map((c) => c.number)
-      : GlobalUnitsModel.usCards.map((c) => c.number)
+      ? GlobalUnitsModel.jpCards.map((c) => c._number)
+      : GlobalUnitsModel.usCards.map((c) => c._number)
 
   const bg = "#293a4b"
   const header = `${props.side} Hand`

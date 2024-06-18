@@ -1,23 +1,23 @@
-import React, { useState } from "react";
-import GlobalGameState from "../../model/GlobalGameState";
-import Accordion from "react-bootstrap/Accordion";
-import "./accordion.css";
-
+import React, { useState } from "react"
+import GlobalGameState from "../../model/GlobalGameState"
+import Accordion from "react-bootstrap/Accordion"
+import "./accordion.css"
 
 export default class GameStatePanel extends React.Component {
   constructor(props) {
-    super(props);
+    super(props)
     this.state = {
       gs: props.gameState,
-    };
+    }
   }
 
   render() {
     const logRows = GlobalGameState.logItems.map((logItem, index) => {
-      return <div key={index}>{logItem}</div>;
-    });
-    const mg = GlobalGameState.midwayGarrisonLevel > 0 ? GlobalGameState.midwayGarrisonLevel : "X";
-    const mif = GlobalGameState.midwayInvasionLevel > 0 ? GlobalGameState.midwayInvasionLevel : "X";
+      return <div key={index}>{logItem}</div>
+    })
+    const mg = GlobalGameState.midwayGarrisonLevel > 0 ? GlobalGameState.midwayGarrisonLevel : "X"
+    const mif = GlobalGameState.midwayInvasionLevel > 0 ? GlobalGameState.midwayInvasionLevel : "X"
+    const mad = GlobalGameState.midwayAttackDeclaration ? "Yes" : "No"
 
     return (
       <>
@@ -32,6 +32,7 @@ export default class GameStatePanel extends React.Component {
               <p className="text-left">US Air Ops: {GlobalGameState.airOperationPoints["us"]}</p>
               <p className="text-left">Midway Invasion Force: {mif}</p>
               <p className="text-left">Midway Garrison: {mg}</p>
+              <p className="text-left">Midway Attack Declaration: {mad}</p>
             </Accordion.Body>
           </Accordion.Item>
           <Accordion.Item eventKey="1" className="bg-dark text-light">
@@ -40,6 +41,6 @@ export default class GameStatePanel extends React.Component {
           </Accordion.Item>
         </Accordion>
       </>
-    );
+    )
   }
 }

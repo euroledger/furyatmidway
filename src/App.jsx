@@ -20,7 +20,7 @@ import USAirBoxOffsets from "./components/draganddrop/USAirBoxOffsets"
 import { airUnitDataJapan, airUnitDataUS } from "./AirUnitTestData"
 import usCSFStartHexes from "./components/MapRegions"
 import YesNoDialog from "./components/dialogs/YesNoDialog"
-import { saveGameState } from "./SaveLoadGame"
+import { loadGameState, saveGameState } from "./SaveLoadGame"
 
 export default App
 export function App() {
@@ -36,7 +36,7 @@ export function App() {
   const [csfAlertShow, setCsfAlertShow] = useState(false) // TO DO param should be an object with boolean and alert text
   const [saveAlertShow, setSaveAlertShow] = useState(false) // TO DO param should be an object with boolean and alert text
 
-  const [midwayDialogShow, setMidwayDialogShow] = useState(true)
+  const [midwayDialogShow, setMidwayDialogShow] = useState(false)
 
   const [alertShow, setAlertShow] = useState(false) // TO DO param should be an object with boolean and alert text
   // const [alertShow, setAlertShow] = useState({
@@ -96,6 +96,7 @@ export function App() {
       GlobalGameState.currentTaskForce =
         GlobalGameState.currentCarrier <= 1 ? 1 : GlobalGameState.currentCarrier === 2 ? 2 : 3 // 3 is Midway
       if (GlobalGameState.currentCarrier === 4) {
+        console.log("Set game state to US Card Draw")
         GlobalGameState.gamePhase = GlobalGameState.PHASE.US_CARD_DRAW
         GlobalGameState.usSetUpComplete = true
       }
@@ -103,12 +104,16 @@ export function App() {
       GlobalInit.controller.drawUSCards(2, true)
       GlobalGameState.usCardsDrawn = true
       if (GlobalGameState.gameTurn != 1) {
+        console.log("Set game state to Both Card Draw")
+
         GlobalGameState.gamePhase = GlobalGameState.PHASE.BOTH_CARD_DRAW
       } else {
+        console.log("Set game state to Midway")
+
         GlobalGameState.gamePhase = GlobalGameState.PHASE.JAPAN_MIDWAY
+        setMidwayDialogShow(true)
       }
     } else if (GlobalGameState.gamePhase === GlobalGameState.PHASE.JAPAN_MIDWAY) {
-      setMidwayDialogShow(true)
       GlobalGameState.gamePhase = GlobalGameState.PHASE.US_FLEET_MOVEMENT
     }
     GlobalGameState.phaseCompleted = false
@@ -239,8 +244,8 @@ export function App() {
                 size="sm"
                 variant="outline-light"
                 onClick={() => {
-                  saveGameState()
-                  setSaveAlertShow(true) // move this to App.js save button handler
+                  saveGameState(GlobalInit.controller)
+                  setSaveAlertShow(true)
                 }}
               >
                 Save Game
@@ -353,6 +358,42 @@ export function App() {
     console.log("devicePixelRatio changed from " + e.oldValue + " to " + e.newValue)
   })
 
+  function midwayYesHandler(e) {
+    setMidwayDialogShow(false)
+    GlobalGameState.midwayAttackDeclaration = true
+    nextAction(e)
+  }
+
+  function midwayNoHandler(e) {
+    GlobalGameState.midwayAttackDeclaration = false
+    setMidwayDialogShow(false)
+    nextAction(e)
+  }
+  async function loady() {
+    console.log("Load game from local storage")
+    setSplash(false)
+    const { airUpdates, jpfleetUpdates, usfleetUpdates, logItems } = loadGameState(GlobalInit.controller)
+    for (const update of airUpdates) {
+      setAirUnitUpdate(update)
+      await delay(1)
+    }
+
+    for (const update of usfleetUpdates) {
+      setFleetUnitUpdate(update)
+      await delay(1)
+    }
+
+    for (const update of jpfleetUpdates) {
+      setFleetUnitUpdate(update)
+      await delay(1)
+    }
+
+    GlobalGameState.logItems = new Array()
+    for (let item of logItems.values()) {
+      GlobalGameState.log(item)
+    }
+  }
+
   function onSplash() {
     setSplash(false)
   }
@@ -372,7 +413,7 @@ export function App() {
           transform: "translate(-50%, -50%)",
         }}
       >
-        <SplashScreen show={splash} onSplash={onSplash}></SplashScreen>
+        <SplashScreen show={splash} onSplash={onSplash} loady={loady}></SplashScreen>
       </div>
     )
   }
@@ -386,7 +427,11 @@ export function App() {
         <h4>INFO</h4>
         <p>Drag the US CSF Fleet Unit to any hex in the shaded blue area of the map.</p>
       </AlertPanel>
-      <YesNoDialog show={midwayDialogShow} onHide={() => setMidwayDialogShow(false)}>
+      <YesNoDialog
+        show={midwayDialogShow}
+        yesHandler={(e) => midwayYesHandler(e)}
+        noHandler={(e) => midwayNoHandler(e)}
+      >
         <h4>MIDWAY BASE ATTACK DECLARATION</h4>
         <p>Do you want to attack Midway this turn?</p>
       </YesNoDialog>
@@ -397,13 +442,6 @@ export function App() {
       <GameStatusPanel show={gameStateShow} gameState={gameState} onHide={() => setGameStateShow(false)} />
       <CardPanel show={jpHandShow} side={GlobalUnitsModel.Side.JAPAN} onHide={() => setjpHandShow(false)}></CardPanel>
       <CardPanel show={usHandShow} side={GlobalUnitsModel.Side.US} onHide={() => setusHandShow(false)}></CardPanel>
-
-      {/* <CardPanel
-        cardArray={[13, 3, 8, 2]}
-        show={usHandShow}
-        side={GlobalUnitsModel.Side.US}
-        onHide={() => setusHandShow(false)}
-      ></CardPanel> */}
       <TransformWrapper
         initialScale={1}
         disabled={isMoveable}

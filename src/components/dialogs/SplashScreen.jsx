@@ -13,9 +13,7 @@ function SplashScreen(props) {
       backdrop="false"
     >
       <div
-        style={{
-          // marginLeft: "30px",
-         
+        style={{         
           position: 'absolute',
            left: '50%',
            top: '50%',
@@ -23,7 +21,7 @@ function SplashScreen(props) {
         }}
       >
         <img src="/images/furysplash.jpg"/>;
-        <Button className="button-88" size="lg" onClick={props.onSplash} style={{width: "190px", position:"absolute", top: "68%", right:"61%"}}>LOAD GAME</Button>
+        <Button className="button-88" size="lg" onClick={props.loady} style={{width: "190px", position:"absolute", top: "68%", right:"61%"}}>LOAD GAME</Button>
         <Button className="button-88" size="lg" onClick={props.onSplash} style={{width: "190px", position:"absolute", top: "68%", right:"7%"}}>NEW GAME</Button>
       </div>
     </Modal>

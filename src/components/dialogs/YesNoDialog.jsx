@@ -9,8 +9,8 @@ function YesNoDialog(props) {
     <Modal {...props} size="sm" aria-labelledby="contained-modal-title-vcenter" centered>
       <Modal.Body style={{ background: `${bg}`, color: "white" }}>{props.children}</Modal.Body>
       <Modal.Footer style={{ background: `${bg}`, color: "black" }}>
-        <Button onClick={props.onHide}>Yes</Button>
-        <Button onClick={props.onHide}>No</Button>
+        <Button onClick={props.yesHandler}>Yes</Button>
+        <Button onClick={props.noHandler}>No</Button>
       </Modal.Footer>
     </Modal>
   )

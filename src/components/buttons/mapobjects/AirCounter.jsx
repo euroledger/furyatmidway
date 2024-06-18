@@ -90,13 +90,10 @@ function AirCounter({
       GlobalGameState.gamePhase !== GlobalGameState.PHASE.US_SETUP_AIR
     ) {
       // cannot move units from carrier other than the current one being set up
-      console.log("QUACK 1")
       return false
     }
     const { name, offsets } = getAirBox()
     if (!offsets) {
-      console.log("QUACK 2")
-
       return false
     }
 
@@ -104,8 +101,6 @@ function AirCounter({
     console.log("GET unit: ", counterData.name)
     const airUnit = controller.getUSAirUnit(counterData.name)
     if (!airUnit) {
-      console.log("QUACK 3")
-
       // error
       return false
     }

@@ -12,6 +12,10 @@ export default class Controller {
   }
 
   constructor() {
+   this.clearModels()
+  }
+
+  clearModels() {
     this.boxModel = new BoxModel()
     this.cardModel = new CardModel()
     this.mapModel = new MapModel()

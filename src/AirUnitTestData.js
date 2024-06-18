@@ -206,7 +206,7 @@ export function getFleetUnitUpdateUS(name) {
    }
 
    return {
-    name: "CSF",
+    name,
     position: {
       currentHex: cHex,
     },
