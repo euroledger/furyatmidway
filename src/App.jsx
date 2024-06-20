@@ -33,7 +33,7 @@ export function App() {
   const [isMoveable, setIsMoveable] = useState(false)
   const [scale, setScale] = useState(1)
   const [testClicked, setTestClicked] = useState(false)
-  const [csfAlertShow, setCsfAlertShow] = useState(false) // TO DO param should be an object with boolean and alert text
+  const [csfAlertShow, setCSFAlertShow] = useState(false) // TO DO param should be an object with boolean and alert text
   const [saveAlertShow, setSaveAlertShow] = useState(false) // TO DO param should be an object with boolean and alert text
 
   const [midwayDialogShow, setMidwayDialogShow] = useState(false)
@@ -86,7 +86,7 @@ export function App() {
       GlobalGameState.gamePhase = GlobalGameState.PHASE.US_SETUP_FLEET
       GlobalGameState.currentCarrier = 0
       setUSMapRegions(usCSFStartHexes)
-      setCsfAlertShow(true)
+      setCSFAlertShow(true)
     } else if (GlobalGameState.gamePhase === GlobalGameState.PHASE.US_SETUP_FLEET) {
       GlobalGameState.gamePhase = GlobalGameState.PHASE.US_SETUP_AIR
       GlobalGameState.usFleetPlaced = true
@@ -423,7 +423,7 @@ export function App() {
         <h4>ALERT</h4>
         <p>This air unit is not a fighter unit so cannot be used for CAP.</p>
       </AlertPanel>
-      <AlertPanel show={!testClicked && csfAlertShow} onHide={() => setCsfAlertShow(false)}>
+      <AlertPanel show={!testClicked && csfAlertShow} onHide={() => setCSFAlertShow(false)}>
         <h4>INFO</h4>
         <p>Drag the US CSF Fleet Unit to any hex in the shaded blue area of the map.</p>
       </AlertPanel>

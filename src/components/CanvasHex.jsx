@@ -1,6 +1,7 @@
 import React from "react"
 import "./main.scss"
-import { convertCoords, hexOrigin, hexSize, flatHexToPixel } from "./HexUtils"
+import { convertCoords, hexOrigin, hexSize, flatHexToPixel, cubeSubtract, distanceBetweenHexes } from "./HexUtils"
+import { queryAllByTestId } from "@testing-library/react"
 
 const POINTY = 0
 const FLAT = 1
@@ -19,7 +20,7 @@ export default class CanvasHex extends React.Component {
       hexSize: hexSize,
       scale: props.scale,
       side: props.side,
-      usRegions: props.usRegions
+      usRegions: props.usRegions,
     }
     this.handleMouseMove = this.handleMouseMove.bind(this)
   }
@@ -31,10 +32,10 @@ export default class CanvasHex extends React.Component {
     })
   }
 
-  UNSAFE_componentWillReceiveProps (nextProps) {
+  UNSAFE_componentWillReceiveProps(nextProps) {
     this.setState({
-      usRegions: nextProps.usRegions
-    });
+      usRegions: nextProps.usRegions,
+    })
     this.clearCanvas(nextProps.usRegions)
   }
   componentDidMount() {
@@ -468,6 +469,10 @@ export default class CanvasHex extends React.Component {
         return
       }
 
+      if (this.state.currentHex) {
+        console.log(`(${ this.state.currentHex.q}, ${this.state.currentHex.r})`)
+        console.log(distanceBetweenHexes({ q: 1, r: 1}, { q: this.state.currentHex.q, r: this.state.currentHex.r}))        
+      }
       const { q1, r1 } = convertCoords(q, r)
       this.setState({
         currentHex: { ...this.state.currentHex, q, r, x, y, row: q1, col: r1 }, // row col are the midway map coords

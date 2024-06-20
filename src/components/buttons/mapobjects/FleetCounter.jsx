@@ -120,7 +120,7 @@ function FleetCounter({
           onMouseEnter={onDrag}
           onMouseLeave={onStop}
           onDragEnd={handleDrop}
-          onClick={handleClick}
+          // onClick={handleClick}
         />
       )}
     </div>

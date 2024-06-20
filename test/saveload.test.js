@@ -91,6 +91,7 @@ describe("Controller tests", () => {
         col: 4,
       },
     }
+    
     controller.setFleetUnitLocation("CSF", location, GlobalUnitsModel.Side.US)
 
     GlobalInit.controller.drawJapanCards(3, true)

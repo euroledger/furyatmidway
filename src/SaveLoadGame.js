@@ -121,12 +121,8 @@ export function loadGameState() {
 
     if (ty === "number" || ty === "boolean" || ty === "string") {
       GlobalGameState[property] = global.get(property)
-      console.log("TYPE ", ty, " ", property + "->" + GlobalGameState[property])
     }
   }
-  console.log("current carrier = ", GlobalGameState["currentCarrier"])
-
-  console.log("japan carrier = ", GlobalGameState.getJapanCarrier())
 
   const airText = localStorage.getItem("air")
   const airMap = new Map(JSON.parse(airText))
