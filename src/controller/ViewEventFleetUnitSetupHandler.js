@@ -20,7 +20,7 @@ class ViewEventFleetUnitSetupHandler {
     if (initial) {
       cmdType = COMMAND_TYPE.PLACE
     }
-    let command = new HexCommand(cmdType, id, from, to)
+    let command = new HexCommand(cmdType, id, from, to, side)
    
     GlobalGameState.phaseCompleted = true
 

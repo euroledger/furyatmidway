@@ -18,9 +18,10 @@ import { calcRandomJapanTestData, getFleetUnitUpdateUS, calcTestDataUS } from ".
 import JapanAirBoxOffsets from "./components/draganddrop/JapanAirBoxOffsets"
 import USAirBoxOffsets from "./components/draganddrop/USAirBoxOffsets"
 import { airUnitDataJapan, airUnitDataUS } from "./AirUnitTestData"
-import usCSFStartHexes from "./components/MapRegions"
+import { usCSFStartHexes, japanAF1StartHexes } from "./components/MapRegions"
 import YesNoDialog from "./components/dialogs/YesNoDialog"
 import { loadGameState, saveGameState } from "./SaveLoadGame"
+import { allHexesWithinDistance } from "./components/HexUtils"
 
 export default App
 export function App() {
@@ -33,10 +34,14 @@ export function App() {
   const [isMoveable, setIsMoveable] = useState(false)
   const [scale, setScale] = useState(1)
   const [testClicked, setTestClicked] = useState(false)
-  const [csfAlertShow, setCSFAlertShow] = useState(false) // TO DO param should be an object with boolean and alert text
+  const [csfAlertShow, setCSFAlertShow] = useState(false)
+  const [jpAlertShow, setJpAlertShow] = useState(false)
+
   const [saveAlertShow, setSaveAlertShow] = useState(false) // TO DO param should be an object with boolean and alert text
 
   const [midwayDialogShow, setMidwayDialogShow] = useState(false)
+  const [fleetMoveAlertShow, setFleetMoveAlertShow] = useState(false)
+  const [midwayNoAttackAlertShow, setMidwayNoAttackAlertShow] = useState(false)
 
   const [alertShow, setAlertShow] = useState(false) // TO DO param should be an object with boolean and alert text
   // const [alertShow, setAlertShow] = useState({
@@ -62,13 +67,49 @@ export function App() {
   })
 
   const [USMapRegions, setUSMapRegions] = useState([])
-  const [japanMapRegions, setjapanMapRegions] = useState([])
+  const [japanMapRegions, setJapanMapRegions] = useState([])
 
   const onDrag = () => {
     setIsMoveable(true)
   }
   const onStop = () => {
     setIsMoveable(false)
+  }
+
+  const setUsFleetRegions = () => {
+    GlobalGameState.phaseCompleted = true // may just want to skip any fleet movement (leave fleet where it is)
+    const csfLocation = GlobalInit.controller.getFleetLocation("CSF", GlobalUnitsModel.Side.US)
+    console.log("csf location = ", csfLocation)
+    const usRegion = allHexesWithinDistance(csfLocation.currentHex, 2, true)
+    setUSMapRegions(usRegion)
+    setFleetMoveAlertShow(true)
+  }
+
+  const setJapanFleetRegions = () => {
+    GlobalGameState.phaseCompleted = true // may just want to skip any fleet movement (leave fleet where it is)
+    if (GlobalGameState.gamePhase === GlobalGameState.PHASE.JAPAN_FLEET_MOVEMENT && GlobalGameState.gameTurn === 1) {
+      setJapanMapRegions(japanAF1StartHexes)
+    } else {
+      const af1Location = GlobalInit.controller.getFleetLocation("1AF", GlobalUnitsModel.Side.JAPAN)
+      const jpRegion = allHexesWithinDistance(af1Location.currentHex, 2, true)
+      setJapanMapRegions(jpRegion)
+    }
+
+    setFleetMoveAlertShow(true)
+  }
+
+  const loadState = () => {
+    if (GlobalGameState.gamePhase === GlobalGameState.PHASE.JAPAN_MIDWAY) {
+      setMidwayDialogShow(true)
+      GlobalGameState.phaseCompleted = false
+    } else if (GlobalGameState.gamePhase === GlobalGameState.PHASE.US_FLEET_MOVEMENT_PLANNING) {
+      setUsFleetRegions()
+      GlobalGameState.phaseCompleted = true
+    } else if ((GlobalGameState.gamePhase = GlobalGameState.PHASE.JAPAN_FLEET_MOVEMENT)) {
+      setJapanFleetRegions()
+      GlobalGameState.phaseCompleted = true
+    }
+    GlobalGameState.updateGlobalState()
   }
 
   const nextAction = (e) => {
@@ -82,15 +123,18 @@ export function App() {
         GlobalInit.controller.drawJapanCards(3, true)
         GlobalGameState.jpCardsDrawn = true
       }
+      GlobalGameState.phaseCompleted = false
     } else if (GlobalGameState.gamePhase === GlobalGameState.PHASE.JAPAN_CARD_DRAW) {
       GlobalGameState.gamePhase = GlobalGameState.PHASE.US_SETUP_FLEET
       GlobalGameState.currentCarrier = 0
       setUSMapRegions(usCSFStartHexes)
       setCSFAlertShow(true)
+      GlobalGameState.phaseCompleted = false
     } else if (GlobalGameState.gamePhase === GlobalGameState.PHASE.US_SETUP_FLEET) {
       GlobalGameState.gamePhase = GlobalGameState.PHASE.US_SETUP_AIR
       GlobalGameState.usFleetPlaced = true
       setUSMapRegions([])
+      GlobalGameState.phaseCompleted = false
     } else if (GlobalGameState.gamePhase === GlobalGameState.PHASE.US_SETUP_AIR) {
       GlobalGameState.currentCarrier++
       GlobalGameState.currentTaskForce =
@@ -99,24 +143,47 @@ export function App() {
         console.log("Set game state to US Card Draw")
         GlobalGameState.gamePhase = GlobalGameState.PHASE.US_CARD_DRAW
         GlobalGameState.usSetUpComplete = true
+        GlobalInit.controller.drawUSCards(2, true)
+        GlobalGameState.usCardsDrawn = true
       }
+      GlobalGameState.phaseCompleted = false
     } else if (GlobalGameState.gamePhase === GlobalGameState.PHASE.US_CARD_DRAW) {
-      GlobalInit.controller.drawUSCards(2, true)
-      GlobalGameState.usCardsDrawn = true
       if (GlobalGameState.gameTurn != 1) {
         console.log("Set game state to Both Card Draw")
-
         GlobalGameState.gamePhase = GlobalGameState.PHASE.BOTH_CARD_DRAW
       } else {
         console.log("Set game state to Midway")
-
         GlobalGameState.gamePhase = GlobalGameState.PHASE.JAPAN_MIDWAY
+        // @TODO hard wire or randomly select midway attack decision here
         setMidwayDialogShow(true)
       }
+      GlobalGameState.phaseCompleted = false
     } else if (GlobalGameState.gamePhase === GlobalGameState.PHASE.JAPAN_MIDWAY) {
-      GlobalGameState.gamePhase = GlobalGameState.PHASE.US_FLEET_MOVEMENT
+      console.log("END OF Midway Declaration Phase")
+      GlobalGameState.gamePhase = GlobalGameState.PHASE.US_FLEET_MOVEMENT_PLANNING
+      setUsFleetRegions()
+      GlobalGameState.phaseCompleted = true
+    } else if (GlobalGameState.gamePhase === GlobalGameState.PHASE.US_FLEET_MOVEMENT_PLANNING) {
+      console.log("END OF US Fleet Movement Phase")
+      GlobalGameState.gamePhase = GlobalGameState.PHASE.JAPAN_FLEET_MOVEMENT
+      setUSMapRegions([])
+      setJapanMapRegions(japanAF1StartHexes)
+      setJpAlertShow(true)
+      GlobalGameState.phaseCompleted = true
+    } else if (GlobalGameState.gamePhase === GlobalGameState.PHASE.JAPAN_FLEET_MOVEMENT) {
+      console.log("END OF Japan Fleet Movement Phase")
+      GlobalGameState.gamePhase = GlobalGameState.PHASE.MIDWAY_ATTACK_PHASE
+      setMidwayNoAttackAlertShow(true)
+      setJapanMapRegions([])
+      GlobalGameState.phaseCompleted = true
+      GlobalGameState.jpFleetPlaced = true
+    } else if (GlobalGameState.gamePhase === GlobalGameState.PHASE.MIDWAY_ATTACK_PHASE) {
+      if (!GlobalGameState.midwayAttackDeclaration) {
+        GlobalGameState.phaseCompleted = true
+        GlobalGameState.gamePhase = GlobalGameState.PHASE.US_FLEET_MOVEMENT
+      }
     }
-    GlobalGameState.phaseCompleted = false
+
     GlobalGameState.setupPhase++
     GlobalGameState.updateGlobalState()
   }
@@ -171,9 +238,21 @@ export function App() {
 
       await delay(1)
       if (update.nextAction) {
+        console.log("GAME STATE = ", GlobalGameState.gamePhase)
+
         nextAction(e)
       }
     }
+    await delay(1)
+
+    console.log("GAME STATE = ", GlobalGameState.gamePhase)
+    nextAction(e) // us card draw
+    await delay(1)
+    console.log("GAME STATE = ", GlobalGameState.gamePhase)
+
+    nextAction(e) // midway
+    console.log("GAME STATE = ", GlobalGameState.gamePhase)
+    setFleetUnitUpdate(undefined)
   }
 
   var v = process.env.REACT_APP_MYVAR || "arse"
@@ -187,7 +266,9 @@ export function App() {
     if (
       GlobalGameState.gamePhase === GlobalGameState.PHASE.JAPAN_SETUP ||
       GlobalGameState.gamePhase === GlobalGameState.PHASE.JAPAN_CARD_DRAW ||
-      GlobalGameState.gamePhase === GlobalGameState.PHASE.JAPAN_MIDWAY
+      GlobalGameState.gamePhase === GlobalGameState.PHASE.JAPAN_MIDWAY ||
+      GlobalGameState.gamePhase === GlobalGameState.PHASE.JAPAN_FLEET_MOVEMENT ||
+      GlobalGameState.gamePhase === GlobalGameState.PHASE.MIDWAY_ATTACK_PHASE
     ) {
       image = "/images/japanflag.jpg"
     }
@@ -392,6 +473,9 @@ export function App() {
     for (let item of logItems.values()) {
       GlobalGameState.log(item)
     }
+
+    console.log(">>>>>>>>> LOADED GAME STATE = ", GlobalGameState.gamePhase)
+    loadState()
   }
 
   function onSplash() {
@@ -427,8 +511,30 @@ export function App() {
         <h4>INFO</h4>
         <p>Drag the US CSF Fleet Unit to any hex in the shaded blue area of the map.</p>
       </AlertPanel>
+      <AlertPanel show={!testClicked && jpAlertShow} onHide={() => setJpAlertShow(false)}>
+        <h4>INFO</h4>
+        <p>Drag the Japanese 1AF Fleet Unit to any hex in the shaded red area of the map.</p>
+      </AlertPanel>
+      <AlertPanel show={!testClicked && fleetMoveAlertShow} onHide={() => setFleetMoveAlertShow(false)}>
+        <h4>INFO</h4>
+        <p>
+          Drag the Fleet Unit to any hex in the shaded area of the map, or press Next Action to leave fleet in current
+          location.
+        </p>
+      </AlertPanel>
+      <AlertPanel
+        show={!testClicked && midwayNoAttackAlertShow}
+        onHide={() => {
+          GlobalGameState.gamePhase = GlobalGameState.PHASE.US_FLEET_MOVEMENT
+          setMidwayNoAttackAlertShow(false)
+          GlobalGameState.updateGlobalState()
+        }}
+      >
+        <h4>INFO</h4>
+        <p>No Midway attack declared this turn.</p>
+      </AlertPanel>
       <YesNoDialog
-        show={midwayDialogShow}
+        show={!testClicked && midwayDialogShow}
         yesHandler={(e) => midwayYesHandler(e)}
         noHandler={(e) => midwayNoHandler(e)}
       >

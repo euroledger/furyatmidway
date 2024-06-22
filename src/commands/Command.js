@@ -3,11 +3,12 @@ import COMMAND_TYPE from "./COMMAND_TYPE";
 class Command {
   static OFFBOARD = "OFFBOARD"
   
-  constructor(commandType, unit, from, to) {
+  constructor(commandType, unit, from, to, side) {
     this.commandType = commandType;
     this.unit = unit;
     this.from = from;
     this.to = to;
+    this.side = side
   }
   set commandType(ct) {
     this._commandType = ct;
@@ -28,12 +29,21 @@ class Command {
     return this._from;
   }
 
+  set side(s) {
+    this._side = s
+  }
+  get side() {
+    return this._side
+  }
+
   set unit(u) {
     this._unit = u;
   }
   get unit() {
     return this._unit;
   }
+
+
   execute() {}
 
   toString() {

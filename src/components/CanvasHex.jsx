@@ -1,17 +1,18 @@
 import React from "react"
 import "./main.scss"
-import { convertCoords, hexOrigin, hexSize, flatHexToPixel, cubeSubtract, distanceBetweenHexes } from "./HexUtils"
-import { queryAllByTestId } from "@testing-library/react"
+import {
+  convertCoords,
+  hexOrigin,
+  hexSize,
+  flatHexToPixel,
+  areCoordinatesOnMap,
+} from "./HexUtils"
 
 const POINTY = 0
 const FLAT = 1
 
 const hexType = FLAT
-const japanAF1StartHexes = [
-  { q: 1, r: 1 },
-  { q: 1, r: 2 },
-  { q: 1, r: 3 },
-]
+
 
 export default class CanvasHex extends React.Component {
   constructor(props) {
@@ -21,6 +22,7 @@ export default class CanvasHex extends React.Component {
       scale: props.scale,
       side: props.side,
       usRegions: props.usRegions,
+      jpRegions: props.jpRegions
     }
     this.handleMouseMove = this.handleMouseMove.bind(this)
   }
@@ -35,8 +37,9 @@ export default class CanvasHex extends React.Component {
   UNSAFE_componentWillReceiveProps(nextProps) {
     this.setState({
       usRegions: nextProps.usRegions,
+      jpRegions: nextProps.jpRegions
     })
-    this.clearCanvas(nextProps.usRegions)
+    this.clearCanvas(nextProps.usRegions, nextProps.jpRegions)
   }
   componentDidMount() {
     this.setState({
@@ -55,16 +58,20 @@ export default class CanvasHex extends React.Component {
     }
   }
 
-  clearCanvas(usRegions) {
+  clearCanvas(usRegions, jpRegions) {
     const { canvasWidth, canvasHeight } = this.state.canvasSize
     const ctx = this.canvasCoordinates.getContext("2d")
     ctx.clearRect(0, 0, canvasWidth, canvasHeight) // clears the canvas
-    this.drawRegions("japan", japanAF1StartHexes, "rgba(223, 71,71, 0.6)")
     if (usRegions || (this.state.usRegions && this.state.usRegions.length > 0)) {
       const regs = usRegions ? usRegions : this.state.usRegions
       this.drawRegions("us", regs, "rgba(102, 178,255, 0.4)")
       this.forceUpdate()
-    }
+    } 
+    if (jpRegions || (this.state.jpRegions && this.state.jpRegions.length > 0)) {
+      const regs = jpRegions ? jpRegions : this.state.jpRegions
+      this.drawRegions("japan", regs, "rgba(223, 71,71, 0.6)")
+      this.forceUpdate()
+    } 
   }
 
   shouldComponentUpdate(nextProps, nextState) {
@@ -105,39 +112,6 @@ export default class CanvasHex extends React.Component {
     return this.cubeAdd(h, this.cubeDirection(direction))
   }
 
-  displayHex = (q, r) => {
-    const odd = [7, 6, 5, 4, 3]
-    const oddTop = [0, -1, -2, -3, -4]
-
-    const index = Math.floor(q / 2)
-
-    // for the midway map, restrict hex selection to the displayed
-    if (q === 1 && r >= 7) {
-      return false
-    }
-    if (q === 3 && r >= 6) {
-      return false
-    }
-    if (q === 5 && r >= 5) {
-      return false
-    }
-
-    if (q === 7 && r >= 4) {
-      return false
-    }
-    if (q === 9 && r >= 3) {
-      return false
-    }
-    if (q === 0 || q >= 10 || (q % 2 === 1 && r === odd[index]) || (q % 2 === 0 && r >= odd[index])) {
-      return false
-    }
-
-    if (r === oddTop[index]) {
-      return false
-    }
-    return true
-  }
-
   drawRegions = (side, hexes, color) => {
     if (side != this.state.side) {
       return
@@ -151,7 +125,7 @@ export default class CanvasHex extends React.Component {
     for (let i = 0; i <= 5; i++) {
       const { q, r } = this.getCubeNeighbour({ q: h.q, r: h.r }, i)
       const { x, y } = flatHexToPixel({ q, r })
-      if (!this.displayHex(q, r)) {
+      if (!areCoordinatesOnMap(q, r)) {
         continue
       }
       this.drawAndFillHex(this.canvasCoordinates, { x, y }, "rgba(255, 128, 0, 0.3)")
@@ -465,14 +439,13 @@ export default class CanvasHex extends React.Component {
       const { q, r } = this.cubeRound(this.pixelToFlatHex({ x: mx, y: my }))
       const { x, y } = flatHexToPixel({ q, r })
 
-      if (!this.displayHex(q, r)) {
+      if (!areCoordinatesOnMap(q, r)) {
         return
       }
 
-      if (this.state.currentHex) {
-        console.log(`(${ this.state.currentHex.q}, ${this.state.currentHex.r})`)
-        console.log(distanceBetweenHexes({ q: 1, r: 1}, { q: this.state.currentHex.q, r: this.state.currentHex.r}))        
-      }
+      // if (this.state.currentHex) {
+      //   console.log(`(${this.state.currentHex.q}, ${this.state.currentHex.r})`)
+      // }
       const { q1, r1 } = convertCoords(q, r)
       this.setState({
         currentHex: { ...this.state.currentHex, q, r, x, y, row: q1, col: r1 }, // row col are the midway map coords

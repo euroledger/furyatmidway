@@ -8,9 +8,12 @@ export default class GlobalGameState {
     US_SETUP_FLEET: "US Setup (Naval)",
     US_SETUP_AIR: "US Setup (Air)",
     US_CARD_DRAW: "US Card Draw",
-    BOTH_CARD_DRAW: `Draw Cards`,
-    JAPAN_MIDWAY: `Japan Midway Attack Declaration`,
-    US_FLEET_MOVEMENT: `US Fleet Movement`
+    BOTH_CARD_DRAW: "Draw Cards",
+    JAPAN_MIDWAY: "Japan Midway Attack Declaration",
+    US_FLEET_MOVEMENT_PLANNING: "US Fleet Movement Planning",
+    JAPAN_FLEET_MOVEMENT: "IJN Fleet Movement",
+    MIDWAY_ATTACK_PHASE: "Midway Attack Phase",
+    US_FLEET_MOVEMENT: "US Fleet Movement"
   }
 
   static usSetUpComplete = false
@@ -77,6 +80,7 @@ export default class GlobalGameState {
   static usCardsDrawn = false
 
   static usFleetPlaced = false
+  static jpFleetPlaced = false
 
   static phaseCompleted = false
 

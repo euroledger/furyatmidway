@@ -2,6 +2,7 @@ import React, { useState } from "react"
 import "../../board.css"
 import HexCommand from "../../../commands/HexCommand"
 import Controller from "../../../controller/Controller"
+import GlobalGameState from "../../../model/GlobalGameState"
 
 function FleetCounter({
   controller,
@@ -12,6 +13,7 @@ function FleetCounter({
   counterData,
   fleetUnitUpdate,
   usRegions,
+  jpRegions,
   enabled,
   side
 }) {
@@ -21,22 +23,24 @@ function FleetCounter({
     top: counterData.position.top,
     currentHex: {},
   })
-
-  let hex = fleetUnitUpdate.position.currentHex
-
+  let hex = {}
+  if (fleetUnitUpdate) {
+    hex = fleetUnitUpdate.position.currentHex
+  }
   // This code for the test mode fleet unit updates
   if (
+    fleetUnitUpdate && 
     counterData.name === fleetUnitUpdate.name &&
     position.currentHex.q !== hex.q &&
     position.currentHex.r !== hex.r
   ) {
-    // console.log(
-    //   "I am ",
-    //   fleetUnitUpdate.name,
-    //   " -> FLEET UNIT UPDATE, move to ",
-    //   hex.q + ",",
-    //   hex.r
-    // )
+    console.log(
+      "I am ",
+      fleetUnitUpdate.name,
+      " -> FLEET UNIT UPDATE, move to ",
+      hex.q + ",",
+      hex.r
+    )
     setPosition({
       initial: false,
       left: hex.x + counterData.position.left + counterData.offsets.x,
@@ -45,10 +49,13 @@ function FleetCounter({
     })
 
     let from = currentHex
+
     let to = { currentHex: hex }
     if (position.initial) {
       from = HexCommand.OFFBOARD
     }
+    console.log("*** To = ", to.currentHex.row, ", ", to.currentHex.col)
+
 
     controller.viewEventHandler({
       type: Controller.EventTypes.FLEET_SETUP,
@@ -66,7 +73,11 @@ function FleetCounter({
 
     if (side === "US") {
       let isThere = usRegions && usRegions.find((h) => h.q === hex.q && h.r === hex.r)
-
+      if (!isThere) {
+        return
+      }
+    } else {
+      let isThere = jpRegions && jpRegions.find((h) => h.q === hex.q && h.r === hex.r)
       if (!isThere) {
         return
       }

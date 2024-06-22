@@ -121,6 +121,7 @@ function Board({
             side="japan"
             setCurrentCoords={setCurrentJapanCoords}
             usRegions={USMapRegions}
+            jpRegions={japanMapRegions}
           ></CanvasHex>
         </div>
         <div
@@ -186,8 +187,11 @@ function Board({
           currentHex={currentJapanHex}
           id="1AF"
           counterData={GlobalInit.counters.get("1AF")}
+          jpRegions={japanMapRegions}
           fleetUnitUpdate={fleetUnitUpdate}
-          enabled={true}
+          enabled={
+            GlobalGameState.gamePhase === GlobalGameState.PHASE.JAPAN_FLEET_MOVEMENT || GlobalGameState.jpFleetPlaced === true
+          }
           side={GlobalUnitsModel.Side.JAPAN}
         ></FleetCounter>
         <FleetCounter
@@ -199,7 +203,7 @@ function Board({
           counterData={GlobalInit.counters.get("CSF")}
           usRegions={USMapRegions}
           fleetUnitUpdate={fleetUnitUpdate}
-          enabled={GlobalGameState.gamePhase === GlobalGameState.PHASE.US_SETUP_FLEET || GlobalGameState.usFleetPlaced}
+          enabled={GlobalGameState.gamePhase === GlobalGameState.PHASE.US_SETUP_FLEET || GlobalGameState.usFleetPlaced === true}
           side={GlobalUnitsModel.Side.US}
         ></FleetCounter>
         <AirCounters
