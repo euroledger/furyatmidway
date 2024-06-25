@@ -183,12 +183,25 @@ export function calcTestDataUS(unit, controller) {
   }
 }
 
-export function getFleetUnitUpdateUS(name) {
-   // 1. set x and y coords from this q, r update
+export function createMapUpdateForFleet(controller, name, side) {
 
-   let hex = {
-    q: 7,
-    r: 1
+  const location = controller.getFleetLocation(name, side)
+
+  console.log(">>> FLEET location = ", location)
+
+  let otherName
+  if (name === "CSF") {
+    otherName = "CSF-JPMAP"
+  }else if (name === "1AF") {
+    otherName = "1AF-USMAP"
+  }
+  return createFleetUpdate(otherName, location.currentHex.q, location.currentHex.r)
+}
+
+function createFleetUpdate(name, q, r) {
+  let hex = {
+    q: q,
+    r: r
    }
 
    let { x, y } = flatHexToPixel({ q: hex.q, r: hex.r })
@@ -211,6 +224,9 @@ export function getFleetUnitUpdateUS(name) {
       currentHex: cHex,
     },
   }
+}
+export function getFleetUnitUpdateUS(name) {
+   return createFleetUpdate(name, 7, 1)
 }
 
 export function calcRandomJapanTestData(unit, controller) {

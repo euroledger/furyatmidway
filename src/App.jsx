@@ -14,7 +14,12 @@ import CardPanel from "./components/dialogs/CardPanel"
 import GameStatusPanel from "./components/dialogs/GameStatusPanel"
 import SplashScreen from "./components/dialogs/SplashScreen"
 import "./style.css"
-import { calcRandomJapanTestData, getFleetUnitUpdateUS, calcTestDataUS } from "./AirUnitTestData"
+import {
+  calcRandomJapanTestData,
+  getFleetUnitUpdateUS,
+  calcTestDataUS,
+  createMapUpdateForFleet,
+} from "./AirUnitTestData"
 import JapanAirBoxOffsets from "./components/draganddrop/JapanAirBoxOffsets"
 import USAirBoxOffsets from "./components/draganddrop/USAirBoxOffsets"
 import { airUnitDataJapan, airUnitDataUS } from "./AirUnitTestData"
@@ -22,6 +27,7 @@ import { usCSFStartHexes, japanAF1StartHexes } from "./components/MapRegions"
 import YesNoDialog from "./components/dialogs/YesNoDialog"
 import { loadGameState, saveGameState } from "./SaveLoadGame"
 import { allHexesWithinDistance } from "./components/HexUtils"
+import DicePanel from "./components/dialogs/DicePanel"
 
 export default App
 export function App() {
@@ -53,6 +59,7 @@ export function App() {
   const [usHandShow, setusHandShow] = useState(false)
 
   const [gameStateShow, setGameStateShow] = useState(false)
+  const [dicePanelShow, setDicePanelShow] = useState(false)
 
   const [airUnitUpdate, setAirUnitUpdate] = useState({
     name: "",
@@ -169,7 +176,7 @@ export function App() {
       setUSMapRegions([])
       setJapanMapRegions(japanAF1StartHexes)
       setJpAlertShow(true)
-      GlobalGameState.phaseCompleted = true
+      GlobalGameState.phaseCompleted = false
     } else if (GlobalGameState.gamePhase === GlobalGameState.PHASE.JAPAN_FLEET_MOVEMENT) {
       console.log("END OF Japan Fleet Movement Phase")
       GlobalGameState.gamePhase = GlobalGameState.PHASE.MIDWAY_ATTACK_PHASE
@@ -177,11 +184,18 @@ export function App() {
       setJapanMapRegions([])
       GlobalGameState.phaseCompleted = true
       GlobalGameState.jpFleetPlaced = true
+      const update = createMapUpdateForFleet(GlobalInit.controller, "1AF", GlobalUnitsModel.Side.JAPAN)
+      setFleetUnitUpdate(update)
     } else if (GlobalGameState.gamePhase === GlobalGameState.PHASE.MIDWAY_ATTACK_PHASE) {
+      console.log("END OF Midway Attack Phase")
       if (!GlobalGameState.midwayAttackDeclaration) {
         GlobalGameState.phaseCompleted = true
         GlobalGameState.gamePhase = GlobalGameState.PHASE.US_FLEET_MOVEMENT
       }
+    } else if (GlobalGameState.gamePhase === GlobalGameState.PHASE.US_FLEET_MOVEMENT) {
+      const update = createMapUpdateForFleet(GlobalInit.controller, "CSF", GlobalUnitsModel.Side.US)
+      setFleetUnitUpdate(update)
+      GlobalGameState.gamePhase = GlobalGameState.PHASE.BOTH_SEARCH_PHASE
     }
 
     GlobalGameState.setupPhase++
@@ -271,6 +285,8 @@ export function App() {
       GlobalGameState.gamePhase === GlobalGameState.PHASE.MIDWAY_ATTACK_PHASE
     ) {
       image = "/images/japanflag.jpg"
+    } else if (GlobalGameState.gamePhase === GlobalGameState.PHASE.BOTH_SEARCH_PHASE) {
+      image = "/images/bothflags.jpg"
     }
 
     return (
@@ -371,7 +387,10 @@ export function App() {
                 className="me-1"
                 variant="secondary"
                 onClick={(e) => nextAction(e)}
-                disabled={!GlobalGameState.phaseCompleted}
+                disabled={
+                  !GlobalGameState.phaseCompleted ||
+                  (GlobalGameState.gamePhase === GlobalGameState.JAPAN_FLEET_MOVEMENT && !GlobalGameState.jpFleetPlaced)
+                }
                 style={{ background: "#9e1527" }}
               >
                 Next Action
@@ -474,7 +493,6 @@ export function App() {
       GlobalGameState.log(item)
     }
 
-    console.log(">>>>>>>>> LOADED GAME STATE = ", GlobalGameState.gamePhase)
     loadState()
   }
 
@@ -545,6 +563,7 @@ export function App() {
         <h4>INFO</h4>
         <p>Game State Successfully Saved!</p>
       </AlertPanel>
+      <DicePanel numDice={5} show={dicePanelShow} onHide={() => setDicePanelShow(false)}></DicePanel>
       <GameStatusPanel show={gameStateShow} gameState={gameState} onHide={() => setGameStateShow(false)} />
       <CardPanel show={jpHandShow} side={GlobalUnitsModel.Side.JAPAN} onHide={() => setjpHandShow(false)}></CardPanel>
       <CardPanel show={usHandShow} side={GlobalUnitsModel.Side.US} onHide={() => setusHandShow(false)}></CardPanel>

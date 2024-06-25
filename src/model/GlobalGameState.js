@@ -13,7 +13,8 @@ export default class GlobalGameState {
     US_FLEET_MOVEMENT_PLANNING: "US Fleet Movement Planning",
     JAPAN_FLEET_MOVEMENT: "IJN Fleet Movement",
     MIDWAY_ATTACK_PHASE: "Midway Attack Phase",
-    US_FLEET_MOVEMENT: "US Fleet Movement"
+    US_FLEET_MOVEMENT: "US Fleet Movement",
+    BOTH_SEARCH_PHASE: "Search Phase"
   }
 
   static usSetUpComplete = false

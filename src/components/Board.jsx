@@ -206,6 +206,28 @@ function Board({
           enabled={GlobalGameState.gamePhase === GlobalGameState.PHASE.US_SETUP_FLEET || GlobalGameState.usFleetPlaced === true}
           side={GlobalUnitsModel.Side.US}
         ></FleetCounter>
+         <FleetCounter
+          controller={controller}
+          onDrag={onDrag}
+          onStop={onStop}
+          currentHex={currentUSHex}
+          id="CSF-JPMAP"
+          counterData={GlobalInit.counters.get("CSF-JPMAP")}
+          fleetUnitUpdate={fleetUnitUpdate}
+          enabled={true}
+          side={GlobalUnitsModel.Side.JP}
+        ></FleetCounter>
+          <FleetCounter
+          controller={controller}
+          onDrag={onDrag}
+          onStop={onStop}
+          currentHex={currentJapanHex}
+          id="1AF-USMAP"
+          counterData={GlobalInit.counters.get("1AF-USMAP")}
+          fleetUnitUpdate={fleetUnitUpdate}
+          enabled={true}
+          side={GlobalUnitsModel.Side.US}
+        ></FleetCounter>
         <AirCounters
           controller={controller}
           onDrag={onDrag}

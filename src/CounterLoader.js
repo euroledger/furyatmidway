@@ -44,6 +44,41 @@ function loadCounters(controller) {
     )
   )
 
+  position = {
+    hexCoords: {},
+    left: 202,
+    top: 117,
+  }
+
+  counters.set(
+    "CSF-JPMAP",
+    new BaseUnit(
+      "CSF-JPMAP",
+      "US Carrier Strike Force (Japan Map)",
+      position,
+      { x: -50, y: 58 }, // offsets
+      "/images/fleetcounters/CSF.png",
+      "3.0%"
+    )
+  )
+
+  position = {
+    hexCoords: {},
+    left: 802,
+    top: 117,
+  }
+  counters.set(
+    "1AF-USMAP",
+    new BaseUnit(
+      "1AF-USMAP",
+      "Japanese 1AF (US Map)",
+      position,
+      { x: -202, y: 88 }, // offsets
+      "/images/fleetcounters/1AF.png",
+      "3.0%"
+    )
+  )
+
   GlobalUnitsModel.jpFleetUnits.set("1AF", new FleetUnit("1AF", false))
   GlobalUnitsModel.jpFleetUnits.set("MIF", new FleetUnit("MIF", false))
   GlobalUnitsModel.jpFleetUnits.set("DMCV", new FleetUnit("DMCV", false))

@@ -27,6 +27,10 @@ function FleetCounter({
   if (fleetUnitUpdate) {
     hex = fleetUnitUpdate.position.currentHex
   }
+
+  if (fleetUnitUpdate) {
+    console.log("GOT AN UPDATE FOR FLEET ",fleetUnitUpdate.name, " - moving to ",hex )
+  }
   // This code for the test mode fleet unit updates
   if (
     fleetUnitUpdate && 
@@ -81,6 +85,7 @@ function FleetCounter({
       if (!isThere) {
         return
       }
+      GlobalGameState.jpFleetPlaced = true
     }
 
     console.log(
