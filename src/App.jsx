@@ -28,6 +28,7 @@ import YesNoDialog from "./components/dialogs/YesNoDialog"
 import { loadGameState, saveGameState } from "./SaveLoadGame"
 import { allHexesWithinDistance } from "./components/HexUtils"
 import DicePanel from "./components/dialogs/DicePanel"
+import { calculateSearchValues, calculateSearchResults } from "./model/SearchValues"
 
 export default App
 export function App() {
@@ -48,6 +49,9 @@ export function App() {
   const [midwayDialogShow, setMidwayDialogShow] = useState(false)
   const [fleetMoveAlertShow, setFleetMoveAlertShow] = useState(false)
   const [midwayNoAttackAlertShow, setMidwayNoAttackAlertShow] = useState(false)
+  const [searchValuesAlertShow, setSearchValuesAlertShow] = useState(false)
+  const [searchValues, setSearchValues] = useState({})
+  const [searchResults, setSearchResults] = useState({})
 
   const [alertShow, setAlertShow] = useState(false) // TO DO param should be an object with boolean and alert text
   // const [alertShow, setAlertShow] = useState({
@@ -106,16 +110,27 @@ export function App() {
   }
 
   const loadState = () => {
+    console.log("GlobalGameState.gamePhase = ", GlobalGameState.gamePhase)
     if (GlobalGameState.gamePhase === GlobalGameState.PHASE.JAPAN_MIDWAY) {
       setMidwayDialogShow(true)
       GlobalGameState.phaseCompleted = false
     } else if (GlobalGameState.gamePhase === GlobalGameState.PHASE.US_FLEET_MOVEMENT_PLANNING) {
       setUsFleetRegions()
       GlobalGameState.phaseCompleted = true
-    } else if ((GlobalGameState.gamePhase = GlobalGameState.PHASE.JAPAN_FLEET_MOVEMENT)) {
+    } else if (GlobalGameState.gamePhase === GlobalGameState.PHASE.JAPAN_FLEET_MOVEMENT) {
       setJapanFleetRegions()
       GlobalGameState.phaseCompleted = true
+    } else if (GlobalGameState.gamePhase === GlobalGameState.PHASE.MIDWAY_ATTACK_PHASE) {
+      setJapanMapRegions([])
+      GlobalGameState.phaseCompleted = true
+    } else if (GlobalGameState.gamePhase === GlobalGameState.PHASE.US_FLEET_MOVEMENT) {
+      setJapanMapRegions([])
+      GlobalGameState.phaseCompleted = true
+    } else if (GlobalGameState.gamePhase === GlobalGameState.PHASE.BOTH_SEARCH_PHASE) {
+      setJapanMapRegions([])
+      GlobalGameState.phaseCompleted = true
     }
+    console.log("+++++ AIR OPS: US: ", GlobalGameState.airOperationPoints.us)
     GlobalGameState.updateGlobalState()
   }
 
@@ -196,6 +211,20 @@ export function App() {
       const update = createMapUpdateForFleet(GlobalInit.controller, "CSF", GlobalUnitsModel.Side.US)
       setFleetUnitUpdate(update)
       GlobalGameState.gamePhase = GlobalGameState.PHASE.BOTH_SEARCH_PHASE
+      const sv = calculateSearchValues(GlobalInit.controller)
+      console.log("SEARCH VALUES = ", sv)
+      const sr = calculateSearchResults(GlobalInit.controller, {
+        jp_af: sv.jp_af,
+        us_csf: sv.us_csf,
+        us_midway: sv.us_midway,
+      })
+      setSearchValues(sv)
+
+      console.log("SEARCH RESULTS = ", sr)
+      GlobalGameState.airOperationPoints.japan = sr.JAPAN
+      GlobalGameState.airOperationPoints.us = sr.US
+      setSearchResults(sr)
+      setSearchValuesAlertShow(true)
     }
 
     GlobalGameState.setupPhase++
@@ -470,6 +499,7 @@ export function App() {
     nextAction(e)
   }
   async function loady() {
+    setTestClicked(true)
     console.log("Load game from local storage")
     setSplash(false)
     const { airUpdates, jpfleetUpdates, usfleetUpdates, logItems } = loadGameState(GlobalInit.controller)
@@ -494,6 +524,7 @@ export function App() {
     }
 
     loadState()
+    // testClicked=false
   }
 
   function onSplash() {
@@ -519,6 +550,14 @@ export function App() {
       </div>
     )
   }
+  let jpAfText, usCsfText, usMidwayText, jpOpsText, usOpsText
+  if (searchValues) {
+    jpAfText = `1AF: Closest Fleet ${searchValues.jp_af} hexes away`
+    usCsfText = `CSF: Closest Fleet ${searchValues.us_csf} hexes away`
+    usMidwayText = `Midway: Closest Fleet ${searchValues.us_midway} hexes away`
+    jpOpsText = `Japan Air Operations Points: ${searchResults.JAPAN}`
+    usOpsText = `US Air Operations Points: ${searchResults.US}`
+  }
   return (
     <>
       <AlertPanel show={alertShow} onHide={() => setAlertShow(false)}>
@@ -539,6 +578,21 @@ export function App() {
           Drag the Fleet Unit to any hex in the shaded area of the map, or press Next Action to leave fleet in current
           location.
         </p>
+      </AlertPanel>
+      <AlertPanel show={searchValuesAlertShow} size={4} onHide={() => setSearchValuesAlertShow(false)}>
+        <h4>SEARCH PHASE: OPS POINTS</h4>
+        <p>Search Values:</p>
+        <ul>
+          <li>{jpAfText}</li>
+          <li>{usCsfText}</li>
+          <li>{usMidwayText}</li>
+        </ul>
+        <p></p>
+        <p>Search Results: </p>
+        <ul>
+          <li>{jpOpsText}</li>
+          <li>{usOpsText}</li>
+        </ul>
       </AlertPanel>
       <AlertPanel
         show={!testClicked && midwayNoAttackAlertShow}

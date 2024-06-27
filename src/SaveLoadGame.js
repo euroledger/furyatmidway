@@ -15,7 +15,7 @@ export function saveGameState(controller) {
       globalState.set(key, val)
     }
   }
-  console.log(globalState)
+  // console.log(globalState)
 
   let airState = new Map()
   const units = Array.from(GlobalInit.counters.values())
@@ -35,8 +35,8 @@ export function saveGameState(controller) {
 
   const jpCardText = JSON.stringify(GlobalUnitsModel.jpCards)
   const usCardText = JSON.stringify(GlobalUnitsModel.usCards)
-  console.log(jpCardText)
-  console.log(usCardText)
+  // console.log(jpCardText)
+  // console.log(usCardText)
 
   const usmaps = controller.getUSFleetLocations()
   const usMapText = JSON.stringify(Array.from(usmaps.entries()))
@@ -44,31 +44,28 @@ export function saveGameState(controller) {
   const jpmaps = controller.getJapanFleetLocations()
   const jpMapText = JSON.stringify(Array.from(jpmaps.entries()))
 
-  console.log(usMapText)
-  console.log(jpMapText)
+  // console.log(usMapText)
+  // console.log(jpMapText)
 
   const logItems = JSON.stringify(Array.from(GlobalGameState.logItems.entries()))
-  console.log(logItems)
+  // console.log(logItems)
+
+  const airOperationsText = JSON.stringify(GlobalGameState.airOperationPoints)
 
   localStorage.setItem("global", globalText)
   localStorage.setItem("air", airText)
+  localStorage.setItem("airoperations", airOperationsText)
   localStorage.setItem("jpMap", jpMapText)
   localStorage.setItem("usMap", usMapText)
   localStorage.setItem("jpcards", jpCardText)
   localStorage.setItem("uscards", usCardText)
   localStorage.setItem("log", logItems)
-
-  // for reverse:
-  // map = new Map(JSON.parse(jsonText))
 }
 function createFleetUpdates(fleetMap) {
   let updates = new Array()
   for (const key of fleetMap.keys()) {
     let update
     const cHex = fleetMap.get(key).currentHex
-
-    console.log("cHex q = ", cHex.q, "cHex r = ", cHex.r)
-
     update = {
         name: key,
         position: {
@@ -114,8 +111,6 @@ export function loadGameState() {
   const globalState = localStorage.getItem("global")
   const global = new Map(JSON.parse(globalState))
 
-  console.log("current carrier = ", GlobalGameState.currentCarrier)
-
   for (var property in GlobalGameState) {
     const ty = typeof GlobalGameState[property]
 
@@ -123,6 +118,8 @@ export function loadGameState() {
       GlobalGameState[property] = global.get(property)
     }
   }
+  const airOperationText = localStorage.getItem("airoperations")
+  GlobalGameState.airOperationPoints = JSON.parse(airOperationText)
 
   const airText = localStorage.getItem("air")
   const airMap = new Map(JSON.parse(airText))

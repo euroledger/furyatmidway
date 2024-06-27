@@ -28,6 +28,40 @@ function loadCounters(controller) {
 
   position = {
     hexCoords: {},
+    left: 34,
+    top: 280,
+  }
+  counters.set(
+    "MIF",
+    new BaseUnit(
+      "MIF",
+      "Japanese Midway Invasion Force",
+      position,
+      { x: 50, y: 58 }, // offsets
+      "/images/fleetcounters/MIF.png",
+      "3.0%"
+    )
+  )
+
+  position = {
+    hexCoords: {},
+    left: 900,
+    top: 117,
+  }
+  counters.set(
+    "MIF-USMAP",
+    new BaseUnit(
+      "MIF-USMAP",
+      "Japanese Midway Invasion Force (US Map)",
+      position,
+      { x: 50, y: 58 }, // offsets
+      "/images/fleetcounters/MIF.png",
+      "3.0%"
+    )
+  )
+
+  position = {
+    hexCoords: {},
     left: 602,
     top: 117,
   }

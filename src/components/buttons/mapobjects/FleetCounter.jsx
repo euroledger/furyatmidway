@@ -28,9 +28,9 @@ function FleetCounter({
     hex = fleetUnitUpdate.position.currentHex
   }
 
-  if (fleetUnitUpdate) {
-    console.log("GOT AN UPDATE FOR FLEET ",fleetUnitUpdate.name, " - moving to ",hex )
-  }
+  // if (fleetUnitUpdate) {
+  //   console.log("GOT AN UPDATE FOR FLEET ",fleetUnitUpdate.name, " - moving to ",hex )
+  // }
   // This code for the test mode fleet unit updates
   if (
     fleetUnitUpdate && 
@@ -38,13 +38,13 @@ function FleetCounter({
     position.currentHex.q !== hex.q &&
     position.currentHex.r !== hex.r
   ) {
-    console.log(
-      "I am ",
-      fleetUnitUpdate.name,
-      " -> FLEET UNIT UPDATE, move to ",
-      hex.q + ",",
-      hex.r
-    )
+    // console.log(
+    //   "I am ",
+    //   fleetUnitUpdate.name,
+    //   " -> FLEET UNIT UPDATE, move to ",
+    //   hex.q + ",",
+    //   hex.r
+    // )
     setPosition({
       initial: false,
       left: hex.x + counterData.position.left + counterData.offsets.x,
@@ -58,7 +58,7 @@ function FleetCounter({
     if (position.initial) {
       from = HexCommand.OFFBOARD
     }
-    console.log("*** To = ", to.currentHex.row, ", ", to.currentHex.col)
+    // console.log("*** To = ", to.currentHex.row, ", ", to.currentHex.col)
 
 
     controller.viewEventHandler({

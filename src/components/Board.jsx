@@ -190,8 +190,25 @@ function Board({
           jpRegions={japanMapRegions}
           fleetUnitUpdate={fleetUnitUpdate}
           enabled={
-            GlobalGameState.gamePhase === GlobalGameState.PHASE.JAPAN_FLEET_MOVEMENT || GlobalGameState.jpFleetPlaced === true
+            GlobalGameState.gamePhase === GlobalGameState.PHASE.JAPAN_FLEET_MOVEMENT ||
+            GlobalGameState.jpFleetPlaced === true
           }
+          side={GlobalUnitsModel.Side.JAPAN}
+        ></FleetCounter>
+        <FleetCounter
+          controller={controller}
+          onDrag={onDrag}
+          onStop={onStop}
+          currentHex={currentJapanHex}
+          id="MIF"
+          counterData={GlobalInit.counters.get("MIF")}
+          jpRegions={japanMapRegions}
+          fleetUnitUpdate={fleetUnitUpdate}
+          // enabled={
+          //   GlobalGameState.gamePhase === GlobalGameState.PHASE.JAPAN_FLEET_MOVEMENT ||
+          //   GlobalGameState.jpFleetPlaced === true
+          // }
+          enabled={true}
           side={GlobalUnitsModel.Side.JAPAN}
         ></FleetCounter>
         <FleetCounter
@@ -203,10 +220,12 @@ function Board({
           counterData={GlobalInit.counters.get("CSF")}
           usRegions={USMapRegions}
           fleetUnitUpdate={fleetUnitUpdate}
-          enabled={GlobalGameState.gamePhase === GlobalGameState.PHASE.US_SETUP_FLEET || GlobalGameState.usFleetPlaced === true}
+          enabled={
+            GlobalGameState.gamePhase === GlobalGameState.PHASE.US_SETUP_FLEET || GlobalGameState.usFleetPlaced === true
+          }
           side={GlobalUnitsModel.Side.US}
         ></FleetCounter>
-         <FleetCounter
+        <FleetCounter
           controller={controller}
           onDrag={onDrag}
           onStop={onStop}
@@ -217,7 +236,7 @@ function Board({
           enabled={true}
           side={GlobalUnitsModel.Side.JP}
         ></FleetCounter>
-          <FleetCounter
+        <FleetCounter
           controller={controller}
           onDrag={onDrag}
           onStop={onStop}
@@ -228,6 +247,18 @@ function Board({
           enabled={true}
           side={GlobalUnitsModel.Side.US}
         ></FleetCounter>
+        <FleetCounter
+          controller={controller}
+          onDrag={onDrag}
+          onStop={onStop}
+          currentHex={currentJapanHex}
+          id="MIF-USMAP"
+          counterData={GlobalInit.counters.get("MIF-USMAP")}
+          fleetUnitUpdate={fleetUnitUpdate}
+          enabled={true}
+          side={GlobalUnitsModel.Side.US}
+        ></FleetCounter>
+
         <AirCounters
           controller={controller}
           onDrag={onDrag}

@@ -4,6 +4,8 @@ import MapModel from "../model/MapModel"
 import GlobalUnitsModel from "../model/GlobalUnitsModel"
 import ViewEventAirUnitSetupHandler from "./ViewEventAirUnitSetupHandler"
 import ViewEventFleetUnitSetupHandler from "./ViewEventFleetUnitSetupHandler"
+import { distanceBetweenHexes } from "../components/HexUtils"
+import GlobalGameState from "../model/GlobalGameState"
 
 export default class Controller {
   static EventTypes = {
@@ -11,8 +13,15 @@ export default class Controller {
     FLEET_SETUP: "FleetSetup",
   }
 
+  static MIDWAY_HEX = {
+    currentHex: {
+      q: 6,
+      r: 3,
+    },
+  }
+
   constructor() {
-   this.clearModels()
+    this.clearModels()
   }
 
   clearModels() {
@@ -155,7 +164,93 @@ export default class Controller {
   getUSFleetLocations() {
     return this.mapModel.getUSFleetLocations()
   }
-  
+
+  numHexesBetweenFleets(fleetA, fleetB) {
+    let locationA = this.getFleetLocation(fleetA.name, fleetA.side)
+    let locationB = this.getFleetLocation(fleetB.name, fleetB.side)
+    if (fleetA.name === "MIDWAY") {
+      locationA = Controller.MIDWAY_HEX
+    } else if (fleetB.name === "MIDWAY") {
+      locationB = Controller.MIDWAY_HEX
+    }
+
+    let hexA = {
+      q: locationA.currentHex.q,
+      r: locationA.currentHex.r,
+    }
+    let hexB = {
+      q: locationB.currentHex.q,
+      r: locationB.currentHex.r,
+    }
+
+    return distanceBetweenHexes(hexA, hexB)
+  }
+
+  closestEnemyFleet(fleetA, side) {
+    let locationA = this.getFleetLocation(fleetA.name, fleetA.side)
+
+    if (fleetA.name === "MIDWAY") {
+      locationA = Controller.MIDWAY_HEX
+    }
+    let hexA = {
+      q: locationA.currentHex.q,
+      r: locationA.currentHex.r,
+    }
+
+    let locations =
+      fleetA.side === GlobalUnitsModel.Side.JAPAN ? this.getUSFleetLocations() : this.getJapanFleetLocations()
+
+    const otherSide =
+      fleetA.side === GlobalUnitsModel.Side.JAPAN ? GlobalUnitsModel.Side.JAPAN : GlobalUnitsModel.Side.US
+
+    let shortestDist = 100
+
+    // if no fleets on the board (for Japan) use Midway instead
+    // @TODO
+
+    let found = false
+    for (let fleet of locations.keys()) {
+      if (fleet.toUpperCase().includes("MAP")) {
+        continue
+      }
+      found = true // will stay false if no fleets on map
+      const locationB = locations.get(fleet)
+      const hexB = {
+        q: locationB.currentHex.q,
+        r: locationB.currentHex.r,
+      }
+      const dist = distanceBetweenHexes(hexA, hexB)
+      if (dist < shortestDist) {
+        shortestDist = dist
+      }
+    }
+
+    if (!found && fleetA.side === GlobalUnitsModel.Side.JAPAN) {
+      // no US fleets -> use Midway for search instead
+      const locationB = Controller.MIDWAY_HEX
+      const hexB = {
+        q: locationB.currentHex.q,
+        r: locationB.currentHex.r,
+      }
+      shortestDist = distanceBetweenHexes(hexA, hexB)
+    } 
+    return shortestDist
+  }
+
+  calcSearchResults(distances) {
+    let jpVal = Math.max(1, GlobalUnitsModel.SearchValue.JP_AF - distances.jp_af)
+    jpVal = Math.min(4, jpVal)
+    let usVal = Math.max(1, 
+      GlobalUnitsModel.SearchValue.US_CSF - distances.us_csf,
+      GlobalUnitsModel.SearchValue.US_MIDWAY - distances.us_midway
+    )
+    usVal = Math.min(4, usVal)
+    return {
+      JAPAN: jpVal,
+      US: usVal
+    }
+  }
+
   viewEventHandler(event) {
     // event contains type and data
 
