@@ -1,13 +1,15 @@
+import GlobalGameState from "../../model/GlobalGameState";
+
 var audio = new Audio("/sounds/dice.wav");
 	
 export const randomDice = (num) => {
-
   const rolls = new Array()
   for (let i = 0; i < num; i++) {
     const random = Math.floor(Math.random() * 6) + 1
     rolls.push(random)
   }
   rollDice(rolls)
+  return rolls
 }
 
 const spin = (r, dice) => {
@@ -65,6 +67,8 @@ const rollDice = (rolls) => {
     for (let i = 0; i < rolls.length; i++) {
       diceElements[i].style.animation = "none"
     }
+    GlobalGameState.dieRolls = rolls
+    GlobalGameState.updateGlobalState()
    
   }, 400)
 }

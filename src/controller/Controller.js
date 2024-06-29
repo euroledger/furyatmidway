@@ -233,22 +233,55 @@ export default class Controller {
         r: locationB.currentHex.r,
       }
       shortestDist = distanceBetweenHexes(hexA, hexB)
-    } 
+    }
     return shortestDist
   }
 
   calcSearchResults(distances) {
     let jpVal = Math.max(1, GlobalUnitsModel.SearchValue.JP_AF - distances.jp_af)
     jpVal = Math.min(4, jpVal)
-    let usVal = Math.max(1, 
+    let usVal = Math.max(
+      1,
       GlobalUnitsModel.SearchValue.US_CSF - distances.us_csf,
       GlobalUnitsModel.SearchValue.US_MIDWAY - distances.us_midway
     )
     usVal = Math.min(4, usVal)
     return {
       JAPAN: jpVal,
-      US: usVal
+      US: usVal,
     }
+  }
+
+  determineInitiative = (japanDieRoll, usDieRoll) => {
+    if (GlobalGameState.airOperationPoints.japan === 0 &&  GlobalGameState.airOperationPoints.us > 0) {
+      return GlobalUnitsModel.Side.US
+    }
+
+    if (GlobalGameState.airOperationPoints.us === 0 &&  GlobalGameState.airOperationPoints.japan > 0) {
+      return GlobalUnitsModel.Side.JAPAN
+    }
+
+    if (GlobalGameState.airOperationPoints.japan === 0 &&  GlobalGameState.airOperationPoints.us === 0) {
+      return null
+    }
+    const japanTotal = japanDieRoll + GlobalGameState.airOperationPoints.japan
+    const usTotal = usDieRoll + GlobalGameState.airOperationPoints.us
+
+    if (japanTotal > usTotal) {
+      return GlobalUnitsModel.Side.JAPAN
+    } else if (usTotal > japanTotal) {
+      return GlobalUnitsModel.Side.US
+    }
+
+    // if the two totals are equal winner is the side with higher air ops
+    if (GlobalGameState.airOperationPoints.japan > GlobalGameState.airOperationPoints.us) {
+      return GlobalUnitsModel.Side.JAPAN
+    } else if (GlobalGameState.airOperationPoints.us > GlobalGameState.airOperationPoints.japan) {
+      return GlobalUnitsModel.Side.US
+    }
+
+    // if totals and air ops both equal, needs a re-roll - return null
+    return null
   }
 
   viewEventHandler(event) {

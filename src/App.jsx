@@ -29,6 +29,8 @@ import { loadGameState, saveGameState } from "./SaveLoadGame"
 import { allHexesWithinDistance } from "./components/HexUtils"
 import DicePanel from "./components/dialogs/DicePanel"
 import { calculateSearchValues, calculateSearchResults } from "./model/SearchValues"
+import { AirOpsHeaders, AirOpsFooters } from "./AirOpsDataPanels"
+import { randomDice } from "./components/dialogs/DiceUtils"
 
 export default App
 export function App() {
@@ -79,6 +81,8 @@ export function App() {
 
   const [USMapRegions, setUSMapRegions] = useState([])
   const [japanMapRegions, setJapanMapRegions] = useState([])
+
+  const [sideWithInitiative, setSideWithInitiative] = useState(null)
 
   const onDrag = () => {
     setIsMoveable(true)
@@ -212,19 +216,20 @@ export function App() {
       setFleetUnitUpdate(update)
       GlobalGameState.gamePhase = GlobalGameState.PHASE.BOTH_SEARCH_PHASE
       const sv = calculateSearchValues(GlobalInit.controller)
-      console.log("SEARCH VALUES = ", sv)
       const sr = calculateSearchResults(GlobalInit.controller, {
         jp_af: sv.jp_af,
         us_csf: sv.us_csf,
         us_midway: sv.us_midway,
       })
       setSearchValues(sv)
-
-      console.log("SEARCH RESULTS = ", sr)
       GlobalGameState.airOperationPoints.japan = sr.JAPAN
       GlobalGameState.airOperationPoints.us = sr.US
       setSearchResults(sr)
       setSearchValuesAlertShow(true)
+
+      // setDicePanelShow(sr.JAPAN > 0 && sr.US > 0)
+    } else if (GlobalGameState.gamePhase === GlobalGameState.PHASE.BOTH_SEARCH_PHASE) {
+      setDicePanelShow(true)
     }
 
     GlobalGameState.setupPhase++
@@ -558,6 +563,25 @@ export function App() {
     jpOpsText = `Japan Air Operations Points: ${searchResults.JAPAN}`
     usOpsText = `US Air Operations Points: ${searchResults.US}`
   }
+
+  const airOpsFooters = (
+    <>
+      <AirOpsFooters controller={GlobalInit.controller}></AirOpsFooters>
+    </>
+  )
+  const airOpsHeaders = (
+    <>
+      <AirOpsHeaders></AirOpsHeaders>
+    </>
+  )
+  function doRoll() {
+    const rolls = randomDice(2)
+    const sideWithInitiative = GlobalInit.controller.determineInitiative(rolls[0], rolls[1])
+    console.log("SIDE WITH INITIATIVE = ", sideWithInitiative)
+
+    setSideWithInitiative(() => sideWithInitiative)
+
+  }
   return (
     <>
       <AlertPanel show={alertShow} onHide={() => setAlertShow(false)}>
@@ -579,7 +603,14 @@ export function App() {
           location.
         </p>
       </AlertPanel>
-      <AlertPanel show={searchValuesAlertShow} size={4} onHide={() => setSearchValuesAlertShow(false)}>
+      <AlertPanel
+        show={searchValuesAlertShow}
+        size={4}
+        onHide={(e) => {
+          setSearchValuesAlertShow(false)
+          nextAction(e)
+        }}
+      >
         <h4>SEARCH PHASE: OPS POINTS</h4>
         <p>Search Values:</p>
         <ul>
@@ -617,7 +648,16 @@ export function App() {
         <h4>INFO</h4>
         <p>Game State Successfully Saved!</p>
       </AlertPanel>
-      <DicePanel numDice={5} show={dicePanelShow} onHide={() => setDicePanelShow(false)}></DicePanel>
+      <DicePanel
+        numDice={2}
+        show={dicePanelShow}
+        headerText="Air Ops Initiative"
+        headers={airOpsHeaders}
+        footers={airOpsFooters}
+        onHide={() => setDicePanelShow(false)}
+        doRoll={doRoll}
+        disabled={sideWithInitiative !== null}
+      ></DicePanel>
       <GameStatusPanel show={gameStateShow} gameState={gameState} onHide={() => setGameStateShow(false)} />
       <CardPanel show={jpHandShow} side={GlobalUnitsModel.Side.JAPAN} onHide={() => setjpHandShow(false)}></CardPanel>
       <CardPanel show={usHandShow} side={GlobalUnitsModel.Side.US} onHide={() => setusHandShow(false)}></CardPanel>

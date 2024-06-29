@@ -61,6 +61,8 @@ export default class GlobalGameState {
 
   static stateHandler = () => {};
 
+  static dieRolls = new Array()
+  
   static midwayInvasionLevel = 5;
 
   static midwayGarrisonLevel = 6;
