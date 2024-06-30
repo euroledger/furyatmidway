@@ -83,7 +83,9 @@ export default class GlobalGameState {
   static usCardsDrawn = false
 
   static usFleetPlaced = false
+  static usFleetMoved = false
   static jpFleetPlaced = false
+  static jpFleetMoved = false
 
   static phaseCompleted = false
 

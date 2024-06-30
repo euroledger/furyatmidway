@@ -19,6 +19,7 @@ import {
   getFleetUnitUpdateUS,
   calcTestDataUS,
   createMapUpdateForFleet,
+  createFleetUpdate,
 } from "./AirUnitTestData"
 import JapanAirBoxOffsets from "./components/draganddrop/JapanAirBoxOffsets"
 import USAirBoxOffsets from "./components/draganddrop/USAirBoxOffsets"
@@ -31,6 +32,8 @@ import DicePanel from "./components/dialogs/DicePanel"
 import { calculateSearchValues, calculateSearchResults } from "./model/SearchValues"
 import { AirOpsHeaders, AirOpsFooters } from "./AirOpsDataPanels"
 import { randomDice } from "./components/dialogs/DiceUtils"
+import UITester from "./UITester"
+import loadHandler from "./LoadHandler"
 
 export default App
 export function App() {
@@ -119,8 +122,11 @@ export function App() {
       setMidwayDialogShow(true)
       GlobalGameState.phaseCompleted = false
     } else if (GlobalGameState.gamePhase === GlobalGameState.PHASE.US_FLEET_MOVEMENT_PLANNING) {
-      setUsFleetRegions()
-      GlobalGameState.phaseCompleted = true
+      if (!GlobalGameState.usFleetMoved) {
+        setUSMapRegions([])
+      } else {
+        GlobalGameState.phaseCompleted = true
+      }
     } else if (GlobalGameState.gamePhase === GlobalGameState.PHASE.JAPAN_FLEET_MOVEMENT) {
       setJapanFleetRegions()
       GlobalGameState.phaseCompleted = true
@@ -134,6 +140,9 @@ export function App() {
       setJapanMapRegions([])
       GlobalGameState.phaseCompleted = true
     }
+    // If we don't do this, a drag and drop move fires a fleet update and the fleet does not move
+    setFleetUnitUpdate(undefined)
+
     console.log("+++++ AIR OPS: US: ", GlobalGameState.airOperationPoints.us)
     GlobalGameState.updateGlobalState()
   }
@@ -188,6 +197,7 @@ export function App() {
       console.log("END OF Midway Declaration Phase")
       GlobalGameState.gamePhase = GlobalGameState.PHASE.US_FLEET_MOVEMENT_PLANNING
       setUsFleetRegions()
+      GlobalGameState.usFleetMoved = false
       GlobalGameState.phaseCompleted = true
     } else if (GlobalGameState.gamePhase === GlobalGameState.PHASE.US_FLEET_MOVEMENT_PLANNING) {
       console.log("END OF US Fleet Movement Phase")
@@ -244,63 +254,7 @@ export function App() {
   }
 
   const testUi = async (e) => {
-    setTestClicked(true)
-
-    let update
-    for (const unit of airUnitDataJapan) {
-      update = calcRandomJapanTestData(unit, GlobalInit.controller)
-      if (!update) {
-        continue
-      }
-      update.index = GlobalInit.controller.getFirstAvailableZone(update.boxName)
-      let position1 = JapanAirBoxOffsets.find((box) => box.name === update.boxName)
-      update.position = position1.offsets[update.index]
-
-      console.log("** JAPAN UPDATE = ", update)
-
-      setAirUnitUpdate(update)
-      await delay(1)
-      if (update.nextAction) {
-        nextAction(e)
-      }
-    }
-    nextAction(e) // get past japan card draw
-
-    update = getFleetUnitUpdateUS("CSF")
-    setFleetUnitUpdate(update)
-
-    nextAction(e) // get past US Fleet Unit setup
-
-    for (const unit of airUnitDataUS) {
-      update = calcTestDataUS(unit, GlobalInit.controller)
-      if (!update) {
-        continue
-      }
-      update.index = GlobalInit.controller.getFirstAvailableZone(update.boxName)
-
-      let position1 = USAirBoxOffsets.find((box) => box.name === update.boxName)
-
-      update.position = position1.offsets[update.index]
-
-      setAirUnitUpdate(update)
-
-      await delay(1)
-      if (update.nextAction) {
-        console.log("GAME STATE = ", GlobalGameState.gamePhase)
-
-        nextAction(e)
-      }
-    }
-    await delay(1)
-
-    console.log("GAME STATE = ", GlobalGameState.gamePhase)
-    nextAction(e) // us card draw
-    await delay(1)
-    console.log("GAME STATE = ", GlobalGameState.gamePhase)
-
-    nextAction(e) // midway
-    console.log("GAME STATE = ", GlobalGameState.gamePhase)
-    setFleetUnitUpdate(undefined)
+    await UITester({ e, setTestClicked, setAirUnitUpdate, setFleetUnitUpdate, nextAction })
   }
 
   var v = process.env.REACT_APP_MYVAR || "arse"
@@ -504,32 +458,33 @@ export function App() {
     nextAction(e)
   }
   async function loady() {
-    setTestClicked(true)
-    console.log("Load game from local storage")
-    setSplash(false)
-    const { airUpdates, jpfleetUpdates, usfleetUpdates, logItems } = loadGameState(GlobalInit.controller)
-    for (const update of airUpdates) {
-      setAirUnitUpdate(update)
-      await delay(1)
-    }
+    loadHandler({ setTestClicked, setSplash, setAirUnitUpdate, setFleetUnitUpdate, loadState })
+    // setTestClicked(true)
+    // console.log("Load game from local storage")
+    // setSplash(false)
+    // const { airUpdates, jpfleetUpdates, usfleetUpdates, logItems } = loadGameState(GlobalInit.controller)
+    // for (const update of airUpdates) {
+    //   setAirUnitUpdate(update)
+    //   await delay(1)
+    // }
 
-    for (const update of usfleetUpdates) {
-      setFleetUnitUpdate(update)
-      await delay(1)
-    }
+    // for (const update of usfleetUpdates) {
+    //   setFleetUnitUpdate(update)
+    //   await delay(1)
+    // }
 
-    for (const update of jpfleetUpdates) {
-      setFleetUnitUpdate(update)
-      await delay(1)
-    }
+    // for (const update of jpfleetUpdates) {
+    //   setFleetUnitUpdate(update)
+    //   await delay(1)
+    // }
 
-    GlobalGameState.logItems = new Array()
-    for (let item of logItems.values()) {
-      GlobalGameState.log(item)
-    }
+    // GlobalGameState.logItems = new Array()
+    // for (let item of logItems.values()) {
+    //   GlobalGameState.log(item)
+    // }
 
-    loadState()
-    // testClicked=false
+    // loadState()
+    // // testClicked=false
   }
 
   function onSplash() {
@@ -577,10 +532,7 @@ export function App() {
   function doRoll() {
     const rolls = randomDice(2)
     const sideWithInitiative = GlobalInit.controller.determineInitiative(rolls[0], rolls[1])
-    console.log("SIDE WITH INITIATIVE = ", sideWithInitiative)
-
     setSideWithInitiative(() => sideWithInitiative)
-
   }
   return (
     <>
@@ -604,7 +556,7 @@ export function App() {
         </p>
       </AlertPanel>
       <AlertPanel
-        show={searchValuesAlertShow}
+        show={!testClicked && searchValuesAlertShow}
         size={4}
         onHide={(e) => {
           setSearchValuesAlertShow(false)

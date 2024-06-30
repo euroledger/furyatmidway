@@ -35,16 +35,16 @@ function FleetCounter({
   if (
     fleetUnitUpdate && 
     counterData.name === fleetUnitUpdate.name &&
-    position.currentHex.q !== hex.q &&
-    position.currentHex.r !== hex.r
+    (position.currentHex.q !== hex.q ||
+    position.currentHex.r !== hex.r)
   ) {
-    // console.log(
-    //   "I am ",
-    //   fleetUnitUpdate.name,
-    //   " -> FLEET UNIT UPDATE, move to ",
-    //   hex.q + ",",
-    //   hex.r
-    // )
+    console.log(
+      "I am ",
+      fleetUnitUpdate.name,
+      " -> FLEET UNIT UPDATE, move to ",
+      hex.q + ",",
+      hex.r
+    )
     setPosition({
       initial: false,
       left: hex.x + counterData.position.left + counterData.offsets.x,
@@ -52,7 +52,10 @@ function FleetCounter({
       currentHex: hex,
     })
 
-    let from = currentHex
+    let from = {
+      currentHex: position.currentHex
+    }
+    // console.log("************ from = ", from)
 
     let to = { currentHex: hex }
     if (position.initial) {
@@ -78,7 +81,10 @@ function FleetCounter({
     if (side === "US") {
       let isThere = usRegions && usRegions.find((h) => h.q === hex.q && h.r === hex.r)
       if (!isThere) {
+        console.log("NOPE!!!!!!!!!!!!!")
         return
+      } else {
+        GlobalGameState.usFleetMoved = true
       }
     } else {
       let isThere = jpRegions && jpRegions.find((h) => h.q === hex.q && h.r === hex.r)
@@ -86,6 +92,8 @@ function FleetCounter({
         return
       }
       GlobalGameState.jpFleetPlaced = true
+      GlobalGameState.jpFleetMoved = true
+
     }
 
     console.log(

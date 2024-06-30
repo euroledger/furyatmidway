@@ -198,7 +198,7 @@ export function createMapUpdateForFleet(controller, name, side) {
   return createFleetUpdate(otherName, location.currentHex.q, location.currentHex.r)
 }
 
-function createFleetUpdate(name, q, r) {
+export function createFleetUpdate(name, q, r) {
   let hex = {
     q: q,
     r: r
