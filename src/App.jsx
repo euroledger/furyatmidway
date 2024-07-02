@@ -40,6 +40,19 @@ export function App() {
   const [splash, setSplash] = useState(true)
   const [showZones, setShowZones] = useState(true)
 
+  // TODO
+  // Have a list of the zones which are enabled for the current game phase
+  // and pass this down to the draganddrop components
+
+  // Maybe add a ZoneHandler to do the logic for this??
+
+  // This will create a list of enabled boxes for whatever game phase
+  // and work out which boxes are enabled during air operations
+  const [enabledZones, setEnabledZones] = useState([])
+
+  // then in the component (ie air box) we can say
+  // If this air box is in the list -> enable, else disable
+
   const [gameState, setGameState] = useState(false)
   // TODO set an effect hook on game state to trigger a game save
 

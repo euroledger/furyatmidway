@@ -110,7 +110,7 @@ const USAirBoxOffsets = [
     ],
   },
   {
-    name: GlobalUnitsModel.AirBox.US_ENTERPRISE_HANGER,
+    name: GlobalUnitsModel.AirBox.US_ENTERPRISE_HANGAR,
     taskForce: GlobalUnitsModel.TaskForce.TASK_FORCE_16,
     carriers: [GlobalUnitsModel.Carrier.ENTERPRISE],
     offsets: [
@@ -152,7 +152,7 @@ const USAirBoxOffsets = [
     ],
   },
   {
-    name: GlobalUnitsModel.AirBox.US_HORNET_HANGER,
+    name: GlobalUnitsModel.AirBox.US_HORNET_HANGAR,
     taskForce: GlobalUnitsModel.TaskForce.TASK_FORCE_16,
     carriers: [GlobalUnitsModel.Carrier.HORNET],
     offsets: [
@@ -286,7 +286,7 @@ const USAirBoxOffsets = [
     ],
   },
   {
-    name: GlobalUnitsModel.AirBox.US_YORKTOWN_HANGER,
+    name: GlobalUnitsModel.AirBox.US_YORKTOWN_HANGAR,
     taskForce: GlobalUnitsModel.TaskForce.TASK_FORCE_17,
     carriers: [GlobalUnitsModel.Carrier.YORKTOWN],
     offsets: [
@@ -420,7 +420,7 @@ const USAirBoxOffsets = [
     ],
   },
   {
-    name: GlobalUnitsModel.AirBox.US_MIDWAY_HANGER,
+    name: GlobalUnitsModel.AirBox.US_MIDWAY_HANGAR,
     taskForce: GlobalUnitsModel.TaskForce.MIDWAY,
     carriers: [GlobalUnitsModel.Carrier.MIDWAY],
     offsets: [

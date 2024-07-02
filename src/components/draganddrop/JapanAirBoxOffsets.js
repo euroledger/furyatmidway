@@ -27,7 +27,7 @@ const JapanAirBoxOffsets = [
     ],
   },
   {
-    name: GlobalUnitsModel.AirBox.JP_AKAGI_HANGER,
+    name: GlobalUnitsModel.AirBox.JP_AKAGI_HANGAR,
     taskForce: GlobalUnitsModel.TaskForce.CARRIER_DIV_1,
     carriers: [GlobalUnitsModel.Carrier.AKAGI],
     offsets: [
@@ -154,7 +154,7 @@ const JapanAirBoxOffsets = [
     ],
   },
   {
-    name: GlobalUnitsModel.AirBox.JP_KAGA_HANGER,
+    name: GlobalUnitsModel.AirBox.JP_KAGA_HANGAR,
     taskForce: GlobalUnitsModel.TaskForce.CARRIER_DIV_1,
     carriers: [GlobalUnitsModel.Carrier.KAGA],
     offsets: [
@@ -222,7 +222,7 @@ const JapanAirBoxOffsets = [
     ],
   },
   {
-    name: GlobalUnitsModel.AirBox.JP_HIRYU_HANGER,
+    name: GlobalUnitsModel.AirBox.JP_HIRYU_HANGAR,
     taskForce: GlobalUnitsModel.TaskForce.CARRIER_DIV_2,
     carriers: [GlobalUnitsModel.Carrier.HIRYU],
     offsets: [
@@ -352,7 +352,7 @@ const JapanAirBoxOffsets = [
 
   // SORYU
   {
-    name: GlobalUnitsModel.AirBox.JP_SORYU_HANGER,
+    name: GlobalUnitsModel.AirBox.JP_SORYU_HANGAR,
     taskForce: GlobalUnitsModel.TaskForce.CARRIER_DIV_2,
     carriers: [GlobalUnitsModel.Carrier.SORYU],
     offsets: [

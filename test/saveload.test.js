@@ -46,8 +46,8 @@ describe("Controller tests", () => {
     controller.addAirUnitToBox(GlobalUnitsModel.AirBox.JP_CD1_CAP_RETURN, 0, aaf2)
     controller.addAirUnitToBox(GlobalUnitsModel.AirBox.JP_CD1_CAP_RETURN, 1, kaf2)
 
-    controller.addAirUnitToBox(GlobalUnitsModel.AirBox.JP_KAGA_HANGER, 0, kdb)
-    controller.addAirUnitToBox(GlobalUnitsModel.AirBox.JP_KAGA_HANGER, 1, ktb)
+    controller.addAirUnitToBox(GlobalUnitsModel.AirBox.JP_KAGA_HANGAR, 0, kdb)
+    controller.addAirUnitToBox(GlobalUnitsModel.AirBox.JP_KAGA_HANGAR, 1, ktb)
 
     controller.addAirUnitToBox(GlobalUnitsModel.AirBox.JP_CD1_RETURN1, 0, adb)
     controller.addAirUnitToBox(GlobalUnitsModel.AirBox.JP_CD1_RETURN2, 1, atb)
@@ -76,8 +76,8 @@ describe("Controller tests", () => {
     controller.addAirUnitToBox(GlobalUnitsModel.AirBox.JP_CD2_CAP_RETURN, 0, haf2)
     controller.addAirUnitToBox(GlobalUnitsModel.AirBox.JP_CD2_CAP_RETURN, 1, saf2)
 
-    controller.addAirUnitToBox(GlobalUnitsModel.AirBox.JP_HIRYU_HANGER, 0, hdb)
-    controller.addAirUnitToBox(GlobalUnitsModel.AirBox.JP_HIRYU_HANGER, 1, htb)
+    controller.addAirUnitToBox(GlobalUnitsModel.AirBox.JP_HIRYU_HANGAR, 0, hdb)
+    controller.addAirUnitToBox(GlobalUnitsModel.AirBox.JP_HIRYU_HANGAR, 1, htb)
 
     controller.addAirUnitToBox(GlobalUnitsModel.AirBox.JP_CD2_RETURN1, 0, sdb)
     controller.addAirUnitToBox(GlobalUnitsModel.AirBox.JP_CD2_RETURN2, 1, stb)

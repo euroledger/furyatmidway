@@ -1,8 +1,8 @@
 import BaseUnit from "./components/buttons/mapobjects/BaseUnit"
 import AirUnit from "./components/buttons/mapobjects/AirUnit"
 import GlobalUnitsModel from "./model/GlobalUnitsModel"
-import FleetUnit from "./model/FleetUnit"
 import AircraftUnit from "./model/AircraftUnit"
+import FleetUnit from "./components/buttons/mapobjects/FleetUnit"
 
 function loadCounters(controller) {
   let counters = new Map()
@@ -113,14 +113,8 @@ function loadCounters(controller) {
     )
   )
 
-  GlobalUnitsModel.jpFleetUnits.set("1AF", new FleetUnit("1AF", false))
-  GlobalUnitsModel.jpFleetUnits.set("MIF", new FleetUnit("MIF", false))
-  GlobalUnitsModel.jpFleetUnits.set("DMCV", new FleetUnit("DMCV", false))
-
-  GlobalUnitsModel.usFleetUnits.set("CSF", new FleetUnit("CSF", false))
-  GlobalUnitsModel.usFleetUnits.set("DMCV", new FleetUnit("DMCV", false))
-
   loadAirCounters(controller, counters)
+  loadFleetUnits()
   return counters
 }
 
@@ -143,6 +137,44 @@ const jpStartPosition4 = {
   left: "2%",
   top: "77%",
 }
+
+const japanFleetUnits = [
+  {
+    name: GlobalUnitsModel.Carrier.AKAGI,
+    taskForce: GlobalUnitsModel.TaskForce.CARRIER_DIV_1,
+  },
+  {
+    name: GlobalUnitsModel.Carrier.KAGA,
+    taskForce: GlobalUnitsModel.TaskForce.CARRIER_DIV_1,
+  },
+  {
+    name: GlobalUnitsModel.Carrier.HIRYU,
+    taskForce: GlobalUnitsModel.TaskForce.CARRIER_DIV_2,
+  },
+  {
+    name: GlobalUnitsModel.Carrier.SORYU,
+    taskForce: GlobalUnitsModel.TaskForce.CARRIER_DIV_2,
+  },
+]
+
+const usFleetUnits = [
+  {
+    name: GlobalUnitsModel.Carrier.ENTERPRISE,
+    taskForce: GlobalUnitsModel.TaskForce.TASK_FORCE_16,
+  },
+  {
+    name: GlobalUnitsModel.Carrier.HORNET,
+    taskForce: GlobalUnitsModel.TaskForce.TASK_FORCE_16,
+  },
+  {
+    name: GlobalUnitsModel.Carrier.YORKTOWN,
+    taskForce: GlobalUnitsModel.TaskForce.TASK_FORCE_17,
+  },
+  {
+    name: GlobalUnitsModel.Carrier.MIDWAY,
+    taskForce: GlobalUnitsModel.TaskForce.MIDWAY,
+  },
+]
 const japanAirUnits = [
   {
     name: "Akagi-A6M-2b-1",
@@ -397,7 +429,6 @@ const japanAirUnits = [
     carrier: GlobalUnitsModel.Carrier.SORYU,
     side: GlobalUnitsModel.Side.JAPAN,
     aircraftUnit: {
-
       strength: 3,
       movement: 3,
       attack: true,
@@ -573,8 +604,8 @@ const usAirUnits = [
       steps: 2,
     },
   },
-   // HORNET AIR UNITS
-   {
+  // HORNET AIR UNITS
+  {
     name: "Hornet-F4F4-1",
     longName: "US F4F-4 (Hornet) 1",
     position: usStartPosition1,
@@ -868,6 +899,26 @@ const usAirUnits = [
     },
   },
 ]
+
+function loadFleetUnits() {
+  for (const unit of japanFleetUnits) {
+    GlobalUnitsModel.jpFleetUnits.set(
+      unit.name,
+      new FleetUnit(unit.name, unit.taskForce, 0, GlobalUnitsModel.Side.JAPAN)
+    )
+    GlobalUnitsModel.carrierSideMap.set(unit.name,GlobalUnitsModel.Side.JAPAN)
+  }
+  for (const unit of usFleetUnits) {
+    GlobalUnitsModel.usFleetUnits.set(
+      unit.name,
+      new FleetUnit(unit.name, unit.taskForce, 0, GlobalUnitsModel.Side.US)
+    )
+    GlobalUnitsModel.carrierSideMap.set(unit.name,GlobalUnitsModel.Side.US)
+  }
+
+
+}
+
 function loadAirCounters(controller, counters) {
   for (const unit of japanAirUnits) {
     const airUnitCounter = new AirUnit(

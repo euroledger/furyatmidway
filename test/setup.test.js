@@ -1,9 +1,9 @@
-import { default as FleetUnit } from "../src/model/FleetUnit";
 import GlobalUnitsModel from "../src/model/GlobalUnitsModel";
 import loadCounters from "../src/CounterLoader";
 import GlobalGameState from "../src/model/GlobalGameState";
 import JapanAirBoxOffsets from "../src/components/draganddrop/JapanAirBoxOffsets";
 import Controller from "../src/controller/Controller";
+import FleetUnit from "../src/components/buttons/mapobjects/FleetUnit";
 
 describe("Controller tests", () => {
   let counters;
@@ -13,27 +13,17 @@ describe("Controller tests", () => {
   });
 
   test("check global (game) fleet unit values", () => {
-    expect(GlobalUnitsModel.jpFleetUnits.size).toEqual(3);
-    expect(GlobalUnitsModel.usFleetUnits.size).toEqual(2);
+    expect(GlobalUnitsModel.jpFleetUnits.size).toEqual(4);
+    expect(GlobalUnitsModel.usFleetUnits.size).toEqual(4);
 
-    expect(GlobalUnitsModel.jpFleetUnits.get("1AF")).toBeTruthy();
-    expect(GlobalUnitsModel.jpFleetUnits.get("MIF")).toBeTruthy();
-    expect(GlobalUnitsModel.jpFleetUnits.get("DMCV")).toBeTruthy();
-
-    expect(GlobalUnitsModel.usFleetUnits.get("CSF")).toBeTruthy();
-    expect(GlobalUnitsModel.usFleetUnits.get("DMCV")).toBeTruthy();
+    expect(GlobalUnitsModel.jpFleetUnits.get(GlobalUnitsModel.Carrier.AKAGI)).toBeTruthy();
+    expect(GlobalUnitsModel.jpFleetUnits.get(GlobalUnitsModel.Carrier.KAGA)).toBeTruthy();
+    expect(GlobalUnitsModel.jpFleetUnits.get(GlobalUnitsModel.Carrier.HIRYU)).toBeTruthy();
+    expect(GlobalUnitsModel.jpFleetUnits.get(GlobalUnitsModel.Carrier.SORYU)).toBeTruthy();
 
     expect(GlobalUnitsModel.jpAirUnits.size).toEqual(16);
-  });
+    expect(GlobalUnitsModel.usAirUnits.size).toEqual(22);
 
-  test("check fleet unit values", () => {
-    const f1 = new FleetUnit("1AF", false);
-    const f2 = new FleetUnit("DMCV", true);
-
-    expect(f1.damaged).toEqual(false);
-    expect(f2.damaged).toEqual(true);
-    expect(f1.name).toEqual("1AF");
-    expect(f2.name).toEqual("DMCV");
   });
 
   test("check fleet unit counter values", () => {

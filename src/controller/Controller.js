@@ -6,6 +6,7 @@ import ViewEventAirUnitSetupHandler from "./ViewEventAirUnitSetupHandler"
 import ViewEventFleetUnitSetupHandler from "./ViewEventFleetUnitSetupHandler"
 import { distanceBetweenHexes } from "../components/HexUtils"
 import GlobalGameState from "../model/GlobalGameState"
+import AirOperationsModel from "../model/AirOperationsModel"
 
 export default class Controller {
   static EventTypes = {
@@ -28,12 +29,19 @@ export default class Controller {
     this.boxModel = new BoxModel()
     this.cardModel = new CardModel()
     this.mapModel = new MapModel()
+    this.airOperationsModel = new AirOperationsModel()
     this.airUnitSetupHandler = new ViewEventAirUnitSetupHandler(this)
     this.fleetUnitSetupHandler = new ViewEventFleetUnitSetupHandler(this)
   }
 
   setCounters(counters) {
     this.counters = counters
+  }
+
+  getAllAirUnits(side) {
+    const units = Array.from(this.counters.values())
+    const airCounters = units.filter((unit) => unit.constructor.name === "AirUnit" && unit.side === side)
+    return airCounters
   }
   addAirUnitToBox = (boxName, index, value) => {
     this.boxModel.addAirUnitToBox(boxName, index, value)
@@ -55,6 +63,27 @@ export default class Controller {
     if (airUnit) {
       return airUnit.carrier
     }
+  }
+
+  getTaskForceForCarrier(name, side) {
+    const carrier = side === GlobalUnitsModel.Side.JAPAN ? this.getJapanFleetUnit(name) : this.getUSFleetUnit(name)
+    return carrier.taskForce
+  }
+
+  getAllCarriersInTaskForce(tf, side) {
+    const fleetUnits =
+      side === GlobalUnitsModel.Side.JAPAN
+        ? Array.from(GlobalUnitsModel.jpFleetUnits.values())
+        : Array.from(GlobalUnitsModel.usFleetUnits.values())
+
+    return fleetUnits.filter((n) => n.taskForce === tf)
+  }
+
+  getOtherCarrierInTF(carrierName, side) {
+    const taskForce = this.getTaskForceForCarrier(carrierName, side)
+    const units = this.getAllCarriersInTaskForce(taskForce, side)
+
+    return units.filter((unit) => unit.name != carrierName)
   }
 
   getAllAirUnitsInBox = (boxName) => {
@@ -133,6 +162,41 @@ export default class Controller {
   getUSAirUnit(name) {
     return GlobalUnitsModel.usAirUnits.get(name)
   }
+
+  getJapanFleetUnit(name) {
+    return GlobalUnitsModel.jpFleetUnits.get(name)
+  }
+
+  getUSFleetUnit(name) {
+    return GlobalUnitsModel.usFleetUnits.get(name)
+  }
+
+  isFlightDeckDamaged(name) {
+    const side = GlobalUnitsModel.carrierSideMap.get(name)
+
+    if (side === GlobalUnitsModel.Side.JAPAN) {
+      const carrier = GlobalUnitsModel.jpFleetUnits.get(name)
+      return carrier.hits === 2
+    } else {
+      const carrier = GlobalUnitsModel.usFleetUnits.get(name)
+      return carrier.hits === 2
+    }
+  }
+
+  numUnitsOnCarrier(name) {
+    const side = GlobalUnitsModel.carrierSideMap.get(name)
+    const flightDeckBox = this.airOperationsModel.getAirBoxForNamedShip(side, name, "FLIGHT")
+    let boxName = Object.values(flightDeckBox)[0]
+    const airUnitsOnFlightDeck = this.getAllAirUnitsInBox(boxName)
+
+    const hangarBox = this.airOperationsModel.getAirBoxForNamedShip(side, name, "HANGAR")
+    boxName = Object.values(hangarBox)[0]
+
+    const airUnitsInHangar = this.getAllAirUnitsInBox(boxName)
+
+    return airUnitsInHangar.length + airUnitsOnFlightDeck.length
+  }
+
   getBoxesForJapaneseCarrier(carrier, includeReturnBoxes) {
     return this.boxModel.getBoxNamesForJapaneseCarrier(carrier, includeReturnBoxes)
   }
@@ -140,7 +204,13 @@ export default class Controller {
   getBoxesForUSCarrier(carrier, includeReturnBoxes) {
     return this.boxModel.getBoxNamesForUSCarrier(carrier, includeReturnBoxes)
   }
+  setValidAirUnitDestinations(name, destinations) {
+    this.airOperationsModel.setValidAirUnitDestinations(name, destinations)
+  }
 
+  getValidAirUnitDestinations(name) {
+    return this.airOperationsModel.getValidAirUnitDestinations(name)
+  }
   drawJapanCards(num, initial) {
     this.cardModel.drawJapanCards(num, initial)
   }
@@ -186,7 +256,7 @@ export default class Controller {
     return distanceBetweenHexes(hexA, hexB)
   }
 
-  closestEnemyFleet(fleetA, side) {
+  closestEnemyFleet(fleetA) {
     let locationA = this.getFleetLocation(fleetA.name, fleetA.side)
 
     if (fleetA.name === "MIDWAY") {
@@ -252,16 +322,28 @@ export default class Controller {
     }
   }
 
+  getAllUnitsInBoxes = (side, boxKey) => {
+    const boxes = this.airOperationsModel.getBoxesByKey(side, boxKey)
+
+    const airUnitsArray = new Array()
+    const bxModel = this.boxModel
+    Object.keys(boxes).forEach(function (key, index) {
+      airUnitsArray.push(bxModel.getAirUnitInBox(key))
+    })
+
+    return airUnitsArray
+  }
+
   determineInitiative = (japanDieRoll, usDieRoll) => {
-    if (GlobalGameState.airOperationPoints.japan === 0 &&  GlobalGameState.airOperationPoints.us > 0) {
+    if (GlobalGameState.airOperationPoints.japan === 0 && GlobalGameState.airOperationPoints.us > 0) {
       return GlobalUnitsModel.Side.US
     }
 
-    if (GlobalGameState.airOperationPoints.us === 0 &&  GlobalGameState.airOperationPoints.japan > 0) {
+    if (GlobalGameState.airOperationPoints.us === 0 && GlobalGameState.airOperationPoints.japan > 0) {
       return GlobalUnitsModel.Side.JAPAN
     }
 
-    if (GlobalGameState.airOperationPoints.japan === 0 &&  GlobalGameState.airOperationPoints.us === 0) {
+    if (GlobalGameState.airOperationPoints.japan === 0 && GlobalGameState.airOperationPoints.us === 0) {
       return null
     }
     const japanTotal = japanDieRoll + GlobalGameState.airOperationPoints.japan

@@ -23,8 +23,8 @@ export default class BoxModels {
     this.japanCD1Return2 = new Array(this.getNumberOfJapanZones(GlobalUnitsModel.AirBox.JP_CD1_RETURN2))
     this.japanCD1CapReturn = new Array(this.getNumberOfJapanZones(GlobalUnitsModel.AirBox.JP_CD1_CAP_RETURN))
 
-    this.japanAkagiHangar = new Array(this.getNumberOfJapanZones(GlobalUnitsModel.AirBox.JP_AKAGI_HANGER))
-    this.japanKagaHangar = new Array(this.getNumberOfJapanZones(GlobalUnitsModel.AirBox.JP_KAGA_HANGER))
+    this.japanAkagiHangar = new Array(this.getNumberOfJapanZones(GlobalUnitsModel.AirBox.JP_AKAGI_HANGAR))
+    this.japanKagaHangar = new Array(this.getNumberOfJapanZones(GlobalUnitsModel.AirBox.JP_KAGA_HANGAR))
     this.japanAkagiFlightDeck = new Array(this.getNumberOfJapanZones(GlobalUnitsModel.AirBox.JP_AKAGI_FLIGHT_DECK))
     this.japanKagaFlightDeck = new Array(this.getNumberOfJapanZones(GlobalUnitsModel.AirBox.JP_KAGA_FLIGHT_DECK))
 
@@ -32,8 +32,8 @@ export default class BoxModels {
     this.japanCD2Return2 = new Array(this.getNumberOfJapanZones(GlobalUnitsModel.AirBox.JP_CD2_RETURN2))
     this.japanCD2CapReturn = new Array(this.getNumberOfJapanZones(GlobalUnitsModel.AirBox.JP_CD2_CAP_RETURN))
 
-    this.japanHiryuHangar = new Array(this.getNumberOfJapanZones(GlobalUnitsModel.AirBox.JP_HIRYU_HANGER))
-    this.japanSoryuHangar = new Array(this.getNumberOfJapanZones(GlobalUnitsModel.AirBox.JP_SORYU_HANGER))
+    this.japanHiryuHangar = new Array(this.getNumberOfJapanZones(GlobalUnitsModel.AirBox.JP_HIRYU_HANGAR))
+    this.japanSoryuHangar = new Array(this.getNumberOfJapanZones(GlobalUnitsModel.AirBox.JP_SORYU_HANGAR))
     this.japanHiryuFlightDeck = new Array(this.getNumberOfJapanZones(GlobalUnitsModel.AirBox.JP_HIRYU_FLIGHT_DECK))
     this.japanSoryuFlightDeck = new Array(this.getNumberOfJapanZones(GlobalUnitsModel.AirBox.JP_SORYU_FLIGHT_DECK))
     this.offboard = new Array()
@@ -53,8 +53,8 @@ export default class BoxModels {
     this.usTF16Return2 = new Array(this.getNumberOfUSZones(GlobalUnitsModel.AirBox.US_TF16_RETURN2))
     this.usTF16CapReturn = new Array(this.getNumberOfUSZones(GlobalUnitsModel.AirBox.US_TF16_CAP_RETURN))
 
-    this.usEnterpriseHangar = new Array(this.getNumberOfUSZones(GlobalUnitsModel.AirBox.US_ENTERPRISE_HANGER))
-    this.usHornetHangar = new Array(this.getNumberOfUSZones(GlobalUnitsModel.AirBox.US_HORNET_HANGER))
+    this.usEnterpriseHangar = new Array(this.getNumberOfUSZones(GlobalUnitsModel.AirBox.US_ENTERPRISE_HANGAR))
+    this.usHornetHangar = new Array(this.getNumberOfUSZones(GlobalUnitsModel.AirBox.US_HORNET_HANGAR))
     this.usEnterpriseFlightDeck = new Array(this.getNumberOfUSZones(GlobalUnitsModel.AirBox.US_ENTERPRISE_FLIGHT_DECK))
     this.usHornetFlightDeck = new Array(this.getNumberOfUSZones(GlobalUnitsModel.AirBox.US_HORNET_FLIGHT_DECK))
 
@@ -66,8 +66,8 @@ export default class BoxModels {
     this.usMidwayReturn2 = new Array(this.getNumberOfUSZones(GlobalUnitsModel.AirBox.US_MIDWAY_RETURN2))
     this.usMidwayCapReturn = new Array(this.getNumberOfUSZones(GlobalUnitsModel.AirBox.US_MIDWAY_CAP_RETURN))
 
-    this.usYorktownHangar = new Array(this.getNumberOfUSZones(GlobalUnitsModel.AirBox.US_YORKTOWN_HANGER))
-    this.usMidwayHangar = new Array(this.getNumberOfUSZones(GlobalUnitsModel.AirBox.US_MIDWAY_HANGER))
+    this.usYorktownHangar = new Array(this.getNumberOfUSZones(GlobalUnitsModel.AirBox.US_YORKTOWN_HANGAR))
+    this.usMidwayHangar = new Array(this.getNumberOfUSZones(GlobalUnitsModel.AirBox.US_MIDWAY_HANGAR))
     this.usYorktownFlightDeck = new Array(this.getNumberOfUSZones(GlobalUnitsModel.AirBox.US_YORKTOWN_FLIGHT_DECK))
     this.usMidwayFlightDeck = new Array(this.getNumberOfUSZones(GlobalUnitsModel.AirBox.US_MIDWAY_FLIGHT_DECK))
     this.offboard = new Array()
@@ -94,16 +94,16 @@ export default class BoxModels {
     this.boxMap.set(GlobalUnitsModel.AirBox.JP_CD1_CAP_RETURN, this.japanCD1CapReturn)
     this.boxMap.set(GlobalUnitsModel.AirBox.JP_CD2_CAP_RETURN, this.japanCD2CapReturn)
 
-    this.boxMap.set(GlobalUnitsModel.AirBox.JP_AKAGI_HANGER, this.japanAkagiHangar)
+    this.boxMap.set(GlobalUnitsModel.AirBox.JP_AKAGI_HANGAR, this.japanAkagiHangar)
     this.boxMap.set(GlobalUnitsModel.AirBox.JP_AKAGI_FLIGHT_DECK, this.japanAkagiFlightDeck)
 
-    this.boxMap.set(GlobalUnitsModel.AirBox.JP_KAGA_HANGER, this.japanKagaHangar)
+    this.boxMap.set(GlobalUnitsModel.AirBox.JP_KAGA_HANGAR, this.japanKagaHangar)
     this.boxMap.set(GlobalUnitsModel.AirBox.JP_KAGA_FLIGHT_DECK, this.japanKagaFlightDeck)
 
-    this.boxMap.set(GlobalUnitsModel.AirBox.JP_HIRYU_HANGER, this.japanHiryuHangar)
+    this.boxMap.set(GlobalUnitsModel.AirBox.JP_HIRYU_HANGAR, this.japanHiryuHangar)
     this.boxMap.set(GlobalUnitsModel.AirBox.JP_HIRYU_FLIGHT_DECK, this.japanHiryuFlightDeck)
 
-    this.boxMap.set(GlobalUnitsModel.AirBox.JP_SORYU_HANGER, this.japanSoryuHangar)
+    this.boxMap.set(GlobalUnitsModel.AirBox.JP_SORYU_HANGAR, this.japanSoryuHangar)
     this.boxMap.set(GlobalUnitsModel.AirBox.JP_SORYU_FLIGHT_DECK, this.japanSoryuFlightDeck)
 
     // US BOX MAP
@@ -124,16 +124,16 @@ export default class BoxModels {
     this.boxMap.set(GlobalUnitsModel.AirBox.US_TF17_CAP_RETURN, this.usTF17CapReturn)
     this.boxMap.set(GlobalUnitsModel.AirBox.US_MIDWAY_CAP_RETURN, this.usMidwayCapReturn)
 
-    this.boxMap.set(GlobalUnitsModel.AirBox.US_ENTERPRISE_HANGER, this.usEnterpriseHangar)
+    this.boxMap.set(GlobalUnitsModel.AirBox.US_ENTERPRISE_HANGAR, this.usEnterpriseHangar)
     this.boxMap.set(GlobalUnitsModel.AirBox.US_ENTERPRISE_FLIGHT_DECK, this.usEnterpriseFlightDeck)
 
-    this.boxMap.set(GlobalUnitsModel.AirBox.US_HORNET_HANGER, this.usHornetHangar)
+    this.boxMap.set(GlobalUnitsModel.AirBox.US_HORNET_HANGAR, this.usHornetHangar)
     this.boxMap.set(GlobalUnitsModel.AirBox.US_HORNET_FLIGHT_DECK, this.usHornetFlightDeck)
 
-    this.boxMap.set(GlobalUnitsModel.AirBox.US_YORKTOWN_HANGER, this.usYorktownHangar)
+    this.boxMap.set(GlobalUnitsModel.AirBox.US_YORKTOWN_HANGAR, this.usYorktownHangar)
     this.boxMap.set(GlobalUnitsModel.AirBox.US_YORKTOWN_FLIGHT_DECK, this.usYorktownFlightDeck)
 
-    this.boxMap.set(GlobalUnitsModel.AirBox.US_MIDWAY_HANGER, this.usMidwayHangar)
+    this.boxMap.set(GlobalUnitsModel.AirBox.US_MIDWAY_HANGAR, this.usMidwayHangar)
     this.boxMap.set(GlobalUnitsModel.AirBox.US_MIDWAY_FLIGHT_DECK, this.usMidwayFlightDeck)
 
     // map of air unit -> location
@@ -173,7 +173,6 @@ export default class BoxModels {
   }
 
   getAirUnitLocation = (airUnitName) => {
-    const loc = this.airUnitLocationMap.get(airUnitName)
     return this.airUnitLocationMap.get(airUnitName)
   }
 

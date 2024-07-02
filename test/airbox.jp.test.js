@@ -29,8 +29,8 @@ describe("Japan Air Box tests", () => {
     controller.addAirUnitToBox(GlobalUnitsModel.AirBox.JP_CD1_CAP_RETURN, 0, aaf2)
     controller.addAirUnitToBox(GlobalUnitsModel.AirBox.JP_CD1_CAP_RETURN, 1, kaf2)
 
-    controller.addAirUnitToBox(GlobalUnitsModel.AirBox.JP_KAGA_HANGER, 0, kdb)
-    controller.addAirUnitToBox(GlobalUnitsModel.AirBox.JP_KAGA_HANGER, 1, ktb)
+    controller.addAirUnitToBox(GlobalUnitsModel.AirBox.JP_KAGA_HANGAR, 0, kdb)
+    controller.addAirUnitToBox(GlobalUnitsModel.AirBox.JP_KAGA_HANGAR, 1, ktb)
 
     controller.addAirUnitToBox(GlobalUnitsModel.AirBox.JP_CD1_RETURN1, 0, adb)
     controller.addAirUnitToBox(GlobalUnitsModel.AirBox.JP_CD1_RETURN2, 1, atb)
@@ -48,7 +48,7 @@ describe("Japan Air Box tests", () => {
     expect(airUnits[0].name).toEqual("Akagi-A6M-2b-2")
     expect(airUnits[1].name).toEqual("Kaga-A6M-2b-2")
 
-    airUnits = controller.getAllAirUnitsInBox(GlobalUnitsModel.AirBox.JP_KAGA_HANGER)
+    airUnits = controller.getAllAirUnitsInBox(GlobalUnitsModel.AirBox.JP_KAGA_HANGAR)
 
     expect(airUnits.length).toEqual(2)
     expect(airUnits[0].name).toEqual("Kaga-D3A-1")
@@ -83,8 +83,8 @@ describe("Japan Air Box tests", () => {
     controller.addAirUnitToBox(GlobalUnitsModel.AirBox.JP_CD2_CAP_RETURN, 0, haf2)
     controller.addAirUnitToBox(GlobalUnitsModel.AirBox.JP_CD2_CAP_RETURN, 1, saf2)
 
-    controller.addAirUnitToBox(GlobalUnitsModel.AirBox.JP_HIRYU_HANGER, 0, hdb)
-    controller.addAirUnitToBox(GlobalUnitsModel.AirBox.JP_HIRYU_HANGER, 1, htb)
+    controller.addAirUnitToBox(GlobalUnitsModel.AirBox.JP_HIRYU_HANGAR, 0, hdb)
+    controller.addAirUnitToBox(GlobalUnitsModel.AirBox.JP_HIRYU_HANGAR, 1, htb)
 
     controller.addAirUnitToBox(GlobalUnitsModel.AirBox.JP_CD2_RETURN1, 0, sdb)
     controller.addAirUnitToBox(GlobalUnitsModel.AirBox.JP_CD2_RETURN2, 1, stb)
@@ -102,7 +102,7 @@ describe("Japan Air Box tests", () => {
     expect(airUnits[0].name).toEqual("Hiryu-A6M-2b-2")
     expect(airUnits[1].name).toEqual("Soryu-A6M-2b-2")
 
-    airUnits = controller.getAllAirUnitsInBox(GlobalUnitsModel.AirBox.JP_HIRYU_HANGER)
+    airUnits = controller.getAllAirUnitsInBox(GlobalUnitsModel.AirBox.JP_HIRYU_HANGAR)
 
     expect(airUnits.length).toEqual(2)
     expect(airUnits[0].name).toEqual("Hiryu-D3A-1")
@@ -126,15 +126,15 @@ describe("Japan Air Box tests", () => {
     const htb = counters.get("Hiryu-B5N-2")
     const stb = counters.get("Soryu-B5N-2")
 
-    controller.addAirUnitToBox(GlobalUnitsModel.AirBox.JP_HIRYU_HANGER, 0, hdb)
-    controller.addAirUnitToBox(GlobalUnitsModel.AirBox.JP_HIRYU_HANGER, 1, haf1)
-    controller.addAirUnitToBox(GlobalUnitsModel.AirBox.JP_HIRYU_HANGER, 2, haf2)
-    let zone = controller.getFirstAvailableZone(GlobalUnitsModel.AirBox.JP_HIRYU_HANGER, GlobalUnitsModel.Side.JAPAN)
+    controller.addAirUnitToBox(GlobalUnitsModel.AirBox.JP_HIRYU_HANGAR, 0, hdb)
+    controller.addAirUnitToBox(GlobalUnitsModel.AirBox.JP_HIRYU_HANGAR, 1, haf1)
+    controller.addAirUnitToBox(GlobalUnitsModel.AirBox.JP_HIRYU_HANGAR, 2, haf2)
+    let zone = controller.getFirstAvailableZone(GlobalUnitsModel.AirBox.JP_HIRYU_HANGAR, GlobalUnitsModel.Side.JAPAN)
     expect(zone).toEqual(3)
 
-    controller.addAirUnitToBox(GlobalUnitsModel.AirBox.JP_HIRYU_HANGER, 3, htb)
-    controller.addAirUnitToBox(GlobalUnitsModel.AirBox.JP_HIRYU_HANGER, 4, stb)
-    zone = controller.getFirstAvailableZone(GlobalUnitsModel.AirBox.JP_HIRYU_HANGER, GlobalUnitsModel.Side.JAPAN)
+    controller.addAirUnitToBox(GlobalUnitsModel.AirBox.JP_HIRYU_HANGAR, 3, htb)
+    controller.addAirUnitToBox(GlobalUnitsModel.AirBox.JP_HIRYU_HANGAR, 4, stb)
+    zone = controller.getFirstAvailableZone(GlobalUnitsModel.AirBox.JP_HIRYU_HANGAR, GlobalUnitsModel.Side.JAPAN)
     expect(zone).toEqual(-1)
   })
 
@@ -151,13 +151,13 @@ describe("Japan Air Box tests", () => {
     const htb = counters.get("Hiryu-B5N-2")
     const stb = counters.get("Soryu-B5N-2")
 
-    controller.addAirUnitToBoxUsingNextFreeSlot(GlobalUnitsModel.AirBox.JP_HIRYU_HANGER, hdb)
-    controller.addAirUnitToBoxUsingNextFreeSlot(GlobalUnitsModel.AirBox.JP_HIRYU_HANGER, haf1)
-    controller.addAirUnitToBoxUsingNextFreeSlot(GlobalUnitsModel.AirBox.JP_HIRYU_HANGER, haf2)
-    let zone = controller.getFirstAvailableZone(GlobalUnitsModel.AirBox.JP_HIRYU_HANGER)
+    controller.addAirUnitToBoxUsingNextFreeSlot(GlobalUnitsModel.AirBox.JP_HIRYU_HANGAR, hdb)
+    controller.addAirUnitToBoxUsingNextFreeSlot(GlobalUnitsModel.AirBox.JP_HIRYU_HANGAR, haf1)
+    controller.addAirUnitToBoxUsingNextFreeSlot(GlobalUnitsModel.AirBox.JP_HIRYU_HANGAR, haf2)
+    let zone = controller.getFirstAvailableZone(GlobalUnitsModel.AirBox.JP_HIRYU_HANGAR)
     expect(zone).toEqual(3)
 
-    const units = controller.getAllAirUnitsInBox(GlobalUnitsModel.AirBox.JP_HIRYU_HANGER)
+    const units = controller.getAllAirUnitsInBox(GlobalUnitsModel.AirBox.JP_HIRYU_HANGAR)
     expect(units.length).toEqual(3)
   })
 
@@ -166,11 +166,11 @@ describe("Japan Air Box tests", () => {
     const haf2 = counters.get("Hiryu-A6M-2b-2")
     const hdb = counters.get("Hiryu-D3A-1")
 
-    controller.addAirUnitToBoxUsingNextFreeSlot(GlobalUnitsModel.AirBox.JP_HIRYU_HANGER, hdb)
-    controller.addAirUnitToBoxUsingNextFreeSlot(GlobalUnitsModel.AirBox.JP_HIRYU_HANGER, haf1)
-    controller.addAirUnitToBoxUsingNextFreeSlot(GlobalUnitsModel.AirBox.JP_HIRYU_HANGER, haf2)
+    controller.addAirUnitToBoxUsingNextFreeSlot(GlobalUnitsModel.AirBox.JP_HIRYU_HANGAR, hdb)
+    controller.addAirUnitToBoxUsingNextFreeSlot(GlobalUnitsModel.AirBox.JP_HIRYU_HANGAR, haf1)
+    controller.addAirUnitToBoxUsingNextFreeSlot(GlobalUnitsModel.AirBox.JP_HIRYU_HANGAR, haf2)
 
-    let slots = controller.getAllFreeZonesInBox(GlobalUnitsModel.AirBox.JP_HIRYU_HANGER)
+    let slots = controller.getAllFreeZonesInBox(GlobalUnitsModel.AirBox.JP_HIRYU_HANGAR)
     expect(slots.length).toEqual(2)
 
 

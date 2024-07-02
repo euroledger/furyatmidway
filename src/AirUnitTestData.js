@@ -14,7 +14,7 @@ export const airUnitDataJapan = [
     name: "Akagi-D3A-1",
   },
   {
-    boxName: GlobalUnitsModel.AirBox.JP_AKAGI_HANGER,
+    boxName: GlobalUnitsModel.AirBox.JP_AKAGI_HANGAR,
     name: "Akagi-B5N-2",
   },
   {
@@ -31,7 +31,7 @@ export const airUnitDataJapan = [
     name: "Kaga-D3A-1",
   },
   {
-    boxName: GlobalUnitsModel.AirBox.JP_KAGA_HANGER,
+    boxName: GlobalUnitsModel.AirBox.JP_KAGA_HANGAR,
     name: "Kaga-B5N-2",
   },
   {
@@ -44,20 +44,20 @@ export const airUnitDataJapan = [
     name: "Hiryu-A6M-2b-1",
   },
   {
-    boxName: GlobalUnitsModel.AirBox.JP_HIRYU_HANGER,
+    boxName: GlobalUnitsModel.AirBox.JP_HIRYU_HANGAR,
     name: "Hiryu-D3A-1",
   },
   {
-    boxName: GlobalUnitsModel.AirBox.JP_HIRYU_HANGER,
+    boxName: GlobalUnitsModel.AirBox.JP_HIRYU_HANGAR,
     name: "Hiryu-B5N-2",
   },
   {
-    boxName: GlobalUnitsModel.AirBox.JP_HIRYU_HANGER,
+    boxName: GlobalUnitsModel.AirBox.JP_HIRYU_HANGAR,
     name: "Hiryu-A6M-2b-2",
     nextAction: true,
   },
   {
-    boxName: GlobalUnitsModel.AirBox.JP_SORYU_HANGER,
+    boxName: GlobalUnitsModel.AirBox.JP_SORYU_HANGAR,
     name: "Soryu-A6M-2b-1",
   },
   {
@@ -70,7 +70,7 @@ export const airUnitDataJapan = [
     nextAction: true,
   },
   {
-    boxName: GlobalUnitsModel.AirBox.JP_SORYU_HANGER,
+    boxName: GlobalUnitsModel.AirBox.JP_SORYU_HANGAR,
     name: "Soryu-A6M-2b-2",
   },
 
@@ -91,11 +91,11 @@ export const airUnitDataUS = [
   },
   {
     name: "Enterprise-SBD3-2",
-    boxName: GlobalUnitsModel.AirBox.US_ENTERPRISE_HANGER,
+    boxName: GlobalUnitsModel.AirBox.US_ENTERPRISE_HANGAR,
   },
   {
     name: "Enterprise-TBD1",
-    boxName: GlobalUnitsModel.AirBox.US_ENTERPRISE_HANGER,
+    boxName: GlobalUnitsModel.AirBox.US_ENTERPRISE_HANGAR,
     nextAction: true
   },
   {
@@ -112,11 +112,11 @@ export const airUnitDataUS = [
   },
   {
     name: "Hornet-SBD3-2",
-    boxName: GlobalUnitsModel.AirBox.US_HORNET_HANGER,
+    boxName: GlobalUnitsModel.AirBox.US_HORNET_HANGAR,
   },
   {
     name: "Hornet-TBD1",
-    boxName: GlobalUnitsModel.AirBox.US_HORNET_HANGER,
+    boxName: GlobalUnitsModel.AirBox.US_HORNET_HANGAR,
     nextAction: true
   },
   {
@@ -133,11 +133,11 @@ export const airUnitDataUS = [
   },
   {
     name: "Yorktown-SBD3-2",
-    boxName: GlobalUnitsModel.AirBox.US_YORKTOWN_HANGER,
+    boxName: GlobalUnitsModel.AirBox.US_YORKTOWN_HANGAR,
   },
   {
     name: "Yorktown-TBD1",
-    boxName: GlobalUnitsModel.AirBox.US_YORKTOWN_HANGER,
+    boxName: GlobalUnitsModel.AirBox.US_YORKTOWN_HANGAR,
     nextAction: true
   },
   {
@@ -154,7 +154,7 @@ export const airUnitDataUS = [
   },
   {
     name: "Midway-SB2U-3",
-    boxName: GlobalUnitsModel.AirBox.US_MIDWAY_HANGER
+    boxName: GlobalUnitsModel.AirBox.US_MIDWAY_HANGAR
   },
   {
     name: "Midway-TBF-1",
@@ -166,7 +166,7 @@ export const airUnitDataUS = [
   },
   {
     name: "Midway-B17-E",
-    boxName: GlobalUnitsModel.AirBox.US_MIDWAY_HANGER,
+    boxName: GlobalUnitsModel.AirBox.US_MIDWAY_HANGAR,
     nextAction: true
   }
 ]

@@ -31,10 +31,10 @@ describe("US Air Box tests", () => {
     controller.addAirUnitToBox(GlobalUnitsModel.AirBox.US_TF16_CAP_RETURN, 0, ef2)
     controller.addAirUnitToBox(GlobalUnitsModel.AirBox.US_TF16_CAP_RETURN, 1, hf2)
 
-    controller.addAirUnitToBox(GlobalUnitsModel.AirBox.US_ENTERPRISE_HANGER, 0, edb1)
+    controller.addAirUnitToBox(GlobalUnitsModel.AirBox.US_ENTERPRISE_HANGAR, 0, edb1)
     controller.addAirUnitToBox(GlobalUnitsModel.AirBox.US_ENTERPRISE_FLIGHT_DECK, 1, etb)
 
-    controller.addAirUnitToBox(GlobalUnitsModel.AirBox.US_HORNET_HANGER, 0, hdb1)
+    controller.addAirUnitToBox(GlobalUnitsModel.AirBox.US_HORNET_HANGAR, 0, hdb1)
     controller.addAirUnitToBox(GlobalUnitsModel.AirBox.US_HORNET_FLIGHT_DECK, 1, htb)
 
     controller.addAirUnitToBox(GlobalUnitsModel.AirBox.US_TF16_RETURN1, 0, edb2)
@@ -53,11 +53,11 @@ describe("US Air Box tests", () => {
     expect(airUnits[0].name).toEqual("Enterprise-F4F4-2")
     expect(airUnits[1].name).toEqual("Hornet-F4F4-2")
 
-    airUnits = controller.getAllAirUnitsInBox(GlobalUnitsModel.AirBox.US_ENTERPRISE_HANGER)
+    airUnits = controller.getAllAirUnitsInBox(GlobalUnitsModel.AirBox.US_ENTERPRISE_HANGAR)
     expect(airUnits.length).toEqual(1)
     expect(airUnits[0].name).toEqual("Enterprise-SBD3-1")
 
-    airUnits = controller.getAllAirUnitsInBox(GlobalUnitsModel.AirBox.US_HORNET_HANGER)
+    airUnits = controller.getAllAirUnitsInBox(GlobalUnitsModel.AirBox.US_HORNET_HANGAR)
     expect(airUnits.length).toEqual(1)
     expect(airUnits[0].name).toEqual("Hornet-SBD3-1")
 
@@ -84,7 +84,7 @@ describe("US Air Box tests", () => {
 
     controller.addAirUnitToBox(GlobalUnitsModel.AirBox.US_TF17_CAP_RETURN, 0, yf2)
 
-    controller.addAirUnitToBox(GlobalUnitsModel.AirBox.US_YORKTOWN_HANGER, 0, ydb1)
+    controller.addAirUnitToBox(GlobalUnitsModel.AirBox.US_YORKTOWN_HANGAR, 0, ydb1)
     controller.addAirUnitToBox(GlobalUnitsModel.AirBox.US_YORKTOWN_FLIGHT_DECK, 1, ytb)
 
     controller.addAirUnitToBox(GlobalUnitsModel.AirBox.US_TF17_RETURN1, 0, ydb2)
@@ -98,7 +98,7 @@ describe("US Air Box tests", () => {
     expect(airUnits.length).toEqual(1)
     expect(airUnits[0].name).toEqual("Yorktown-F4F4-2")
 
-    airUnits = controller.getAllAirUnitsInBox(GlobalUnitsModel.AirBox.US_YORKTOWN_HANGER)
+    airUnits = controller.getAllAirUnitsInBox(GlobalUnitsModel.AirBox.US_YORKTOWN_HANGAR)
     expect(airUnits.length).toEqual(1)
     expect(airUnits[0].name).toEqual("Yorktown-SBD3-1")
 
@@ -139,15 +139,15 @@ describe("US Air Box tests", () => {
     const hdb2= counters.get("Hornet-SBD3-2")
     const htb = counters.get("Hornet-TBD1")
 
-    controller.addAirUnitToBox(GlobalUnitsModel.AirBox.US_HORNET_HANGER, 0, hdb1)
-    controller.addAirUnitToBox(GlobalUnitsModel.AirBox.US_HORNET_HANGER, 1, haf1)
-    controller.addAirUnitToBox(GlobalUnitsModel.AirBox.US_HORNET_HANGER, 2, haf2)
-    zone = controller.getFirstAvailableZone(GlobalUnitsModel.AirBox.US_HORNET_HANGER, GlobalUnitsModel.Side.US)
+    controller.addAirUnitToBox(GlobalUnitsModel.AirBox.US_HORNET_HANGAR, 0, hdb1)
+    controller.addAirUnitToBox(GlobalUnitsModel.AirBox.US_HORNET_HANGAR, 1, haf1)
+    controller.addAirUnitToBox(GlobalUnitsModel.AirBox.US_HORNET_HANGAR, 2, haf2)
+    zone = controller.getFirstAvailableZone(GlobalUnitsModel.AirBox.US_HORNET_HANGAR, GlobalUnitsModel.Side.US)
     expect(zone).toEqual(3)
 
-    controller.addAirUnitToBox(GlobalUnitsModel.AirBox.US_HORNET_HANGER, 3, htb)
-    controller.addAirUnitToBox(GlobalUnitsModel.AirBox.US_HORNET_HANGER, 4, hdb2)
-    zone = controller.getFirstAvailableZone(GlobalUnitsModel.AirBox.US_HORNET_HANGER, GlobalUnitsModel.Side.US)
+    controller.addAirUnitToBox(GlobalUnitsModel.AirBox.US_HORNET_HANGAR, 3, htb)
+    controller.addAirUnitToBox(GlobalUnitsModel.AirBox.US_HORNET_HANGAR, 4, hdb2)
+    zone = controller.getFirstAvailableZone(GlobalUnitsModel.AirBox.US_HORNET_HANGAR, GlobalUnitsModel.Side.US)
     expect(zone).toEqual(-1)
   })
 
@@ -162,13 +162,13 @@ describe("US Air Box tests", () => {
     const haf2 = counters.get("Hornet-F4F4-2")
     const hdb1 = counters.get("Hornet-SBD3-1")
 
-    controller.addAirUnitToBoxUsingNextFreeSlot(GlobalUnitsModel.AirBox.US_HORNET_HANGER, hdb1)
-    controller.addAirUnitToBoxUsingNextFreeSlot(GlobalUnitsModel.AirBox.US_HORNET_HANGER, haf1)
-    controller.addAirUnitToBoxUsingNextFreeSlot(GlobalUnitsModel.AirBox.US_HORNET_HANGER, haf2)
-    let zone = controller.getFirstAvailableZone(GlobalUnitsModel.AirBox.US_HORNET_HANGER)
+    controller.addAirUnitToBoxUsingNextFreeSlot(GlobalUnitsModel.AirBox.US_HORNET_HANGAR, hdb1)
+    controller.addAirUnitToBoxUsingNextFreeSlot(GlobalUnitsModel.AirBox.US_HORNET_HANGAR, haf1)
+    controller.addAirUnitToBoxUsingNextFreeSlot(GlobalUnitsModel.AirBox.US_HORNET_HANGAR, haf2)
+    let zone = controller.getFirstAvailableZone(GlobalUnitsModel.AirBox.US_HORNET_HANGAR)
     expect(zone).toEqual(3)
 
-    const units = controller.getAllAirUnitsInBox(GlobalUnitsModel.AirBox.US_HORNET_HANGER)
+    const units = controller.getAllAirUnitsInBox(GlobalUnitsModel.AirBox.US_HORNET_HANGAR)
     expect(units.length).toEqual(3)
   })
 
@@ -177,11 +177,11 @@ describe("US Air Box tests", () => {
     const haf2 = counters.get("Hornet-F4F4-2")
     const hdb1 = counters.get("Hornet-SBD3-1")
 
-    controller.addAirUnitToBoxUsingNextFreeSlot(GlobalUnitsModel.AirBox.US_HORNET_HANGER, hdb1)
-    controller.addAirUnitToBoxUsingNextFreeSlot(GlobalUnitsModel.AirBox.US_HORNET_HANGER, haf1)
-    controller.addAirUnitToBoxUsingNextFreeSlot(GlobalUnitsModel.AirBox.US_HORNET_HANGER, haf2)
+    controller.addAirUnitToBoxUsingNextFreeSlot(GlobalUnitsModel.AirBox.US_HORNET_HANGAR, hdb1)
+    controller.addAirUnitToBoxUsingNextFreeSlot(GlobalUnitsModel.AirBox.US_HORNET_HANGAR, haf1)
+    controller.addAirUnitToBoxUsingNextFreeSlot(GlobalUnitsModel.AirBox.US_HORNET_HANGAR, haf2)
 
-    let slots = controller.getAllFreeZonesInBox(GlobalUnitsModel.AirBox.US_HORNET_HANGER)
+    let slots = controller.getAllFreeZonesInBox(GlobalUnitsModel.AirBox.US_HORNET_HANGAR)
     expect(slots.length).toEqual(2)
 
     controller.addAirUnitToBox(GlobalUnitsModel.AirBox.US_TF16_RETURN1, 2, haf1)
