@@ -1,7 +1,5 @@
 import Controller from "../src/controller/Controller"
 import loadCounters from "../src/CounterLoader"
-import { flatHexToPixel, convertCoords } from "../src/components/HexUtils"
-import HexCommand from "../src/commands/HexCommand"
 import GlobalUnitsModel from "../src/model/GlobalUnitsModel"
 import { createFleetMove } from "./TestUtils"
 

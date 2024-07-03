@@ -187,8 +187,6 @@ export function createMapUpdateForFleet(controller, name, side) {
 
   const location = controller.getFleetLocation(name, side)
 
-  console.log(">>> FLEET location = ", location)
-
   let otherName
   if (name === "CSF") {
     otherName = "CSF-JPMAP"

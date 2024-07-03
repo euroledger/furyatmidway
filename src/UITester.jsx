@@ -24,8 +24,6 @@ const UITester = async ({ e, setTestClicked, setAirUnitUpdate, setFleetUnitUpdat
     let position1 = JapanAirBoxOffsets.find((box) => box.name === update.boxName)
     update.position = position1.offsets[update.index]
 
-    console.log("** JAPAN UPDATE = ", update)
-
     setAirUnitUpdate(update)
     await delay(1)
     if (update.nextAction) {

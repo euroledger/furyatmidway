@@ -1,15 +1,15 @@
-import React, { useRef, useState } from "react";
+import React, { useState, useContext } from "react";
 import GlobalGameState from "../../model/GlobalGameState";
 import "./button.css";
 import MIFOffsets from "../draganddrop/MIFBoxOffsets";
-
+import { BoardContext } from "../../App";
 function MidwayInvasionButton({
   image,
   initialPosition,
-  onDrag,
-  onStop,
   getZone,
 }) {
+  const { onDrag, onStop } = useContext(BoardContext)
+
   const [position, setPosition] = useState(initialPosition);
  
   const handleDrop = (event) => {

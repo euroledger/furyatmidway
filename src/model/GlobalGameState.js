@@ -30,7 +30,7 @@ export default class GlobalGameState {
     'Place Hornet Air Units',
     'Place Yorktown Air Units',
     'Place Midway Air Units',
-    'Draw 3 x US Cards'
+    'Draw 2 x US Cards'
   ]
 
   static JAPAN_CARRIERS = [

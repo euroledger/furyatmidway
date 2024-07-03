@@ -2,6 +2,7 @@ import GlobalGameState from "../model/GlobalGameState"
 import GlobalUnitsModel from "../model/GlobalUnitsModel"
 import MoveCommand from "../commands/MoveCommand"
 import COMMAND_TYPE from "../commands/COMMAND_TYPE"
+import { determineAllUnitsDeployedForCarrier } from "./AirUnitSetupHandler"
 
 class ViewEventAirUnitSetupHandler {
   constructor(controller) {
@@ -20,22 +21,7 @@ class ViewEventAirUnitSetupHandler {
     let command = new MoveCommand(COMMAND_TYPE.MOVE, counterData.longName, from, to)
     // console.log("Next free zone -> ", this.controller.getFirstAvailableZone(name))
 
-    if (side === GlobalUnitsModel.Side.JAPAN) {
-      const airUnitsDeployed = this.controller.getJapaneseAirUnitsDeployed(counterData.carrier)
-      if (airUnitsDeployed.length === 4) {
-        // all units deployed -> activate button
-        GlobalGameState.phaseCompleted = true
-        GlobalGameState.updateGlobalState()
-      }
-    } else {
-      const airUnitsDeployed = this.controller.getUSAirUnitsDeployed(counterData.carrier)
-      const numAirUnitsInCarrier = GlobalGameState.currentCarrier === 3 ? 7 : 5
-      if (airUnitsDeployed.length === numAirUnitsInCarrier) {
-        // all units deployed -> activate button
-        GlobalGameState.phaseCompleted = true
-        GlobalGameState.updateGlobalState()
-      }
-    }
+    determineAllUnitsDeployedForCarrier(this.controller, side, counterData.carrier)
     GlobalGameState.log(`Command: ${command.toString()}`)
   }
 }

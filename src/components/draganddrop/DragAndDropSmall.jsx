@@ -1,20 +1,23 @@
-import React from "react";
-import "../board.css";
+import React from "react"
+import "../board.css"
+import GlobalUnitsModel from "../../model/GlobalUnitsModel"
 
-function DragAndDropSmall({ name, handleDragEnter, zones, enabled }) {
+function DragAndDropSmall({ name, handleDragEnter, zones, enabled, side }) {
   const onDragOver = (e) => {
-    e.stopPropagation();
-    e.preventDefault();
-  };
+    e.stopPropagation()
+    e.preventDefault()
+  }
 
- const myZones = zones.map((p, index) => {
+  const myZones = zones.map((p, index) => {
     if (!enabled) {
       return <></>
     }
+    const dropClass =
+      side === GlobalUnitsModel.Side.JAPAN ? "drag-drop-zone-small zone2 bg-japan" : "drag-drop-zone-small zone2 bg-us"
     return (
       <div
         key={index}
-        class={"drag-drop-zone-small zone2"}
+        class={dropClass}
         style={{
           left: p.left + "%",
           top: p.top + "%",
@@ -22,9 +25,9 @@ function DragAndDropSmall({ name, handleDragEnter, zones, enabled }) {
         onDragEnter={(e) => handleDragEnter(e, index, name)}
         onDragOver={onDragOver}
       ></div>
-    );
-  });
-  return <>{myZones}</>;
+    )
+  })
+  return <>{myZones}</>
 }
 
-export default DragAndDropSmall;
+export default DragAndDropSmall

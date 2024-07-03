@@ -70,12 +70,27 @@ export default class Controller {
     return carrier.taskForce
   }
 
-  getAllCarriersInTaskForce(tf, side) {
+  getAllCarriersForSide(side) {
     const fleetUnits =
       side === GlobalUnitsModel.Side.JAPAN
         ? Array.from(GlobalUnitsModel.jpFleetUnits.values())
         : Array.from(GlobalUnitsModel.usFleetUnits.values())
 
+    if (side === GlobalUnitsModel.Side.JAPAN) {
+      return fleetUnits
+    }
+    const distance = this.numHexesBetweenFleets({name: "CSF",  side}, {name: "MIDWAY"})
+    if (distance <= 2) {
+      return fleetUnits     
+    }
+    return fleetUnits.filter((n) => n.name.toUpperCase() != "MIDWAY")
+  }
+
+  getAllCarriersInTaskForce(tf, side) {
+    const fleetUnits =
+      side === GlobalUnitsModel.Side.JAPAN
+        ? Array.from(GlobalUnitsModel.jpFleetUnits.values())
+        : Array.from(GlobalUnitsModel.usFleetUnits.values())
     return fleetUnits.filter((n) => n.taskForce === tf)
   }
 

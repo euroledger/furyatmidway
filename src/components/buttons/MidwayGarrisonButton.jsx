@@ -1,15 +1,15 @@
-import React, { useRef, useState } from "react";
+import React, { useRef, useState, useContext } from "react";
 import GlobalGameState from "../../model/GlobalGameState";
 import "./button.css";
 import MGTOffsets from "../draganddrop/MGTBoxOffsets";
-
+import { BoardContext } from "../../App";
 function MidwayGarrisonButton({
   image,
   initialPosition,
-  onDrag,
-  onStop,
   getZone,
 }) {
+  const { onDrag, onStop } = useContext(BoardContext)
+
   const [position, setPosition] = useState(initialPosition);
 
   const myRef = useRef();

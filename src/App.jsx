@@ -1,4 +1,4 @@
-import { React, useState } from "react"
+import { React, useState, useEffect, createContext } from "react"
 import Container from "react-bootstrap/Container"
 import Nav from "react-bootstrap/Nav"
 import Navbar from "react-bootstrap/Navbar"
@@ -14,16 +14,8 @@ import CardPanel from "./components/dialogs/CardPanel"
 import GameStatusPanel from "./components/dialogs/GameStatusPanel"
 import SplashScreen from "./components/dialogs/SplashScreen"
 import "./style.css"
-import {
-  calcRandomJapanTestData,
-  getFleetUnitUpdateUS,
-  calcTestDataUS,
-  createMapUpdateForFleet,
-  createFleetUpdate,
-} from "./AirUnitTestData"
-import JapanAirBoxOffsets from "./components/draganddrop/JapanAirBoxOffsets"
-import USAirBoxOffsets from "./components/draganddrop/USAirBoxOffsets"
-import { airUnitDataJapan, airUnitDataUS } from "./AirUnitTestData"
+import { createMapUpdateForFleet } from "./AirUnitTestData"
+import { determineAllUnitsDeployedForCarrier } from "./controller/AirUnitSetupHandler"
 import { usCSFStartHexes, japanAF1StartHexes } from "./components/MapRegions"
 import YesNoDialog from "./components/dialogs/YesNoDialog"
 import { loadGameState, saveGameState } from "./SaveLoadGame"
@@ -34,12 +26,24 @@ import { AirOpsHeaders, AirOpsFooters } from "./AirOpsDataPanels"
 import { randomDice } from "./components/dialogs/DiceUtils"
 import UITester from "./UITester"
 import loadHandler from "./LoadHandler"
+import { getJapanEnabledAirBoxes, getUSEnabledAirBoxes } from "./AirBoxZoneHandler"
 
 export default App
+
+export const BoardContext = createContext()
+
 export function App() {
   const [splash, setSplash] = useState(true)
   const [showZones, setShowZones] = useState(true)
+  const [enabledJapanBoxes, setEnabledJapanBoxes] = useState([])
+  const [enabledUSBoxes, setEnabledUSBoxes] = useState([])
 
+  useEffect(() => {
+    setEnabledJapanBoxes(getJapanEnabledAirBoxes())
+  }, [])
+  useEffect(() => {
+    setEnabledUSBoxes(getUSEnabledAirBoxes())
+  }, [])
   // TODO
   // Have a list of the zones which are enabled for the current game phase
   // and pass this down to the draganddrop components
@@ -131,7 +135,13 @@ export function App() {
 
   const loadState = () => {
     console.log("GlobalGameState.gamePhase = ", GlobalGameState.gamePhase)
-    if (GlobalGameState.gamePhase === GlobalGameState.PHASE.JAPAN_MIDWAY) {
+    if (GlobalGameState.gamePhase === GlobalGameState.PHASE.JAPAN_SETUP) {
+      const carrier = GlobalGameState.getJapanCarrier()
+      determineAllUnitsDeployedForCarrier(GlobalInit.controller, GlobalUnitsModel.Side.JAPAN, carrier)
+    } else if (GlobalGameState.gamePhase === GlobalGameState.PHASE.US_SETUP_AIR) {
+      const carrier = GlobalGameState.getUSCarrier()
+      determineAllUnitsDeployedForCarrier(GlobalInit.controller, GlobalUnitsModel.Side.US, carrier)
+    } else if (GlobalGameState.gamePhase === GlobalGameState.PHASE.JAPAN_MIDWAY) {
       setMidwayDialogShow(true)
       GlobalGameState.phaseCompleted = false
     } else if (GlobalGameState.gamePhase === GlobalGameState.PHASE.US_FLEET_MOVEMENT_PLANNING) {
@@ -158,8 +168,13 @@ export function App() {
 
     console.log("+++++ AIR OPS: US: ", GlobalGameState.airOperationPoints.us)
     GlobalGameState.updateGlobalState()
+    const enabledJapanBoxes = getJapanEnabledAirBoxes()
+    setEnabledJapanBoxes(() => enabledJapanBoxes)
+    const enabledUSBoxes = getUSEnabledAirBoxes()
+    setEnabledUSBoxes(() => enabledUSBoxes)
   }
 
+  // TODO move this into separate file
   const nextAction = (e) => {
     e.preventDefault()
     if (GlobalGameState.gamePhase === GlobalGameState.PHASE.JAPAN_SETUP) {
@@ -257,6 +272,10 @@ export function App() {
 
     GlobalGameState.setupPhase++
     GlobalGameState.updateGlobalState()
+    const enabledBoxes = getJapanEnabledAirBoxes()
+    setEnabledJapanBoxes(() => enabledBoxes)
+    const enabledUSBoxes = getUSEnabledAirBoxes()
+    setEnabledUSBoxes(() => enabledUSBoxes)
   }
 
   // set up initial zustand air counter list
@@ -356,7 +375,7 @@ export function App() {
                   setShowZones(!showZones)
                 }}
               >
-                {showZones ? "Hide" : "Show"}
+                Undo
               </Button>
             </Nav>
 
@@ -472,32 +491,6 @@ export function App() {
   }
   async function loady() {
     loadHandler({ setTestClicked, setSplash, setAirUnitUpdate, setFleetUnitUpdate, loadState })
-    // setTestClicked(true)
-    // console.log("Load game from local storage")
-    // setSplash(false)
-    // const { airUpdates, jpfleetUpdates, usfleetUpdates, logItems } = loadGameState(GlobalInit.controller)
-    // for (const update of airUpdates) {
-    //   setAirUnitUpdate(update)
-    //   await delay(1)
-    // }
-
-    // for (const update of usfleetUpdates) {
-    //   setFleetUnitUpdate(update)
-    //   await delay(1)
-    // }
-
-    // for (const update of jpfleetUpdates) {
-    //   setFleetUnitUpdate(update)
-    //   await delay(1)
-    // }
-
-    // GlobalGameState.logItems = new Array()
-    // for (let item of logItems.values()) {
-    //   GlobalGameState.log(item)
-    // }
-
-    // loadState()
-    // // testClicked=false
   }
 
   function onSplash() {
@@ -652,19 +645,29 @@ export function App() {
             }}
           >
             <TransformComponent>
-              <Board
-                controller={GlobalInit.controller}
-                gameStateHandler={gameStateHandler}
-                onDrag={onDrag}
-                onStop={onStop}
-                scale={scale}
-                airUnitUpdate={airUnitUpdate}
-                fleetUnitUpdate={fleetUnitUpdate}
-                setAlertShow={setAlertShow}
-                showZones={showZones}
-                USMapRegions={USMapRegions}
-                japanMapRegions={japanMapRegions}
-              />
+              <BoardContext.Provider
+                value={{
+                  controller: GlobalInit.controller,
+                  gameStateHandler,
+                  onDrag,
+                  onStop,
+                  scale,
+                  airUnitUpdate,
+                  fleetUnitUpdate,
+                  setAlertShow,
+                  showZones,
+                  USMapRegions,
+                  japanMapRegions,
+                  enabledJapanBoxes,
+                  enabledUSBoxes
+                }}
+              >
+                <Board
+                  scale={scale}
+                  USMapRegions={USMapRegions}
+                  japanMapRegions={japanMapRegions}
+                />
+              </BoardContext.Provider>
             </TransformComponent>
           </div>
         </div>

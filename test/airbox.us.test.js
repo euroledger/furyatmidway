@@ -1,6 +1,8 @@
 import Controller from "../src/controller/Controller"
 import GlobalUnitsModel from "../src/model/GlobalUnitsModel"
+import GlobalGameState from "../src/model/GlobalGameState"
 import loadCounters from "../src/CounterLoader"
+import { getUSEnabledAirBoxes } from "../src/AirBoxZoneHandler"
 
 describe("US Air Box tests", () => {
   let controller
@@ -114,7 +116,7 @@ describe("US Air Box tests", () => {
   // test("check US Midway air units can be added to various carrier air boxes", () => {
   // })
 
-  test("Check indexes of filled Japan air boxes", () => {
+  test("Check indexes of filled US air boxes", () => {
 
     const ef1 = counters.get("Enterprise-F4F4-1")
     const ef2 = counters.get("Enterprise-F4F4-2")
@@ -189,5 +191,18 @@ describe("US Air Box tests", () => {
     slots = controller.getAllFreeZonesInBox(GlobalUnitsModel.AirBox.US_TF16_RETURN1)
     expect(slots.length).toEqual(4)
     expect(slots).toEqual([ 0, 1, 3, 5 ])
+  })
+
+  test("getUSEnabledAirBoxes returns correct zones for various game states", () => {
+    GlobalGameState.gamePhase = GlobalGameState.PHASE.US_SETUP_AIR
+    GlobalGameState.setupPhase = 6
+
+    const enabledZones = getUSEnabledAirBoxes()
+    expect (enabledZones.length).toEqual(3)
+    expect (enabledZones[0]).toEqual(GlobalUnitsModel.AirBox.US_TF16_CAP)
+    expect (enabledZones[1]).toEqual(GlobalUnitsModel.AirBox.US_ENTERPRISE_HANGAR)
+    expect (enabledZones[2]).toEqual(GlobalUnitsModel.AirBox.US_ENTERPRISE_FLIGHT_DECK)
+
+    console.log("ENABLED ZONES = ", enabledZones)
   })
 })

@@ -1,22 +1,12 @@
-import React, { useState } from "react"
+import React, { useState, useContext } from "react"
 import "../../board.css"
 import HexCommand from "../../../commands/HexCommand"
 import Controller from "../../../controller/Controller"
 import GlobalGameState from "../../../model/GlobalGameState"
+import { BoardContext } from "../../../App"
 
-function FleetCounter({
-  controller,
-  onDrag,
-  onStop,
-  id,
-  currentHex,
-  counterData,
-  fleetUnitUpdate,
-  usRegions,
-  jpRegions,
-  enabled,
-  side
-}) {
+function FleetCounter({ id, currentHex, counterData, usRegions, jpRegions, enabled, side }) {
+  const { controller, onDrag, onStop, fleetUnitUpdate } = useContext(BoardContext)
   const [position, setPosition] = useState({
     initial: true,
     left: counterData.position.left,
@@ -33,18 +23,11 @@ function FleetCounter({
   // }
   // This code for the test mode fleet unit updates
   if (
-    fleetUnitUpdate && 
+    fleetUnitUpdate &&
     counterData.name === fleetUnitUpdate.name &&
-    (position.currentHex.q !== hex.q ||
-    position.currentHex.r !== hex.r)
+    (position.currentHex.q !== hex.q || position.currentHex.r !== hex.r)
   ) {
-    console.log(
-      "I am ",
-      fleetUnitUpdate.name,
-      " -> FLEET UNIT UPDATE, move to ",
-      hex.q + ",",
-      hex.r
-    )
+    console.log("I am ", fleetUnitUpdate.name, " -> FLEET UNIT UPDATE, move to ", hex.q + ",", hex.r)
     setPosition({
       initial: false,
       left: hex.x + counterData.position.left + counterData.offsets.x,
@@ -53,7 +36,7 @@ function FleetCounter({
     })
 
     let from = {
-      currentHex: position.currentHex
+      currentHex: position.currentHex,
     }
     // console.log("************ from = ", from)
 
@@ -63,7 +46,6 @@ function FleetCounter({
     }
     // console.log("*** To = ", to.currentHex.row, ", ", to.currentHex.col)
 
-
     controller.viewEventHandler({
       type: Controller.EventTypes.FLEET_SETUP,
       data: {
@@ -71,7 +53,7 @@ function FleetCounter({
         id: counterData.name,
         from,
         to,
-        side
+        side,
       },
     })
   }
@@ -93,7 +75,6 @@ function FleetCounter({
       }
       GlobalGameState.jpFleetPlaced = true
       GlobalGameState.jpFleetMoved = true
-
     }
 
     console.log(
@@ -120,7 +101,7 @@ function FleetCounter({
         id,
         from,
         to,
-        side
+        side,
       },
     })
   }

@@ -1,20 +1,18 @@
-import React, { useState } from "react"
+import React, { useContext, useState } from "react"
 import "../../board.css"
 import Controller from "../../../controller/Controller"
 import GlobalUnitsModel from "../../../model/GlobalUnitsModel"
 import GlobalGameState from "../../../model/GlobalGameState"
+import { BoardContext } from "../../../App"
 
 function AirCounter({
-  controller,
-  onDrag,
-  onStop,
   getAirBox,
   setAirBox,
   counterData,
-  airUnitUpdate,
-  setAlertShow,
   side,
 }) {
+
+  const { controller, onDrag, onStop, airUnitUpdate, setAlertShow } = useContext(BoardContext)
   const [position, setPosition] = useState({
     left: counterData.position.left,
     top: counterData.position.top,

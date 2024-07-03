@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from "react"
+import React, { useState, useEffect, useContext } from "react"
 import TurnMarkerButton from "./buttons/TurnMarkerButton"
 import AOPMarkerButton from "./buttons/AOPMarkerButton"
 import MidwayInvasionButton from "./buttons/MidwayInvasionButton"
@@ -19,18 +19,7 @@ import GlobalGameState from "../model/GlobalGameState"
 import StrikePanel from "./dialogs/StrikePanel"
 import GlobalUnitsModel from "../model/GlobalUnitsModel"
 
-function Board({
-  controller,
-  onDrag,
-  onStop,
-  scale,
-  airUnitUpdate,
-  fleetUnitUpdate,
-  setAlertShow,
-  showZones,
-  USMapRegions,
-  japanMapRegions,
-}) {
+function Board({ scale, USMapRegions, japanMapRegions }) {
   let zProps = { us: 0, japan: 0 }
   const initialJpAopPosition = { left: 2.7, top: 7 }
   const initialUSAopPosition = { left: 3.5, top: 6.1 }
@@ -144,8 +133,6 @@ function Board({
           image="/images/markers/jpaop.png"
           side="japan"
           initialPosition={initialJpAopPosition}
-          onDrag={onDrag}
-          onStop={onStop}
           getZone={getZone}
           zIndex={zIndex}
           incrementZIndex={incrementZIndex}
@@ -154,8 +141,6 @@ function Board({
           image="/images/markers/usaop.png"
           side="us"
           initialPosition={initialUSAopPosition}
-          onDrag={onDrag}
-          onStop={onStop}
           getZone={getZone}
           zIndex={zIndex}
           incrementZIndex={incrementZIndex}
@@ -166,8 +151,6 @@ function Board({
         <MidwayInvasionButton
           image="/images/markers/midwayinvasion.png"
           initialPosition={initialMIFPosition}
-          onDrag={onDrag}
-          onStop={onStop}
           getZone={getMIFZone}
         />
         <div>
@@ -176,19 +159,13 @@ function Board({
         <MidwayGarrisonButton
           image="/images/markers/midwaygarrison.png"
           initialPosition={initialMGFPosition}
-          onDrag={onDrag}
-          onStop={onStop}
           getZone={getMGFZone}
         />
         <FleetCounter
-          controller={controller}
-          onDrag={onDrag}
-          onStop={onStop}
           currentHex={currentJapanHex}
           id="1AF"
           counterData={GlobalInit.counters.get("1AF")}
           jpRegions={japanMapRegions}
-          fleetUnitUpdate={fleetUnitUpdate}
           enabled={
             GlobalGameState.gamePhase === GlobalGameState.PHASE.JAPAN_FLEET_MOVEMENT ||
             GlobalGameState.jpFleetPlaced === true
@@ -196,81 +173,50 @@ function Board({
           side={GlobalUnitsModel.Side.JAPAN}
         ></FleetCounter>
         <FleetCounter
-          controller={controller}
-          onDrag={onDrag}
-          onStop={onStop}
           currentHex={currentJapanHex}
           id="MIF"
           counterData={GlobalInit.counters.get("MIF")}
           jpRegions={japanMapRegions}
-          fleetUnitUpdate={fleetUnitUpdate}
-          // enabled={
-          //   GlobalGameState.gamePhase === GlobalGameState.PHASE.JAPAN_FLEET_MOVEMENT ||
-          //   GlobalGameState.jpFleetPlaced === true
-          // }
           enabled={true}
           side={GlobalUnitsModel.Side.JAPAN}
         ></FleetCounter>
         <FleetCounter
-          controller={controller}
-          onDrag={onDrag}
-          onStop={onStop}
           currentHex={currentUSHex}
           id="CSF"
           counterData={GlobalInit.counters.get("CSF")}
           usRegions={USMapRegions}
-          fleetUnitUpdate={fleetUnitUpdate}
           enabled={
             GlobalGameState.gamePhase === GlobalGameState.PHASE.US_SETUP_FLEET || GlobalGameState.usFleetPlaced === true
           }
           side={GlobalUnitsModel.Side.US}
         ></FleetCounter>
         <FleetCounter
-          controller={controller}
-          onDrag={onDrag}
-          onStop={onStop}
           currentHex={currentUSHex}
           id="CSF-JPMAP"
           counterData={GlobalInit.counters.get("CSF-JPMAP")}
-          fleetUnitUpdate={fleetUnitUpdate}
           enabled={true}
           side={GlobalUnitsModel.Side.JP}
         ></FleetCounter>
         <FleetCounter
-          controller={controller}
-          onDrag={onDrag}
-          onStop={onStop}
           currentHex={currentJapanHex}
           id="1AF-USMAP"
           counterData={GlobalInit.counters.get("1AF-USMAP")}
-          fleetUnitUpdate={fleetUnitUpdate}
           enabled={true}
           side={GlobalUnitsModel.Side.US}
         ></FleetCounter>
         <FleetCounter
-          controller={controller}
-          onDrag={onDrag}
-          onStop={onStop}
           currentHex={currentJapanHex}
           id="MIF-USMAP"
           counterData={GlobalInit.counters.get("MIF-USMAP")}
-          fleetUnitUpdate={fleetUnitUpdate}
           enabled={true}
           side={GlobalUnitsModel.Side.US}
         ></FleetCounter>
 
-        <AirCounters
-          controller={controller}
-          onDrag={onDrag}
-          onStop={onStop}
-          counterData={GlobalInit.counters}
-          getAirBox={getAirBox}
-          setAirBox={setAirBox}
-          airUnitUpdate={airUnitUpdate}
-          setAlertShow={setAlertShow}
-        ></AirCounters>
-        <JapanCarrierDropZones handleDragEnter={handleAirBoxDragEnter} show={showZones}></JapanCarrierDropZones>
-        <USCarrierDropZones handleDragEnter={handleUSAirBoxDragEnter} show={showZones}></USCarrierDropZones>
+        <AirCounters counterData={GlobalInit.counters} getAirBox={getAirBox} setAirBox={setAirBox}></AirCounters>
+        <JapanCarrierDropZones
+          handleDragEnter={handleAirBoxDragEnter}
+        ></JapanCarrierDropZones>
+        <USCarrierDropZones handleDragEnter={handleUSAirBoxDragEnter}></USCarrierDropZones>
 
         <StrikePanel side="Japan" enabled={false}></StrikePanel>
         <StrikePanel side="US" enabled={false}></StrikePanel>

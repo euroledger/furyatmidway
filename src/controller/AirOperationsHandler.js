@@ -7,6 +7,12 @@ export const VALID_DESTINATIONS = {
   carrier: "",
   box: "",
 }
+function getValidUSDestinations(controller, name) {
+  // iterate over US carriers, check for flight deck damage, capacity
+
+
+
+}
 function doReturn1(controller, name, side) {
   // console.log("AIR UNIT ", name, " WANTS TO GO TO HANGAR..!")
 
@@ -20,34 +26,34 @@ function doReturn1(controller, name, side) {
   // console.log("\t => flight deck damaged = ", flightDeckDamaged)
   // console.log("\t => currentLoad = ", currentLoad)
 
-  if (!flightDeckDamaged && currentLoad < 5) {
-    // this unit can go to its parent carrier hangar
-    const validDestination = {
-      carrier: parentCarrier,
-      box: "HANGAR",
+  // for US (only) any carrier in the TF or other TF (or Midway) is also valid
+  // add to destinations...basically any undamaged carrier with capacity (Midway must be in range)
+
+  let destinationsArray = new Array()
+  if (side === GlobalUnitsModel.Side.US) {
+    destinationsArray = getValidUSDestinations()
+  } else {
+    if (!flightDeckDamaged && currentLoad < 5) {
+      // this unit can go to its parent carrier hangar
+      const validDestination = {
+        carrier: parentCarrier,
+        box: "HANGAR",
+      }
+      destinationsArray.push(validDestination)
+    } else {
+      // Also if carrier is sunk..
+      if (pcarrier.isSunk) {
+        // get other carrier in task force if any
+      }
+
+      // Try other carrier in same CarDiv
+
+      // Try carriers in other CarDiv
+
+      // if no options -> unit is eliminated
     }
-
-    const destinationsArray = new Array()
-    destinationsArray.push(validDestination)
-
-    controller.setValidAirUnitDestinations(name, destinationsArray)
   }
-
-  // Also if carrier is sunk..
-  const pcarrier =
-    side === GlobalUnitsModel.Side.JAPAN
-      ? controller.getJapanFleetUnit(parentCarrier, side)
-      : controller.getUSUnit(parentCarrier, side)
-
-  if (pcarrier.isSunk) {
-    // get other carrier in task force if any
-  }
-
-  // Try other carrier in same CarDiv or TF
-
-  // Try carriers in other CarDiv/TF or Midway
-
-  // if no options -> unit is eliminated
+  controller.setValidAirUnitDestinations(name, destinationsArray)
 }
 export function handleAirUnitMoves(controller, side) {
   // 1. loop through all air units for this side

@@ -1,6 +1,8 @@
 import Controller from "../src/controller/Controller"
-import GlobalUnitsModel from "../src/model/GlobalUnitsModel"
 import loadCounters from "../src/CounterLoader"
+import GlobalUnitsModel from "../src/model/GlobalUnitsModel"
+import GlobalGameState from "../src/model/GlobalGameState"
+import { getJapanEnabledAirBoxes } from "../src/AirBoxZoneHandler"
 
 describe("Japan Air Box tests", () => {
   let controller
@@ -179,5 +181,19 @@ describe("Japan Air Box tests", () => {
     slots = controller.getAllFreeZonesInBox(GlobalUnitsModel.AirBox.JP_CD2_RETURN1)
     expect(slots.length).toEqual(4)
     expect(slots).toEqual([ 0, 1, 3, 5 ])
+  })
+
+  test("getJapanEnabledAirBoxes returns correct zones for various game states", () => {
+    GlobalGameState.gamePhase = GlobalGameState.PHASE.JAPAN_SETUP
+    GlobalGameState.setupPhase = 0
+
+    const enabledZones = getJapanEnabledAirBoxes()
+    console.log("ENABLED ZONES = ", enabledZones)
+
+    expect (enabledZones.length).toEqual(3)
+    expect (enabledZones[0]).toEqual(GlobalUnitsModel.AirBox.JP_CD1_CAP)
+    expect (enabledZones[1]).toEqual(GlobalUnitsModel.AirBox.JP_AKAGI_HANGAR)
+    expect (enabledZones[2]).toEqual(GlobalUnitsModel.AirBox.JP_AKAGI_FLIGHT_DECK)
+
   })
 })

@@ -4,6 +4,7 @@ import AirOperationsModel from "../src/model/AirOperationsModel"
 import GlobalGameState from "../src/model/GlobalGameState"
 import GlobalUnitsModel from "../src/model/GlobalUnitsModel"
 import { handleAirUnitMoves } from "../src/controller/AirOperationsHandler"
+import { createFleetMove } from "./TestUtils"
 
 describe("Air Operations tests", () => {
   let controller
@@ -145,6 +146,16 @@ describe("Air Operations tests", () => {
 
   // Add US Carrier test here
   test("US Carrier Status", () => {
+
+    // Place US CSF within two of Midway
+    createFleetMove(controller, 7, 1, "CSF", GlobalUnitsModel.Side.US) // G-4
+    let fleetUnits = controller.getAllCarriersForSide(GlobalUnitsModel.Side.US)
+    expect (fleetUnits.length).toEqual(4)
+
+    createFleetMove(controller, 6, -1, "CSF", GlobalUnitsModel.Side.US) // F-2
+    fleetUnits = controller.getAllCarriersForSide(GlobalUnitsModel.Side.US)
+    expect (fleetUnits.length).toEqual(3)
+
     const carrier = controller.getUSFleetUnit(GlobalUnitsModel.Carrier.ENTERPRISE)
     expect(carrier.hits).toEqual(0)
     expect(carrier.isSunk).toEqual(false)

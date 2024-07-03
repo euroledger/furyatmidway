@@ -11,10 +11,18 @@
   width: 2.0%;
   height: 3.0%;
   text-align: center;
-  border-radius: 3px;
+  border-radius:7px;
+  
 }
 
+.bg-japan {
+  background: rgba(228, 92, 92, 0.8);
+}
+
+.bg-us {
+  background: rgba(92, 131, 228, 0.8);
+}
 .zone2 {
   /* background: green;  */
-  border: 2px solid black
+  border: 1px solid rgb(23, 1, 1)
 }

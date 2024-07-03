@@ -115,11 +115,11 @@ const USAirBoxOffsets = [
     carriers: [GlobalUnitsModel.Carrier.ENTERPRISE],
     offsets: [
       {
-        left: 54.2,
+        left: 54.0,
         top: 89.0,
       },
       {
-        left: 54.2,
+        left: 54.0,
         top: 91.8,
       },
       {
@@ -131,7 +131,7 @@ const USAirBoxOffsets = [
         top: 91.8,
       },
       {
-        left: 57.8,
+        left: 58.0,
         top: 90.5,
       },
     ],
@@ -157,11 +157,11 @@ const USAirBoxOffsets = [
     carriers: [GlobalUnitsModel.Carrier.HORNET],
     offsets: [
       {
-        left: 60.2,
+        left: 60.0,
         top: 89.0,
       },
       {
-        left: 60.2,
+        left: 60.0,
         top: 91.8,
       },
       {
@@ -173,7 +173,7 @@ const USAirBoxOffsets = [
         top: 91.8,
       },
       {
-        left: 63.8,
+        left: 64.0,
         top: 90.5,
       },
     ],
@@ -425,32 +425,32 @@ const USAirBoxOffsets = [
     carriers: [GlobalUnitsModel.Carrier.MIDWAY],
     offsets: [
       {
-        left: 88.7,
-        top: 22.0,
+        left: 87.6,
+        top: 23.5,
       },
       {
-        left: 88.7,
-        top: 24.7,
+        left: 87.6,
+        top: 27.2,
       },
       {
-        left: 88.7,
-        top: 27.4,
+        left: 87.6,
+        top: 30.9,
       },
       {
-        left: 88.7,
-        top: 30.1,
+        left: 87.6,
+        top: 34.6
       },
       {
-        left: 88.7,
-        top: 32.8,
+        left: 89.7,
+        top: 25.4,
       },
       {
-        left: 88.7,
-        top: 35.5,
+        left: 89.7,
+        top: 29.0,
       },
       {
-        left: 88.7,
-        top: 38.2,
+        left: 89.7,
+        top: 32.6,
       },
     ],
   },
