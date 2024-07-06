@@ -940,7 +940,8 @@ function loadAirCounters(controller, counters) {
         unit.aircraftUnit.strength,
         unit.aircraftUnit.movement,
         unit.aircraftUnit.attack,
-        unit.aircraftUnit.diveBomber
+        unit.aircraftUnit.diveBomber,
+        unit.aircraftUnit.steps
       )
     )
     controller.addAirUnitToBox(GlobalUnitsModel.AirBox.OFFBOARD, 0, airUnitCounter)

@@ -9,31 +9,57 @@ export const VALID_DESTINATIONS = {
 }
 function getValidUSDestinations(controller, name) {
   // iterate over US carriers, check for flight deck damage, capacity
-
-
-
 }
-function doReturn1(controller, name, side) {
-  // console.log("AIR UNIT ", name, " WANTS TO GO TO HANGAR..!")
 
+function tryOtherTaskForce(controller, parentCarrier, side) {
+  let destinationsArray = new Array()
+  const taskForce = controller.getTaskForceForCarrier(parentCarrier, side)
+  const carriersInOtherTaskForce = controller.getCarriersInOtherTF(taskForce, side)
+  for (const carrier of carriersInOtherTaskForce) {
+    // console.log("----------> try", carrier.name)
+    if (!controller.isSunk(carrier.name)) {
+      if (controller.isHangarAvailable(carrier.name)) {
+        // console.log("yes i can land on", carrier.name)
+        const validDestination = {
+          carrier: carrier.name,
+          box: "HANGAR",
+        }
+        destinationsArray.push(validDestination)
+      }
+    }
+  }
+  return destinationsArray
+}
+function tryOtherCarrier(controller, parentCarrier, side) {
+  let destinationsArray = new Array()
+  const otherCarrier = controller.getOtherCarrierInTF(parentCarrier, side)
+  if (controller.isSunk(otherCarrier.name)) {
+    // otherwise...try carriers in other task force
+    // if no options -> unit is eliminated
+    // console.log(otherCarrier.name,"sunk, try other task force")
+    destinationsArray = tryOtherTaskForce(controller, parentCarrier, side)
+  } else if (controller.isHangarAvailable(otherCarrier.name)) {
+    // this unit can go to its parent carrier hangar
+    const validDestination = {
+      carrier: otherCarrier.name,
+      box: "HANGAR",
+    }
+    destinationsArray.push(validDestination)
+  }
+  return destinationsArray
+}
+export function doReturn1(controller, name, side) {
   // determine parent carrier and if flight deck of that carrier is damaged
   // and carrier is not at capacity
   const parentCarrier = controller.getCarrierForAirUnit(name)
-  const flightDeckDamaged = controller.isFlightDeckDamaged(parentCarrier, side)
-  const currentLoad = controller.numUnitsOnCarrier(parentCarrier, side)
-
-  // console.log("\t => parent carrier = ", parentCarrier)
-  // console.log("\t => flight deck damaged = ", flightDeckDamaged)
-  // console.log("\t => currentLoad = ", currentLoad)
-
-  // for US (only) any carrier in the TF or other TF (or Midway) is also valid
-  // add to destinations...basically any undamaged carrier with capacity (Midway must be in range)
-
   let destinationsArray = new Array()
   if (side === GlobalUnitsModel.Side.US) {
     destinationsArray = getValidUSDestinations()
   } else {
-    if (!flightDeckDamaged && currentLoad < 5) {
+    if (controller.isSunk(parentCarrier)) {
+      // console.log(parentCarrier, "sunk, try other carrier")
+      destinationsArray = tryOtherCarrier(controller, parentCarrier, side)
+    } else if (controller.isHangarAvailable(parentCarrier)) {
       // this unit can go to its parent carrier hangar
       const validDestination = {
         carrier: parentCarrier,
@@ -41,19 +67,18 @@ function doReturn1(controller, name, side) {
       }
       destinationsArray.push(validDestination)
     } else {
-      // Also if carrier is sunk..
-      if (pcarrier.isSunk) {
-        // get other carrier in task force if any
+      destinationsArray = tryOtherCarrier(controller, parentCarrier, side)
+      if (destinationsArray.length === 0) {
+        destinationsArray = tryOtherTaskForce(controller, parentCarrier, side)
       }
-
-      // Try other carrier in same CarDiv
-
-      // Try carriers in other CarDiv
-
-      // if no options -> unit is eliminated
     }
   }
   controller.setValidAirUnitDestinations(name, destinationsArray)
+
+  if (destinationsArray.length === 0) {
+    // no available carrier - unit elimintated
+    controller.setAirUnitEliminated(name, side)
+  }
 }
 export function handleAirUnitMoves(controller, side) {
   // 1. loop through all air units for this side

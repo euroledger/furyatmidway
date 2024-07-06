@@ -121,7 +121,6 @@ export function App() {
   }
 
   const setJapanFleetRegions = () => {
-    GlobalGameState.phaseCompleted = true // may just want to skip any fleet movement (leave fleet where it is)
     if (GlobalGameState.gamePhase === GlobalGameState.PHASE.JAPAN_FLEET_MOVEMENT && GlobalGameState.gameTurn === 1) {
       setJapanMapRegions(japanAF1StartHexes)
     } else {
@@ -129,7 +128,6 @@ export function App() {
       const jpRegion = allHexesWithinDistance(af1Location.currentHex, 2, true)
       setJapanMapRegions(jpRegion)
     }
-
     setFleetMoveAlertShow(true)
   }
 
@@ -152,7 +150,7 @@ export function App() {
       }
     } else if (GlobalGameState.gamePhase === GlobalGameState.PHASE.JAPAN_FLEET_MOVEMENT) {
       setJapanFleetRegions()
-      GlobalGameState.phaseCompleted = true
+      GlobalGameState.phaseCompleted = GlobalGameState.jpFleetMoved
     } else if (GlobalGameState.gamePhase === GlobalGameState.PHASE.MIDWAY_ATTACK_PHASE) {
       setJapanMapRegions([])
       GlobalGameState.phaseCompleted = true
@@ -659,14 +657,10 @@ export function App() {
                   USMapRegions,
                   japanMapRegions,
                   enabledJapanBoxes,
-                  enabledUSBoxes
+                  enabledUSBoxes,
                 }}
               >
-                <Board
-                  scale={scale}
-                  USMapRegions={USMapRegions}
-                  japanMapRegions={japanMapRegions}
-                />
+                <Board scale={scale} USMapRegions={USMapRegions} japanMapRegions={japanMapRegions} />
               </BoardContext.Provider>
             </TransformComponent>
           </div>

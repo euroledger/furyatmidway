@@ -79,9 +79,9 @@ export default class Controller {
     if (side === GlobalUnitsModel.Side.JAPAN) {
       return fleetUnits
     }
-    const distance = this.numHexesBetweenFleets({name: "CSF",  side}, {name: "MIDWAY"})
+    const distance = this.numHexesBetweenFleets({ name: "CSF", side }, { name: "MIDWAY" })
     if (distance <= 2) {
-      return fleetUnits     
+      return fleetUnits
     }
     return fleetUnits.filter((n) => n.name.toUpperCase() != "MIDWAY")
   }
@@ -97,10 +97,29 @@ export default class Controller {
   getOtherCarrierInTF(carrierName, side) {
     const taskForce = this.getTaskForceForCarrier(carrierName, side)
     const units = this.getAllCarriersInTaskForce(taskForce, side)
-
-    return units.filter((unit) => unit.name != carrierName)
+    const otherCarrier = units.filter((unit) => unit.name != carrierName)
+    return otherCarrier.length === 1 ? otherCarrier[0] : undefined
   }
 
+  getCarriersInOtherTF(tf, side, addMidway) {
+    if (side === GlobalUnitsModel.Side.JAPAN) {
+      const otherTaskForce =
+        tf === GlobalUnitsModel.TaskForce.CARRIER_DIV_1
+          ? GlobalUnitsModel.TaskForce.CARRIER_DIV_2
+          : GlobalUnitsModel.TaskForce.CARRIER_DIV_1
+      return this.getAllCarriersInTaskForce(otherTaskForce, side)
+    } else {
+      const otherTaskForce =
+        tf === GlobalUnitsModel.TaskForce.TASK_FORCE_16
+          ? GlobalUnitsModel.TaskForce.TASK_FORCE_17
+          : GlobalUnitsModel.TaskForce.TASK_FORCE_16
+      const carriers = this.getAllCarriersInTaskForce(otherTaskForce, side)
+      if (addMidway) {
+        carriers.push(GlobalUnitsModel.Carrier.MIDWAY)
+      }
+      return carriers
+    }
+  }
   getAllAirUnitsInBox = (boxName) => {
     return this.boxModel.getAllAirUnitsInBox(boxName)
   }
@@ -186,6 +205,47 @@ export default class Controller {
     return GlobalUnitsModel.usFleetUnits.get(name)
   }
 
+  isSunk(name) {
+    const side = GlobalUnitsModel.carrierSideMap.get(name)
+
+    if (side === GlobalUnitsModel.Side.JAPAN) {
+      const carrier = GlobalUnitsModel.jpFleetUnits.get(name)
+      return carrier.isSunk
+    } else {
+      const carrier = GlobalUnitsModel.usFleetUnits.get(name)
+      return carrier.isSunk
+    }
+  }
+
+  isHangarAvailable(name) {
+    const side = GlobalUnitsModel.carrierSideMap.get(name)
+
+    const flightDeckDamaged = this.isFlightDeckDamaged(name, side)
+    const currentLoad = this.numUnitsOnCarrier(name, side)
+    return !flightDeckDamaged && currentLoad < 5
+  }
+
+  setAirUnitEliminated(name, side) {
+    if (side === GlobalUnitsModel.Side.JAPAN) {
+      const airUnit = this.getJapanAirUnit(name)
+      airUnit.steps = 0
+    } else {
+      const airUnit = this.getUSAirUnit(name)
+      airUnit.steps = 0
+    }
+  }
+
+  setCarrierHits(name, hits) {
+    const side = GlobalUnitsModel.carrierSideMap.get(name)
+    if (side === GlobalUnitsModel.Side.JAPAN) {
+      const carrier = GlobalUnitsModel.jpFleetUnits.get(name)
+      carrier.hits = hits
+    } else {
+      const carrier = GlobalUnitsModel.usFleetUnits.get(name)
+      carrier.hits = hits
+    }
+  }
+
   isFlightDeckDamaged(name) {
     const side = GlobalUnitsModel.carrierSideMap.get(name)
 
@@ -203,6 +263,7 @@ export default class Controller {
     const flightDeckBox = this.airOperationsModel.getAirBoxForNamedShip(side, name, "FLIGHT")
     let boxName = Object.values(flightDeckBox)[0]
     const airUnitsOnFlightDeck = this.getAllAirUnitsInBox(boxName)
+    
 
     const hangarBox = this.airOperationsModel.getAirBoxForNamedShip(side, name, "HANGAR")
     boxName = Object.values(hangarBox)[0]

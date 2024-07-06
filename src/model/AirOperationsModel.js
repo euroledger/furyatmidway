@@ -28,6 +28,7 @@ export default class AirOperationsModel {
     return filteredEntries
   }
 
+  // eg JAPAN, Akagi, HANGAR
   getAirBoxForNamedShip(side, carrier, boxKey) {
     let sideKey = side === GlobalUnitsModel.Side.JAPAN ? "JP" : "US"
 
