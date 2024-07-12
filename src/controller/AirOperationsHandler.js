@@ -7,10 +7,50 @@ export const VALID_DESTINATIONS = {
   carrier: "",
   box: "",
 }
-function getValidUSDestinations(controller, name) {
-  // iterate over US carriers, check for flight deck damage, capacity
+function getValidUSDestinations(controller, parentCarrier, side) {
+  // For returning strikers, always return to carrier in same TF if possible, or other TF if not
+  let destinationsArray = new Array()
+
+  const thisTF = controller.getTaskForceForCarrier(parentCarrier, side)
+  const carriersInTF = controller.getAllCarriersInTaskForce(thisTF, side)
+
+  for (const carrier of carriersInTF) {
+    if (!controller.isSunk(carrier.name) && controller.isHangarAvailable(carrier.name)) {
+      // this unit can go to its parent carrier hangar
+      const validDestination = {
+        carrier: carrier.name,
+        box: "HANGAR",
+      }
+      destinationsArray.push(validDestination)
+    }
+  }
+  if (destinationsArray.length === 0) {
+    destinationsArray = tryOtherTaskForce(controller, parentCarrier, side)
+  }
+
+  return destinationsArray
 }
 
+function getValidJapanDestinations(controller, parentCarrier, side) {
+  let destinationsArray = new Array()
+  if (controller.isSunk(parentCarrier)) {
+    // console.log(parentCarrier, "sunk, try other carrier")
+    destinationsArray = tryOtherCarrier(controller, parentCarrier, side)
+  } else if (controller.isHangarAvailable(parentCarrier)) {
+    // this unit can go to its parent carrier hangar
+    const validDestination = {
+      carrier: parentCarrier,
+      box: "HANGAR",
+    }
+    destinationsArray.push(validDestination)
+  } else {
+    destinationsArray = tryOtherCarrier(controller, parentCarrier, side)
+    if (destinationsArray.length === 0) {
+      destinationsArray = tryOtherTaskForce(controller, parentCarrier, side)
+    }
+  }
+  return destinationsArray
+}
 function tryOtherTaskForce(controller, parentCarrier, side) {
   let destinationsArray = new Array()
   const taskForce = controller.getTaskForceForCarrier(parentCarrier, side)
@@ -26,6 +66,9 @@ function tryOtherTaskForce(controller, parentCarrier, side) {
         }
         destinationsArray.push(validDestination)
       }
+      // else {
+      //   console.log("NO room on carrier", carrier.name)
+      // }
     }
   }
   return destinationsArray
@@ -33,6 +76,9 @@ function tryOtherTaskForce(controller, parentCarrier, side) {
 function tryOtherCarrier(controller, parentCarrier, side) {
   let destinationsArray = new Array()
   const otherCarrier = controller.getOtherCarrierInTF(parentCarrier, side)
+  if (!otherCarrier) {
+    return destinationsArray // empty list, eg TF 17 has no other carrier
+  }
   if (controller.isSunk(otherCarrier.name)) {
     // otherwise...try carriers in other task force
     // if no options -> unit is eliminated
@@ -54,24 +100,9 @@ export function doReturn1(controller, name, side) {
   const parentCarrier = controller.getCarrierForAirUnit(name)
   let destinationsArray = new Array()
   if (side === GlobalUnitsModel.Side.US) {
-    destinationsArray = getValidUSDestinations()
+    destinationsArray = getValidUSDestinations(controller, parentCarrier, side)
   } else {
-    if (controller.isSunk(parentCarrier)) {
-      // console.log(parentCarrier, "sunk, try other carrier")
-      destinationsArray = tryOtherCarrier(controller, parentCarrier, side)
-    } else if (controller.isHangarAvailable(parentCarrier)) {
-      // this unit can go to its parent carrier hangar
-      const validDestination = {
-        carrier: parentCarrier,
-        box: "HANGAR",
-      }
-      destinationsArray.push(validDestination)
-    } else {
-      destinationsArray = tryOtherCarrier(controller, parentCarrier, side)
-      if (destinationsArray.length === 0) {
-        destinationsArray = tryOtherTaskForce(controller, parentCarrier, side)
-      }
-    }
+    destinationsArray = getValidJapanDestinations(controller, parentCarrier, side)
   }
   controller.setValidAirUnitDestinations(name, destinationsArray)
 

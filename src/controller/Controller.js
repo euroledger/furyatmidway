@@ -206,6 +206,9 @@ export default class Controller {
   }
 
   isSunk(name) {
+    if (name === GlobalUnitsModel.Carrier.MIDWAY) {
+      return false
+    }
     const side = GlobalUnitsModel.carrierSideMap.get(name)
 
     if (side === GlobalUnitsModel.Side.JAPAN) {
@@ -218,11 +221,12 @@ export default class Controller {
   }
 
   isHangarAvailable(name) {
+    const baseCapacity = name === GlobalUnitsModel.Carrier.MIDWAY ? 7 : 5
     const side = GlobalUnitsModel.carrierSideMap.get(name)
 
     const flightDeckDamaged = this.isFlightDeckDamaged(name, side)
     const currentLoad = this.numUnitsOnCarrier(name, side)
-    return !flightDeckDamaged && currentLoad < 5
+    return !flightDeckDamaged && currentLoad < baseCapacity
   }
 
   setAirUnitEliminated(name, side) {

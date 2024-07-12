@@ -4,7 +4,6 @@ import AirOperationsModel from "../src/model/AirOperationsModel"
 import GlobalGameState from "../src/model/GlobalGameState"
 import GlobalUnitsModel from "../src/model/GlobalUnitsModel"
 import { handleAirUnitMoves, doReturn1 } from "../src/controller/AirOperationsHandler"
-import { createFleetMove } from "./TestUtils"
 
 describe("Air Operations tests with Preset air unit locations", () => {
   let controller
@@ -58,19 +57,6 @@ describe("Air Operations tests with Preset air unit locations", () => {
 
     controller.addAirUnitToBox(GlobalUnitsModel.AirBox.JP_SORYU_HANGAR, 0, sdb)
     controller.addAirUnitToBox(GlobalUnitsModel.AirBox.JP_SORYU_FLIGHT_DECK, 1, stb)
-
-    // TF 16
-    const ef1 = counters.get("Enterprise-F4F4-1")
-    const ef2 = counters.get("Enterprise-F4F4-2")
-    const edb1 = counters.get("Enterprise-SBD3-1")
-    const edb2 = counters.get("Enterprise-SBD3-2")
-    const etb = counters.get("Enterprise-TBD1")
-
-    controller.addAirUnitToBox(GlobalUnitsModel.AirBox.US_ENTERPRISE_FLIGHT_DECK, 0, edb1)
-    controller.addAirUnitToBox(GlobalUnitsModel.AirBox.US_TF16_CAP, 1, ef1)
-    controller.addAirUnitToBox(GlobalUnitsModel.AirBox.US_TF16_CAP, 2, ef2)
-    controller.addAirUnitToBox(GlobalUnitsModel.AirBox.US_ENTERPRISE_FLIGHT_DECK, 3, etb)
-    controller.addAirUnitToBox(GlobalUnitsModel.AirBox.US_ENTERPRISE_HANGAR, 4, edb2)
   })
 
   test("Initiative Determination", () => {
@@ -105,18 +91,6 @@ describe("Air Operations tests with Preset air unit locations", () => {
     expect(sideWithInitiative).toEqual(GlobalUnitsModel.Side.JAPAN)
   })
 
-  test("Air Box Processing for All US units (air and carrier)", () => {
-    const ef1 = counters.get("Enterprise-F4F4-1")
-    const ef2 = counters.get("Enterprise-F4F4-2")
-    const edb1 = counters.get("Enterprise-SBD3-1")
-
-    controller.addAirUnitToBox(GlobalUnitsModel.AirBox.US_TF16_RETURN1, 0, edb1)
-    controller.addAirUnitToBox(GlobalUnitsModel.AirBox.US_TF16_RETURN1, 1, ef1)
-    controller.addAirUnitToBox(GlobalUnitsModel.AirBox.US_TF16_RETURN1, 2, ef2)
-    const unitsInUSReturn1Box = controller.getAllUnitsInBoxes(GlobalUnitsModel.Side.US, "RETURN1")
-
-    expect(unitsInUSReturn1Box.length).toEqual(3)
-  })
 
   test("Japanese Carrier Status", () => {
     const carrier = controller.getJapanFleetUnit(GlobalUnitsModel.Carrier.AKAGI)
@@ -141,37 +115,6 @@ describe("Air Operations tests with Preset air unit locations", () => {
 
     const numUnitsOnCarrier = controller.numUnitsOnCarrier("Akagi", GlobalUnitsModel.Side.JAPAN)
     expect(numUnitsOnCarrier).toEqual(4)
-  })
-
-  // Add US Carrier tst here
-  test("US Carrier Status", () => {
-    // Place US CSF within two of Midway
-    createFleetMove(controller, 7, 1, "CSF", GlobalUnitsModel.Side.US) // G-4
-    let fleetUnits = controller.getAllCarriersForSide(GlobalUnitsModel.Side.US)
-    expect(fleetUnits.length).toEqual(4)
-
-    createFleetMove(controller, 6, -1, "CSF", GlobalUnitsModel.Side.US) // F-2
-    fleetUnits = controller.getAllCarriersForSide(GlobalUnitsModel.Side.US)
-    expect(fleetUnits.length).toEqual(3)
-
-    const carrier = controller.getUSFleetUnit(GlobalUnitsModel.Carrier.ENTERPRISE)
-    expect(carrier.hits).toEqual(0)
-    expect(carrier.isSunk).toEqual(false)
-
-    const taskForce = controller.getTaskForceForCarrier(GlobalUnitsModel.Carrier.ENTERPRISE, GlobalUnitsModel.Side.US)
-    expect(taskForce).toEqual(GlobalUnitsModel.TaskForce.TASK_FORCE_16)
-
-    const units = controller.getAllCarriersInTaskForce(taskForce, GlobalUnitsModel.Side.US)
-    expect(units.length).toEqual(2)
-
-    const otherCarrierinTF = controller.getOtherCarrierInTF(
-      GlobalUnitsModel.Carrier.ENTERPRISE,
-      GlobalUnitsModel.Side.US
-    )
-    expect(otherCarrierinTF.name).toEqual(GlobalUnitsModel.Carrier.HORNET)
-
-    const numUnitsOnCarrier = controller.numUnitsOnCarrier("Enterprise", GlobalUnitsModel.Side.US)
-    expect(numUnitsOnCarrier).toEqual(3)
   })
 
   test("Create Lists of Valid Destination Boxes for each Japan Air Unit", () => {
