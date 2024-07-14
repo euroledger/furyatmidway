@@ -65,6 +65,10 @@ export default class Controller {
     }
   }
 
+  getReturn2AirBoxForNamedTaskForce(side, tf) {
+    return Object.values(this.airOperationsModel.getReturn2AirBoxForNamedTaskForce(side, tf))[0]
+  }
+
   getTaskForceForCarrier(name, side) {
     const carrier = side === GlobalUnitsModel.Side.JAPAN ? this.getJapanFleetUnit(name) : this.getUSFleetUnit(name)
     return carrier.taskForce
@@ -99,6 +103,10 @@ export default class Controller {
     const units = this.getAllCarriersInTaskForce(taskForce, side)
     const otherCarrier = units.filter((unit) => unit.name != carrierName)
     return otherCarrier.length === 1 ? otherCarrier[0] : undefined
+  }
+
+  getAirBoxForNamedShip(side, name, box) {
+    return Object.values(this.airOperationsModel.getAirBoxForNamedShip(side, name, box))[0]
   }
 
   getCarriersInOtherTF(tf, side, addMidway) {
@@ -258,7 +266,10 @@ export default class Controller {
       return carrier.hits === 2
     } else {
       const carrier = GlobalUnitsModel.usFleetUnits.get(name)
-      return carrier.hits === 2
+      return (
+        (name === GlobalUnitsModel.Carrier.MIDWAY && carrier.hits === 3) ||
+        (name !== GlobalUnitsModel.Carrier.MIDWAY && carrier.hits === 2)
+      )
     }
   }
 
@@ -267,7 +278,6 @@ export default class Controller {
     const flightDeckBox = this.airOperationsModel.getAirBoxForNamedShip(side, name, "FLIGHT")
     let boxName = Object.values(flightDeckBox)[0]
     const airUnitsOnFlightDeck = this.getAllAirUnitsInBox(boxName)
-    
 
     const hangarBox = this.airOperationsModel.getAirBoxForNamedShip(side, name, "HANGAR")
     boxName = Object.values(hangarBox)[0]
@@ -318,9 +328,9 @@ export default class Controller {
   numHexesBetweenFleets(fleetA, fleetB) {
     let locationA = this.getFleetLocation(fleetA.name, fleetA.side)
     let locationB = this.getFleetLocation(fleetB.name, fleetB.side)
-    if (fleetA.name === "MIDWAY") {
+    if (fleetA.name.toUpperCase() === "MIDWAY") {
       locationA = Controller.MIDWAY_HEX
-    } else if (fleetB.name === "MIDWAY") {
+    } else if (fleetB.name.toUpperCase() === "MIDWAY") {
       locationB = Controller.MIDWAY_HEX
     }
 

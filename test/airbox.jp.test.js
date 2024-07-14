@@ -188,7 +188,6 @@ describe("Japan Air Box tests", () => {
     GlobalGameState.setupPhase = 0
 
     const enabledZones = getJapanEnabledAirBoxes()
-    console.log("ENABLED ZONES = ", enabledZones)
 
     expect (enabledZones.length).toEqual(3)
     expect (enabledZones[0]).toEqual(GlobalUnitsModel.AirBox.JP_CD1_CAP)

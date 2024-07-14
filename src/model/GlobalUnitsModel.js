@@ -12,7 +12,7 @@ export default class GlobalUnitsModel {
 
   static AirBox = {
     OFFBOARD: "OFFBOARD",
-    JP_CD1_CAP: "1CD CAP",
+    JP_CD1_CAP: "CD1 CAP",
     JP_CD1_CAP_RETURN: "CD1 CAP RETURNING",
     JP_CD1_RETURN2: "CD1 RETURNING (2)",
     JP_CD1_RETURN1: "CD1 RETURNING (1)",
@@ -23,7 +23,7 @@ export default class GlobalUnitsModel {
     JP_KAGA_FLIGHT_DECK: "KAGA FLIGHT DECK",
 
     JP_CD2_CAP_RETURN: "CD2 CAP RETURNING",
-    JP_CD2_CAP: "2CD CAP",
+    JP_CD2_CAP: "CD2 CAP",
     JP_CD2_RETURN2: "CD2 RETURNING (2)",
     JP_CD2_RETURN1: "CD2 RETURNING (1)",
 
@@ -65,10 +65,10 @@ export default class GlobalUnitsModel {
   }
 
   static TaskForce = {
-    CARRIER_DIV_1: "CarrierDiv1",
-    CARRIER_DIV_2: "CarrierDiv2",
-    TASK_FORCE_16: "TaskForce16",
-    TASK_FORCE_17: "TaskForce17",
+    CARRIER_DIV_1: "CD1",
+    CARRIER_DIV_2: "CD2",
+    TASK_FORCE_16: "TF16",
+    TASK_FORCE_17: "TF17",
     MIDWAY: "MIDWAY",
   }
 

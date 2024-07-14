@@ -906,21 +906,24 @@ function loadFleetUnits() {
       unit.name,
       new FleetUnit(unit.name, unit.taskForce, 0, GlobalUnitsModel.Side.JAPAN)
     )
-    GlobalUnitsModel.carrierSideMap.set(unit.name,GlobalUnitsModel.Side.JAPAN)
+    GlobalUnitsModel.carrierSideMap.set(unit.name, GlobalUnitsModel.Side.JAPAN)
   }
   for (const unit of usFleetUnits) {
-    GlobalUnitsModel.usFleetUnits.set(
-      unit.name,
-      new FleetUnit(unit.name, unit.taskForce, 0, GlobalUnitsModel.Side.US)
-    )
-    GlobalUnitsModel.carrierSideMap.set(unit.name,GlobalUnitsModel.Side.US)
+    GlobalUnitsModel.usFleetUnits.set(unit.name, new FleetUnit(unit.name, unit.taskForce, 0, GlobalUnitsModel.Side.US))
+    GlobalUnitsModel.carrierSideMap.set(unit.name, GlobalUnitsModel.Side.US)
   }
-
-
 }
 
 function loadAirCounters(controller, counters) {
   for (const unit of japanAirUnits) {
+    const aircraftUnit = new AircraftUnit(
+      unit.name,
+      unit.aircraftUnit.strength,
+      unit.aircraftUnit.movement,
+      unit.aircraftUnit.attack,
+      unit.aircraftUnit.diveBomber,
+      unit.aircraftUnit.steps
+    )
     const airUnitCounter = new AirUnit(
       unit.name,
       unit.longName,
@@ -929,21 +932,13 @@ function loadAirCounters(controller, counters) {
       unit.image,
       unit.width,
       unit.carrier,
-      unit.side
+      unit.side,
+      aircraftUnit
     )
+
     counters.set(unit.name, airUnitCounter)
 
-    GlobalUnitsModel.jpAirUnits.set(
-      unit.name,
-      new AircraftUnit(
-        unit.name,
-        unit.aircraftUnit.strength,
-        unit.aircraftUnit.movement,
-        unit.aircraftUnit.attack,
-        unit.aircraftUnit.diveBomber,
-        unit.aircraftUnit.steps
-      )
-    )
+    GlobalUnitsModel.jpAirUnits.set(unit.name, aircraftUnit)
     controller.addAirUnitToBox(GlobalUnitsModel.AirBox.OFFBOARD, 0, airUnitCounter)
     controller.addAirUnitToJapaneseCarrier(unit.carrier, airUnitCounter)
     controller.setCounters(counters)

@@ -1,9 +1,10 @@
 import BaseUnit from "./BaseUnit"
 export default class AirUnit extends BaseUnit {
-  constructor(name, longName, position, offsets, image, width, carrier, side) {
+  constructor(name, longName, position, offsets, image, width, carrier, side, aircraftUnit) {
     super(name, longName, position, offsets, image, width)
     this.carrier = carrier
     this.side = side
+    this.aircraftUnit = aircraftUnit
   }
 
   set carrier(c) {
@@ -20,5 +21,13 @@ export default class AirUnit extends BaseUnit {
 
   get side() {
     return this._side
+  }
+
+  set aircraftUnit(au) {
+    this._aircraftUnit = au
+  }
+
+  get aircraftUnit() {
+    return this._aircraftUnit
   }
 }

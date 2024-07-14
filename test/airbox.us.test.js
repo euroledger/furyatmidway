@@ -202,7 +202,5 @@ describe("US Air Box tests", () => {
     expect (enabledZones[0]).toEqual(GlobalUnitsModel.AirBox.US_TF16_CAP)
     expect (enabledZones[1]).toEqual(GlobalUnitsModel.AirBox.US_ENTERPRISE_HANGAR)
     expect (enabledZones[2]).toEqual(GlobalUnitsModel.AirBox.US_ENTERPRISE_FLIGHT_DECK)
-
-    console.log("ENABLED ZONES = ", enabledZones)
   })
 })

@@ -1,6 +1,5 @@
 import GlobalUnitsModel from "./GlobalUnitsModel"
 
-
 export default class AirOperationsModel {
   // functions to get all planes in certain types of boxes
 
@@ -34,6 +33,26 @@ export default class AirOperationsModel {
 
     const filteredEntries = Object.keys(GlobalUnitsModel.AirBox)
       .filter((key) => key.includes(carrier.toUpperCase()) && key.includes(boxKey) && key.includes(sideKey))
+      .reduce((obj, key) => {
+        obj[key] = GlobalUnitsModel.AirBox[key]
+        return obj
+      }, {})
+    return filteredEntries
+  }
+  getHangarAirBoxForNamedTaskForce(side, tf) {
+    let sideKey = side === GlobalUnitsModel.Side.JAPAN ? "JP" : "US"
+    const filteredEntries = Object.keys(GlobalUnitsModel.AirBox)
+      .filter((key) => key.includes(tf.toUpperCase()) && key.includes("HANGAR") && key.includes(sideKey))
+      .reduce((obj, key) => {
+        obj[key] = GlobalUnitsModel.AirBox[key]
+        return obj
+      }, {})
+    return filteredEntries
+  }
+  getReturn2AirBoxForNamedTaskForce(side, tf) {
+    let sideKey = side === GlobalUnitsModel.Side.JAPAN ? "JP" : "US"
+    const filteredEntries = Object.keys(GlobalUnitsModel.AirBox)
+      .filter((key) => key.includes(tf.toUpperCase()) && key.includes("RETURN1") && key.includes(sideKey))
       .reduce((obj, key) => {
         obj[key] = GlobalUnitsModel.AirBox[key]
         return obj
