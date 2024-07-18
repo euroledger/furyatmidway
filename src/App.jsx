@@ -144,8 +144,9 @@ export function App() {
       GlobalGameState.phaseCompleted = false
     } else if (GlobalGameState.gamePhase === GlobalGameState.PHASE.US_FLEET_MOVEMENT_PLANNING) {
       if (!GlobalGameState.usFleetMoved) {
-        setUSMapRegions([])
+        setUsFleetRegions()
       } else {
+        setUSMapRegions([])
         GlobalGameState.phaseCompleted = true
       }
     } else if (GlobalGameState.gamePhase === GlobalGameState.PHASE.JAPAN_FLEET_MOVEMENT) {

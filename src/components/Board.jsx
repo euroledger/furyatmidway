@@ -219,7 +219,7 @@ function Board({ scale, USMapRegions, japanMapRegions }) {
         <USCarrierDropZones handleDragEnter={handleUSAirBoxDragEnter}></USCarrierDropZones>
 
         <StrikePanel side="Japan" enabled={false}></StrikePanel>
-        <StrikePanel side="US" enabled={false}></StrikePanel>
+        <StrikePanel side="US" enabled={true}></StrikePanel>
       </div>
     </>
   )

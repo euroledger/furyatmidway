@@ -132,7 +132,7 @@ export function getStep1TorpedoPlanes(airUnits) {
   )
 }
 
-function checkFromBox(step1Fighters, step1DiveBombers, step1TorpedoPlanes, auto) {
+function checkPlanesInBox(step1Fighters, step1DiveBombers, step1TorpedoPlanes, auto) {
   if (step1Fighters.length >= 2) {
     if (!auto) {
       return step1Fighters
@@ -181,26 +181,38 @@ export function checkForReorganization(controller, fromBox, toBox, auto) {
   const airUnits = controller.getAllAirUnitsInBox(fromBox)
 
   // 2. Check to see if there are any 1 step units of the same type
-  const step1Fighters = getStep1Fighters(airUnits)
-  const step1DiveBombers = getStep1DiveBombers(airUnits)
-  const step1TorpedoPlanes = getStep1TorpedoPlanes(airUnits)
+  let step1Fighters = getStep1Fighters(airUnits)
+  let step1DiveBombers = getStep1DiveBombers(airUnits)
+  let step1TorpedoPlanes = getStep1TorpedoPlanes(airUnits)
 
   // 3. if any type has 2 or more units - reorganise these units
   if (step1Fighters.length >= 2 || step1DiveBombers.length >= 2 || step1TorpedoPlanes.length >= 2) {
-    return checkFromBox(step1Fighters, step1DiveBombers, step1TorpedoPlanes, auto)
+    return checkPlanesInBox(step1Fighters, step1DiveBombers, step1TorpedoPlanes, auto)
   }
-  // 4. If there are 2 or more units across the from and to boxes - reorganise across
+
+  // 4. check to see if a reorg can be done in the toBox, then across boxeas
+  if (!toBox) {
+    return null
+  }
+  const airUnitsToBox = controller.getAllAirUnitsInBox(toBox)
+  let step1FightersToBox = getStep1Fighters(airUnitsToBox)
+  let step1DiveBombersToBox = getStep1DiveBombers(airUnitsToBox)
+  let step1TorpedoPlanesToBox = getStep1TorpedoPlanes(airUnitsToBox)
+
+  if (step1FightersToBox.length >= 2 || step1DiveBombersToBox.length >= 2 || step1TorpedoPlanesToBox.length >= 2) {
+    return checkPlanesInBox(step1FightersToBox, step1DiveBombersToBox, step1TorpedoPlanesToBox, auto)
+  }
+
+  // 5. If there are 2 or more units across the from and to boxes - reorganise across
   // the boxes, note always eliminate the unit in the to Box so that creates space
   // for incoming unit
-
-  // if this is a landing check for combination with Hangar (Return) or Flight Deck (Cap Return)
-  const airUnitsInToBox = controller.getAllAirUnitsInBox(toBox)
-
-  const step1FightersHangar = getStep1Fighters(airUnits)
-  const step1DiveBombersHangar = getStep1DiveBombers(airUnits)
-  const step1TorpedoPlanesHangar = getStep1TorpedoPlanes(airUnits)
-
-  // 5. check to see if a reorg can be done in the toBox, then across boxeas
+  step1Fighters = step1Fighters.concat(step1FightersToBox)
+  step1DiveBombers = step1DiveBombers.concat(step1DiveBombersToBox)
+  step1TorpedoPlanes = step1TorpedoPlanes.concat(step1TorpedoPlanesToBox)
+  if (step1Fighters.length >= 2 || step1DiveBombers.length >= 2 || step1TorpedoPlanes.length >= 2) {
+    return checkPlanesInBox(step1Fighters, step1DiveBombers, step1TorpedoPlanes, auto)
+  }
+  return null
 }
 
 export function handleAirUnitMoves(controller, side) {

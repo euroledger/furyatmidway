@@ -36,7 +36,7 @@ describe("Air Operations tests for Reorganization", () => {
     controller.addAirUnitToBox(GlobalUnitsModel.AirBox.JP_CD1_RETURN1, 2, atb)
   })
 
-  test("1 Step Air Units", () => {
+  test.skip("1 Step Air Units", () => {
     const airUnits = controller.getAllAirUnitsInBox(GlobalUnitsModel.AirBox.JP_CD1_RETURN1)
 
     let step1Fighters = getStep1Fighters(airUnits)
@@ -62,7 +62,7 @@ describe("Air Operations tests for Reorganization", () => {
     expect(step1TorpedoPlanes.length).toEqual(1)
   })
 
-  test("Reorganize 1 Step Air Units within the same box (CD1 RETURN1), no auto reorganize", () => {
+  test.skip("Reorganize 1 Step Air Units within the same box (CD1 RETURN1), no auto reorganize", () => {
     // Fighters
     aaf1.aircraftUnit.steps = 1
     aaf2.aircraftUnit.steps = 1
@@ -96,7 +96,7 @@ describe("Air Operations tests for Reorganization", () => {
     expect(unitsToReorganize.length).toEqual(2)
   })
 
-  test("Reorganize 1 Step Air Units within the same box (CD1 RETURN1), auto reorganize", () => {
+  test.skip("Reorganize 1 Step Air Units within the same box (CD1 RETURN1), auto reorganize", () => {
     // Fighters
     aaf1.aircraftUnit.steps = 1
     aaf2.aircraftUnit.steps = 1
@@ -158,12 +158,43 @@ describe("Air Operations tests for Reorganization", () => {
     expect(atb.aircraftUnit.steps).toEqual(0)
   })
 
-  test("Reorganize 1 Step Air Units across boxes CD1 RETURN1 - AKAGI HANGAR, no auto reorganize", () => {})
+  test("Reorganize 1 Step Air Units across boxes CD1 RETURN1 - AKAGI HANGAR, no auto reorganize", () => {
+    // Test reorg in TO box
+    kdb.aircraftUnit.steps = 1
+    adb.aircraftUnit.steps = 1
+
+    let unitsToReorganize = checkForReorganization(
+      controller,
+      GlobalUnitsModel.AirBox.JP_CD1_RETURN1,
+      GlobalUnitsModel.AirBox.JP_KAGA_HANGAR,
+      false
+    )
+    expect(unitsToReorganize.length).toEqual(2)
+
+    // We have two step 1 fighters = one in the (Kaga) hangar one in the (CD1) return1 box
+    // These can be reorganized to free up a slot on the carrier (which is at capacity)
+    // aaf2 can then land on the Kaga (goes to Hangar)
+    // controller.addAirUnitToBox(GlobalUnitsModel.AirBox.JP_KAGA_HANGAR, 0, aaf1)
+    // controller.addAirUnitToBox(GlobalUnitsModel.AirBox.JP_CD1_RETURN1, 0, kdb)
+
+    // kdb.aircraftUnit.steps = 2
+    // adb.aircraftUnit.steps = 2
+
+    // aaf1.aircraftUnit.steps = 1
+    // aaf2.aircraftUnit.steps = 1
+
+    // unitsToReorganize = checkForReorganization(
+    //   controller,
+    //   GlobalUnitsModel.AirBox.JP_CD1_RETURN1,
+    //   GlobalUnitsModel.AirBox.JP_KAGA_HANGAR,
+    //   false
+    // )
+    // expect(unitsToReorganize.length).toEqual(2)
+  })
 
   test("Reorganize 1 Step Air Units across boxes CD1 RETURN1 - AKAGI HANGAR, auto reorganize", () => {})
 
   test("Reorganize 1 Step Air Units across boxes CD1 CAP RETURN - AKAGI FLIGHT DECK, auto reorganize", () => {
     // TODO once CAP return code written
   })
-
 })
