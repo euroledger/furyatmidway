@@ -1,14 +1,28 @@
 .drag-drop-zone {
   position: absolute;
-  padding: 1.5rem;
+  width: 3.3%;
+  height: 5.3%;
   text-align: center;
-  border-radius: 0.5rem;
+  border-radius: 3px;
 }
 
-.zone1 {
-    background: #07f;
+.drag-drop-zone-small {
+  position: absolute;
+  width: 2.0%;
+  height: 3.0%;
+  text-align: center;
+  border-radius:7px;
+  
 }
 
+.bg-japan {
+  background: rgba(228, 92, 92, 0.8);
+}
+
+.bg-us {
+  background: rgba(92, 131, 228, 0.8);
+}
 .zone2 {
-    background: rgb(99, 178, 62);
+  /* background: green;  */
+  border: 1px solid rgb(23, 1, 1)
 }

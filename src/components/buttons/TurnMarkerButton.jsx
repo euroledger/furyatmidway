@@ -4,7 +4,7 @@ import GlobalGameState from "../../model/GlobalGameState";
 import "./button.css";
 
 
-function TurnMarkerButton({ image, turnHandler }) {
+function TurnMarkerButton({ image, gameStateHandler }) {
   const turnMarker = {
     initialPosition: { left: 2.6, top: 55.6 },
     items: [
@@ -33,14 +33,15 @@ function TurnMarkerButton({ image, turnHandler }) {
   const handleButtonChange = (event, userData) => {
     setDropdownVisible(false);
 
-    const yoffset = userData.delta[GlobalGameState.gameTurn - 1];
+    const yoffset = userData.delta[GlobalGameState.items.get('gameTurn') - 1];
 
     if (yoffset < 0) {
       GlobalGameState.gameTurn += 1;
     } else {
       GlobalGameState.gameTurn -= 1;
     }
-    turnHandler()
+    GlobalGameState.log(`Turn Marker set to ${GlobalGameState.gameTurn}`)
+    GlobalGameState.stateHandler()
 
 
     turnMarker.items[0].userData.isDisabled = GlobalGameState.gameTurn == 7;
