@@ -1,4 +1,3 @@
-import React, { useState } from "react"
 import "./panel.css"
 import GlobalUnitsModel from "../../model/GlobalUnitsModel"
 
@@ -36,6 +35,7 @@ function StrikePanel({ side, enabled }) {
     return <StrikeBox num={index + 1} bg={bg}></StrikeBox>
   })
 
+  const left = side === GlobalUnitsModel.Side.US ? "82.8%" : "46%"
   return (
     <>
       {enabled && (
@@ -46,7 +46,7 @@ function StrikePanel({ side, enabled }) {
             position: "absolute",
             width: "200px",
             height: "290px",
-            left: "82.8%",
+            left: left,
             top: "59%",
             justifyContent: "center",
             borderRadius: "4px",

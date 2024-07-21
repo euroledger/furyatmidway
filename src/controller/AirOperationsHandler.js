@@ -174,6 +174,10 @@ function checkPlanesInBox(step1Fighters, step1DiveBombers, step1TorpedoPlanes, a
   }
   return null
 }
+
+function isMidwayBox(box) {
+  return box.includes("MIDWAY".toUpperCase())
+}
 // toBox is the destination box, hangar for returning strike, flight deck for returning CAP
 // auto - if true automatically reorganise, false return object with reorg possibilities (for UI)
 export function checkForReorganization(controller, fromBox, toBox, auto) {
@@ -190,12 +194,16 @@ export function checkForReorganization(controller, fromBox, toBox, auto) {
     return checkPlanesInBox(step1Fighters, step1DiveBombers, step1TorpedoPlanes, auto)
   }
 
-  // 4. check to see if a reorg can be done in the toBox, then across boxeas
-  if (!toBox) {
+  // 4. check to see if a reorg can be done in the toBox, then across boxes
+  // Can never reorganize across Midway -> Carrier (since this is never a landing option)
+  // But carrier -> Midway is allowed
+  if (!toBox || (isMidwayBox(fromBox) && !isMidwayBox(toBox))) {
     return null
   }
+
   const airUnitsToBox = controller.getAllAirUnitsInBox(toBox)
   let step1FightersToBox = getStep1Fighters(airUnitsToBox)
+
   let step1DiveBombersToBox = getStep1DiveBombers(airUnitsToBox)
   let step1TorpedoPlanesToBox = getStep1TorpedoPlanes(airUnitsToBox)
 
@@ -206,15 +214,82 @@ export function checkForReorganization(controller, fromBox, toBox, auto) {
   // 5. If there are 2 or more units across the from and to boxes - reorganise across
   // the boxes, note always eliminate the unit in the to Box so that creates space
   // for incoming unit
-  step1Fighters = step1Fighters.concat(step1FightersToBox)
-  step1DiveBombers = step1DiveBombers.concat(step1DiveBombersToBox)
-  step1TorpedoPlanes = step1TorpedoPlanes.concat(step1TorpedoPlanesToBox)
+  step1Fighters = step1FightersToBox.concat(step1Fighters)
+
+  step1DiveBombers = step1DiveBombersToBox.concat(step1DiveBombers)
+  step1TorpedoPlanes = step1TorpedoPlanesToBox.concat(step1TorpedoPlanes)
   if (step1Fighters.length >= 2 || step1DiveBombers.length >= 2 || step1TorpedoPlanes.length >= 2) {
     return checkPlanesInBox(step1Fighters, step1DiveBombers, step1TorpedoPlanes, auto)
   }
   return null
 }
 
+function mergeUnique(arr1, arr2){
+  let newArray = arr1
+  
+  for(let item of arr2) {
+    if (!newArray.includes(item)) {
+      newArray.push(item)
+    }
+  }
+  return newArray
+}
+
+export function checkAllBoxesForReorganization(controller, unit, fromBox, side, auto) {
+  let carrierName = unit.carrier
+  let toBox = controller.getAirBoxForNamedShip(side, carrierName, "HANGAR")
+
+  // check reorg within box
+  let reorgUnits = checkForReorganization(controller, fromBox, null, auto)
+
+  if (reorgUnits) {
+    controller.setReorganizationUnits(unit.name, reorgUnits)
+    return
+  }
+    // check reorg across boxes
+    // 1. Same Carrier
+  reorgUnits = checkForReorganization(controller, fromBox, toBox, auto)
+  
+  if (reorgUnits) {
+    controller.setReorganizationUnits(unit.name, reorgUnits)
+    if (side === GlobalUnitsModel.Side.JAPAN) {
+      return // Japan air unit must use its own carrier if possible
+    }
+  }
+  // 2. Other Carrier in Same Task Force 
+  let carrier = controller.getOtherCarrierInTF(carrierName, side)
+  if (!carrier) {
+    return
+  }
+  toBox = controller.getAirBoxForNamedShip(side, carrier.name, "HANGAR")
+
+  let reorgUnits2 = checkForReorganization(controller, fromBox, toBox, auto)
+
+  if (reorgUnits2) {
+    if (reorgUnits1) {
+      reorgUnits2 = mergeUnique(reorgUnits1, reorgUnits2)
+    }
+    controller.setReorganizationUnits(unit.name, reorgUnits2)
+    return
+  }
+
+  // 3. Other Task Force Carrier(s)
+  const taskForce = controller.getTaskForceForCarrier(carrier.name, side)
+  const carriersInOtherTaskForce = controller.getCarriersInOtherTF(taskForce, side)
+
+  let reorgUnits1 = new Array()
+  for (const carrier of carriersInOtherTaskForce) {
+    toBox = controller.getAirBoxForNamedShip(side, carrier.name, "HANGAR")
+    let reorgUnits2 = checkForReorganization(controller, fromBox, toBox, auto)
+    if (reorgUnits2) {
+      reorgUnits1 = mergeUnique(reorgUnits1, reorgUnits2)
+    }
+  }
+  if (reorgUnits1) {
+    controller.setReorganizationUnits(unit.name, reorgUnits1)
+  }
+  return
+}
 export function handleAirUnitMoves(controller, side) {
   // 1. loop through all air units for this side
   const airUnits = controller.getAllAirUnits(side)
@@ -230,15 +305,22 @@ export function handleAirUnitMoves(controller, side) {
         { name: "MIDWAY", side: GlobalUnitsModel.Side.US },
         { name: "CSF", side: GlobalUnitsModel.Side.US }
       )
-      const useMidway = hexesBetweenMidwayAndCSF <= 2
+      const useMidway = hexesBetweenMidwayAndCSF <= 2 && side === GlobalUnitsModel.Side.US
       const destinations = doReturn1(controller, unit.name, side, useMidway)
       if (destinations.length === 0) {
         // check for possible reorganisation
-        checkForReorganization(controller, location.boxName, side)
+        checkAllBoxesForReorganization(controller, unit, location.boxName, side, false)
       }
     }
     if (location.boxName.includes("RETURNING (2)")) {
       doReturn2(controller, unit.name, side)
     }
+    // TODO CAP - CAP RETURN
+    
+    // TODO CAP RETURN -> FLIGHT DECK
+
+    // TODO HANGAR -> FLIGHT DECK
+
+    // TODO FLIGHT DECK -> CAP, HANGAR or STRIKE BOXES
   }
 }

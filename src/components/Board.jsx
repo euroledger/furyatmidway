@@ -115,14 +115,12 @@ function Board({ scale, USMapRegions, japanMapRegions }) {
         </div>
         <div
           id="canvas"
-          // className="border"
           style={{
             position: "absolute",
             left: `47.4%`,
             top: `26.6%`,
           }}
         >
-          {/* US MAP <Canvas></Canvas> */}
           <CanvasHex scale={scale} side="us" setCurrentCoords={setCurrentUSCoords} usRegions={USMapRegions}></CanvasHex>
         </div>
         <TurnMarkerButton image="/images/markers/turnmarker.png" />
@@ -219,7 +217,7 @@ function Board({ scale, USMapRegions, japanMapRegions }) {
         <USCarrierDropZones handleDragEnter={handleUSAirBoxDragEnter}></USCarrierDropZones>
 
         <StrikePanel side="Japan" enabled={false}></StrikePanel>
-        <StrikePanel side="US" enabled={true}></StrikePanel>
+        <StrikePanel side="US" enabled={false}></StrikePanel>
       </div>
     </>
   )

@@ -6,9 +6,10 @@ import {
   getStep1DiveBombers,
   getStep1TorpedoPlanes,
   checkForReorganization,
+  checkAllBoxesForReorganization
 } from "../src/controller/AirOperationsHandler"
 
-describe("Air Operations tests for Reorganization", () => {
+describe("Japan Air Operations: tests for Reorganization", () => {
   let controller
   let counters
   let kaf1, kaf2, kdb, ktb, aaf1, aaf2, adb, atb
@@ -36,7 +37,7 @@ describe("Air Operations tests for Reorganization", () => {
     controller.addAirUnitToBox(GlobalUnitsModel.AirBox.JP_CD1_RETURN1, 2, atb)
   })
 
-  test.skip("1 Step Air Units", () => {
+  test("1 Step Air Units", () => {
     const airUnits = controller.getAllAirUnitsInBox(GlobalUnitsModel.AirBox.JP_CD1_RETURN1)
 
     let step1Fighters = getStep1Fighters(airUnits)
@@ -62,7 +63,7 @@ describe("Air Operations tests for Reorganization", () => {
     expect(step1TorpedoPlanes.length).toEqual(1)
   })
 
-  test.skip("Reorganize 1 Step Air Units within the same box (CD1 RETURN1), no auto reorganize", () => {
+  test("Reorganize 1 Step Air Units within the same box (CD1 RETURN1), no auto reorganize", () => {
     // Fighters
     aaf1.aircraftUnit.steps = 1
     aaf2.aircraftUnit.steps = 1
@@ -96,7 +97,7 @@ describe("Air Operations tests for Reorganization", () => {
     expect(unitsToReorganize.length).toEqual(2)
   })
 
-  test.skip("Reorganize 1 Step Air Units within the same box (CD1 RETURN1), auto reorganize", () => {
+  test("Reorganize 1 Step Air Units within the same box (CD1 RETURN1), auto reorganize", () => {
     // Fighters
     aaf1.aircraftUnit.steps = 1
     aaf2.aircraftUnit.steps = 1
@@ -160,6 +161,7 @@ describe("Air Operations tests for Reorganization", () => {
 
   test("Reorganize 1 Step Air Units across boxes CD1 RETURN1 - AKAGI HANGAR, no auto reorganize", () => {
     // Test reorg in TO box
+    // 2 units in TO BOX
     kdb.aircraftUnit.steps = 1
     adb.aircraftUnit.steps = 1
 
@@ -171,30 +173,180 @@ describe("Air Operations tests for Reorganization", () => {
     )
     expect(unitsToReorganize.length).toEqual(2)
 
-    // We have two step 1 fighters = one in the (Kaga) hangar one in the (CD1) return1 box
-    // These can be reorganized to free up a slot on the carrier (which is at capacity)
-    // aaf2 can then land on the Kaga (goes to Hangar)
-    // controller.addAirUnitToBox(GlobalUnitsModel.AirBox.JP_KAGA_HANGAR, 0, aaf1)
-    // controller.addAirUnitToBox(GlobalUnitsModel.AirBox.JP_CD1_RETURN1, 0, kdb)
+    aaf1.aircraftUnit.steps = 1
+    aaf2.aircraftUnit.steps = 1
 
-    // kdb.aircraftUnit.steps = 2
-    // adb.aircraftUnit.steps = 2
+    // Test reorg across boxes
+    // TO BOX Akagi hangar -> aaf2 1 step
+    // FROM BOX CD1 RETURN 1 -> aaf1 1 step
+    // Reorg -> 2 air units in reorg object, no auto organize
+    controller.addAirUnitToBox(GlobalUnitsModel.AirBox.JP_AKAGI_HANGAR, 2, aaf2)
+    unitsToReorganize = checkForReorganization(
+      controller,
+      GlobalUnitsModel.AirBox.JP_CD1_RETURN1,
+      GlobalUnitsModel.AirBox.JP_KAGA_HANGAR,
+      false
+    )
+    expect(unitsToReorganize.length).toEqual(2)
+  })
+  test("Get fromBox and toBox for given air unit", () => {
+    const unit = aaf1
+    const carrier = unit.carrier
 
-    // aaf1.aircraftUnit.steps = 1
-    // aaf2.aircraftUnit.steps = 1
+    const fromBox = controller.getAirUnitLocation(unit.name).boxName
+    expect(fromBox).toEqual(GlobalUnitsModel.AirBox.JP_CD1_RETURN1)
 
-    // unitsToReorganize = checkForReorganization(
-    //   controller,
-    //   GlobalUnitsModel.AirBox.JP_CD1_RETURN1,
-    //   GlobalUnitsModel.AirBox.JP_KAGA_HANGAR,
-    //   false
-    // )
-    // expect(unitsToReorganize.length).toEqual(2)
+    const toBox = controller.getAirBoxForNamedShip(GlobalUnitsModel.Side.JAPAN, carrier, "FLIGHT")
+    expect(toBox).toEqual(GlobalUnitsModel.AirBox.JP_AKAGI_FLIGHT_DECK)
   })
 
-  test("Reorganize 1 Step Air Units across boxes CD1 RETURN1 - AKAGI HANGAR, auto reorganize", () => {})
+  test("Reorganize 1 Step Air Units across boxes CD1 RETURN1 - AKAGI HANGAR, auto reorganize", () => {
+    // Test reorg in TO box
+    kdb.aircraftUnit.steps = 1
+    adb.aircraftUnit.steps = 1
+
+    let unitsToReorganize = checkForReorganization(
+      controller,
+      GlobalUnitsModel.AirBox.JP_CD1_RETURN1,
+      GlobalUnitsModel.AirBox.JP_KAGA_HANGAR,
+      true
+    )
+    expect(unitsToReorganize).toBeNull()
+
+    expect(kdb.aircraftUnit.steps).toEqual(0)
+    expect(adb.aircraftUnit.steps).toEqual(2)
+
+    aaf1.aircraftUnit.steps = 1
+    aaf2.aircraftUnit.steps = 1
+
+    // Test reorg across boxes
+    // TO BOX Akagi hangar -> aaf2 1 step
+    // FROM BOX CD1 RETURN 1 -> aaf1 1 step
+    // Reorg -> 0 air units in reorg object, auto organize, aaf2 in hangar eliminated to make space
+    controller.addAirUnitToBox(GlobalUnitsModel.AirBox.JP_KAGA_HANGAR, 2, aaf2)
+    unitsToReorganize = checkForReorganization(
+      controller,
+      GlobalUnitsModel.AirBox.JP_CD1_RETURN1,
+      GlobalUnitsModel.AirBox.JP_KAGA_HANGAR,
+      true
+    )
+    expect(unitsToReorganize).toBeNull()
+
+    expect(aaf2.aircraftUnit.steps).toEqual(0)
+    expect(aaf1.aircraftUnit.steps).toEqual(2)
+  })
+
+  test("Reorganize 1 Step Air Units across boxes CD1 CAP RETURN - other Task Force Carriers no auto reorganize", () => {
+  
+    // Situation
+    // 1 Step Akagi fighter unit needs to land, Akagi is Sunk, Kaga at capacity
+    //  => Kaga has no 1 step fighters
+    //    => Check other TF - Hiryu and Soryu are both at capacity so no landing possible
+    //      => Hiryu and Soryu both have 1 step fighters so should be 3 units for possible reorg
+
+    // Set Akagi to Sunk
+    controller.setCarrierHits(GlobalUnitsModel.Carrier.AKAGI, 3)
+    expect(controller.isSunk(GlobalUnitsModel.Carrier.AKAGI)).toEqual(true)
+
+    // Load up Hiryu and Soryu to max capacity
+    const hf1 = counters.get("Hiryu-A6M-2b-1")
+    const hf2 = counters.get("Hiryu-A6M-2b-2")
+    const hdb = counters.get("Hiryu-D3A-1")
+    const htb = counters.get("Hiryu-B5N-2")
+
+    const sf1 = counters.get("Soryu-A6M-2b-1")
+    const sf2 = counters.get("Soryu-A6M-2b-2")
+    const sdb = counters.get("Soryu-D3A-1")
+    const stb = counters.get("Soryu-B5N-2")
+
+    controller.addAirUnitToBox(GlobalUnitsModel.AirBox.JP_HIRYU_FLIGHT_DECK, 0, hdb)
+    controller.addAirUnitToBox(GlobalUnitsModel.AirBox.JP_HIRYU_FLIGHT_DECK, 1, hf2)
+    controller.addAirUnitToBox(GlobalUnitsModel.AirBox.JP_HIRYU_HANGAR, 0, hf1)
+    controller.addAirUnitToBox(GlobalUnitsModel.AirBox.JP_HIRYU_HANGAR, 1, htb)
+    controller.addAirUnitToBox(GlobalUnitsModel.AirBox.JP_HIRYU_HANGAR, 2, adb) // Akagi dive bomber on HIRYU
+
+    controller.addAirUnitToBox(GlobalUnitsModel.AirBox.JP_SORYU_FLIGHT_DECK, 0, sdb)
+    controller.addAirUnitToBox(GlobalUnitsModel.AirBox.JP_SORYU_FLIGHT_DECK, 1, sf2)
+    controller.addAirUnitToBox(GlobalUnitsModel.AirBox.JP_SORYU_HANGAR, 0, sf1)
+    controller.addAirUnitToBox(GlobalUnitsModel.AirBox.JP_SORYU_HANGAR, 1, stb)
+    controller.addAirUnitToBox(GlobalUnitsModel.AirBox.JP_SORYU_HANGAR, 2, atb) // Akagi torped bomber on SORYU
+ 
+    let numUnitsOnCarrier = controller.numUnitsOnCarrier("Hiryu", GlobalUnitsModel.Side.JAPAN)
+    expect(numUnitsOnCarrier).toEqual(5)
+
+    numUnitsOnCarrier = controller.numUnitsOnCarrier("Soryu", GlobalUnitsModel.Side.JAPAN)
+    expect(numUnitsOnCarrier).toEqual(5)
+
+    // Akagi (incoming) fighter unit plus two fighter units in hangars set to 1 step
+    aaf1.aircraftUnit.steps = 1
+    hf1.aircraftUnit.steps = 1
+    sf1.aircraftUnit.steps = 1
+
+    checkAllBoxesForReorganization(controller, aaf1, GlobalUnitsModel.AirBox.JP_CD1_RETURN1, GlobalUnitsModel.Side.JAPAN, false)
+
+    const reorgUnits = controller.getReorganizationUnits(aaf1.name)
+    expect(reorgUnits.length).toEqual(3)
+
+    expect(reorgUnits[0].name).toEqual(hf1.name)
+    expect(reorgUnits[1].name).toEqual(aaf1.name)
+    expect(reorgUnits[2].name).toEqual(sf1.name)
+
+  })
+
+  test("Reorganize 1 Step Air Units across boxes CD1 CAP RETURN - other Task Force Carriers with auto reorganize", () => {
+    // Same as previous test but this time auto reorganize
+    // If neither carrier damaged (or both damaged) eliminate first unit found
+
+    controller.setCarrierHits(GlobalUnitsModel.Carrier.AKAGI, 3)
+    expect(controller.isSunk(GlobalUnitsModel.Carrier.AKAGI)).toEqual(true)
+
+    // Load up Hiryu and Soryu to max capacity
+    const hf1 = counters.get("Hiryu-A6M-2b-1")
+    const hf2 = counters.get("Hiryu-A6M-2b-2")
+    const hdb = counters.get("Hiryu-D3A-1")
+    const htb = counters.get("Hiryu-B5N-2")
+
+    const sf1 = counters.get("Soryu-A6M-2b-1")
+    const sf2 = counters.get("Soryu-A6M-2b-2")
+    const sdb = counters.get("Soryu-D3A-1")
+    const stb = counters.get("Soryu-B5N-2")
+
+    controller.addAirUnitToBox(GlobalUnitsModel.AirBox.JP_HIRYU_FLIGHT_DECK, 0, hdb)
+    controller.addAirUnitToBox(GlobalUnitsModel.AirBox.JP_HIRYU_FLIGHT_DECK, 1, hf2)
+    controller.addAirUnitToBox(GlobalUnitsModel.AirBox.JP_HIRYU_HANGAR, 0, hf1)
+    controller.addAirUnitToBox(GlobalUnitsModel.AirBox.JP_HIRYU_HANGAR, 1, htb)
+    controller.addAirUnitToBox(GlobalUnitsModel.AirBox.JP_HIRYU_HANGAR, 2, adb) // Akagi dive bomber on HIRYU
+
+    controller.addAirUnitToBox(GlobalUnitsModel.AirBox.JP_SORYU_FLIGHT_DECK, 0, sdb)
+    controller.addAirUnitToBox(GlobalUnitsModel.AirBox.JP_SORYU_FLIGHT_DECK, 1, sf2)
+    controller.addAirUnitToBox(GlobalUnitsModel.AirBox.JP_SORYU_HANGAR, 0, sf1)
+    controller.addAirUnitToBox(GlobalUnitsModel.AirBox.JP_SORYU_HANGAR, 1, stb)
+    controller.addAirUnitToBox(GlobalUnitsModel.AirBox.JP_SORYU_HANGAR, 2, atb) // Akagi torped bomber on SORYU
+ 
+    let numUnitsOnCarrier = controller.numUnitsOnCarrier("Hiryu", GlobalUnitsModel.Side.JAPAN)
+    expect(numUnitsOnCarrier).toEqual(5)
+
+    numUnitsOnCarrier = controller.numUnitsOnCarrier("Soryu", GlobalUnitsModel.Side.JAPAN)
+    expect(numUnitsOnCarrier).toEqual(5)
+
+    // Akagi (incoming) fighter unit plus two fighter units in hangars set to 1 step
+    aaf1.aircraftUnit.steps = 1
+    hf1.aircraftUnit.steps = 1
+    sf1.aircraftUnit.steps = 1
+
+    // Neither Hiryu or Soryu damaged so just elim first fighter unit found (Hiryu's hf1)
+    checkAllBoxesForReorganization(controller, aaf1, GlobalUnitsModel.AirBox.JP_CD1_RETURN1, GlobalUnitsModel.Side.JAPAN, true)
+
+    const reorgUnits = controller.getReorganizationUnits(aaf1.name)
+    expect(reorgUnits.length).toEqual(0)
+
+    expect(aaf1.aircraftUnit.steps).toEqual(2)
+    expect(hf1.aircraftUnit.steps).toEqual(0)
+    expect(sf1.aircraftUnit.steps).toEqual(1)
+  })
 
   test("Reorganize 1 Step Air Units across boxes CD1 CAP RETURN - AKAGI FLIGHT DECK, auto reorganize", () => {
     // TODO once CAP return code written
+  
   })
 })

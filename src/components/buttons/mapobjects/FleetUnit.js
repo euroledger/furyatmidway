@@ -11,8 +11,12 @@ export default class FleetUnit extends BaseUnit {
     return this._hits === 3
   }
 
+  // @TODO add functions for bow and stern damage
+
   set hits(h) {
     this._hits = h
+
+    // add function param bow or stern for flight deck damage
   }
 
   get hits() {

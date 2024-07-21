@@ -298,6 +298,14 @@ export default class Controller {
     this.airOperationsModel.setValidAirUnitDestinations(name, destinations)
   }
 
+  setReorganizationUnits(name, units) {
+    this.airOperationsModel.setReorganizationUnits(name, units)
+  }
+
+  getReorganizationUnits(name) {
+    return this.airOperationsModel.getReorganizationUnits(name)
+  }
+
   getValidAirUnitDestinations(name) {
     return this.airOperationsModel.getValidAirUnitDestinations(name)
   }
@@ -446,8 +454,8 @@ export default class Controller {
     }
 
     // if the two totals are equal winner is the side with higher air ops
-    console.log("japanDieRoll = ", japanDieRoll, "usDieRoll = ", usDieRoll)
-    console.log("japan air ops = ", GlobalGameState.airOperationPoints.japan, "us air ops = ", GlobalGameState.airOperationPoints.us)
+    // console.log("japanDieRoll = ", japanDieRoll, "usDieRoll = ", usDieRoll)
+    // console.log("japan air ops = ", GlobalGameState.airOperationPoints.japan, "us air ops = ", GlobalGameState.airOperationPoints.us)
     if (GlobalGameState.airOperationPoints.japan > GlobalGameState.airOperationPoints.us) {
       return GlobalUnitsModel.Side.JAPAN
     } else if (GlobalGameState.airOperationPoints.us > GlobalGameState.airOperationPoints.japan) {

@@ -945,6 +945,14 @@ function loadAirCounters(controller, counters) {
   }
 
   for (const unit of usAirUnits) {
+    const aircraftUnit = new AircraftUnit(
+      unit.name,
+      unit.aircraftUnit.strength,
+      unit.aircraftUnit.movement,
+      unit.aircraftUnit.attack,
+      unit.aircraftUnit.diveBomber,
+      unit.aircraftUnit.steps
+    )
     const airUnitCounter = new AirUnit(
       unit.name,
       unit.longName,
@@ -953,21 +961,13 @@ function loadAirCounters(controller, counters) {
       unit.image,
       unit.width,
       unit.carrier,
-      unit.side
+      unit.side,
+      aircraftUnit
     )
     counters.set(unit.name, airUnitCounter)
 
-    GlobalUnitsModel.usAirUnits.set(
-      unit.name,
-      new AircraftUnit(
-        unit.name,
-        unit.aircraftUnit.strength,
-        unit.aircraftUnit.movement,
-        unit.aircraftUnit.attack,
-        unit.aircraftUnit.diveBomber,
-        unit.aircraftUnit.steps
-      )
-    )
+    GlobalUnitsModel.usAirUnits.set(unit.name, aircraftUnit)
+
     controller.addAirUnitToBox(GlobalUnitsModel.AirBox.OFFBOARD, 0, airUnitCounter)
     controller.addAirUnitToUSCarrier(unit.carrier, airUnitCounter)
     controller.setCounters(counters)

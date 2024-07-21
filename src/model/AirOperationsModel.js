@@ -2,9 +2,11 @@ import GlobalUnitsModel from "./GlobalUnitsModel"
 
 export default class AirOperationsModel {
   // functions to get all planes in certain types of boxes
-
+  // also maps for air unit destination boxes and possible reorganizations
+  
   constructor() {
     this.airUnitDestinationMap = new Map()
+    this.airUnitReorganizationMap = new Map()
   }
 
   setValidAirUnitDestinations(name, destination) {
@@ -13,6 +15,14 @@ export default class AirOperationsModel {
 
   getValidAirUnitDestinations(name) {
     return this.airUnitDestinationMap.get(name)
+  }
+
+  setReorganizationUnits(name, units) {
+    this.airUnitReorganizationMap.set(name, units)
+  }
+
+  getReorganizationUnits(name) {
+    return this.airUnitReorganizationMap.get(name)
   }
 
   getBoxesByKey(side, boxKey) {
