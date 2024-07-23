@@ -217,23 +217,21 @@ describe("Air Operations tests with air unit locations set in tests", () => {
     expect(destinations[0]).toEqual(GlobalUnitsModel.AirBox.JP_KAGA_HANGAR)
   })
 
-  test("Create Lists of Valid Destination Boxes for Japan Air Unit when both Car Div 1 carrier flight decks damaged", () => {
+  test("Create Lists of Valid Destination Boxes for Japan Air Unit when one Car Div 1 carrier flight deck damaged", () => {
     // Akagi fighter unit in return1 box
     const aaf1 = counters.get("Akagi-A6M-2b-1")
     controller.addAirUnitToBox(GlobalUnitsModel.AirBox.JP_CD1_RETURN1, 0, aaf1)
 
     // set Akagi flight deck (both boxes) to damaged
     controller.setCarrierHits(GlobalUnitsModel.Carrier.AKAGI, 2)
-    controller.setCarrierHits(GlobalUnitsModel.Carrier.KAGA, 2)
 
     doReturn1(controller, aaf1.name, GlobalUnitsModel.Side.JAPAN)
     const destinations = controller.getValidAirUnitDestinations(aaf1.name)
 
-    expect(destinations.length).toEqual(2)
-
-    expect(destinations[0]).toEqual(GlobalUnitsModel.AirBox.JP_HIRYU_HANGAR)
-    expect(destinations[1]).toEqual(GlobalUnitsModel.AirBox.JP_SORYU_HANGAR)
+    expect(destinations.length).toEqual(1)
+    expect(destinations[0]).toEqual(GlobalUnitsModel.AirBox.JP_KAGA_HANGAR)
   })
+  
 
   test("Create Lists of Valid Destination Boxes for Japan Air Unit when  both carriers in CarDiv are sunk and carrier in other Car Div sunk or at capacity or flight deck damaged", () => {
     // Akagi fighter unit in return1 box

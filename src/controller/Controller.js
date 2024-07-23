@@ -65,8 +65,12 @@ export default class Controller {
     }
   }
 
-  getReturn2AirBoxForNamedTaskForce(side, tf) {
-    return Object.values(this.airOperationsModel.getReturn2AirBoxForNamedTaskForce(side, tf))[0]
+  getCapReturnAirBoxForNamedTaskForce(side, tf) {
+    return Object.values(this.airOperationsModel.getCapReturnAirBoxForNamedTaskForce(side, tf))[0]
+  }
+
+  getReturn1AirBoxForNamedTaskForce(side, tf) {
+    return Object.values(this.airOperationsModel.getReturn1AirBoxForNamedTaskForce(side, tf))[0]
   }
 
   getTaskForceForCarrier(name, side) {
@@ -226,6 +230,32 @@ export default class Controller {
       const carrier = GlobalUnitsModel.usFleetUnits.get(name)
       return carrier.isSunk
     }
+  }
+
+  isFlightDeckAvailable(carrierName, side) {
+    let hits = 0
+    if (side === GlobalUnitsModel.Side.JAPAN) {
+      const carrier = GlobalUnitsModel.jpFleetUnits.get(carrierName)
+      // console.log("CARRIER QUACK = ", carrier)
+
+      hits = carrier.hits
+    } else {
+      const carrier = GlobalUnitsModel.usFleetUnits.get(carrierName)
+      hits = carrier.hits
+    }
+    // return false if both slots either damaged or occupied by an air unit
+    const flightDeckBox = this.airOperationsModel.getAirBoxForNamedShip(side, carrierName, "FLIGHT")
+    let boxName = Object.values(flightDeckBox)[0]
+    const units = this.getAllAirUnitsInBox(boxName)
+    // console.log("UNITS = ", units)
+
+    // for carriers if hits + units length >= 2 unavailable, for Midway 3
+    const capacity = carrierName.toUpperCase().includes("MIDWAY") ? 3 : 2
+
+    const totalUnavailableSlots = hits + units.length
+
+    const retVal = totalUnavailableSlots < capacity
+    return retVal
   }
 
   isHangarAvailable(name) {

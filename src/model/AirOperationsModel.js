@@ -3,7 +3,7 @@ import GlobalUnitsModel from "./GlobalUnitsModel"
 export default class AirOperationsModel {
   // functions to get all planes in certain types of boxes
   // also maps for air unit destination boxes and possible reorganizations
-  
+
   constructor() {
     this.airUnitDestinationMap = new Map()
     this.airUnitReorganizationMap = new Map()
@@ -59,10 +59,21 @@ export default class AirOperationsModel {
       }, {})
     return filteredEntries
   }
-  getReturn2AirBoxForNamedTaskForce(side, tf) {
+  getReturn1AirBoxForNamedTaskForce(side, tf) {
     let sideKey = side === GlobalUnitsModel.Side.JAPAN ? "JP" : "US"
     const filteredEntries = Object.keys(GlobalUnitsModel.AirBox)
       .filter((key) => key.includes(tf.toUpperCase()) && key.includes("RETURN1") && key.includes(sideKey))
+      .reduce((obj, key) => {
+        obj[key] = GlobalUnitsModel.AirBox[key]
+        return obj
+      }, {})
+    return filteredEntries
+  }
+
+  getCapReturnAirBoxForNamedTaskForce(side, tf) {
+    let sideKey = side === GlobalUnitsModel.Side.JAPAN ? "JP" : "US"
+    const filteredEntries = Object.keys(GlobalUnitsModel.AirBox)
+      .filter((key) => key.includes(`${sideKey}_${tf}_CAP_RETURN`))
       .reduce((obj, key) => {
         obj[key] = GlobalUnitsModel.AirBox[key]
         return obj

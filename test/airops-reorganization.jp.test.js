@@ -6,7 +6,8 @@ import {
   getStep1DiveBombers,
   getStep1TorpedoPlanes,
   checkForReorganization,
-  checkAllBoxesForReorganization
+  checkAllBoxesForReorganization,
+  checkAllBoxesForReorganizationCAP
 } from "../src/controller/AirOperationsHandler"
 
 describe("Japan Air Operations: tests for Reorganization", () => {
@@ -236,8 +237,7 @@ describe("Japan Air Operations: tests for Reorganization", () => {
     expect(aaf1.aircraftUnit.steps).toEqual(2)
   })
 
-  test("Reorganize 1 Step Air Units across boxes CD1 CAP RETURN - other Task Force Carriers no auto reorganize", () => {
-  
+  test("Reorganize 1 Step Air Units across boxes CD1 RETURN1 - other Task Force Carriers no auto reorganize", () => {
     // Situation
     // 1 Step Akagi fighter unit needs to land, Akagi is Sunk, Kaga at capacity
     //  => Kaga has no 1 step fighters
@@ -270,7 +270,7 @@ describe("Japan Air Operations: tests for Reorganization", () => {
     controller.addAirUnitToBox(GlobalUnitsModel.AirBox.JP_SORYU_HANGAR, 0, sf1)
     controller.addAirUnitToBox(GlobalUnitsModel.AirBox.JP_SORYU_HANGAR, 1, stb)
     controller.addAirUnitToBox(GlobalUnitsModel.AirBox.JP_SORYU_HANGAR, 2, atb) // Akagi torped bomber on SORYU
- 
+
     let numUnitsOnCarrier = controller.numUnitsOnCarrier("Hiryu", GlobalUnitsModel.Side.JAPAN)
     expect(numUnitsOnCarrier).toEqual(5)
 
@@ -282,7 +282,13 @@ describe("Japan Air Operations: tests for Reorganization", () => {
     hf1.aircraftUnit.steps = 1
     sf1.aircraftUnit.steps = 1
 
-    checkAllBoxesForReorganization(controller, aaf1, GlobalUnitsModel.AirBox.JP_CD1_RETURN1, GlobalUnitsModel.Side.JAPAN, false)
+    checkAllBoxesForReorganization(
+      controller,
+      aaf1,
+      GlobalUnitsModel.AirBox.JP_CD1_RETURN1,
+      GlobalUnitsModel.Side.JAPAN,
+      false
+    )
 
     const reorgUnits = controller.getReorganizationUnits(aaf1.name)
     expect(reorgUnits.length).toEqual(3)
@@ -290,10 +296,9 @@ describe("Japan Air Operations: tests for Reorganization", () => {
     expect(reorgUnits[0].name).toEqual(hf1.name)
     expect(reorgUnits[1].name).toEqual(aaf1.name)
     expect(reorgUnits[2].name).toEqual(sf1.name)
-
   })
 
-  test("Reorganize 1 Step Air Units across boxes CD1 CAP RETURN - other Task Force Carriers with auto reorganize", () => {
+  test("Reorganize 1 Step Air Units across boxes CD1 RETURN1 - other Task Force Carriers with auto reorganize", () => {
     // Same as previous test but this time auto reorganize
     // If neither carrier damaged (or both damaged) eliminate first unit found
 
@@ -321,8 +326,8 @@ describe("Japan Air Operations: tests for Reorganization", () => {
     controller.addAirUnitToBox(GlobalUnitsModel.AirBox.JP_SORYU_FLIGHT_DECK, 1, sf2)
     controller.addAirUnitToBox(GlobalUnitsModel.AirBox.JP_SORYU_HANGAR, 0, sf1)
     controller.addAirUnitToBox(GlobalUnitsModel.AirBox.JP_SORYU_HANGAR, 1, stb)
-    controller.addAirUnitToBox(GlobalUnitsModel.AirBox.JP_SORYU_HANGAR, 2, atb) // Akagi torped bomber on SORYU
- 
+    controller.addAirUnitToBox(GlobalUnitsModel.AirBox.JP_SORYU_HANGAR, 2, atb) // Akagi torpedo bomber on SORYU
+
     let numUnitsOnCarrier = controller.numUnitsOnCarrier("Hiryu", GlobalUnitsModel.Side.JAPAN)
     expect(numUnitsOnCarrier).toEqual(5)
 
@@ -335,7 +340,13 @@ describe("Japan Air Operations: tests for Reorganization", () => {
     sf1.aircraftUnit.steps = 1
 
     // Neither Hiryu or Soryu damaged so just elim first fighter unit found (Hiryu's hf1)
-    checkAllBoxesForReorganization(controller, aaf1, GlobalUnitsModel.AirBox.JP_CD1_RETURN1, GlobalUnitsModel.Side.JAPAN, true)
+    checkAllBoxesForReorganization(
+      controller,
+      aaf1,
+      GlobalUnitsModel.AirBox.JP_CD1_RETURN1,
+      GlobalUnitsModel.Side.JAPAN,
+      true
+    )
 
     const reorgUnits = controller.getReorganizationUnits(aaf1.name)
     expect(reorgUnits.length).toEqual(0)
@@ -345,8 +356,39 @@ describe("Japan Air Operations: tests for Reorganization", () => {
     expect(sf1.aircraftUnit.steps).toEqual(1)
   })
 
-  test("Reorganize 1 Step Air Units across boxes CD1 CAP RETURN - AKAGI FLIGHT DECK, auto reorganize", () => {
-    // TODO once CAP return code written
-  
+  test("Reorganize 1 Step Air Units across boxes CD1 CAP RETURN - AKAGI FLIGHT DECK, no auto reorganize", () => {
+    aaf1.aircraftUnit.steps = 1
+    kaf1.aircraftUnit.steps = 1
+
+    // check for reorg between CD1 CAP RETURN and Kaga Flight Deck
+    controller.addAirUnitToBox(GlobalUnitsModel.AirBox.JP_CD1_CAP_RETURN, 0, aaf1)
+    controller.addAirUnitToBox(GlobalUnitsModel.AirBox.JP_KAGA_FLIGHT_DECK, 0, kaf1)
+
+    checkAllBoxesForReorganizationCAP(
+      controller,
+      aaf1,
+      GlobalUnitsModel.AirBox.JP_CD1_CAP_RETURN,
+      GlobalUnitsModel.Side.JAPAN,
+      false
+    )
+
+    let reorgUnits = controller.getReorganizationUnits(aaf1.name)
+    expect(reorgUnits.length).toEqual(2)
+
+    expect(reorgUnits[0].name).toEqual(kaf1.name)
+    expect(reorgUnits[1].name).toEqual(aaf1.name)
+
+    // same but now reorg with Akagi Hangar
+    kaf1.aircraftUnit.steps = 1
+    kaf1.aircraftUnit.steps = 1
+
+    controller.addAirUnitToBox(GlobalUnitsModel.AirBox.JP_KAGA_HANGAR, 0, kaf1)
+
+    reorgUnits = controller.getReorganizationUnits(aaf1.name)
+    expect(reorgUnits.length).toEqual(2)
+
+    expect(reorgUnits[0].name).toEqual(kaf1.name)
+    expect(reorgUnits[1].name).toEqual(aaf1.name)
+
   })
 })

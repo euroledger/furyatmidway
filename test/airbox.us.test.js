@@ -13,7 +13,7 @@ describe("US Air Box tests", () => {
     counters = loadCounters(controller)
   })
 
-  test("check US TF16 air units can be added to various carrier air boxes", () => {
+  test("US TF16 air units can be added to various carrier air boxes", () => {
     // get all Enterprise air units from data store
     const ef1 = counters.get("Enterprise-F4F4-1")
     const ef2 = counters.get("Enterprise-F4F4-2")
@@ -74,7 +74,7 @@ describe("US Air Box tests", () => {
     expect(airUnits[0].name).toEqual("Hornet-SBD3-2")
   })
 
-  test("check US TF17 air units can be added to various carrier air boxes", () => {
+  test("US TF17 air units can be added to various carrier air boxes", () => {
     // get all Enterprise air units from data store
     const yf1 = counters.get("Yorktown-F4F4-1")
     const yf2 = counters.get("Yorktown-F4F4-2")
@@ -116,7 +116,7 @@ describe("US Air Box tests", () => {
   // test("check US Midway air units can be added to various carrier air boxes", () => {
   // })
 
-  test("Check indexes of filled US air boxes", () => {
+  test("Indices of filled US air boxes", () => {
 
     const ef1 = counters.get("Enterprise-F4F4-1")
     const ef2 = counters.get("Enterprise-F4F4-2")
