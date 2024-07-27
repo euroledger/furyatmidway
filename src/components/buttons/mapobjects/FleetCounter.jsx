@@ -63,10 +63,10 @@ function FleetCounter({ id, currentHex, counterData, usRegions, jpRegions, enabl
     if (side === "US") {
       let isThere = usRegions && usRegions.find((h) => h.q === hex.q && h.r === hex.r)
       if (!isThere) {
-        console.log("NOPE!!!!!!!!!!!!!")
         return
       } else {
         GlobalGameState.usFleetMoved = true
+        GlobalGameState.usFleetPlaced = true
       }
     } else {
       let isThere = jpRegions && jpRegions.find((h) => h.q === hex.q && h.r === hex.r)

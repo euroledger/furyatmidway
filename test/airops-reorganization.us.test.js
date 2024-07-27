@@ -6,6 +6,7 @@ import {
   getStep1DiveBombers,
   getStep1TorpedoPlanes,
   checkForReorganization,
+  checkAllUSBoxesForReorganizationCAP,
 } from "../src/controller/AirOperationsHandler"
 
 describe("US Air Operations: tests for Reorganization", () => {
@@ -13,7 +14,7 @@ describe("US Air Operations: tests for Reorganization", () => {
   let counters
   let ef1, ef2, edb1, edb2, etb, hf1, hf2, hdb1, hdb2, htb
   let mf1, mf2, mdb, mdb2, mtb, mhb1, mhb2
-  
+
   beforeEach(() => {
     controller = new Controller()
     counters = loadCounters(controller)
@@ -255,7 +256,67 @@ describe("US Air Operations: tests for Reorganization", () => {
     expect(ef1.aircraftUnit.steps).toEqual(2)
   })
 
+  test("Reorganize 1 Step Air Units across boxes TF16 CAP RETURN - ENTERPRISE FLIGHT DECK, no auto reorganize", () => {
+    ef1.aircraftUnit.steps = 1
+    ef2.aircraftUnit.steps = 1
+
+    // check for reorg between CD1 CAP RETURN and Kaga Flight Deck
+    controller.addAirUnitToBox(GlobalUnitsModel.AirBox.US_ENTERPRISE_FLIGHT_DECK, 0, ef1)
+    controller.addAirUnitToBox(GlobalUnitsModel.AirBox.US_TF16_CAP_RETURN, 0, ef2)
+
+    checkAllUSBoxesForReorganizationCAP(
+      controller,
+      ef1,
+      GlobalUnitsModel.AirBox.US_TF16_CAP_RETURN,
+      GlobalUnitsModel.Side.US,
+      false
+    )
+
+    let reorgUnits = controller.getReorganizationUnits(ef1.name)
+    expect(reorgUnits.length).toEqual(2)
+
+    expect(reorgUnits[0].name).toEqual(ef1.name)
+    expect(reorgUnits[1].name).toEqual(ef2.name)
+
+    // same but now reorg with Enterpise Hangar
+    ef1.aircraftUnit.steps = 1
+    ef2.aircraftUnit.steps = 1
+
+    controller.addAirUnitToBox(GlobalUnitsModel.AirBox.US_ENTERPRISE_HANGAR, 0, ef1)
+
+    reorgUnits = controller.getReorganizationUnits(ef1.name)
+    expect(reorgUnits.length).toEqual(2)
+
+    expect(reorgUnits[0].name).toEqual(ef1.name)
+    expect(reorgUnits[1].name).toEqual(ef2.name)
+  })
+
   test("Reorganize 1 Step Air Units across boxes TF16 CAP RETURN - ENTERPRISE FLIGHT DECK, auto reorganize", () => {
-    // TODO once CAP return code written
+    ef1.aircraftUnit.steps = 1
+    ef1.aircraftUnit.steps = 1
+
+    // check for reorg between CD1 CAP RETURN and Kaga Flight Deck
+    controller.addAirUnitToBox(GlobalUnitsModel.AirBox.US_TF16_CAP_RETURN, 0, ef1)
+    controller.addAirUnitToBox(GlobalUnitsModel.AirBox.US_ENTERPRISE_FLIGHT_DECK, 0, ef2)
+
+    checkAllUSBoxesForReorganizationCAP(
+      controller,
+      ef1,
+      GlobalUnitsModel.AirBox.US_TF16_CAP_RETURN,
+      GlobalUnitsModel.Side.US,
+      true
+    )
+
+    let reorgUnits = controller.getReorganizationUnits(ef1.name)
+    expect(reorgUnits).toBeNull
+
+    // auto reorganize: air unit on flight deck eliminated to make room for combined
+    // 2 step unit returning from CAP
+    expect((ef1.aircraftUnit.steps = 2))
+    expect((ef2.aircraftUnit.steps = 0))
+  })
+
+  test("Reorganize 1 Step Air Units across boxes TF16 CAP RETURN - ENTERPRISE FLIGHT DECK, no auto reorganize with 3 units to reorg (two 1 step fighter units on Flight Deck)", () => {
+    // TODO
   })
 })

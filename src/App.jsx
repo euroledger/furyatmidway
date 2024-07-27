@@ -10,6 +10,8 @@ import GlobalGameState from "./model/GlobalGameState"
 import GlobalInit from "./model/GlobalInit"
 import GlobalUnitsModel from "./model/GlobalUnitsModel"
 import AlertPanel from "./components/dialogs/AlertPanel"
+import SaveGamePanel from "./components/dialogs/SaveGamePanel"
+import LoadGamePanel from "./components/dialogs/LoadGamePanel"
 import CardPanel from "./components/dialogs/CardPanel"
 import GameStatusPanel from "./components/dialogs/GameStatusPanel"
 import SplashScreen from "./components/dialogs/SplashScreen"
@@ -19,13 +21,13 @@ import { determineAllUnitsDeployedForCarrier } from "./controller/AirUnitSetupHa
 import { usCSFStartHexes, japanAF1StartHexes } from "./components/MapRegions"
 import YesNoDialog from "./components/dialogs/YesNoDialog"
 import { loadGameState, saveGameState } from "./SaveLoadGame"
+import loadHandler from "./LoadHandler"
 import { allHexesWithinDistance } from "./components/HexUtils"
 import DicePanel from "./components/dialogs/DicePanel"
 import { calculateSearchValues, calculateSearchResults } from "./model/SearchValues"
 import { AirOpsHeaders, AirOpsFooters } from "./AirOpsDataPanels"
 import { randomDice } from "./components/dialogs/DiceUtils"
 import UITester from "./UITester"
-import loadHandler from "./LoadHandler"
 import { getJapanEnabledAirBoxes, getUSEnabledAirBoxes } from "./AirBoxZoneHandler"
 
 export default App
@@ -64,6 +66,12 @@ export function App() {
   const [scale, setScale] = useState(1)
   const [testClicked, setTestClicked] = useState(false)
   const [csfAlertShow, setCSFAlertShow] = useState(false)
+
+  const [saveGameShow, setSaveGameShow] = useState(false)
+  const [gameSaveID, setGameSaveID] = useState("")
+  const [gameLoadID, setGameLoadID] = useState("")
+
+  const [loadPanelShow, setLoadPanelShow] = useState(false)
   const [jpAlertShow, setJpAlertShow] = useState(false)
 
   const [saveAlertShow, setSaveAlertShow] = useState(false) // TO DO param should be an object with boolean and alert text
@@ -122,23 +130,29 @@ export function App() {
 
   const setJapanFleetRegions = () => {
     if (GlobalGameState.gamePhase === GlobalGameState.PHASE.JAPAN_FLEET_MOVEMENT && GlobalGameState.gameTurn === 1) {
+      // @TODO if Midway attack declared, remove any hexes out of range
       setJapanMapRegions(japanAF1StartHexes)
     } else {
       const af1Location = GlobalInit.controller.getFleetLocation("1AF", GlobalUnitsModel.Side.JAPAN)
       const jpRegion = allHexesWithinDistance(af1Location.currentHex, 2, true)
+      // @TODO if Midway attack declared, remove any hexes out of range
       setJapanMapRegions(jpRegion)
     }
     setFleetMoveAlertShow(true)
   }
 
   const loadState = () => {
-    console.log("GlobalGameState.gamePhase = ", GlobalGameState.gamePhase)
     if (GlobalGameState.gamePhase === GlobalGameState.PHASE.JAPAN_SETUP) {
       const carrier = GlobalGameState.getJapanCarrier()
       determineAllUnitsDeployedForCarrier(GlobalInit.controller, GlobalUnitsModel.Side.JAPAN, carrier)
     } else if (GlobalGameState.gamePhase === GlobalGameState.PHASE.US_SETUP_AIR) {
       const carrier = GlobalGameState.getUSCarrier()
       determineAllUnitsDeployedForCarrier(GlobalInit.controller, GlobalUnitsModel.Side.US, carrier)
+    } else if (GlobalGameState.gamePhase === GlobalGameState.PHASE.US_SETUP_FLEET) {
+      setUSMapRegions(usCSFStartHexes)
+      if (!GlobalGameState.usFleetPlaced) {
+        setCSFAlertShow(true)
+      }
     } else if (GlobalGameState.gamePhase === GlobalGameState.PHASE.JAPAN_MIDWAY) {
       setMidwayDialogShow(true)
       GlobalGameState.phaseCompleted = false
@@ -360,8 +374,7 @@ export function App() {
                 size="sm"
                 variant="outline-light"
                 onClick={() => {
-                  saveGameState(GlobalInit.controller)
-                  setSaveAlertShow(true)
+                  setSaveGameShow(true)
                 }}
               >
                 Save Game
@@ -408,7 +421,8 @@ export function App() {
                 onClick={(e) => nextAction(e)}
                 disabled={
                   !GlobalGameState.phaseCompleted ||
-                  (GlobalGameState.gamePhase === GlobalGameState.JAPAN_FLEET_MOVEMENT && !GlobalGameState.jpFleetPlaced)
+                  (GlobalGameState.gamePhase === GlobalGameState.PHASE.JAPAN_FLEET_MOVEMENT && !GlobalGameState.jpFleetPlaced) ||
+                  (GlobalGameState.gamePhase === GlobalGameState.PHASE.US_SETUP_FLEET && !GlobalGameState.usFleetPlaced)
                 }
                 style={{ background: "#9e1527" }}
               >
@@ -488,8 +502,15 @@ export function App() {
     setMidwayDialogShow(false)
     nextAction(e)
   }
+
+  function loadMyGame(id) {
+    loadHandler({ setTestClicked, setSplash, setAirUnitUpdate, setFleetUnitUpdate, loadState, id })
+  }
+
   async function loady() {
-    loadHandler({ setTestClicked, setSplash, setAirUnitUpdate, setFleetUnitUpdate, loadState })
+    setSplash(false)
+    setLoadPanelShow(true)
+    // loadHandler({ setTestClicked, setSplash, setAirUnitUpdate, setFleetUnitUpdate, loadState })
   }
 
   function onSplash() {
@@ -539,8 +560,23 @@ export function App() {
     const sideWithInitiative = GlobalInit.controller.determineInitiative(rolls[0], rolls[1])
     setSideWithInitiative(() => sideWithInitiative)
   }
+
   return (
     <>
+      <LoadGamePanel
+        show={loadPanelShow}
+        loadIdHandler={setGameLoadID}
+        loadMyGameHandler={loadMyGame}
+        onHide={() => setLoadPanelShow(false)}
+      ></LoadGamePanel>
+
+      <SaveGamePanel
+        saveGameState={saveGameState}
+        setSaveAlertShow={setSaveAlertShow}
+        show={saveGameShow}
+        onHide={() => setSaveGameShow(false)}
+        handler={setGameSaveID}
+      ></SaveGamePanel>
       <AlertPanel show={alertShow} onHide={() => setAlertShow(false)}>
         <h4>ALERT</h4>
         <p>This air unit is not a fighter unit so cannot be used for CAP.</p>
@@ -602,8 +638,9 @@ export function App() {
         <p>Do you want to attack Midway this turn?</p>
       </YesNoDialog>
       <AlertPanel show={saveAlertShow} onHide={() => setSaveAlertShow(false)}>
-        <h4>INFO</h4>
+        <h4 style={{ justifyContent: "center", alignItems: "center" }}>INFO</h4>
         <p>Game State Successfully Saved!</p>
+        <p>Game Id = {gameSaveID} </p>
       </AlertPanel>
       <DicePanel
         numDice={2}

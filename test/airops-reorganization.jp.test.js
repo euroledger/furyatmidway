@@ -7,7 +7,7 @@ import {
   getStep1TorpedoPlanes,
   checkForReorganization,
   checkAllBoxesForReorganization,
-  checkAllBoxesForReorganizationCAP
+  checkAllJapanBoxesForReorganizationCAP,
 } from "../src/controller/AirOperationsHandler"
 
 describe("Japan Air Operations: tests for Reorganization", () => {
@@ -161,7 +161,7 @@ describe("Japan Air Operations: tests for Reorganization", () => {
   })
 
   test("Reorganize 1 Step Air Units across boxes CD1 RETURN1 - AKAGI HANGAR, no auto reorganize", () => {
-    // Test reorg in TO box
+    // test reorg in TO box
     // 2 units in TO BOX
     kdb.aircraftUnit.steps = 1
     adb.aircraftUnit.steps = 1
@@ -177,7 +177,7 @@ describe("Japan Air Operations: tests for Reorganization", () => {
     aaf1.aircraftUnit.steps = 1
     aaf2.aircraftUnit.steps = 1
 
-    // Test reorg across boxes
+    // test reorg across boxes
     // TO BOX Akagi hangar -> aaf2 1 step
     // FROM BOX CD1 RETURN 1 -> aaf1 1 step
     // Reorg -> 2 air units in reorg object, no auto organize
@@ -202,7 +202,7 @@ describe("Japan Air Operations: tests for Reorganization", () => {
   })
 
   test("Reorganize 1 Step Air Units across boxes CD1 RETURN1 - AKAGI HANGAR, auto reorganize", () => {
-    // Test reorg in TO box
+    // test reorg in TO box
     kdb.aircraftUnit.steps = 1
     adb.aircraftUnit.steps = 1
 
@@ -220,7 +220,7 @@ describe("Japan Air Operations: tests for Reorganization", () => {
     aaf1.aircraftUnit.steps = 1
     aaf2.aircraftUnit.steps = 1
 
-    // Test reorg across boxes
+    // test reorg across boxes
     // TO BOX Akagi hangar -> aaf2 1 step
     // FROM BOX CD1 RETURN 1 -> aaf1 1 step
     // Reorg -> 0 air units in reorg object, auto organize, aaf2 in hangar eliminated to make space
@@ -364,7 +364,7 @@ describe("Japan Air Operations: tests for Reorganization", () => {
     controller.addAirUnitToBox(GlobalUnitsModel.AirBox.JP_CD1_CAP_RETURN, 0, aaf1)
     controller.addAirUnitToBox(GlobalUnitsModel.AirBox.JP_KAGA_FLIGHT_DECK, 0, kaf1)
 
-    checkAllBoxesForReorganizationCAP(
+    checkAllJapanBoxesForReorganizationCAP(
       controller,
       aaf1,
       GlobalUnitsModel.AirBox.JP_CD1_CAP_RETURN,
@@ -380,7 +380,7 @@ describe("Japan Air Operations: tests for Reorganization", () => {
 
     // same but now reorg with Akagi Hangar
     kaf1.aircraftUnit.steps = 1
-    kaf1.aircraftUnit.steps = 1
+    aaf1.aircraftUnit.steps = 1
 
     controller.addAirUnitToBox(GlobalUnitsModel.AirBox.JP_KAGA_HANGAR, 0, kaf1)
 
@@ -389,6 +389,139 @@ describe("Japan Air Operations: tests for Reorganization", () => {
 
     expect(reorgUnits[0].name).toEqual(kaf1.name)
     expect(reorgUnits[1].name).toEqual(aaf1.name)
+  })
 
+  test("Reorganize 1 Step Air Units across boxes CD1 CAP RETURN - KAGA HANGAR, no auto reorganize", () => {
+    kaf1.aircraftUnit.steps = 1
+    kaf2.aircraftUnit.steps = 1
+
+    // Kaga Flight Deck full so...
+    // check for reorg between CD1 CAP RETURN and Kaga Hangar
+    controller.addAirUnitToBox(GlobalUnitsModel.AirBox.JP_KAGA_FLIGHT_DECK, 0, kdb)
+    controller.addAirUnitToBox(GlobalUnitsModel.AirBox.JP_KAGA_FLIGHT_DECK, 1, ktb)
+
+    controller.addAirUnitToBox(GlobalUnitsModel.AirBox.JP_CD1_CAP_RETURN, 0, kaf1)
+    controller.addAirUnitToBox(GlobalUnitsModel.AirBox.JP_KAGA_HANGAR, 0, kaf2)
+
+    checkAllJapanBoxesForReorganizationCAP(
+      controller,
+      kaf1,
+      GlobalUnitsModel.AirBox.JP_CD1_CAP_RETURN,
+      GlobalUnitsModel.Side.JAPAN,
+      false
+    )
+
+    let reorgUnits = controller.getReorganizationUnits(kaf1.name)
+    expect(reorgUnits.length).toEqual(2)
+
+    expect(reorgUnits[0].name).toEqual(kaf2.name)
+    expect(reorgUnits[1].name).toEqual(kaf1.name)
+
+    // same but now reorg with Akagi Hangar
+    // Assume Kaga sunk
+    controller.setCarrierHits(GlobalUnitsModel.Carrier.KAGA, 3)
+
+    kaf1.aircraftUnit.steps = 1
+    kaf2.aircraftUnit.steps = 2
+    aaf1.aircraftUnit.steps = 1
+
+    controller.addAirUnitToBox(GlobalUnitsModel.AirBox.JP_AKAGI_FLIGHT_DECK, 0, adb)
+    controller.addAirUnitToBox(GlobalUnitsModel.AirBox.JP_AKAGI_FLIGHT_DECK, 1, atb)
+
+    controller.addAirUnitToBox(GlobalUnitsModel.AirBox.JP_CD1_CAP_RETURN, 0, kaf1)
+    controller.addAirUnitToBox(GlobalUnitsModel.AirBox.JP_AKAGI_HANGAR, 0, aaf1)
+    checkAllJapanBoxesForReorganizationCAP(
+      controller,
+      kaf1,
+      GlobalUnitsModel.AirBox.JP_CD1_CAP_RETURN,
+      GlobalUnitsModel.Side.JAPAN,
+      false
+    )
+
+    reorgUnits = controller.getReorganizationUnits(kaf1.name)
+    expect(reorgUnits.length).toEqual(2)
+
+    expect(reorgUnits[0].name).toEqual(aaf1.name)
+    expect(reorgUnits[1].name).toEqual(kaf1.name)
+  })
+
+  test("Reorganize 1 Step Air Units across boxes CD1 CAP RETURN - KAGA HANGAR, auto reorganize", () => {
+    kaf1.aircraftUnit.steps = 1
+    kaf2.aircraftUnit.steps = 1
+
+    // Kaga Flight Deck full so...
+    // check for reorg between CD1 CAP RETURN and Kaga Hangar
+    controller.addAirUnitToBox(GlobalUnitsModel.AirBox.JP_KAGA_FLIGHT_DECK, 0, kdb)
+    controller.addAirUnitToBox(GlobalUnitsModel.AirBox.JP_KAGA_FLIGHT_DECK, 1, ktb)
+
+    controller.addAirUnitToBox(GlobalUnitsModel.AirBox.JP_CD1_CAP_RETURN, 0, kaf1)
+    controller.addAirUnitToBox(GlobalUnitsModel.AirBox.JP_KAGA_HANGAR, 0, kaf2)
+
+    checkAllJapanBoxesForReorganizationCAP(
+      controller,
+      kaf1,
+      GlobalUnitsModel.AirBox.JP_CD1_CAP_RETURN,
+      GlobalUnitsModel.Side.JAPAN,
+      true
+    )
+
+    let reorgUnits = controller.getReorganizationUnits(kaf1.name)
+    expect(reorgUnits).toBeNull
+
+    expect(kaf1.aircraftUnit.steps).toEqual(2)
+    expect(kaf2.aircraftUnit.steps).toEqual(0)
+
+    // same but now reorg with Akagi Hangar
+    // Assume Kaga sunk
+    controller.setCarrierHits(GlobalUnitsModel.Carrier.KAGA, 3)
+
+    kaf1.aircraftUnit.steps = 1
+    kaf2.aircraftUnit.steps = 2
+    aaf1.aircraftUnit.steps = 1
+
+    controller.addAirUnitToBox(GlobalUnitsModel.AirBox.JP_AKAGI_FLIGHT_DECK, 0, adb)
+    controller.addAirUnitToBox(GlobalUnitsModel.AirBox.JP_AKAGI_FLIGHT_DECK, 1, atb)
+
+    controller.addAirUnitToBox(GlobalUnitsModel.AirBox.JP_CD1_CAP_RETURN, 0, kaf1)
+    controller.addAirUnitToBox(GlobalUnitsModel.AirBox.JP_AKAGI_HANGAR, 0, aaf1)
+    checkAllJapanBoxesForReorganizationCAP(
+      controller,
+      kaf1,
+      GlobalUnitsModel.AirBox.JP_CD1_CAP_RETURN,
+      GlobalUnitsModel.Side.JAPAN,
+      true
+    )
+
+    reorgUnits = controller.getReorganizationUnits(kaf1.name)
+    expect(reorgUnits).toBeNull
+
+    expect(kaf1.aircraftUnit.steps).toEqual(2)
+    expect(aaf1.aircraftUnit.steps).toEqual(0)
+
+  })
+
+  test("Reorganize 1 Step Air Units across boxes CD1 CAP RETURN - AKAGI FLIGHT DECK, auto reorganize", () => {
+    aaf1.aircraftUnit.steps = 1
+    kaf1.aircraftUnit.steps = 1
+
+    // check for reorg between CD1 CAP RETURN and Kaga Flight Deck
+    controller.addAirUnitToBox(GlobalUnitsModel.AirBox.JP_CD1_CAP_RETURN, 0, aaf1)
+    controller.addAirUnitToBox(GlobalUnitsModel.AirBox.JP_KAGA_FLIGHT_DECK, 0, kaf1)
+
+    checkAllJapanBoxesForReorganizationCAP(
+      controller,
+      aaf1,
+      GlobalUnitsModel.AirBox.JP_CD1_CAP_RETURN,
+      GlobalUnitsModel.Side.JAPAN,
+      true
+    )
+
+    let reorgUnits = controller.getReorganizationUnits(aaf1.name)
+    expect(reorgUnits).toBeNull
+
+    // auto reorganize: air unit on flight deck eliminated to make room for combined
+    // 2 step unit returning from CAP
+    expect((aaf1.aircraftUnit.steps = 2))
+    expect((kaf1.aircraftUnit.steps = 0))
   })
 })

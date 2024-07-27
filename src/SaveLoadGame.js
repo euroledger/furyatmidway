@@ -4,7 +4,7 @@ import GlobalUnitsModel from "./model/GlobalUnitsModel"
 import JapanAirBoxOffsets from "./components/draganddrop/JapanAirBoxOffsets"
 import USAirBoxOffsets from "./components/draganddrop/USAirBoxOffsets"
 
-export function saveGameState(controller) {
+export function saveGameState(controller, gameId) {
   const arr = Object.getOwnPropertyNames(GlobalGameState.prototype.constructor)
   let globalState = new Map()
   for (let key of arr) {
@@ -52,6 +52,18 @@ export function saveGameState(controller) {
 
   const airOperationsText = JSON.stringify(GlobalGameState.airOperationPoints)
 
+  // let savedGame = new Map()
+  let savedGameDetails = {
+    global: globalText,
+    air: airText,
+    airoperations: airOperationsText,
+    jpMap: jpMapText,
+    usMap: usMapText,
+    jpcards: jpCardText,
+    uscards: usCardText,
+    log: logItems,
+  }
+  // savedGame.set(gameId, savedGameDetails )
   localStorage.setItem("global", globalText)
   localStorage.setItem("air", airText)
   localStorage.setItem("airoperations", airOperationsText)
@@ -60,6 +72,8 @@ export function saveGameState(controller) {
   localStorage.setItem("jpcards", jpCardText)
   localStorage.setItem("uscards", usCardText)
   localStorage.setItem("log", logItems)
+
+  localStorage.setItem(gameId, JSON.stringify(savedGameDetails))
 }
 function createFleetUpdates(fleetMap) {
   let updates = new Array()
@@ -67,16 +81,15 @@ function createFleetUpdates(fleetMap) {
     let update
     const cHex = fleetMap.get(key).currentHex
     update = {
-        name: key,
-        position: {
-            currentHex: cHex
-        }
+      name: key,
+      position: {
+        currentHex: cHex,
+      },
     }
     updates.push(update)
   }
   return updates
 }
-
 
 function createAirUnitUpdates(airUnitMap) {
   let airUpdates = new Array()
@@ -95,7 +108,7 @@ function createAirUnitUpdates(airUnitMap) {
       position1 = USAirBoxOffsets.find((box) => box.name === update.boxName)
     }
     if (!position1) {
-        continue
+      continue
     }
     update.position = position1.offsets[update.index]
 
@@ -105,6 +118,54 @@ function createAirUnitUpdates(airUnitMap) {
     airUpdates.push(update)
   }
   return airUpdates
+}
+
+export function loadGameStateForId(gameId) {
+  const loadedJson = localStorage.getItem(gameId)
+
+  const gameDetails = JSON.parse(loadedJson)
+  if (!gameId) {
+    return
+  }
+
+  const globalState = gameDetails.global
+
+  const global = new Map(JSON.parse(globalState))
+
+  for (var property in GlobalGameState) {
+    const ty = typeof GlobalGameState[property]
+
+    if (ty === "number" || ty === "boolean" || ty === "string") {
+      GlobalGameState[property] = global.get(property)
+    }
+  }
+  const airOperationText = gameDetails.airoperations
+  GlobalGameState.airOperationPoints = JSON.parse(airOperationText)
+
+  const airText = gameDetails.air
+  const airMap = new Map(JSON.parse(airText))
+
+  const airUpdates = createAirUnitUpdates(airMap)
+
+  const usCardText = gameDetails.uscards
+  const jpCardText = gameDetails.jpcards
+
+  GlobalUnitsModel.jpCards = JSON.parse(jpCardText)
+  GlobalUnitsModel.usCards = JSON.parse(usCardText)
+
+  const items = gameDetails.log
+  const logItems = new Map(JSON.parse(items))
+
+  const jpMapText = gameDetails.jpMap
+  const jpFleetMap = new Map(JSON.parse(jpMapText))
+
+  const usMapText = gameDetails.usMap
+  const usFleetMap = new Map(JSON.parse(usMapText))
+
+  const usfleetUpdates = createFleetUpdates(usFleetMap)
+  const jpfleetUpdates = createFleetUpdates(jpFleetMap)
+
+  return { airUpdates, jpfleetUpdates, usfleetUpdates, logItems }
 }
 
 export function loadGameState() {

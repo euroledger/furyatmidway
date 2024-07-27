@@ -1,17 +1,18 @@
 import GlobalGameState from "./model/GlobalGameState"
-import GlobalInit from "./model/GlobalInit"
-import { loadGameState } from "./SaveLoadGame"
+import { loadGameStateForId } from "./SaveLoadGame"
 
 function delay(ms) {
   return new Promise((resolve) => {
     setTimeout(resolve, ms)
   })
 }
-async function loadHandler({ setTestClicked, setSplash, setAirUnitUpdate, setFleetUnitUpdate, loadState }) {
+
+async function loadHandler({ setTestClicked, setSplash, setAirUnitUpdate, setFleetUnitUpdate, loadState, id }) {
+
   setTestClicked(true)
   console.log("Load game from local storage")
   setSplash(false)
-  const { airUpdates, jpfleetUpdates, usfleetUpdates, logItems } = loadGameState(GlobalInit.controller)
+  const { airUpdates, jpfleetUpdates, usfleetUpdates, logItems } = loadGameStateForId(id)
   for (const update of airUpdates) {
     setAirUnitUpdate(update)
     await delay(1)

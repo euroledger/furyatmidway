@@ -66,9 +66,20 @@
     background: #da2c12;
     outline: none;
 }
+.delete {
+  background-color: #b11010 !important;
+  border-color: white;
+}
+.modal-load {
+  width: 1000px !important
+}
 .trigger-btn {
     display: inline-block;
     margin: 100px auto;
+}
+input::placeholder {
+  color: rgb(159, 166, 166) !important;
+  opacity: 1;
 }
 body.modal-open .modal-backdrop {
     opacity: 0.5 

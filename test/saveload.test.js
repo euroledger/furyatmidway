@@ -3,7 +3,7 @@ import loadCounters from "../src/CounterLoader"
 import GlobalUnitsModel from "../src/model/GlobalUnitsModel"
 import GlobalGameState from "../src/model/GlobalGameState"
 import GlobalInit from "../src/model/GlobalInit"
-import { saveGameState, loadGameState } from "../src/SaveLoadGame"
+import { saveGameState, loadGameStateForId } from "../src/SaveLoadGame"
 
 describe("Controller tests", () => {
   let controller
@@ -98,7 +98,7 @@ describe("Controller tests", () => {
     GlobalInit.controller.drawUSCards(2, true)
 
     // save to local storage
-    saveGameState(controller)
+    saveGameState(controller, "fam-main")
 
     let kaf1Location = controller.getAirUnitLocation("Akagi-A6M-2b-1")
     expect(kaf1Location.boxName).toEqual(GlobalUnitsModel.AirBox.JP_CD1_CAP)
@@ -110,7 +110,7 @@ describe("Controller tests", () => {
     expect(kaf1Location).toBeUndefined()
 
     // load from local storage - check correct
-    const { airUpdates, jpfleetUpdates, usfleetUpdates, logItems } = loadGameState(GlobalInit.controller)
+    const { airUpdates, jpfleetUpdates, usfleetUpdates, logItems } = loadGameStateForId("fam-main")
     kaf1 = airUpdates.filter((a) => a.name === "Akagi-A6M-2b-1")[0]
     expect(kaf1.boxName).toEqual(GlobalUnitsModel.AirBox.JP_CD1_CAP)
     expect(logItems.size).toBeGreaterThan(0)
