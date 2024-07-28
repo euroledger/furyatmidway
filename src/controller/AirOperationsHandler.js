@@ -33,21 +33,27 @@ export function getValidUSDestinationsCAP(controller, parentCarrier, side) {
   const thisTF = controller.getTaskForceForCarrier(parentCarrier, side)
   const carriersInTF = controller.getAllCarriersInTaskForce(thisTF, side)
 
-  const boxName = controller.getAirBoxForNamedShip(side, carrier.name, "FLIGHT_DECK")
-
   for (const carrier of carriersInTF) {
-    const destAvailable = controller.isFlightDeckAvailable(boxName, side)
+    const boxName = controller.getAirBoxForNamedShip(side, carrier.name, "FLIGHT_DECK")
 
+    const destAvailable = controller.isFlightDeckAvailable(carrier.name, side)
+
+    // console.log(carrier.name, "-> destAvailable = ", destAvailable)
     if (!controller.isSunk(carrier.name) && destAvailable) {
       // this unit can go to its parent carrier flight deck
+
+      // console.log("PUSH 1", boxName)
       destinationsArray.push(boxName)
-    } else {
-      // As this is CAP -> if flight deck damaged or not free, can go to hangar instead
-      // if carrier not at capacity
-      if (controller.isHangarAvailable(carrier.name)) {
-        const capHangar = controller.getAirBoxForNamedShip(side, carrier.name, "HANGAR")
-        destinationsArray.push(capHangar)
-      }
+    } else if (controller.isSunk(carrier.name)) {
+      continue
+    }
+    // As this is CAP -> can go to hangar instead
+    // if carrier not at capacity
+    if (controller.isHangarAvailable(carrier.name)) {
+      const capHangar = controller.getAirBoxForNamedShip(side, carrier.name, "HANGAR")
+      // console.log("PUSH 2", capHangar)
+
+      destinationsArray.push(capHangar)
     }
   }
   // Never try other task force
@@ -81,30 +87,22 @@ export function getValidJapanDestinationsCAP(controller, parentCarrier, side) {
   const boxName = controller.getAirBoxForNamedShip(side, parentCarrier, "FLIGHT_DECK")
   const destAvailable = controller.isFlightDeckAvailable(parentCarrier, side)
 
-  // debug
-  // if (controller.isSunk(parentCarrier)) {
-  //   console.log(parentCarrier, "sunk, try other carrier")
-  // } else if (!destAvailable) {
-  //   console.log(parentCarrier, "flight deck not available")
-  // }
-
   if (!controller.isSunk(parentCarrier) && destAvailable) {
     // console.log(parentCarrier, " => Flight Deck avaiable")
     destinationsArray.push(boxName)
-  } else if (controller.isSunk(parentCarrier)) {
-    destinationsArray = tryOtherCarrierCAP(controller, parentCarrier, side)
-  } else if (controller.isHangarAvailable(parentCarrier)) {
+  }
+
+  if (controller.getCarrierHits(parentCarrier) < 2 && controller.isHangarAvailable(parentCarrier)) {
     // console.log(parentCarrier, " => Hangar available")
 
     const capHangar = controller.getAirBoxForNamedShip(side, parentCarrier, "HANGAR")
     destinationsArray.push(capHangar)
     return destinationsArray
-  } else if (!controller.isHangarAvailable(parentCarrier)) {
-    destinationsArray = tryOtherCarrierCAP(controller, parentCarrier, side)
   }
-
+  destinationsArray = destinationsArray.concat(tryOtherCarrierCAP(controller, parentCarrier, side))
   return destinationsArray
 }
+
 function tryOtherTaskForce(controller, parentCarrier, side, useMidway) {
   let destinationsArray = new Array()
   const taskForce = controller.getTaskForceForCarrier(parentCarrier, side)
@@ -157,17 +155,13 @@ function tryOtherCarrierCAP(controller, parentCarrier, side) {
     return destinationsArray // empty list, eg TF 17 has no other carrier
   }
   const destAvailable = controller.isFlightDeckAvailable(otherCarrier.name, side)
-
-  // console.log(otherCarrier.name, "FLIGHT DECK AVAILABLE = ", destAvailable)
   if (destAvailable) {
     const box = controller.getAirBoxForNamedShip(side, otherCarrier.name, "FLIGHT_DECK")
     destinationsArray.push(box)
-  } else {
-    if (controller.isHangarAvailable(otherCarrier.name)) {
-      const capHangar = controller.getAirBoxForNamedShip(side, otherCarrier.name, "HANGAR")
-      destinationsArray.push(capHangar)
-      return destinationsArray
-    }
+  }
+  if (controller.isHangarAvailable(otherCarrier.name)) {
+    const capHangar = controller.getAirBoxForNamedShip(side, otherCarrier.name, "HANGAR")
+    destinationsArray.push(capHangar)
   }
   return destinationsArray
 }
@@ -347,7 +341,13 @@ export function checkForReorganization(controller, fromBox, toBox, auto) {
 }
 
 function mergeUnique(arr1, arr2) {
-  let newArray = arr1
+  if (arr1 === null) {
+    return arr2
+  }
+  if (arr2 === null){
+    return arr1
+  }
+   let newArray = arr1
 
   for (let item of arr2) {
     if (!newArray.includes(item)) {
@@ -361,31 +361,37 @@ export function checkAllJapanBoxesForReorganizationCAP(controller, unit, fromBox
   let carrierName = unit.carrier
   let toBox = controller.getAirBoxForNamedShip(side, carrierName, "FLIGHT_DECK")
 
-  // check reorg within CAP RETURN box
-  let reorgUnits = checkForReorganization(controller, fromBox, null, auto)
+  let reorgUnits = new Array()
 
-  if (reorgUnits) {
-    controller.setReorganizationUnits(unit.name, reorgUnits)
-    return
+  // check reorg within CAP RETURN box
+  let reorgUnitsCAP = checkForReorganization(controller, fromBox, null, auto)
+
+  if (reorgUnitsCAP) {
+    reorgUnits = reorgUnitsCAP
   }
+
+  const hits = controller.getCarrierHits(carrierName)
   // check reorg across boxes
   // 1. Same Carrier Flight Deck
-  reorgUnits = checkForReorganization(controller, fromBox, toBox, auto)
-
-  if (reorgUnits) {
-    controller.setReorganizationUnits(unit.name, reorgUnits)
-    if (side === GlobalUnitsModel.Side.JAPAN) {
-      return // Japan air unit must use its own carrier if possible
-    }
+  let reorgUnitsFD = checkForReorganization(controller, fromBox, toBox, auto)
+  if (reorgUnitsFD) {
+    reorgUnits = mergeUnique(reorgUnits, reorgUnitsFD)
   }
+
   // 2. Same Carrier Hangar
   toBox = controller.getAirBoxForNamedShip(side, carrierName, "HANGAR")
-  reorgUnits = checkForReorganization(controller, fromBox, toBox, auto)
+  let reorgUnitsHangar = checkForReorganization(controller, fromBox, toBox, auto)
+
+  if (reorgUnitsHangar) {
+    reorgUnits = mergeUnique(reorgUnits, reorgUnitsHangar)
+  }
 
   if (reorgUnits) {
     controller.setReorganizationUnits(unit.name, reorgUnits)
     if (side === GlobalUnitsModel.Side.JAPAN) {
-      return // Japan air unit must use its own carrier if possible
+      if (hits < 2) {
+        return // Japan air unit must use its own carrier if possible (ie undamaged)
+      }
     }
   }
   // 3. Other Carrier in Same Task Force Flight Deck
@@ -395,18 +401,19 @@ export function checkAllJapanBoxesForReorganizationCAP(controller, unit, fromBox
   }
   toBox = controller.getAirBoxForNamedShip(side, carrier.name, "FLIGHT_DECK")
 
-  let reorgUnits2 = checkForReorganization(controller, fromBox, toBox, auto)
-
-  if (reorgUnits2) {
-    controller.setReorganizationUnits(unit.name, reorgUnits2)
-    return
+  let reorgUnitsOtherFD = checkForReorganization(controller, fromBox, toBox, auto)
+  if (reorgUnitsOtherFD) {
+    reorgUnits = mergeUnique(reorgUnits, reorgUnitsOtherFD)
   }
-
+  if (reorgUnits) {
+    controller.setReorganizationUnits(unit.name, reorgUnits)
+  }
 
   // 4. Other Carrier in Same Task Force Hangar
   toBox = controller.getAirBoxForNamedShip(side, carrier.name, "HANGAR")
 
-  reorgUnits = checkForReorganization(controller, fromBox, toBox, auto)
+  let reorgUnits3 = checkForReorganization(controller, fromBox, toBox, auto)
+  reorgUnits = mergeUnique(reorgUnits, reorgUnits3)
 
   if (reorgUnits) {
     controller.setReorganizationUnits(unit.name, reorgUnits)
@@ -451,7 +458,8 @@ export function checkAllUSBoxesForReorganizationCAP(controller, unit, fromBox, s
     reorgUnits = checkForReorganization(controller, fromBox, toBox, auto)
     if (reorgUnits) {
       reorgUnitsArray = mergeUnique(reorgUnitsArray, reorgUnits)
-    }  }
+    }
+  }
   if (reorgUnits) {
     controller.setReorganizationUnits(unit.name, reorgUnits)
     return

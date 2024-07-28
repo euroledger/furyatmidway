@@ -40,7 +40,7 @@ describe("Air Operations tests with Preset air unit locations", () => {
     controller.addAirUnitToBox(GlobalUnitsModel.AirBox.JP_CD1_CAP_RETURN, 1, kaf1)
 
     controller.addAirUnitToBox(GlobalUnitsModel.AirBox.JP_KAGA_FLIGHT_DECK, 0, kdb)
-    controller.addAirUnitToBox(GlobalUnitsModel.AirBox.JP_AKAGI_FLIGHT_DECK, 0, adb)
+    controller.addAirUnitToBox(GlobalUnitsModel.AirBox.JP_AKAGI_FLIGHT_DECK, 1, adb)
 
     controller.addAirUnitToBox(GlobalUnitsModel.AirBox.JP_AKAGI_HANGAR, 0, aaf2)
     controller.addAirUnitToBox(GlobalUnitsModel.AirBox.JP_AKAGI_HANGAR, 1, kaf2)
@@ -63,8 +63,9 @@ describe("Air Operations tests with Preset air unit locations", () => {
       GlobalUnitsModel.Side.JAPAN
     )
 
-    expect(destinations.length).toEqual(1)
+    expect(destinations.length).toEqual(2)
     expect(destinations[0]).toEqual(GlobalUnitsModel.AirBox.JP_SORYU_FLIGHT_DECK)
+    expect(destinations[1]).toEqual(GlobalUnitsModel.AirBox.JP_SORYU_HANGAR)
   })
 
   test("Create Lists of Valid Destination Boxes for Soryu fighter 1 unit returning from CAP, Soryu Sunk", () => {
@@ -76,8 +77,10 @@ describe("Air Operations tests with Preset air unit locations", () => {
       GlobalUnitsModel.Side.JAPAN
     )
 
-    expect(destinations.length).toEqual(1)
+    expect(destinations.length).toEqual(2)
     expect(destinations[0]).toEqual(GlobalUnitsModel.AirBox.JP_HIRYU_FLIGHT_DECK)
+    expect(destinations[1]).toEqual(GlobalUnitsModel.AirBox.JP_HIRYU_HANGAR)
+
   })
 
   test("Create Lists of Valid Destination Boxes for Soryu fighter 1 unit returning from CAP, Soryu Sunk, Hiryu Flight Deck unavailable", () => {
@@ -94,7 +97,7 @@ describe("Air Operations tests with Preset air unit locations", () => {
     expect(destinations[0]).toEqual(GlobalUnitsModel.AirBox.JP_HIRYU_HANGAR)
   })
 
-  test("Soryu CAP returning air unit, Soryu at capacity, go to Hiryu (Flight Deck)", () => {
+  test("Soryu CAP returning air unit, Soryu at capacity, go to Hiryu (Flight Deck or Hangar)", () => {
     // Add one unit to Soryu flight deck and two to hangar so
     // carrier now at capacity
     
@@ -110,8 +113,9 @@ describe("Air Operations tests with Preset air unit locations", () => {
       GlobalUnitsModel.Side.JAPAN
     )
 
-    expect(destinations.length).toEqual(1)
+    expect(destinations.length).toEqual(2)
     expect(destinations[0]).toEqual(GlobalUnitsModel.AirBox.JP_HIRYU_FLIGHT_DECK)
+    expect(destinations[1]).toEqual(GlobalUnitsModel.AirBox.JP_HIRYU_HANGAR)
   })
 
   test("Soryu CAP returning air unit, Soryu sunk, go to Hiryu, Hiryu at capacity, no possible destination for this air unit", () => {
@@ -132,7 +136,24 @@ describe("Air Operations tests with Preset air unit locations", () => {
   })
 
 
-  test("Soryu CAP returning air unit, Soryu flight deck damaged/occupied, go to Soryu hangar", () => {
+  test("Soryu CAP returning air unit, Soryu flight deck has 1 damage - go to Soryu", () => {
+    controller.setCarrierHits(GlobalUnitsModel.Carrier.SORYU, 1)
+
+    // This frees up a slot on the flight deck
+    controller.addAirUnitToBox(GlobalUnitsModel.AirBox.JP_SORYU_HANGAR, 1, stb)
+
+    let destinations = getValidJapanDestinationsCAP(
+        controller,
+        GlobalUnitsModel.Carrier.SORYU,
+        GlobalUnitsModel.Side.JAPAN
+      )
+  
+      expect(destinations.length).toEqual(2)
+      expect(destinations[0]).toEqual(GlobalUnitsModel.AirBox.JP_SORYU_FLIGHT_DECK)
+      expect(destinations[1]).toEqual(GlobalUnitsModel.AirBox.JP_SORYU_HANGAR)
+  })
+
+  test("Soryu CAP returning air unit, Soryu flight deck has 1 damage, other flight deck slot occupied - go to Soryu Hangar", () => {
     controller.setCarrierHits(GlobalUnitsModel.Carrier.SORYU, 1)
 
     let destinations = getValidJapanDestinationsCAP(
@@ -146,6 +167,34 @@ describe("Air Operations tests with Preset air unit locations", () => {
   })
 
 
+  test("Soryu CAP returning air unit, Soryu flight deck has 2 damage, Hiryu Flight Deck or Hangar", () => {
+    controller.setCarrierHits(GlobalUnitsModel.Carrier.SORYU, 2)
+
+    let destinations = getValidJapanDestinationsCAP(
+        controller,
+        GlobalUnitsModel.Carrier.SORYU,
+        GlobalUnitsModel.Side.JAPAN
+      )
+  
+      expect(destinations.length).toEqual(2)
+      expect(destinations[0]).toEqual(GlobalUnitsModel.AirBox.JP_HIRYU_FLIGHT_DECK)
+      expect(destinations[1]).toEqual(GlobalUnitsModel.AirBox.JP_HIRYU_HANGAR)
+  })
+
+  test("Soryu CAP returning air unit, Soryu flight deck has 2 damage, Hiryu Flight Deck has 1 damaged and 1 occupied go to Hiryu Hangar", () => {
+    controller.setCarrierHits(GlobalUnitsModel.Carrier.SORYU, 2)
+    controller.setCarrierHits(GlobalUnitsModel.Carrier.HIRYU, 1)
+
+    let destinations = getValidJapanDestinationsCAP(
+        controller,
+        GlobalUnitsModel.Carrier.SORYU,
+        GlobalUnitsModel.Side.JAPAN
+      )
+  
+      expect(destinations.length).toEqual(1)
+      expect(destinations[0]).toEqual(GlobalUnitsModel.AirBox.JP_HIRYU_HANGAR)
+  })
+
   test("Create Lists of Valid Destination Boxes for each Japan Air Unit", () => {
     // set CSF to prevent null exception
     createFleetMove(controller, 7, 1, "CSF", GlobalUnitsModel.Side.US) // G-4
@@ -154,29 +203,23 @@ describe("Air Operations tests with Preset air unit locations", () => {
 
     let destinations = controller.getValidAirUnitDestinations(saf1.name)
 
-    expect(destinations.length).toEqual(1)
+    expect(destinations.length).toEqual(2)
     expect(destinations[0]).toEqual(GlobalUnitsModel.AirBox.JP_SORYU_FLIGHT_DECK)
+    expect(destinations[1]).toEqual(GlobalUnitsModel.AirBox.JP_SORYU_HANGAR)
   })
 
-  test("Create Lists of Valid Destination Boxes for Japan (Kaga) Air Unit when both carriers in CarDiv 1 are sunk", () => {
-    const carriersInOtherTaskForce = controller.getCarriersInOtherTF(
-      GlobalUnitsModel.TaskForce.CARRIER_DIV_1,
-      GlobalUnitsModel.Side.JAPAN
-    )
-    expect(carriersInOtherTaskForce.length).toEqual(2)
-    expect(carriersInOtherTaskForce[0].name).toEqual(GlobalUnitsModel.Carrier.HIRYU)
-    expect(carriersInOtherTaskForce[1].name).toEqual(GlobalUnitsModel.Carrier.SORYU)
-
+  test("Create Lists of Valid Destination Boxes for Japan (Kaga) CAP Air Unit when both carriers in CarDiv 1 are sunk", () => {
+ 
     // Set Akagi and Kaga to be sunk
     controller.setCarrierHits(GlobalUnitsModel.Carrier.AKAGI, 3)
     controller.setCarrierHits(GlobalUnitsModel.Carrier.KAGA, 3)
 
-    doReturn1(controller, "Kaga-A6M-2b-1", GlobalUnitsModel.Side.JAPAN)
-    const destinations = controller.getValidAirUnitDestinations("Kaga-A6M-2b-1")
+    let destinations = getValidJapanDestinationsCAP(
+      controller,
+      GlobalUnitsModel.Carrier.AKAGI,
+      GlobalUnitsModel.Side.JAPAN
+    )
 
-    expect(destinations.length).toEqual(2)
-
-    expect(destinations[0]).toEqual(GlobalUnitsModel.AirBox.JP_HIRYU_HANGAR)
-    expect(destinations[1]).toEqual(GlobalUnitsModel.AirBox.JP_SORYU_HANGAR)
+    expect(destinations).toBeNull
   })
 })

@@ -264,6 +264,7 @@ export default class Controller {
 
     const flightDeckDamaged = this.isFlightDeckDamaged(name, side)
     const currentLoad = this.numUnitsOnCarrier(name, side)
+
     return !flightDeckDamaged && currentLoad < baseCapacity
   }
 
@@ -285,6 +286,17 @@ export default class Controller {
     } else {
       const carrier = GlobalUnitsModel.usFleetUnits.get(name)
       carrier.hits = hits
+    }
+  }
+
+  getCarrierHits(name) {
+    const side = GlobalUnitsModel.carrierSideMap.get(name)
+    if (side === GlobalUnitsModel.Side.JAPAN) {
+      const carrier = GlobalUnitsModel.jpFleetUnits.get(name)
+      return carrier.hits
+    } else {
+      const carrier = GlobalUnitsModel.usFleetUnits.get(name)
+      return carrier.hits
     }
   }
 

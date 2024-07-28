@@ -315,8 +315,4 @@ describe("US Air Operations: tests for Reorganization", () => {
     expect((ef1.aircraftUnit.steps = 2))
     expect((ef2.aircraftUnit.steps = 0))
   })
-
-  test("Reorganize 1 Step Air Units across boxes TF16 CAP RETURN - ENTERPRISE FLIGHT DECK, no auto reorganize with 3 units to reorg (two 1 step fighter units on Flight Deck)", () => {
-    // TODO
-  })
 })

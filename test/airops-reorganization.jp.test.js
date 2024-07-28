@@ -362,7 +362,7 @@ describe("Japan Air Operations: tests for Reorganization", () => {
 
     // check for reorg between CD1 CAP RETURN and Kaga Flight Deck
     controller.addAirUnitToBox(GlobalUnitsModel.AirBox.JP_CD1_CAP_RETURN, 0, aaf1)
-    controller.addAirUnitToBox(GlobalUnitsModel.AirBox.JP_KAGA_FLIGHT_DECK, 0, kaf1)
+    controller.addAirUnitToBox(GlobalUnitsModel.AirBox.JP_AKAGI_FLIGHT_DECK, 0, kaf1)
 
     checkAllJapanBoxesForReorganizationCAP(
       controller,
