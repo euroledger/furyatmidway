@@ -21,7 +21,7 @@ function StrikeBox({ num, bg }) {
     </div>
   )
 }
-function StrikePanel({ side, enabled }) {
+function StrikePanel({ side, enabled, zIndex }) {
   let txt = "US "
   let bg = "#CCE5FF"
   if (side === GlobalUnitsModel.Side.JAPAN) {
@@ -53,6 +53,7 @@ function StrikePanel({ side, enabled }) {
             borderColor: "white",
             borderStyle: "solid",
             borderWidth: "1px",
+            zIndex:zIndex
           }}
         >
           <div

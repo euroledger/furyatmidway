@@ -18,7 +18,7 @@ import SplashScreen from "./components/dialogs/SplashScreen"
 import "./style.css"
 import { createMapUpdateForFleet } from "./AirUnitTestData"
 import { determineAllUnitsDeployedForCarrier } from "./controller/AirUnitSetupHandler"
-import { usCSFStartHexes, japanAF1StartHexes } from "./components/MapRegions"
+import { usCSFStartHexes, japanAF1StartHexesNoMidway, japanAF1StartHexesMidway } from "./components/MapRegions"
 import YesNoDialog from "./components/dialogs/YesNoDialog"
 import { loadGameState, saveGameState } from "./SaveLoadGame"
 import loadHandler from "./LoadHandler"
@@ -131,7 +131,12 @@ export function App() {
   const setJapanFleetRegions = () => {
     if (GlobalGameState.gamePhase === GlobalGameState.PHASE.JAPAN_FLEET_MOVEMENT && GlobalGameState.gameTurn === 1) {
       // @TODO if Midway attack declared, remove any hexes out of range
-      setJapanMapRegions(japanAF1StartHexes)
+
+      if (GlobalGameState.midwayAttackDeclaration === true) {
+        setJapanMapRegions(japanAF1StartHexesMidway)
+      } else {
+        setJapanMapRegions(japanAF1StartHexesNoMidway)
+      }
     } else {
       const af1Location = GlobalInit.controller.getFleetLocation("1AF", GlobalUnitsModel.Side.JAPAN)
       const jpRegion = allHexesWithinDistance(af1Location.currentHex, 2, true)
@@ -244,8 +249,11 @@ export function App() {
       console.log("END OF US Fleet Movement Phase")
       GlobalGameState.gamePhase = GlobalGameState.PHASE.JAPAN_FLEET_MOVEMENT
       setUSMapRegions([])
-      setJapanMapRegions(japanAF1StartHexes)
-      setJpAlertShow(true)
+      if (GlobalGameState.midwayAttackDeclaration === true) {
+        setJapanMapRegions(japanAF1StartHexesMidway)
+      } else {
+        setJapanMapRegions(japanAF1StartHexesNoMidway)
+      }      setJpAlertShow(true)
       GlobalGameState.phaseCompleted = false
     } else if (GlobalGameState.gamePhase === GlobalGameState.PHASE.JAPAN_FLEET_MOVEMENT) {
       console.log("END OF Japan Fleet Movement Phase")

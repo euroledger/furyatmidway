@@ -160,6 +160,8 @@ function AirCounter({
     e.preventDefault()
     console.log('Right click');
 }
+const zx= side === GlobalUnitsModel.Side.JAPAN ? 93: 11
+
   return (
     <div>
       <input
@@ -171,7 +173,7 @@ function AirCounter({
           width: counterData.width,
           left: position.left,
           top: position.top,
-          zIndex: 10,
+          zIndex: zx,
           // transform: 'rotate(270deg)'
         }}
         id="saveForm2"
@@ -182,6 +184,7 @@ function AirCounter({
         onDragEnd={handleDrop}
         onClick={(e) => handleClick(e)}
         onContextMenu={(e) => handleRightClick(e)}
+        zIndex={side === GlobalUnitsModel.Side.JAPAN ? 91 : 11}
       />
     </div>
   )

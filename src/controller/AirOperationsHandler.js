@@ -195,6 +195,31 @@ export function doReturn2(controller, name, side) {
     controller.setValidAirUnitDestinations(name, boxArray)
   }
 }
+export function doFlightDeck(controller, name, side) {
+
+  // Air Units on the Flight Deck can go to
+  //  i) CAP Box (if fighter)
+  //  ii) Strike Box
+  //  iii) Hangar
+
+}
+
+export function doHangar(controller, name, side) {
+  const parentCarrier = controller.getCarrierForAirUnit(name)
+  const destBox = controller.getAirBoxForNamedShip(side, parentCarrier, "FLIGHT_DECK")
+
+  // check there is room on this carrier's flight deck
+  const destAvailable = controller.isFlightDeckAvailable(parentCarrier, side)
+  
+  if (!destAvailable) {
+    return 
+  }
+  const boxArray = new Array()
+  if (destBox) {
+    boxArray.push(destBox)
+    controller.setValidAirUnitDestinations(name, boxArray)
+  }
+}
 
 export function doCapReturn(controller, name, side) {
   // determine parent carrier and if flight deck of that carrier is damaged
@@ -572,9 +597,12 @@ export function handleAirUnitMoves(controller, side) {
     if (location.boxName.includes("CAP") && !location.boxName.includes("RETURNING")) {
       doCap(controller, unit.name, side)
     }
+    if (location.boxName.includes("HANGAR")) {
+      doHangar(controller, unit.name, side)
+    }
 
-    // TODO HANGAR -> FLIGHT DECK
-
-    // TODO FLIGHT DECK -> CAP, HANGAR or STRIKE BOXES
+    if (location.boxName.includes("FLIGHT")) {
+      doFlightDeck(controller, unit.name, side)
+    }
   }
 }

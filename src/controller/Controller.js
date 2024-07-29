@@ -236,8 +236,6 @@ export default class Controller {
     let hits = 0
     if (side === GlobalUnitsModel.Side.JAPAN) {
       const carrier = GlobalUnitsModel.jpFleetUnits.get(carrierName)
-      // console.log("CARRIER QUACK = ", carrier)
-
       hits = carrier.hits
     } else {
       const carrier = GlobalUnitsModel.usFleetUnits.get(carrierName)

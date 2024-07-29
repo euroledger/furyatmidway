@@ -4,6 +4,9 @@ import GlobalGameState from "./model/GlobalGameState"
 import GlobalUnitsModel from "./model/GlobalUnitsModel"
 
 function getUSSetupZones(box) {
+  // if (box.name.includes("STRIKE")) {
+  //   return box.name
+  // }
   if (
     !box.name.includes(GlobalGameState.getUSCarrier().toUpperCase()) &&
     box.name != GlobalUnitsModel.AirBox.US_TF16_CAP &&
@@ -28,6 +31,9 @@ function getUSSetupZones(box) {
 }
 
 function getJapanSetupZones(box) {
+  // if (box.name.includes("STRIKE")) {
+  //   return box.name
+  // }
   if (
     !box.name.includes(GlobalGameState.getJapanCarrier().toUpperCase()) &&
     box.name != GlobalUnitsModel.AirBox.JP_CD1_CAP &&
@@ -59,6 +65,7 @@ export function getUSEnabledAirBoxes() {
 export function getJapanEnabledAirBoxes() {
   const jpZones = JapanAirBoxOffsets.flatMap((box) => {
     if (GlobalGameState.gamePhase === GlobalGameState.PHASE.JAPAN_SETUP) {
+      const boxes = getJapanSetupZones(box)
       return getJapanSetupZones(box)
     }
   })

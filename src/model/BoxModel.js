@@ -250,16 +250,16 @@ export default class BoxModels {
 
   getBoxNamesForJapaneseCarrier(carrier, includeReturnBoxes) {
     return includeReturnBoxes
-      ? JapanAirBoxOffsets.filter((b) => b.carriers.includes(carrier)).map((bn) => bn.name)
-      : JapanAirBoxOffsets.filter((b) => b.carriers.includes(carrier))
+      ? JapanAirBoxOffsets.filter((b) => b.carriers && b.carriers.includes(carrier)).map((bn) => bn.name)
+      : JapanAirBoxOffsets.filter((b) => b.carriers && b.carriers.includes(carrier))
           .map((bn) => bn.name)
           .filter((n) => !n.includes("RETURN"))
   }
 
   getBoxNamesForUSCarrier(carrier, includeReturnBoxes) {
     return includeReturnBoxes
-      ? USAirBoxOffsets.filter((b) => b.carriers.includes(carrier)).map((bn) => bn.name)
-      : USAirBoxOffsets.filter((b) => b.carriers.includes(carrier))
+      ? USAirBoxOffsets.filter((b) => b.carriers && b.carriers.includes(carrier)).map((bn) => bn.name)
+      : USAirBoxOffsets.filter((b) => b.carriers && b.carriers.includes(carrier))
           .map((bn) => bn.name)
           .filter((n) => !n.includes("RETURN"))
   }

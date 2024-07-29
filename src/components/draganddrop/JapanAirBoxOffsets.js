@@ -193,7 +193,6 @@ const JapanAirBoxOffsets = [
         left: 22.1,
         top: 86.0,
       },
-
     ],
   },
 
@@ -261,7 +260,6 @@ const JapanAirBoxOffsets = [
         left: 34.5,
         top: 86.0,
       },
-
     ],
   },
   {
@@ -392,9 +390,254 @@ const JapanAirBoxOffsets = [
         left: 40.9,
         top: 86.0,
       },
-
     ],
   },
+  {
+    name: GlobalUnitsModel.AirBox.JP_STRIKE_BOX_0,
+    offsets: [
+      {
+        left: 45.8,
+        top: 64.0,
+      },
+      {
+        left: 47.8,
+        top: 64.0,
+      },
+      {
+        left: 49.8,
+        top: 64.0,
+      },  {
+        left: 51.8,
+        top: 64.0,
+      },
+      {
+        left: 53.8,
+        top: 64.0,
+      },
+      {
+        left: 55.8,
+        top: 64.0,
+      },
+      {
+        left: 57.8,
+        top: 64.0,
+      },  {
+        left: 59.8,
+        top: 64.0,
+      },
+    ],
+  },
+  {
+    name: GlobalUnitsModel.AirBox.JP_STRIKE_BOX_1,
+    offsets: [
+      {
+        left: 45.8,
+        top: 68.5,
+      },
+      {
+        left: 47.8,
+        top: 68.5,
+      },
+      {
+        left: 49.8,
+        top: 68.5,
+      },  {
+        left: 51.8,
+        top: 68.5,
+      },
+      {
+        left: 53.8,
+        top: 68.5,
+      },
+      {
+        left: 55.8,
+        top: 68.5,
+      },
+      {
+        left: 57.8,
+        top: 68.5,
+      },  {
+        left: 59.8,
+        top: 68.5,
+      },
+    ],
+  },
+  {
+    name: GlobalUnitsModel.AirBox.JP_STRIKE_BOX_2,
+    offsets: [
+      {
+        left: 45.8,
+        top: 72.8,
+      },
+      {
+        left: 47.8,
+        top: 72.8,
+      },
+      {
+        left: 49.8,
+        top: 72.8,
+      },  {
+        left: 51.8,
+        top: 72.8,
+      },
+      {
+        left: 53.8,
+        top: 72.8,
+      },
+      {
+        left: 55.8,
+        top: 72.8,
+      },
+      {
+        left: 57.8,
+        top: 72.8,
+      },  {
+        left: 59.8,
+        top: 72.8,
+      },
+    ],
+  },
+  {
+    name: GlobalUnitsModel.AirBox.JP_STRIKE_BOX_3,
+    offsets: [
+      {
+        left: 45.8,
+        top: 77.1,
+      },
+      {
+        left: 47.8,
+        top: 77.1,
+      },
+      {
+        left: 49.8,
+        top: 77.1,
+      },  {
+        left: 51.8,
+        top: 77.1,
+      },
+      {
+        left: 53.8,
+        top: 77.1,
+      },
+      {
+        left: 55.8,
+        top: 77.1,
+      },
+      {
+        left: 57.8,
+        top: 77.1,
+      },  {
+        left: 59.8,
+        top: 77.1,
+      },
+    ],
+  },
+  {
+    name: GlobalUnitsModel.AirBox.JP_STRIKE_BOX_4,
+    offsets: [
+      {
+        left: 45.8,
+        top: 81.4,
+      },
+      {
+        left: 47.8,
+        top: 81.4,
+      },
+      {
+        left: 49.8,
+        top: 81.4,
+      },  {
+        left: 51.8,
+        top: 81.4,
+      },
+      {
+        left: 53.8,
+        top: 81.4,
+      },
+      {
+        left: 55.8,
+        top: 81.4,
+      },
+      {
+        left: 57.8,
+        top: 81.4,
+      },  {
+        left: 59.8,
+        top: 81.4,
+      },
+    ],
+  },
+  {
+    name: GlobalUnitsModel.AirBox.JP_STRIKE_BOX_5,
+    offsets: [
+      {
+        left: 45.8,
+        top: 85.8,
+      },
+      {
+        left: 47.8,
+        top: 85.8,
+      },
+      {
+        left: 49.8,
+        top: 85.8,
+      },  {
+        left: 51.8,
+        top: 85.8,
+      },
+      {
+        left: 53.8,
+        top: 85.8,
+      },
+      {
+        left: 55.8,
+        top: 85.8,
+      },
+      {
+        left: 57.8,
+        top: 85.8,
+      },  {
+        left: 59.8,
+        top: 85.8,
+      },
+    ],
+  },
+  {
+    name: GlobalUnitsModel.AirBox.JP_STRIKE_BOX_6,
+    offsets: [
+      {
+        left: 45.8,
+        top: 90.1,
+      },
+      {
+        left: 47.8,
+        top: 90.1,
+      },
+      {
+        left: 49.8,
+        top: 90.1,
+      },  {
+        left: 51.8,
+        top: 90.1,
+      },
+      {
+        left: 53.8,
+        top: 90.1,
+      },
+      {
+        left: 55.8,
+        top: 90.1,
+      },
+      {
+        left: 57.8,
+        top: 90.1,
+      },  {
+        left: 59.8,
+        top: 90.1,
+      },
+    ],
+  },
+  
 ]
 
 export default JapanAirBoxOffsets
