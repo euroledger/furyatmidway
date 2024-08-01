@@ -80,4 +80,26 @@ export default class AirOperationsModel {
       }, {})
     return filteredEntries
   }
+
+  getCapBoxForNamedTaskForce(side, tf) {
+    let sideKey = side === GlobalUnitsModel.Side.JAPAN ? "JP" : "US"
+    const filteredEntries = Object.keys(GlobalUnitsModel.AirBox)
+      .filter((key) => key.includes(`${sideKey}_${tf}_CAP`))
+      .reduce((obj, key) => {
+        obj[key] = GlobalUnitsModel.AirBox[key]
+        return obj
+      }, {})
+    return filteredEntries
+  }
+
+  getStrikeBoxesForSide(side) {
+    let sideKey = side === GlobalUnitsModel.Side.JAPAN ? "JP" : "US"
+    const filteredEntries = Object.keys(GlobalUnitsModel.AirBox)
+      .filter((key) => key.includes(`${sideKey}_STRIKE_BOX_`))
+      .reduce((obj, key) => {
+        obj[key] = GlobalUnitsModel.AirBox[key]
+        return obj
+      }, {})
+    return filteredEntries
+  }
 }

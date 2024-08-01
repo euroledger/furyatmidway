@@ -53,8 +53,10 @@ function AirCounter({
   const japanDrop = (counterData) => {
 
     if (
-      counterData.carrier != GlobalGameState.getJapanCarrier() &&
-      GlobalGameState.gamePhase === GlobalGameState.PHASE.JAPAN_SETUP
+      (counterData.carrier != GlobalGameState.getJapanCarrier() &&
+      GlobalGameState.gamePhase === GlobalGameState.PHASE.JAPAN_SETUP) || 
+      GlobalGameState.gamePhase === GlobalGameState.PHASE.AIR_OPERATIONS
+
     ) {
       // cannot move units from carrier other than the current one being set up
       return false
@@ -85,13 +87,17 @@ function AirCounter({
   const usDrop = (counterData) => {
     if (
       counterData.carrier != GlobalGameState.getUSCarrier() ||
-      GlobalGameState.gamePhase !== GlobalGameState.PHASE.US_SETUP_AIR
+      GlobalGameState.gamePhase !== GlobalGameState.PHASE.US_SETUP_AIR || 
+      GlobalGameState.gamePhase == GlobalGameState.PHASE.AIR_OPERATIONS
     ) {
       // cannot move units from carrier other than the current one being set up
+      console.log("QUACK 1")
       return false
     }
     const { name, offsets } = getAirBox()
     if (!offsets) {
+      console.log("QUACK 2")
+
       return false
     }
 
@@ -100,6 +106,8 @@ function AirCounter({
     const airUnit = controller.getUSAirUnit(counterData.name)
     if (!airUnit) {
       // error
+      console.log("QUACK 3")
+
       return false
     }
     if (
@@ -155,6 +163,13 @@ function AirCounter({
 
   const handleClick = (e) => {
       console.log('Left click');
+      // TODO 
+      // Use counterData.name to index into AirOperationsHandler to 
+      // get list of valid destinations for the current location of
+      // this counter
+
+      // pass setEnabledZones down from App to enable zones on the view
+      // corresponding to valid destinations
   }
   const handleRightClick = (e) => {
     e.preventDefault()

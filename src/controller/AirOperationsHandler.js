@@ -196,12 +196,29 @@ export function doReturn2(controller, name, side) {
   }
 }
 export function doFlightDeck(controller, name, side) {
-
   // Air Units on the Flight Deck can go to
-  //  i) CAP Box (if fighter)
-  //  ii) Strike Box
-  //  iii) Hangar
+  const carrierName = controller.getCarrierForAirUnit(name)
 
+  let destinationsArray = new Array()
+
+  const unit = controller.getAirUnitForName(name)
+
+  //  i) CAP Box (if fighter)
+  if (!unit.aircraftUnit.attack) {
+    const capBox = controller.getCapBoxForNamedCarrier(carrierName, side)
+    destinationsArray.push(capBox)
+  }
+  //  ii) Strike Box
+  // Note For US air units, we will need to filter out any strike boxes 
+  // containing air units from other carriers
+  const strikeBoxes = controller.getStrikeBoxes(name, side)
+  destinationsArray = destinationsArray.concat(strikeBoxes)
+  
+  //  iii) Hangar
+  const hangarBox = controller.getAirBoxForNamedShip(side, carrierName, "HANGAR")
+  destinationsArray.push(hangarBox)
+
+  controller.setValidAirUnitDestinations(name, destinationsArray)
 }
 
 export function doHangar(controller, name, side) {
@@ -210,9 +227,9 @@ export function doHangar(controller, name, side) {
 
   // check there is room on this carrier's flight deck
   const destAvailable = controller.isFlightDeckAvailable(parentCarrier, side)
-  
+
   if (!destAvailable) {
-    return 
+    return
   }
   const boxArray = new Array()
   if (destBox) {
@@ -369,10 +386,10 @@ function mergeUnique(arr1, arr2) {
   if (arr1 === null) {
     return arr2
   }
-  if (arr2 === null){
+  if (arr2 === null) {
     return arr1
   }
-   let newArray = arr1
+  let newArray = arr1
 
   for (let item of arr2) {
     if (!newArray.includes(item)) {

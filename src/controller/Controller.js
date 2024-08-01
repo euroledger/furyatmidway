@@ -58,11 +58,55 @@ export default class Controller {
     this.boxModel.removeAirUnitFromBox(boxName, index)
   }
 
+  getAirUnitForName(name) {
+    return this.counters.get(name)
+  }
+
+  getStrikeBoxes(name, side) {
+    const unit = this.getAirUnitForName(name)
+    let strikeBoxes = Object.values(this.airOperationsModel.getStrikeBoxesForSide(side))
+
+    // if this is a fighter unit, filter out any empty boxes
+    // (Fighters cannot be alone in a strike box)
+    if (!unit.aircraftUnit.attack) {
+      strikeBoxes = strikeBoxes.filter((box) => {
+        const airUnitsInBox = this.boxModel.getAllAirUnitsInBox(box)
+        return airUnitsInBox && airUnitsInBox.length > 0
+      })
+    }
+    if (side === GlobalUnitsModel.Side.US) {
+      // get all units for each strike box, any there
+      // from a different carrer should be removed
+      // (US cannot mix air units from different carriers in same strike)
+      const carrier = this.getCarrierForAirUnit(name)
+
+      strikeBoxes = strikeBoxes.filter((box) => {
+        const airUnitsInBox = this.boxModel.getAllAirUnitsInBox(box)
+        // if no air units in this box, no need to filter
+        if (!airUnitsInBox || airUnitsInBox.length === 0) return true
+
+        let carriers = airUnitsInBox.map((a) => a.carrier)
+        return carriers.includes(carrier) || carriers.length === 0
+      })
+    }
+    return strikeBoxes
+  }
+
   getCarrierForAirUnit(name) {
     const airUnit = this.counters.get(name)
     if (airUnit) {
       return airUnit.carrier
     }
+  }
+
+  getCapBoxForNamedCarrier(carrierName, side) {
+    const tf = this.getTaskForceForCarrier(carrierName, side)
+    return Object.values(this.airOperationsModel.getCapBoxForNamedTaskForce(side, tf))[0]
+  }
+
+  getHangarBoxForNamedCarrier(carrierName, side) {
+    const tf = this.getTaskForceForCarrier(carrierName, side)
+    return Object.values(this.airOperationsModel.getHangarBoxForNamedCarrier(side, tf))[0]
   }
 
   getCapReturnAirBoxForNamedTaskForce(side, tf) {
@@ -245,7 +289,6 @@ export default class Controller {
     const flightDeckBox = this.airOperationsModel.getAirBoxForNamedShip(side, carrierName, "FLIGHT")
     let boxName = Object.values(flightDeckBox)[0]
     const units = this.getAllAirUnitsInBox(boxName)
-    // console.log("UNITS = ", units)
 
     // for carriers if hits + units length >= 2 unavailable, for Midway 3
     const capacity = carrierName.toUpperCase().includes("MIDWAY") ? 3 : 2

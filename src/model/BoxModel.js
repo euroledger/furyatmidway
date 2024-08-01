@@ -44,6 +44,18 @@ export default class BoxModels {
     this.japanCarrierMap.set(GlobalUnitsModel.Carrier.HIRYU, new Array())
     this.japanCarrierMap.set(GlobalUnitsModel.Carrier.SORYU, new Array())
 
+
+    this.japanStrikeBox0 = new Array(this.getNumberOfJapanZones(GlobalUnitsModel.AirBox.JP_STRIKE_BOX_0))
+    this.japanStrikeBox1 = new Array(this.getNumberOfJapanZones(GlobalUnitsModel.AirBox.JP_STRIKE_BOX_1))
+    this.japanStrikeBox2 = new Array(this.getNumberOfJapanZones(GlobalUnitsModel.AirBox.JP_STRIKE_BOX_2))
+    this.japanStrikeBox3 = new Array(this.getNumberOfJapanZones(GlobalUnitsModel.AirBox.JP_STRIKE_BOX_3))
+    this.japanStrikeBox4 = new Array(this.getNumberOfJapanZones(GlobalUnitsModel.AirBox.JP_STRIKE_BOX_4))
+    this.japanStrikeBox5 = new Array(this.getNumberOfJapanZones(GlobalUnitsModel.AirBox.JP_STRIKE_BOX_5))
+    this.japanStrikeBox6 = new Array(this.getNumberOfJapanZones(GlobalUnitsModel.AirBox.JP_STRIKE_BOX_6))
+
+    this.japanStrikeBoxes = new Array()
+
+
     // US Model
     this.usTF16CapBoxes = new Array(this.getNumberOfUSZones(GlobalUnitsModel.AirBox.US_TF16_CAP))
     this.usTF17CapBoxes = new Array(this.getNumberOfUSZones(GlobalUnitsModel.AirBox.US_TF17_CAP))
@@ -78,6 +90,13 @@ export default class BoxModels {
     this.usCarrierMap.set(GlobalUnitsModel.Carrier.YORKTOWN, new Array())
     this.usCarrierMap.set(GlobalUnitsModel.Carrier.MIDWAY, new Array())
 
+    this.usStrikeBox0 = new Array(this.getNumberOfUSZones(GlobalUnitsModel.AirBox.US_STRIKE_BOX_0))
+    this.usStrikeBox1 = new Array(this.getNumberOfUSZones(GlobalUnitsModel.AirBox.US_STRIKE_BOX_1))
+    this.usStrikeBox2 = new Array(this.getNumberOfUSZones(GlobalUnitsModel.AirBox.US_STRIKE_BOX_2))
+    this.usStrikeBox3 = new Array(this.getNumberOfUSZones(GlobalUnitsModel.AirBox.US_STRIKE_BOX_3))
+    this.usStrikeBox4 = new Array(this.getNumberOfUSZones(GlobalUnitsModel.AirBox.US_STRIKE_BOX_4))
+    this.usStrikeBox5 = new Array(this.getNumberOfUSZones(GlobalUnitsModel.AirBox.US_STRIKE_BOX_5))
+    this.usStrikeBox6 = new Array(this.getNumberOfUSZones(GlobalUnitsModel.AirBox.US_STRIKE_BOX_6))
     // map of air unit boxes, each item is a zone within the air box represented
     // as an array. Each element in th array may or may not contain an air unit
     this.boxMap = new Map()
@@ -105,6 +124,14 @@ export default class BoxModels {
 
     this.boxMap.set(GlobalUnitsModel.AirBox.JP_SORYU_HANGAR, this.japanSoryuHangar)
     this.boxMap.set(GlobalUnitsModel.AirBox.JP_SORYU_FLIGHT_DECK, this.japanSoryuFlightDeck)
+
+    this.boxMap.set(GlobalUnitsModel.AirBox.JP_STRIKE_BOX_0, this.japanStrikeBox0)
+    this.boxMap.set(GlobalUnitsModel.AirBox.JP_STRIKE_BOX_1, this.japanStrikeBox1)
+    this.boxMap.set(GlobalUnitsModel.AirBox.JP_STRIKE_BOX_2, this.japanStrikeBox2)
+    this.boxMap.set(GlobalUnitsModel.AirBox.JP_STRIKE_BOX_3, this.japanStrikeBox3)
+    this.boxMap.set(GlobalUnitsModel.AirBox.JP_STRIKE_BOX_4, this.japanStrikeBox4)
+    this.boxMap.set(GlobalUnitsModel.AirBox.JP_STRIKE_BOX_5, this.japanStrikeBox5)
+    this.boxMap.set(GlobalUnitsModel.AirBox.JP_STRIKE_BOX_6, this.japanStrikeBox6)
 
     // US BOX MAP
     this.boxMap.set(GlobalUnitsModel.AirBox.US_TF16_CAP, this.usTF16CapBoxes)
@@ -136,6 +163,13 @@ export default class BoxModels {
     this.boxMap.set(GlobalUnitsModel.AirBox.US_MIDWAY_HANGAR, this.usMidwayHangar)
     this.boxMap.set(GlobalUnitsModel.AirBox.US_MIDWAY_FLIGHT_DECK, this.usMidwayFlightDeck)
 
+    this.boxMap.set(GlobalUnitsModel.AirBox.US_STRIKE_BOX_0, this.usStrikeBox0)
+    this.boxMap.set(GlobalUnitsModel.AirBox.US_STRIKE_BOX_1, this.usStrikeBox1)
+    this.boxMap.set(GlobalUnitsModel.AirBox.US_STRIKE_BOX_2, this.usStrikeBox2)
+    this.boxMap.set(GlobalUnitsModel.AirBox.US_STRIKE_BOX_3, this.usStrikeBox3)
+    this.boxMap.set(GlobalUnitsModel.AirBox.US_STRIKE_BOX_4, this.usStrikeBox4)
+    this.boxMap.set(GlobalUnitsModel.AirBox.US_STRIKE_BOX_5, this.usStrikeBox5)
+    this.boxMap.set(GlobalUnitsModel.AirBox.US_STRIKE_BOX_6, this.usStrikeBox6)
     // map of air unit -> location
     // This maps the name of an air unit to its location (ie box name, index)
     this.airUnitLocationMap = new Map()

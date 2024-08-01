@@ -246,7 +246,7 @@ export function calcRandomJapanTestData(unit, controller) {
 
   // 3. If the flight deck has empty slots, remove hangar from list
   const flightDeckAirBox = JapanAirBoxOffsets.filter(
-    (b) => b.carriers.includes(carrier) && b.name.includes("FLIGHT")
+    (b) => b.carriers && b.carriers.includes(carrier) && b.name.includes("FLIGHT")
   )[0]
 
   const fdBoxes = controller.getAllFreeZonesInBox(flightDeckAirBox.name).length

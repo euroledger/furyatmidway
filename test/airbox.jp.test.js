@@ -175,24 +175,46 @@ describe("Japan Air Box tests", () => {
     let slots = controller.getAllFreeZonesInBox(GlobalUnitsModel.AirBox.JP_HIRYU_HANGAR)
     expect(slots.length).toEqual(2)
 
-
     controller.addAirUnitToBox(GlobalUnitsModel.AirBox.JP_CD2_RETURN1, 2, haf1)
     controller.addAirUnitToBox(GlobalUnitsModel.AirBox.JP_CD2_RETURN1, 4, haf2)
     slots = controller.getAllFreeZonesInBox(GlobalUnitsModel.AirBox.JP_CD2_RETURN1)
     expect(slots.length).toEqual(4)
-    expect(slots).toEqual([ 0, 1, 3, 5 ])
+    expect(slots).toEqual([0, 1, 3, 5])
   })
 
   test("getJapanEnabledAirBoxes returns correct zones for various game states", () => {
     GlobalGameState.gamePhase = GlobalGameState.PHASE.JAPAN_SETUP
     GlobalGameState.setupPhase = 0
 
-    const enabledZones = getJapanEnabledAirBoxes()
+    let enabledZones = getJapanEnabledAirBoxes()
 
-    expect (enabledZones.length).toEqual(3)
-    expect (enabledZones[0]).toEqual(GlobalUnitsModel.AirBox.JP_CD1_CAP)
-    expect (enabledZones[1]).toEqual(GlobalUnitsModel.AirBox.JP_AKAGI_HANGAR)
-    expect (enabledZones[2]).toEqual(GlobalUnitsModel.AirBox.JP_AKAGI_FLIGHT_DECK)
+    expect(enabledZones.length).toEqual(3)
+    expect(enabledZones[0]).toEqual(GlobalUnitsModel.AirBox.JP_CD1_CAP)
+    expect(enabledZones[1]).toEqual(GlobalUnitsModel.AirBox.JP_AKAGI_HANGAR)
+    expect(enabledZones[2]).toEqual(GlobalUnitsModel.AirBox.JP_AKAGI_FLIGHT_DECK)
 
+    GlobalGameState.gamePhase = GlobalGameState.PHASE.AIR_OPERATIONS
+
+    enabledZones = getJapanEnabledAirBoxes(GlobalUnitsModel.Side.JAPAN)
+    expect(enabledZones.length).toEqual(7)
+    expect(enabledZones[0]).toEqual(GlobalUnitsModel.AirBox.JP_STRIKE_BOX_0)
+    expect(enabledZones[1]).toEqual(GlobalUnitsModel.AirBox.JP_STRIKE_BOX_1)
+    expect(enabledZones[2]).toEqual(GlobalUnitsModel.AirBox.JP_STRIKE_BOX_2)
+    expect(enabledZones[3]).toEqual(GlobalUnitsModel.AirBox.JP_STRIKE_BOX_3)
+    expect(enabledZones[4]).toEqual(GlobalUnitsModel.AirBox.JP_STRIKE_BOX_4)
+    expect(enabledZones[5]).toEqual(GlobalUnitsModel.AirBox.JP_STRIKE_BOX_5)
+    expect(enabledZones[6]).toEqual(GlobalUnitsModel.AirBox.JP_STRIKE_BOX_6)
+  })
+
+  test("Air Units can be added to Strike Boxes", () => {
+    const haf1 = counters.get("Hiryu-A6M-2b-1")
+    const haf2 = counters.get("Hiryu-A6M-2b-2")
+    const hdb = counters.get("Hiryu-D3A-1")
+
+    controller.addAirUnitToBox(GlobalUnitsModel.AirBox.JP_STRIKE_BOX_0, 0, hdb)
+    controller.addAirUnitToBox(GlobalUnitsModel.AirBox.JP_STRIKE_BOX_0, 1, haf1)
+    controller.addAirUnitToBox(GlobalUnitsModel.AirBox.JP_STRIKE_BOX_0, 2, haf2)
+    let zone = controller.getFirstAvailableZone(GlobalUnitsModel.AirBox.JP_STRIKE_BOX_0, GlobalUnitsModel.Side.JAPAN)
+    expect(zone).toEqual(3)
   })
 })

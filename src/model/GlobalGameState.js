@@ -12,9 +12,10 @@ export default class GlobalGameState {
     JAPAN_MIDWAY: "Japan Midway Attack Declaration",
     US_FLEET_MOVEMENT_PLANNING: "US Fleet Movement Planning",
     JAPAN_FLEET_MOVEMENT: "IJN Fleet Movement",
-    MIDWAY_ATTACK_PHASE: "Midway Attack Phase",
+    MIDWAY_ATTACK: "Midway Attack Phase",
     US_FLEET_MOVEMENT: "US Fleet Movement",
-    BOTH_SEARCH_PHASE: "Search Phase"
+    AIR_SEARCH: "Search Phase",
+    AIR_OPERATIONS: "Air Operations Phase"
   }
 
   static usSetUpComplete = false
@@ -53,7 +54,7 @@ export default class GlobalGameState {
   static currentCarrierDivision = 1
 
   static currentTaskForce = 1
-
+  
   static airOperationPoints = {
     japan: 0,
     us: 0,

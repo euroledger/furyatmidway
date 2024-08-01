@@ -19,7 +19,7 @@ import GlobalGameState from "../model/GlobalGameState"
 import StrikePanel from "./dialogs/StrikePanel"
 import GlobalUnitsModel from "../model/GlobalUnitsModel"
 
-function Board({ scale, USMapRegions, japanMapRegions }) {
+function Board({ scale, USMapRegions, japanMapRegions, japanStrikePanelEnabled,usStrikePanelEnabled }) {
   let zProps = { us: 0, japan: 0 }
   const initialJpAopPosition = { left: 2.7, top: 7 }
   const initialUSAopPosition = { left: 3.5, top: 6.1 }
@@ -93,6 +93,9 @@ function Board({ scale, USMapRegions, japanMapRegions }) {
       setZIndex({ ...zProps, us: zProps[side] + increment })
     }
   }
+
+
+
 
   return (
     <>
@@ -216,8 +219,8 @@ function Board({ scale, USMapRegions, japanMapRegions }) {
         ></JapanCarrierDropZones>
         <USCarrierDropZones handleDragEnter={handleUSAirBoxDragEnter}></USCarrierDropZones>
 
-        <StrikePanel side="Japan" enabled={true} zIndex={90}></StrikePanel>
-        <StrikePanel side="US" enabled={false} zIndex={1}></StrikePanel>
+        <StrikePanel side="Japan" enabled={japanStrikePanelEnabled} zIndex={90}></StrikePanel>
+        <StrikePanel side="US" enabled={usStrikePanelEnabled} zIndex={1}></StrikePanel>
       </div>
     </>
   )
