@@ -114,7 +114,6 @@ export function App() {
   const [japanMapRegions, setJapanMapRegions] = useState([])
 
   const [sideWithInitiative, setSideWithInitiative] = useState(null)
-  const [initiativeDecided, setInitiativeDecided] = useState(false)
 
   const onDrag = () => {
     setIsMoveable(true)
@@ -184,11 +183,21 @@ export function App() {
     } else if (GlobalGameState.gamePhase === GlobalGameState.PHASE.AIR_SEARCH) {
       setJapanMapRegions([])
       GlobalGameState.phaseCompleted = true
-    }
+    } else if (GlobalGameState.gamePhase === GlobalGameState.PHASE.AIR_OPERATIONS) {
+      GlobalGameState.phaseCompleted = false
+      GlobalGameState.sideWithInitiative = sideWithInitiative
+      if (GlobalGameState.sideWithInitiative === GlobalUnitsModel.Side.JAPAN) {
+        setJapanStrikePanelEnabled(true)
+        setUsStrikePanelEnabled(false)
+      } else {
+        console.log("Set US Strike Panel enabled")
+        setUsStrikePanelEnabled(true)
+        setJapanStrikePanelEnabled(false)
+      }
+        }
     // If we don't do this, a drag and drop move fires a fleet update and the fleet does not move
     setFleetUnitUpdate(undefined)
 
-    console.log("+++++ AIR OPS: US: ", GlobalGameState.airOperationPoints.us)
     GlobalGameState.updateGlobalState()
     const enabledJapanBoxes = getJapanEnabledAirBoxes()
     setEnabledJapanBoxes(() => enabledJapanBoxes)
@@ -345,7 +354,7 @@ export function App() {
   }
 
   const testUi = async (e) => {
-    await UITester({ e, setTestClicked, setAirUnitUpdate, setFleetUnitUpdate, nextAction })
+    await UITester({ e, setTestClicked, setAirUnitUpdate, setFleetUnitUpdate, nextAction, doRoll })
   }
 
   var v = process.env.REACT_APP_MYVAR || "none"
@@ -604,9 +613,15 @@ export function App() {
       <AirOpsHeaders></AirOpsHeaders>
     </>
   )
-  function doRoll() {
-    const rolls = randomDice(2)
-    const sideWithInitiative = GlobalInit.controller.determineInitiative(rolls[0], rolls[1])
+  function doRoll(roll0, roll1)  { // for automated testing
+    let sideWithInitiative
+    if (roll0 && roll1) {
+      sideWithInitiative = GlobalInit.controller.determineInitiative(roll0, roll1)
+    } else {
+      const rolls = randomDice(2)
+      sideWithInitiative = GlobalInit.controller.determineInitiative(rolls[0], rolls[1])
+    }
+ 
     setSideWithInitiative(() => sideWithInitiative)
 
     // @TODO
@@ -696,7 +711,7 @@ export function App() {
       </AlertPanel>
       <DicePanel
         numDice={2}
-        show={dicePanelShow}
+        show={!testClicked && dicePanelShow}
         headerText="Air Ops Initiative"
         headers={airOpsHeaders}
         footers={airOpsFooters}
@@ -751,6 +766,9 @@ export function App() {
                   japanMapRegions,
                   enabledJapanBoxes,
                   enabledUSBoxes,
+                  setEnabledUSBoxes,
+                  setEnabledJapanBoxes,
+                  setIsMoveable
                 }}
               >
                 <Board

@@ -1,14 +1,23 @@
 export default class AircraftUnit {
-    constructor(name, strength, movement, attack, diveBomber, steps) {
+    constructor(name, strength, movement, attack, diveBomber, steps, moved) {
         this.name = name;
         this.strength = strength;
         this.movement = movement;
         this.attack = attack;
         this.diveBomber = diveBomber
-        this.steps = steps
+        this.steps = steps,
+        this.moved = moved
     };
 
-    set name(n) {
+    get movement() {
+        return this._movement
+    }
+
+    set movement(mv) {
+        this._movement = mv
+    }
+
+     set name(n) {
         this._name = n;
     }
 
@@ -45,5 +54,13 @@ export default class AircraftUnit {
 
     get steps() {
         return this._steps
+    }
+
+    get moved() {
+        return this._moved
+    }
+
+    set moved(m) {
+        this._moved = m
     }
 }

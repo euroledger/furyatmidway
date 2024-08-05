@@ -3,7 +3,6 @@ import loadCounters from "../src/CounterLoader";
 import GlobalGameState from "../src/model/GlobalGameState";
 import JapanAirBoxOffsets from "../src/components/draganddrop/JapanAirBoxOffsets";
 import Controller from "../src/controller/Controller";
-import FleetUnit from "../src/components/buttons/mapobjects/FleetUnit";
 
 describe("Controller tests", () => {
   let counters;
@@ -92,4 +91,8 @@ describe("Controller tests", () => {
     expect(db.attack).toEqual(true);
     expect(db.diveBomber).toEqual(true);
   });
+
+  test("Check strike group counter values", () => {
+
+  })
 });

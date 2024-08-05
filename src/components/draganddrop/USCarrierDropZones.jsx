@@ -10,7 +10,7 @@ function USCarrierDropZones({ handleDragEnter  }) {
 
   const usZones = USAirBoxOffsets.flatMap((box, index) => {
     
-    if (!enabledUSBoxes.includes(box.name)) {
+    if (!enabledUSBoxes || !enabledUSBoxes.includes(box.name)) {
       return []
     }
 

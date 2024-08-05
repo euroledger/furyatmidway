@@ -477,11 +477,15 @@ const USAirBoxOffsets = [
     name: GlobalUnitsModel.AirBox.US_STRIKE_BOX_0,
     offsets: [
       {
-        left: 88.0,
+        left: 86.0,
         top: 64.1,
       },
       {
-        left: 91.0,
+        left: 89.0,
+        top: 64.1,
+      },
+      {
+        left: 92.0,
         top: 64.1,
       },
     ]
@@ -490,11 +494,15 @@ const USAirBoxOffsets = [
     name: GlobalUnitsModel.AirBox.US_STRIKE_BOX_1,
     offsets: [
       {
-        left: 88.0,
+        left: 86.0,
         top: 68.6,
       },
       {
-        left: 91.0,
+        left: 89.0,
+        top: 68.6,
+      },
+      {
+        left: 92.0,
         top: 68.6,
       },
     ]
@@ -503,11 +511,15 @@ const USAirBoxOffsets = [
     name: GlobalUnitsModel.AirBox.US_STRIKE_BOX_2,
     offsets: [
       {
-        left: 88.0,
+        left: 86.0,
         top: 72.8,
       },
       {
-        left: 91.0,
+        left: 89.0,
+        top: 72.8,
+      },
+      {
+        left: 92.0,
         top: 72.8,
       },
     ]
@@ -516,11 +528,15 @@ const USAirBoxOffsets = [
     name: GlobalUnitsModel.AirBox.US_STRIKE_BOX_3,
     offsets: [
       {
-        left: 88.0,
+        left: 86.0,
         top: 77.2,
       },
       {
-        left: 91.0,
+        left: 89.0,
+        top: 77.2,
+      },
+      {
+        left: 92.0,
         top: 77.2,
       },
     ]
@@ -529,11 +545,15 @@ const USAirBoxOffsets = [
     name: GlobalUnitsModel.AirBox.US_STRIKE_BOX_4,
     offsets: [
       {
-        left: 88.0,
+        left: 86.0,
         top: 81.5,
       },
       {
-        left: 91.0,
+        left: 89.0,
+        top: 81.5,
+      },
+      {
+        left: 92.0,
         top: 81.5,
       },
     ]
@@ -542,11 +562,15 @@ const USAirBoxOffsets = [
     name: GlobalUnitsModel.AirBox.US_STRIKE_BOX_5,
     offsets: [
       {
-        left: 88.0,
+        left: 86.0,
         top: 85.9,
       },
       {
-        left: 91.0,
+        left: 89.0,
+        top: 85.9,
+      },
+      {
+        left: 92.0,
         top: 85.9,
       },
     ]
@@ -555,11 +579,15 @@ const USAirBoxOffsets = [
     name: GlobalUnitsModel.AirBox.US_STRIKE_BOX_6,
     offsets: [
       {
-        left: 88.0,
+        left: 86.0,
         top: 90.2,
       },
       {
-        left: 91.0,
+        left: 89.0,
+        top: 90.2,
+      },
+      {
+        left: 92.0,
         top: 90.2,
       },
     ]

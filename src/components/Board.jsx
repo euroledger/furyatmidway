@@ -10,6 +10,7 @@ import MIFOffsets from "./draganddrop/MIFBoxOffsets"
 import MGTOffsets from "./draganddrop/MGTBoxOffsets"
 import FleetCounter from "./buttons/mapobjects/FleetCounter"
 import AirCounters from "./buttons/mapobjects/AirCounters"
+import StrikeCounters from "./buttons/mapobjects/StrikeCounters"
 import JapanAirBoxOffsets from "./draganddrop/JapanAirBoxOffsets"
 import USAirBoxOffsets from "./draganddrop/USAirBoxOffsets"
 import GlobalInit from "../model/GlobalInit"
@@ -19,7 +20,7 @@ import GlobalGameState from "../model/GlobalGameState"
 import StrikePanel from "./dialogs/StrikePanel"
 import GlobalUnitsModel from "../model/GlobalUnitsModel"
 
-function Board({ scale, USMapRegions, japanMapRegions, japanStrikePanelEnabled,usStrikePanelEnabled }) {
+function Board({ scale, USMapRegions, japanMapRegions, japanStrikePanelEnabled, usStrikePanelEnabled }) {
   let zProps = { us: 0, japan: 0 }
   const initialJpAopPosition = { left: 2.7, top: 7 }
   const initialUSAopPosition = { left: 3.5, top: 6.1 }
@@ -93,9 +94,6 @@ function Board({ scale, USMapRegions, japanMapRegions, japanStrikePanelEnabled,u
       setZIndex({ ...zProps, us: zProps[side] + increment })
     }
   }
-
-
-
 
   return (
     <>
@@ -214,9 +212,14 @@ function Board({ scale, USMapRegions, japanMapRegions, japanStrikePanelEnabled,u
         ></FleetCounter>
 
         <AirCounters counterData={GlobalInit.counters} getAirBox={getAirBox} setAirBox={setAirBox}></AirCounters>
-        <JapanCarrierDropZones
-          handleDragEnter={handleAirBoxDragEnter}
-        ></JapanCarrierDropZones>
+        <StrikeCounters
+          controller={GlobalInit.controller}
+          // onDrag={onDrag}
+          // onStop={onStop}
+          counterData={GlobalInit.counters}
+        ></StrikeCounters>
+
+        <JapanCarrierDropZones handleDragEnter={handleAirBoxDragEnter}></JapanCarrierDropZones>
         <USCarrierDropZones handleDragEnter={handleUSAirBoxDragEnter}></USCarrierDropZones>
 
         <StrikePanel side="Japan" enabled={japanStrikePanelEnabled} zIndex={90}></StrikePanel>

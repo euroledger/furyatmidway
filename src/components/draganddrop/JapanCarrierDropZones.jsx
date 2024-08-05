@@ -10,7 +10,7 @@ function JapanCarrierDropZones({ handleDragEnter }) {
 
   const japanZones = JapanAirBoxOffsets.flatMap((box, index) => {
     
-    if (!enabledJapanBoxes.includes(box.name)) {
+    if (!enabledJapanBoxes || !enabledJapanBoxes.includes(box.name)) {
       return []
     }
 

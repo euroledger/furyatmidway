@@ -107,6 +107,8 @@ export default class GlobalGameState {
   // static setupPhase = 6; // tmp put back to 0
   static setupPhase = 0; // tmp put back to 0
 
+  static airAttacksComplete = false; // set to true after all air attacks - triggers CAP return etc
+
   static getJapanCarrier = () => {
     return this.JAPAN_CARRIERS[this.setupPhase]
   }

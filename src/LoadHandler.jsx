@@ -35,6 +35,12 @@ async function loadHandler({ setTestClicked, setSplash, setAirUnitUpdate, setFle
 
   loadState()
   setTestClicked(false)
+  setAirUnitUpdate({
+    name: "",
+    position: {},
+    boxName: "",
+    index: -1,
+  })
 }
 
 export default loadHandler

@@ -10,6 +10,7 @@ export default class AirOperationsModel {
   }
 
   setValidAirUnitDestinations(name, destination) {
+    console.log(name, "->", destination)
     this.airUnitDestinationMap.set(name, destination)
   }
 
@@ -84,7 +85,7 @@ export default class AirOperationsModel {
   getCapBoxForNamedTaskForce(side, tf) {
     let sideKey = side === GlobalUnitsModel.Side.JAPAN ? "JP" : "US"
     const filteredEntries = Object.keys(GlobalUnitsModel.AirBox)
-      .filter((key) => key.includes(`${sideKey}_${tf}_CAP`))
+      .filter((key) => key === `${sideKey}_${tf}_CAP`)
       .reduce((obj, key) => {
         obj[key] = GlobalUnitsModel.AirBox[key]
         return obj

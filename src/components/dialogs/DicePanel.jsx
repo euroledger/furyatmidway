@@ -52,7 +52,7 @@ function DicePanel(props) {
       </Modal.Body>
 
       <Modal.Footer style={{ background: `${bg}`, color: "black" }}>
-        <Button disabled={disabled} onClick={(e) => doRoll(e)}>
+        <Button disabled={disabled} onClick={() => doRoll()}>
           Roll Dice
         </Button>
         <Button disabled={!disabled} onClick={onHide}>Close</Button>

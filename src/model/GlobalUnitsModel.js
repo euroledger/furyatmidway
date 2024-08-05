@@ -104,11 +104,13 @@ export default class GlobalUnitsModel {
     STRIKE_GROUP: "Strike Group",
   }
 
-  // only used for testing counter load as far as I can see
   static jpFleetUnits = new Map()
   static usFleetUnits = new Map()
   static jpAirUnits = new Map()
   static usAirUnits = new Map()
+
+  static jpStrikeGroups = new Map()
+  static usStrikeGroups = new Map()
 
   static carrierSideMap = new Map()
 

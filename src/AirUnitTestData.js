@@ -2,7 +2,7 @@ import JapanAirBoxOffsets from "./components/draganddrop/JapanAirBoxOffsets"
 import GlobalUnitsModel from "./model/GlobalUnitsModel"
 import GlobalInit from "./model/GlobalInit"
 import GlobalGameState from "./model/GlobalGameState"
-import { flatHexToPixel, convertCoords} from  "./components/HexUtils"
+import { flatHexToPixel, convertCoords } from "./components/HexUtils"
 
 export const airUnitDataJapan = [
   {
@@ -73,7 +73,6 @@ export const airUnitDataJapan = [
     boxName: GlobalUnitsModel.AirBox.JP_SORYU_HANGAR,
     name: "Soryu-A6M-2b-2",
   },
-
 ]
 
 export const airUnitDataUS = [
@@ -96,7 +95,7 @@ export const airUnitDataUS = [
   {
     name: "Enterprise-TBD1",
     boxName: GlobalUnitsModel.AirBox.US_ENTERPRISE_HANGAR,
-    nextAction: true
+    nextAction: true,
   },
   {
     name: "Hornet-F4F4-1",
@@ -117,7 +116,7 @@ export const airUnitDataUS = [
   {
     name: "Hornet-TBD1",
     boxName: GlobalUnitsModel.AirBox.US_HORNET_HANGAR,
-    nextAction: true
+    nextAction: true,
   },
   {
     name: "Yorktown-F4F4-1",
@@ -138,7 +137,7 @@ export const airUnitDataUS = [
   {
     name: "Yorktown-TBD1",
     boxName: GlobalUnitsModel.AirBox.US_YORKTOWN_HANGAR,
-    nextAction: true
+    nextAction: true,
   },
   {
     name: "Midway-F4F3",
@@ -150,25 +149,36 @@ export const airUnitDataUS = [
   },
   {
     name: "Midway-SBD-2",
-    boxName: GlobalUnitsModel.AirBox.US_MIDWAY_FLIGHT_DECK
+    boxName: GlobalUnitsModel.AirBox.US_MIDWAY_FLIGHT_DECK,
   },
   {
     name: "Midway-SB2U-3",
-    boxName: GlobalUnitsModel.AirBox.US_MIDWAY_HANGAR
+    boxName: GlobalUnitsModel.AirBox.US_MIDWAY_HANGAR,
   },
   {
     name: "Midway-TBF-1",
-    boxName: GlobalUnitsModel.AirBox.US_MIDWAY_FLIGHT_DECK
+    boxName: GlobalUnitsModel.AirBox.US_MIDWAY_FLIGHT_DECK,
   },
   {
     name: "Midway-B26-B",
-    boxName: GlobalUnitsModel.AirBox.US_MIDWAY_FLIGHT_DECK
+    boxName: GlobalUnitsModel.AirBox.US_MIDWAY_FLIGHT_DECK,
   },
   {
     name: "Midway-B17-E",
     boxName: GlobalUnitsModel.AirBox.US_MIDWAY_HANGAR,
-    nextAction: true
-  }
+    nextAction: true,
+  },
+]
+
+export const strikeGroupsUS = [
+  {
+    name: "Yorktown-SBD3-1",
+    boxName: GlobalUnitsModel.AirBox.US_STRIKE_BOX_0,
+  },
+  {
+    name: "Yorktown-F4F4-2",
+    boxName: GlobalUnitsModel.AirBox.US_STRIKE_BOX_0,
+  },
 ]
 
 export function calcTestDataUS(unit, controller) {
@@ -183,14 +193,22 @@ export function calcTestDataUS(unit, controller) {
   }
 }
 
-export function createMapUpdateForFleet(controller, name, side) {
+export function calcStrikeDataUS(unit) {
+  const update = {
+    name: unit.name,
+    boxName: unit.boxName,
+    nextAction: unit.nextAction,
+  }
+  return update
+}
 
+export function createMapUpdateForFleet(controller, name, side) {
   const location = controller.getFleetLocation(name, side)
 
   let otherName
   if (name === "CSF") {
     otherName = "CSF-JPMAP"
-  }else if (name === "1AF") {
+  } else if (name === "1AF") {
     otherName = "1AF-USMAP"
   }
   return createFleetUpdate(otherName, location.currentHex.q, location.currentHex.r)
@@ -199,24 +217,24 @@ export function createMapUpdateForFleet(controller, name, side) {
 export function createFleetUpdate(name, q, r) {
   let hex = {
     q: q,
-    r: r
-   }
+    r: r,
+  }
 
-   let { x, y } = flatHexToPixel({ q: hex.q, r: hex.r })
+  let { x, y } = flatHexToPixel({ q: hex.q, r: hex.r })
 
-   // 2. set row and col from this q, r update
-   const { q1, r1 } = convertCoords(hex.q, hex.r)
+  // 2. set row and col from this q, r update
+  const { q1, r1 } = convertCoords(hex.q, hex.r)
 
-   let cHex = {
-     q: hex.q,
-     r: hex.r,
-     x: x,
-     y: y,
-     row: q1,
-     col: r1,
-   }
+  let cHex = {
+    q: hex.q,
+    r: hex.r,
+    x: x,
+    y: y,
+    row: q1,
+    col: r1,
+  }
 
-   return {
+  return {
     name,
     position: {
       currentHex: cHex,
@@ -224,7 +242,7 @@ export function createFleetUpdate(name, q, r) {
   }
 }
 export function getFleetUnitUpdateUS(name) {
-   return createFleetUpdate(name, 7, 1)
+  return createFleetUpdate(name, 7, 1)
 }
 
 export function calcRandomJapanTestData(unit, controller) {
@@ -260,6 +278,11 @@ export function calcRandomJapanTestData(unit, controller) {
 
   // 5. Add air unit to box
   let nextAction = unit.nextAction
+  // console.log("JAPAN UPDATE = ",{
+  //   name: unit.name,
+  //   boxName: boxes[rn],
+  //   nextAction: nextAction,
+  // } )
   return {
     name: unit.name,
     boxName: boxes[rn],

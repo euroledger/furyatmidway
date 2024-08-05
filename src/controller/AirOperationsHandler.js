@@ -1,5 +1,6 @@
 // this should be a state (box) flow model
 
+import GlobalGameState from "../model/GlobalGameState"
 import GlobalUnitsModel from "../model/GlobalUnitsModel"
 
 // which determines valid moves for air units based on their current location (ie box)
@@ -195,6 +196,15 @@ export function doReturn2(controller, name, side) {
     controller.setValidAirUnitDestinations(name, boxArray)
   }
 }
+export function doStrikeBox(controller, name) {
+  // For now
+  // Once a unit has moved into the strike box
+  // disallow further moves
+  controller.setValidAirUnitDestinations(name, new Array())
+
+  // @TODO once strike has finished, set possible return boxes as destinations
+}
+
 export function doFlightDeck(controller, name, side) {
   // Air Units on the Flight Deck can go to
   const carrierName = controller.getCarrierForAirUnit(name)
@@ -259,10 +269,13 @@ export function doCapReturn(controller, name, side) {
 
 // CAP -> CAP RETURN occurs after CAP has intercepted a Strike Group
 export function doCap(controller, name, side) {
+  if (!GlobalGameState.airAttacksComplete) {
+    controller.setValidAirUnitDestinations(name, new Array())
+    return
+  }
   const parentCarrier = controller.getCarrierForAirUnit(name)
   const tf = controller.getTaskForceForCarrier(parentCarrier, side)
   const destBox = controller.getCapReturnAirBoxForNamedTaskForce(side, tf)
-
   const boxArray = new Array()
   if (destBox) {
     boxArray.push(destBox)
@@ -565,6 +578,60 @@ export function checkAllBoxesForReorganization(controller, unit, fromBox, side, 
   return
 }
 
+export function setValidDestinationBoxes(controller, airUnitName, side) {
+  const location = controller.getAirUnitLocation(airUnitName)
+
+  console.log(airUnitName, "location -> ", location.boxName)
+  if (location.boxName.includes("RETURNING (1)")) {
+    // see if US CSF within two hexes of Midway
+    let hexesBetweenMidwayAndCSF = controller.numHexesBetweenFleets(
+      { name: "MIDWAY", side: GlobalUnitsModel.Side.US },
+      { name: "CSF", side: GlobalUnitsModel.Side.US }
+    )
+
+    // This is not correct, the test should be if strike hex is within 5 of Midway
+    // @TODO fix this!
+    const useMidway = hexesBetweenMidwayAndCSF <= 2 && side === GlobalUnitsModel.Side.US
+    const destinations = doReturn1(controller, airUnitName, side, useMidway)
+    if (destinations.length === 0) {
+      // check for possible reorganisation
+      checkAllBoxesForReorganization(controller, unit, location.boxName, side, false)
+    }
+  }
+  if (location.boxName.includes("RETURNING (2)")) {
+    doReturn2(controller, airUnitName, side)
+  }
+  if (location.boxName.includes("CAP RETURNING")) {
+    let hexesBetweenMidwayAndCSF = controller.numHexesBetweenFleets(
+      { name: "MIDWAY", side: GlobalUnitsModel.Side.US },
+      { name: "CSF", side: GlobalUnitsModel.Side.US }
+    )
+    const useMidway = hexesBetweenMidwayAndCSF <= 2 && side === GlobalUnitsModel.Side.US
+    const destinations = doCapReturn(controller, airUnitName, side, useMidway)
+    if (destinations.length === 0) {
+      // check for possible reorganisation
+      if (side === GlobalUnitsModel.Side.JAPAN) {
+        checkAllJapanBoxesForReorganizationCAP(controller, unit, location.boxName, side, false)
+      } else {
+        checkAllUSBoxesForReorganizationCAP(controller, unit, location.boxName, side, false)
+      }
+    }
+  }
+  if (location.boxName.includes("CAP") && !location.boxName.includes("RETURNING")) {
+    doCap(controller, airUnitName, side)
+  }
+  if (location.boxName.includes("HANGAR")) {
+    doHangar(controller, airUnitName, side)
+  }
+
+  if (location.boxName.includes("FLIGHT")) {
+    doFlightDeck(controller, airUnitName, side)
+  }
+
+  if (location.boxName.includes("STRIKE")) {
+    doStrikeBox(controller, airUnitName, side)
+  }
+}
 // This function determines which Air Boxes are valid moves for a given air unit in
 // a given location, allowing for possible reorganization of step 1 units
 export function handleAirUnitMoves(controller, side) {
@@ -575,51 +642,6 @@ export function handleAirUnitMoves(controller, side) {
 
   // 3. use the following logic to work out what that unit can do
   for (let unit of airUnits) {
-    const location = controller.getAirUnitLocation(unit.name)
-    if (location.boxName.includes("RETURNING (1)")) {
-      // see if US CSF within two hexes of Midway
-      let hexesBetweenMidwayAndCSF = controller.numHexesBetweenFleets(
-        { name: "MIDWAY", side: GlobalUnitsModel.Side.US },
-        { name: "CSF", side: GlobalUnitsModel.Side.US }
-      )
-
-      // This is not correct, the test should be if strike hex is within 5 of Midway
-      // @TODO fix this!
-      const useMidway = hexesBetweenMidwayAndCSF <= 2 && side === GlobalUnitsModel.Side.US
-      const destinations = doReturn1(controller, unit.name, side, useMidway)
-      if (destinations.length === 0) {
-        // check for possible reorganisation
-        checkAllBoxesForReorganization(controller, unit, location.boxName, side, false)
-      }
-    }
-    if (location.boxName.includes("RETURNING (2)")) {
-      doReturn2(controller, unit.name, side)
-    }
-    if (location.boxName.includes("CAP RETURNING")) {
-      let hexesBetweenMidwayAndCSF = controller.numHexesBetweenFleets(
-        { name: "MIDWAY", side: GlobalUnitsModel.Side.US },
-        { name: "CSF", side: GlobalUnitsModel.Side.US }
-      )
-      const useMidway = hexesBetweenMidwayAndCSF <= 2 && side === GlobalUnitsModel.Side.US
-      const destinations = doCapReturn(controller, unit.name, side, useMidway)
-      if (destinations.length === 0) {
-        // check for possible reorganisation
-        if (side === GlobalUnitsModel.Side.JAPAN) {
-          checkAllJapanBoxesForReorganizationCAP(controller, unit, location.boxName, side, false)
-        } else {
-          checkAllUSBoxesForReorganizationCAP(controller, unit, location.boxName, side, false)
-        }
-      }
-    }
-    if (location.boxName.includes("CAP") && !location.boxName.includes("RETURNING")) {
-      doCap(controller, unit.name, side)
-    }
-    if (location.boxName.includes("HANGAR")) {
-      doHangar(controller, unit.name, side)
-    }
-
-    if (location.boxName.includes("FLIGHT")) {
-      doFlightDeck(controller, unit.name, side)
-    }
+    setValidDestinationBoxes(controller, unit.name, side)
   }
 }

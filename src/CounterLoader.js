@@ -3,6 +3,7 @@ import AirUnit from "./components/buttons/mapobjects/AirUnit"
 import GlobalUnitsModel from "./model/GlobalUnitsModel"
 import AircraftUnit from "./model/AircraftUnit"
 import FleetUnit from "./components/buttons/mapobjects/FleetUnit"
+import StrikeGroupUnit from "./components/buttons/mapobjects/StrikeGroupUnit"
 
 function loadCounters(controller) {
   let counters = new Map()
@@ -115,6 +116,7 @@ function loadCounters(controller) {
 
   loadAirCounters(controller, counters)
   loadFleetUnits()
+  loadStrikeGroups(counters)
   return counters
 }
 
@@ -900,6 +902,126 @@ const usAirUnits = [
   },
 ]
 
+const jpSGPosition1 = {
+  left: "63%",
+  top: "64%",
+}
+
+const japanStrikeGroups = [
+  {
+    name: "JP-SG1",
+    longName: "Japan Strike Group 1",
+    position: jpSGPosition1,
+    image: "/images/aircounters/ijnStrike1.png",
+    width: "2.1%",
+    box: GlobalUnitsModel.AirBox.JP_STRIKE_BOX_0,
+    side: GlobalUnitsModel.Side.JAPAN,
+    units: new Array(), // list of air units in this strike group
+  },
+]
+const usSGPosition1 = {
+  left: "95%",
+  top: "63%",
+}
+const usSGPosition2 = {
+  left: "95%",
+  top: "67.5%",
+}
+
+const usSGPosition3 = {
+  left: "95%",
+  top: "72.0%",
+}
+const usSGPosition4 = {
+  left: "95%",
+  top: "76.5%",
+}
+const usSGPosition5 = {
+  left: "95%",
+  top: "81.0%",
+}
+const usSGPosition6 = {
+  left: "95%",
+  top: "85.5%",
+}
+const usSGPosition7 = {
+  left: "95%",
+  top: "89.5%",
+}
+const usStrikeGroups = [
+  {
+    name: "US-SG1",
+    longName: "US Strike Group 1",
+    position: usSGPosition1,
+    image: "/images/aircounters/usStrike1.png",
+    // image: "/images/aircounters/USN-SG1.jpg",
+
+    width: "2.1%",
+    box: GlobalUnitsModel.AirBox.US_STRIKE_BOX_0,
+    side: GlobalUnitsModel.Side.US,
+    units: new Array(), // list of air units in this strike group
+  },
+  {
+    name: "US-SG2",
+    longName: "US Strike Group 2",
+    position: usSGPosition2,
+    image: "/images/aircounters/usStrike2.png",
+    width: "2.1%",
+    box: GlobalUnitsModel.AirBox.US_STRIKE_BOX_1,
+    side: GlobalUnitsModel.Side.US,
+    units: new Array(), // list of air units in this strike group
+  },
+  {
+    name: "US-SG3",
+    longName: "US Strike Group 3",
+    position: usSGPosition3,
+    image: "/images/aircounters/usStrike3.png",
+    width: "2.1%",
+    box: GlobalUnitsModel.AirBox.US_STRIKE_BOX_2,
+    side: GlobalUnitsModel.Side.US,
+    units: new Array(), // list of air units in this strike group
+  },
+  {
+    name: "US-SG4",
+    longName: "US Strike Group 4",
+    position: usSGPosition4,
+    image: "/images/aircounters/usStrike4.png",
+    width: "2.1%",
+    box: GlobalUnitsModel.AirBox.US_STRIKE_BOX_3,
+    side: GlobalUnitsModel.Side.US,
+    units: new Array(), // list of air units in this strike group
+  },
+  {
+    name: "US-SG5",
+    longName: "US Strike Group 5",
+    position: usSGPosition5,
+    image: "/images/aircounters/usStrike5.png",
+    width: "2.1%",
+    box: GlobalUnitsModel.AirBox.US_STRIKE_BOX_4,
+    side: GlobalUnitsModel.Side.US,
+    units: new Array(), // list of air units in this strike group
+  },
+  {
+    name: "US-SG6",
+    longName: "US Strike Group 6",
+    position: usSGPosition6,
+    image: "/images/aircounters/usStrike6.png",
+    width: "2.1%",
+    box: GlobalUnitsModel.AirBox.US_STRIKE_BOX_5,
+    side: GlobalUnitsModel.Side.US,
+    units: new Array(), // list of air units in this strike group
+  },
+  {
+    name: "US-SG7",
+    longName: "US Strike Group 7",
+    position: usSGPosition7,
+    image: "/images/aircounters/usStrike7.png",
+    width: "2.1%",
+    box: GlobalUnitsModel.AirBox.US_STRIKE_BOX_6,
+    side: GlobalUnitsModel.Side.US,
+    units: new Array(), // list of air units in this strike group
+  },
+]
 function loadFleetUnits() {
   for (const unit of japanFleetUnits) {
     GlobalUnitsModel.jpFleetUnits.set(
@@ -914,6 +1036,22 @@ function loadFleetUnits() {
   }
 }
 
+function loadStrikeGroups(counters) {
+  for (const group of japanStrikeGroups) {
+    const sgu = new StrikeGroupUnit(group.name, group.longName, group.position, group.image, group.width, group.units)
+
+    GlobalUnitsModel.jpStrikeGroups.set(group.name, sgu)
+    counters.set(group.name, sgu)
+  }
+  for (const group of usStrikeGroups) {
+    console.log("SET", group.box)
+    const sgu = new StrikeGroupUnit(group.name, group.longName, group.position, group.image, group.width, group.units)
+
+    GlobalUnitsModel.usStrikeGroups.set(group.box, sgu)
+    counters.set(group.name, sgu)
+  }
+}
+
 function loadAirCounters(controller, counters) {
   for (const unit of japanAirUnits) {
     const aircraftUnit = new AircraftUnit(
@@ -922,7 +1060,8 @@ function loadAirCounters(controller, counters) {
       unit.aircraftUnit.movement,
       unit.aircraftUnit.attack,
       unit.aircraftUnit.diveBomber,
-      unit.aircraftUnit.steps
+      unit.aircraftUnit.steps,
+      false
     )
     const airUnitCounter = new AirUnit(
       unit.name,
@@ -951,7 +1090,8 @@ function loadAirCounters(controller, counters) {
       unit.aircraftUnit.movement,
       unit.aircraftUnit.attack,
       unit.aircraftUnit.diveBomber,
-      unit.aircraftUnit.steps
+      unit.aircraftUnit.steps,
+      false
     )
     const airUnitCounter = new AirUnit(
       unit.name,

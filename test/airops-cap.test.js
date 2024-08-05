@@ -3,6 +3,7 @@ import loadCounters from "../src/CounterLoader"
 import GlobalUnitsModel from "../src/model/GlobalUnitsModel"
 import { handleAirUnitMoves } from "../src/controller/AirOperationsHandler"
 import { createFleetMove } from "./TestUtils"
+import GlobalGameState from "../src/model/GlobalGameState"
 
 describe("Air Operations tests for air units in Return 2 boxes", () => {
   let controller
@@ -46,6 +47,8 @@ describe("Air Operations tests for air units in Return 2 boxes", () => {
 
     // MIDWAY
     controller.addAirUnitToBox(GlobalUnitsModel.AirBox.US_MIDWAY_CAP, 0, mf1)
+
+    GlobalGameState.airAttacksComplete = true
   })
 
   test("Create Lists of Valid Destination Boxes for each Japan Air Unit in CAP Boxes", () => {
