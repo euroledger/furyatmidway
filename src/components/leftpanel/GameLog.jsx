@@ -40,10 +40,13 @@ function GameLog() {
             class="accordion-body"
             style={{ height: "400px", overflowY: "scroll" }}
           >
-            <div class="text-left">
+            {/* <div class="text-left">
+              style={{
+                maxHeight: "400px"
+              }}
               {logRows}
               <div ref={messagesEndRef} />
-            </div>
+            </div> */}
           </div>
         </div>
       </div>

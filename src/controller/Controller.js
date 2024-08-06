@@ -8,12 +8,14 @@ import { distanceBetweenHexes } from "../components/HexUtils"
 import GlobalGameState from "../model/GlobalGameState"
 import AirOperationsModel from "../model/AirOperationsModel"
 import ViewEventAirUnitMoveHandler from "./ViewEventAirUnitMoveHandler"
+import ViewDieRollEventHandler from "./ViewDieRollEventHandler"
 
 export default class Controller {
   static EventTypes = {
     AIR_UNIT_SETUP: "AirUnitSetup",
     FLEET_SETUP: "FleetSetup",
     AIR_UNIT_MOVE: "StrikeGroupSetup",
+    INITIATIVE_ROLL: "InitiativeRoll",
   }
 
   static MIDWAY_HEX = {
@@ -35,6 +37,7 @@ export default class Controller {
     this.airUnitSetupHandler = new ViewEventAirUnitSetupHandler(this)
     this.fleetUnitSetupHandler = new ViewEventFleetUnitSetupHandler(this)
     this.airUnitMoveHandler = new ViewEventAirUnitMoveHandler(this)
+    this.dieRollEventHandler = new ViewDieRollEventHandler(this)
   }
 
   setCounters(counters) {
@@ -65,6 +68,10 @@ export default class Controller {
     return this.counters.get(name)
   }
 
+  setAirUnitForName(name, airUnit) {
+    this.counters.set(name, airUnit)
+  }
+
   getStrikeBoxes(name, side) {
     const unit = this.getAirUnitForName(name)
     let strikeBoxes = Object.values(this.airOperationsModel.getStrikeBoxesForSide(side))
@@ -76,7 +83,7 @@ export default class Controller {
         const airUnitsInBox = this.boxModel.getAllAirUnitsInBox(box)
         return airUnitsInBox && airUnitsInBox.length > 0
       })
-    } 
+    }
     if (side === GlobalUnitsModel.Side.US) {
       // get all units for each strike box, any there
       // from a different carrer should be removed
@@ -566,6 +573,10 @@ export default class Controller {
 
       case Controller.EventTypes.AIR_UNIT_MOVE:
         this.airUnitMoveHandler.handleEvent(event)
+        break
+
+      case Controller.EventTypes.INITIATIVE_ROLL:
+        this.dieRollEventHandler.handleEvent(event)
         break
 
       default:

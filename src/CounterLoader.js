@@ -1044,7 +1044,6 @@ function loadStrikeGroups(counters) {
     counters.set(group.name, sgu)
   }
   for (const group of usStrikeGroups) {
-    console.log("SET", group.box)
     const sgu = new StrikeGroupUnit(group.name, group.longName, group.position, group.image, group.width, group.units)
 
     GlobalUnitsModel.usStrikeGroups.set(group.box, sgu)

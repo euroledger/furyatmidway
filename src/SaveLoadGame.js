@@ -27,6 +27,7 @@ export function saveGameState(controller, gameId) {
       boxName,
       boxIndex,
       side: airUnit.side,
+      counterData: airUnit,
     })
   }
 
@@ -52,6 +53,10 @@ export function saveGameState(controller, gameId) {
 
   const airOperationsText = JSON.stringify(GlobalGameState.airOperationPoints)
 
+
+  // @TODO SAVE STRIKE GROUPS
+
+  
   // let savedGame = new Map()
   let savedGameDetails = {
     global: globalText,
@@ -120,6 +125,20 @@ function createAirUnitUpdates(airUnitMap) {
   return airUpdates
 }
 
+function loadAirUnits(airUnitMap) {
+  for (const key of airUnitMap.keys()) {
+
+    const airUnit = airUnitMap.get(key)
+   
+    const globalAirUnit = GlobalInit.controller.getAirUnitForName(key)
+
+    if (airUnit.counterData._aircraftUnit._moved) {
+      globalAirUnit.aircraftUnit.moved = true
+    }
+   
+    // TODO steps, damage to fleets etc
+  }
+}
 export function loadGameStateForId(gameId) {
   const loadedJson = localStorage.getItem(gameId)
 
@@ -144,6 +163,11 @@ export function loadGameStateForId(gameId) {
 
   const airText = gameDetails.air
   const airMap = new Map(JSON.parse(airText))
+
+  console.log("AIR UNITS")
+  console.log(airMap)
+
+  loadAirUnits(airMap)
 
   const airUpdates = createAirUnitUpdates(airMap)
 

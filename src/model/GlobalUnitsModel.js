@@ -95,15 +95,6 @@ export default class GlobalUnitsModel {
     US_MIDWAY: 8,
   }
 
-  static BoxOptions = {
-    RETURN_1: "Return 1",
-    RETURN_2: "Return 2",
-    CAP: "CAP",
-    FLIGHT_DECK: "Flight Deck",
-    HANGAR: "Hangar",
-    STRIKE_GROUP: "Strike Group",
-  }
-
   static jpFleetUnits = new Map()
   static usFleetUnits = new Map()
   static jpAirUnits = new Map()

@@ -14,6 +14,7 @@ function StrikeCounters({ controller, onDrag, onStop, counterData }) {
     } else {
       // only display this counter if we are US in the Air Operations phase and there
       // is at least one air unit in this strike group
+
       if (GlobalGameState.gamePhase !== GlobalGameState.PHASE.AIR_OPERATIONS || strikeGroupUnit.units.length === 0) {
         return
       } else {

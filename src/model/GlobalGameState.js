@@ -94,6 +94,8 @@ export default class GlobalGameState {
     this.stateHandler();
   }
 
+  static loading = false
+  
   static log = (message) => {
     this.logItems.push(message);
     this.stateHandler();

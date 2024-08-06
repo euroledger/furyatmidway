@@ -17,6 +17,7 @@ import GameStatusPanel from "./components/dialogs/GameStatusPanel"
 import SplashScreen from "./components/dialogs/SplashScreen"
 import "./style.css"
 import { createMapUpdateForFleet } from "./AirUnitTestData"
+import Controller from "./controller/Controller"
 import { determineAllUnitsDeployedForCarrier } from "./controller/AirUnitSetupHandler"
 import { usCSFStartHexes, japanAF1StartHexesNoMidway, japanAF1StartHexesMidway } from "./components/MapRegions"
 import YesNoDialog from "./components/dialogs/YesNoDialog"
@@ -63,6 +64,8 @@ export function App() {
   // If this air box is in the list -> enable, else disable
 
   const [gameState, setGameState] = useState(false)
+
+  const [loading, setLoading] = useState(false)
   // TODO set an effect hook on game state to trigger a game save
 
   const [isMoveable, setIsMoveable] = useState(false)
@@ -190,7 +193,6 @@ export function App() {
         setJapanStrikePanelEnabled(true)
         setUsStrikePanelEnabled(false)
       } else {
-        console.log("Set US Strike Panel enabled")
         setUsStrikePanelEnabled(true)
         setJapanStrikePanelEnabled(false)
       }
@@ -201,7 +203,10 @@ export function App() {
     GlobalGameState.updateGlobalState()
     const enabledJapanBoxes = getJapanEnabledAirBoxes()
     setEnabledJapanBoxes(() => enabledJapanBoxes)
+
     const enabledUSBoxes = getUSEnabledAirBoxes()
+    console.log("++++++++++++++++ QUACK ENABLED US BOXES = ", enabledUSBoxes)
+
     setEnabledUSBoxes(() => enabledUSBoxes)
   }
 
@@ -562,6 +567,7 @@ export function App() {
   }
 
   function loadMyGame(id) {
+    setLoading(() => true)
     loadHandler({ setTestClicked, setSplash, setAirUnitUpdate, setFleetUnitUpdate, loadState, id })
   }
 
@@ -615,13 +621,25 @@ export function App() {
   )
   function doRoll(roll0, roll1)  { // for automated testing
     let sideWithInitiative
+    let jpRolls, usRolls
     if (roll0 && roll1) {
       sideWithInitiative = GlobalInit.controller.determineInitiative(roll0, roll1)
+      jpRolls = [roll0]
+      usRolls = [roll1]
     } else {
       const rolls = randomDice(2)
       sideWithInitiative = GlobalInit.controller.determineInitiative(rolls[0], rolls[1])
+      jpRolls = [rolls[0]]
+      usRolls = [rolls[1]]
     }
  
+    GlobalInit.controller.viewEventHandler({
+      type: Controller.EventTypes.INITIATIVE_ROLL, 
+      data: {
+        jpRolls,
+        usRolls,
+      },
+    })
     setSideWithInitiative(() => sideWithInitiative)
 
     // @TODO
@@ -768,7 +786,8 @@ export function App() {
                   enabledUSBoxes,
                   setEnabledUSBoxes,
                   setEnabledJapanBoxes,
-                  setIsMoveable
+                  setIsMoveable,
+                  loading
                 }}
               >
                 <Board

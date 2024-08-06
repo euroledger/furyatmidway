@@ -9,7 +9,7 @@ class ViewEventAirUnitMoveHandler {
   }
   handleEvent(event) {
     // event contains type and data
-    const { counterData, name, index, side } = event.data
+    const { counterData, name, index, side, loading } = event.data
 
     const { boxName, boxIndex } = this.controller.getAirUnitLocation(counterData.name)
     const from = boxName === GlobalUnitsModel.AirBox.OFFBOARD ? "OFFBOARD" : boxName + " - box " + boxIndex
@@ -37,8 +37,9 @@ class ViewEventAirUnitMoveHandler {
       strikeBox.units = strikeBox.units.filter((unit) => unit.name !== counterData.name)
     }
 
-    counterData.aircraftUnit.moved = true
-    console.log("SET",  counterData.name, "TO TRUE")
+    if (!loading) {
+      counterData.aircraftUnit.moved = true
+    }
     GlobalGameState.log(`Command: ${command.toString()}`)
   }
 }

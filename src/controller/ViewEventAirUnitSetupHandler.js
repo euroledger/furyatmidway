@@ -9,7 +9,6 @@ class ViewEventAirUnitSetupHandler {
     this.controller = controller
   }
   handleEvent(event) {
-    console.log("QUACK 1")
     // event contains type and data
     const { counterData, name, index, side } = event.data
 

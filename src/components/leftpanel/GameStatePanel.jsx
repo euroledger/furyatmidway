@@ -37,7 +37,14 @@ export default class GameStatePanel extends React.Component {
           </Accordion.Item>
           <Accordion.Item eventKey="1" className="bg-dark text-light">
             <Accordion.Header>Game Log</Accordion.Header>
-            <Accordion.Body>{logRows}</Accordion.Body>
+            <Accordion.Body
+              style={{
+                maxHeight: "400px",
+                overflowY: "scroll",
+              }}
+            >
+              {logRows}
+            </Accordion.Body>
           </Accordion.Item>
         </Accordion>
       </>

@@ -29,13 +29,22 @@ function ConfirmPanel({ idx, setShowConfirmPanel }) {
     >
       <p style={{ paddingBottom: "50px", paddingTop: "20px" }}></p>
       <p>
-        Do you really want to delete {key}?{" "}
-        <Button style={{ marginLeft: "10px" }} onClick={(e) => removeItem(e, fullKey, setShowConfirmPanel)}>
-          Yes
-        </Button>
-        <Button style={{ marginLeft: "5px" }} onClick={() => setShowConfirmPanel(false)}>
-          No
-        </Button>
+        Do you really want to delete <strong>{key}</strong>?{" "}
+        <div
+          style={{
+            marginTop: "10px",
+            display: "flex",
+            justifyContent: "center",
+            alignItems: "center",
+          }}
+        >
+          <Button style={{ marginLeft: "10px" }} onClick={(e) => removeItem(e, fullKey, setShowConfirmPanel)}>
+            Yes
+          </Button>
+          <Button style={{ marginLeft: "5px" }} onClick={() => setShowConfirmPanel(false)}>
+            No
+          </Button>
+        </div>
       </p>
     </div>
   )
