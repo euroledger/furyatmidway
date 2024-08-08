@@ -81,6 +81,18 @@ function FleetCounter({ id, currentHex, counterData, usRegions, jpRegions, enabl
       `Fleet Unit ${counterData.name} moves to q:${hex.q}, r:${hex.r} => x:${currentHex.x},y:${currentHex.y}, row: ${currentHex.row}, col: ${currentHex.col}`
     )
 
+    console.log("currenthex.x =", currentHex.x)
+    console.log("currentHex.y =", currentHex.y)
+
+    console.log("counterData.position.left=", counterData.position.left)
+    console.log("counterData.position.top=", counterData.position.top)
+
+    console.log("counterData.offsets.x=",counterData.offsets.x)
+    console.log("counterData.offsets.y=",counterData.offsets.y)
+
+    console.log("SET left to ", currentHex.x + counterData.position.left + counterData.offsets.x)
+    console.log("SET top to ", currentHex.y + counterData.position.top + counterData.offsets.y)
+
     setPosition({
       initial: false,
       left: currentHex.x + counterData.position.left + counterData.offsets.x,

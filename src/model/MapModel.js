@@ -9,20 +9,35 @@ export default class CardModel {
 
   setFleetUnitLocation(id, location, side) {
     if (side === GlobalUnitsModel.Side.JAPAN) {
-        this.jpMap.set(id, location)
+      this.jpMap.set(id, location)
     } else {
-        this.usMap.set(id, location)
+      this.usMap.set(id, location)
     }
   }
 
-  getFleetLocation(id, side) {
+  setStrikeGroupLocation(id, location, side) {
     if (side === GlobalUnitsModel.Side.JAPAN) {
-        return this.jpMap.get(id)
+      this.jpMap.set(id, location)
     } else {
-        return this.usMap.get(id)
+      this.usMap.set(id, location)
     }
   }
-  
+
+  getStrikeGroupLocation(id, side) {
+    if (side === GlobalUnitsModel.Side.JAPAN) {
+      return this.jpMap.get(id)
+    } else {
+      return this.usMap.get(id)
+    }
+  }
+  getFleetLocation(id, side) {
+    if (side === GlobalUnitsModel.Side.JAPAN) {
+      return this.jpMap.get(id)
+    } else {
+      return this.usMap.get(id)
+    }
+  }
+
   getJapanFleetLocations() {
     return this.jpMap
   }

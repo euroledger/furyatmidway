@@ -70,13 +70,24 @@ function LoadGamePanel(props) {
   }
 
   return (
-    <Modal {...props} aria-labelledby="contained-modal-title-vcenter" centered>
+    <Modal {...props} aria-labelledby="contained-modal-title-vcenter" keyboard={false} backdrop="static">
       <Modal.Header style={{ background: `${bg}`, color: "white", justifyContent: "center", alignItems: "center" }}>
         <h4>Load Game</h4>
       </Modal.Header>
       <Modal.Body style={{ paddingTop: "20px", background: `${bg}`, color: "white" }}>
         <p>Select Game to Load or Delete</p>
         <p style={{ paddingTop: "50px" }}></p>
+        {savedGameArray.length === 0 && (
+          <p
+            style={{
+              display: "flex",
+              justifyContent: "center",
+              alignItems: "center",
+            }}
+          >
+            No Games Saved
+          </p>
+        )}
         {Array.from({ length: savedGameArray.length }).map((_, idx) => {
           return (
             <row style={{ display: "flex", paddingLeft: "10px", paddingTop: "5px", height: "50px" }}>

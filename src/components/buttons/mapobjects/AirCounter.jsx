@@ -25,6 +25,11 @@ function AirCounter({ getAirBox, setAirBox, counterData, side }) {
 
   const onDrag = () => {
     setIsMoveable(true)
+
+    if (GlobalGameState.sideWithInitiative && counterData.side !== GlobalGameState.sideWithInitiative) {
+      return
+    }
+    // only the selected (clicked) air unit should be draggable
     setSelected(() => true)
 
     if (
@@ -37,9 +42,6 @@ function AirCounter({ getAirBox, setAirBox, counterData, side }) {
 
     setValidDestinationBoxes(controller, counterData.name, counterData.side)
     setBoxes(counterData)
-
-    // only the selected (clicked) air unit should be draggable
-    console.log("SET SELECTED TO TRUE")
   }
   const [selected, setSelected] = useState(false)
 
@@ -88,26 +90,23 @@ function AirCounter({ getAirBox, setAirBox, counterData, side }) {
   }
 
   const japanDrop = (counterData) => {
-    console.log("TRYING DROP....selected = ", selected)
+    console.log("TRYING DROP....gamePhase = ", GlobalGameState.gamePhase)
     if (
       (counterData.carrier != GlobalGameState.getJapanCarrier() &&
-        GlobalGameState.gamePhase === GlobalGameState.PHASE.JAPAN_SETUP) ||
-      GlobalGameState.gamePhase === GlobalGameState.PHASE.AIR_OPERATIONS
+        GlobalGameState.gamePhase === GlobalGameState.PHASE.JAPAN_SETUP) &&
+      GlobalGameState.gamePhase !== GlobalGameState.PHASE.AIR_OPERATIONS
     ) {
       // cannot move units from carrier other than the current one being set up
+      
       return false
     }
     const { name, offsets } = getAirBox()
     if (!offsets) {
-      console.log("QUACK 1")
-
       return false
     }
     // attack is true if the air unit is torpedo or dive bomber, i.e., not a fighter
     const airUnit = controller.getJapanAirUnit(counterData.name)
     if (!airUnit) {
-      console.log("QUACK 2")
-
       // error
       return false
     }
@@ -159,7 +158,6 @@ function AirCounter({ getAirBox, setAirBox, counterData, side }) {
     return offsets
   }
   const handleDrop = (event) => {
-    console.log("HANDLE DROP selected = ", selected)
     event.preventDefault()
 
     const { name, offsets, index, side } = getAirBox()
@@ -168,26 +166,19 @@ function AirCounter({ getAirBox, setAirBox, counterData, side }) {
       return
     }
     if (counterData.aircraftUnit.moved) {
-      console.log("QUACK 100")
       return
     }
 
     const unit = controller.getAirUnitInBox(name, index)
     if (unit) {
-      console.log("QUACK 200")
-
       // already a unit in that box
       return
     }
     if (!selected) {
-      console.log("QUACK 300")
-
       return
     }
     if (theSide === GlobalUnitsModel.Side.JAPAN) {
       if (!japanDrop(counterData)) {
-        console.log("QUACK 400")
-
         return
       }
     } else {
@@ -196,7 +187,6 @@ function AirCounter({ getAirBox, setAirBox, counterData, side }) {
       }
     }
 
-    console.log("MOVE US UNIT ", counterData.name, "TO ", name)
     setPosition({
       left: offsets.left + "%",
       top: offsets.top - 0.2 + "%",
@@ -242,6 +232,9 @@ function AirCounter({ getAirBox, setAirBox, counterData, side }) {
     }
   }
   const handleClick = (e) => {
+    if (counterData.side !== GlobalGameState.sideWithInitiative) {
+      return
+    }
     if (
       counterData.aircraftUnit.moved ||
       GlobalGameState.gamePhase === GlobalGameState.PHASE.JAPAN_SETUP ||
@@ -252,6 +245,7 @@ function AirCounter({ getAirBox, setAirBox, counterData, side }) {
     setValidDestinationBoxes(controller, counterData.name, counterData.side)
     setBoxes(counterData)
 
+    console.log("HERE WE ARE!!!!!!!!!!!!!!!")
     // only the selected (clicked) air unit should be draggable
     setSelected(true)
   }

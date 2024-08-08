@@ -90,12 +90,14 @@ export default class GlobalGameState {
 
   static phaseCompleted = false
 
+  static sideWithInitiative = ""
+
   static updateGlobalState = () => {
     this.stateHandler();
   }
 
   static loading = false
-  
+
   static log = (message) => {
     this.logItems.push(message);
     this.stateHandler();

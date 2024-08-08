@@ -9,6 +9,7 @@ import GlobalGameState from "../model/GlobalGameState"
 import AirOperationsModel from "../model/AirOperationsModel"
 import ViewEventAirUnitMoveHandler from "./ViewEventAirUnitMoveHandler"
 import ViewDieRollEventHandler from "./ViewDieRollEventHandler"
+import ViewStrikeGroupMoveHandler from "./ViewStrikeGroupMoveHandler"
 
 export default class Controller {
   static EventTypes = {
@@ -16,6 +17,7 @@ export default class Controller {
     FLEET_SETUP: "FleetSetup",
     AIR_UNIT_MOVE: "StrikeGroupSetup",
     INITIATIVE_ROLL: "InitiativeRoll",
+    STRIKE_GROUP_MOVE: "StrikeGroupMove"
   }
 
   static MIDWAY_HEX = {
@@ -38,6 +40,7 @@ export default class Controller {
     this.fleetUnitSetupHandler = new ViewEventFleetUnitSetupHandler(this)
     this.airUnitMoveHandler = new ViewEventAirUnitMoveHandler(this)
     this.dieRollEventHandler = new ViewDieRollEventHandler(this)
+    this.stikeGroupMoveEventHandler = new ViewStrikeGroupMoveHandler(this)
   }
 
   setCounters(counters) {
@@ -231,6 +234,13 @@ export default class Controller {
     return this.boxModel.getAirUnitLocation(airUnitName)
   }
 
+  getStrikeGroupLocation = (stikeGroupName) => {
+    return this.mapModel.getStrikeGroupLocation(stikeGroupName)
+  }
+
+  setStrikeGroupLocation(id, location, side) {
+    this.mapModel.setStrikeGroupLocation(id, location, side)
+  }
   addAirUnitToJapaneseCarrier(carrier, value) {
     this.boxModel.addAirUnitToJapaneseCarrier(carrier, value)
   }
@@ -577,6 +587,11 @@ export default class Controller {
 
       case Controller.EventTypes.INITIATIVE_ROLL:
         this.dieRollEventHandler.handleEvent(event)
+        break
+
+        
+      case Controller.EventTypes.STRIKE_GROUP_MOVE:
+        this.stikeGroupMoveEventHandler.handleEvent(event)
         break
 
       default:

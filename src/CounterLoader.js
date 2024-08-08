@@ -116,7 +116,7 @@ function loadCounters(controller) {
 
   loadAirCounters(controller, counters)
   loadFleetUnits()
-  loadStrikeGroups(counters)
+  loadStrikeGroups(controller, counters)
   return counters
 }
 
@@ -906,6 +906,30 @@ const jpSGPosition1 = {
   left: "63%",
   top: "64%",
 }
+const jpSGPosition2 = {
+  left: "63%",
+  top: "68.5%",
+}
+const jpSGPosition3 = {
+  left: "63%",
+  top: "73%",
+}
+const jpSGPosition4 = {
+  left: "63%",
+  top: "77.5%",
+}
+const jpSGPosition5 = {
+  left: "63%",
+  top: "82%",
+}
+const jpSGPosition6 = {
+  left: "63%",
+  top: "86.5%",
+}
+const jpSGPosition7 = {
+  left: "63%",
+  top: "91%",
+}
 
 const japanStrikeGroups = [
   {
@@ -918,7 +942,68 @@ const japanStrikeGroups = [
     side: GlobalUnitsModel.Side.JAPAN,
     units: new Array(), // list of air units in this strike group
   },
+  {
+    name: "JP-SG2",
+    longName: "Japan Strike Group 2",
+    position: jpSGPosition2,
+    image: "/images/aircounters/ijnStrike2.png",
+    width: "2.1%",
+    box: GlobalUnitsModel.AirBox.JP_STRIKE_BOX_1,
+    side: GlobalUnitsModel.Side.JAPAN,
+    units: new Array(), // list of air units in this strike group
+  },
+  {
+    name: "JP-SG3",
+    longName: "Japan Strike Group 3",
+    position: jpSGPosition3,
+    image: "/images/aircounters/ijnStrike1.png",
+    width: "2.1%",
+    box: GlobalUnitsModel.AirBox.JP_STRIKE_BOX_2,
+    side: GlobalUnitsModel.Side.JAPAN,
+    units: new Array(), // list of air units in this strike group
+  },
+  {
+    name: "JP-SG4",
+    longName: "Japan Strike Group 4",
+    position: jpSGPosition4,
+    image: "/images/aircounters/ijnStrike4.png",
+    width: "2.1%",
+    box: GlobalUnitsModel.AirBox.JP_STRIKE_BOX_3,
+    side: GlobalUnitsModel.Side.JAPAN,
+    units: new Array(), // list of air units in this strike group
+  },
+  {
+    name: "JP-SG5",
+    longName: "Japan Strike Group 5",
+    position: jpSGPosition5,
+    image: "/images/aircounters/ijnStrike5.png",
+    width: "2.1%",
+    box: GlobalUnitsModel.AirBox.JP_STRIKE_BOX_4,
+    side: GlobalUnitsModel.Side.JAPAN,
+    units: new Array(), // list of air units in this strike group
+  },
+  {
+    name: "JP-SG6",
+    longName: "Japan Strike Group 6",
+    position: jpSGPosition6,
+    image: "/images/aircounters/ijnStrike6.png",
+    width: "2.1%",
+    box: GlobalUnitsModel.AirBox.JP_STRIKE_BOX_4,
+    side: GlobalUnitsModel.Side.JAPAN,
+    units: new Array(), // list of air units in this strike group
+  },
+  {
+    name: "JP-SG7",
+    longName: "Japan Strike Group 7",
+    position: jpSGPosition7,
+    image: "/images/aircounters/ijnStrike7.png",
+    width: "2.1%",
+    box: GlobalUnitsModel.AirBox.JP_STRIKE_BOX_5,
+    side: GlobalUnitsModel.Side.JAPAN,
+    units: new Array(), // list of air units in this strike group
+  },
 ]
+
 const usSGPosition1 = {
   left: "95%",
   top: "63%",
@@ -951,7 +1036,7 @@ const usSGPosition7 = {
 const usStrikeGroups = [
   {
     name: "US-SG1",
-    longName: "US Strike Group 1",
+    longName: "Strike Group 1",
     position: usSGPosition1,
     image: "/images/aircounters/usStrike1.png",
     // image: "/images/aircounters/USN-SG1.jpg",
@@ -963,7 +1048,7 @@ const usStrikeGroups = [
   },
   {
     name: "US-SG2",
-    longName: "US Strike Group 2",
+    longName: "Strike Group 2",
     position: usSGPosition2,
     image: "/images/aircounters/usStrike2.png",
     width: "2.1%",
@@ -973,7 +1058,7 @@ const usStrikeGroups = [
   },
   {
     name: "US-SG3",
-    longName: "US Strike Group 3",
+    longName: "Strike Group 3",
     position: usSGPosition3,
     image: "/images/aircounters/usStrike3.png",
     width: "2.1%",
@@ -983,7 +1068,7 @@ const usStrikeGroups = [
   },
   {
     name: "US-SG4",
-    longName: "US Strike Group 4",
+    longName: "Strike Group 4",
     position: usSGPosition4,
     image: "/images/aircounters/usStrike4.png",
     width: "2.1%",
@@ -993,7 +1078,7 @@ const usStrikeGroups = [
   },
   {
     name: "US-SG5",
-    longName: "US Strike Group 5",
+    longName: "Strike Group 5",
     position: usSGPosition5,
     image: "/images/aircounters/usStrike5.png",
     width: "2.1%",
@@ -1003,7 +1088,7 @@ const usStrikeGroups = [
   },
   {
     name: "US-SG6",
-    longName: "US Strike Group 6",
+    longName: "Strike Group 6",
     position: usSGPosition6,
     image: "/images/aircounters/usStrike6.png",
     width: "2.1%",
@@ -1013,7 +1098,7 @@ const usStrikeGroups = [
   },
   {
     name: "US-SG7",
-    longName: "US Strike Group 7",
+    longName: "Strike Group 7",
     position: usSGPosition7,
     image: "/images/aircounters/usStrike7.png",
     width: "2.1%",
@@ -1036,18 +1121,51 @@ function loadFleetUnits() {
   }
 }
 
-function loadStrikeGroups(counters) {
+function loadStrikeGroups(controller, counters) {
+  const location = GlobalUnitsModel.AirBox.OFFBOARD
   for (const group of japanStrikeGroups) {
-    const sgu = new StrikeGroupUnit(group.name, group.longName, group.position, group.image, group.width, group.units)
+    const sgu = new StrikeGroupUnit(
+      group.name,
+      group.longName,
+      group.position,
+      group.image,
+      group.width,
+      group.units,
+      location,
+      GlobalUnitsModel.Side.JAPAN,
+      {
+        left: 500,
+        top: 50
+      },
+      false // moved
+    )
 
-    GlobalUnitsModel.jpStrikeGroups.set(group.name, sgu)
+    GlobalUnitsModel.jpStrikeGroups.set(group.box, sgu)
     counters.set(group.name, sgu)
+
+    controller.addAirUnitToBox(GlobalUnitsModel.AirBox.OFFBOARD, 0, sgu)
   }
   for (const group of usStrikeGroups) {
-    const sgu = new StrikeGroupUnit(group.name, group.longName, group.position, group.image, group.width, group.units)
+    const sgu = new StrikeGroupUnit(
+      group.name,
+      group.longName,
+      group.position,
+      group.image,
+      group.width,
+      group.units,
+      location,
+      GlobalUnitsModel.Side.US,
+      {
+        left: 500,
+        top: 50
+      },
+      false // moved
+    )
 
     GlobalUnitsModel.usStrikeGroups.set(group.box, sgu)
     counters.set(group.name, sgu)
+    controller.addAirUnitToBox(GlobalUnitsModel.AirBox.OFFBOARD, 0, sgu)
+
   }
 }
 

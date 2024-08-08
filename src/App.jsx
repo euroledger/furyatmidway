@@ -188,7 +188,7 @@ export function App() {
       GlobalGameState.phaseCompleted = true
     } else if (GlobalGameState.gamePhase === GlobalGameState.PHASE.AIR_OPERATIONS) {
       GlobalGameState.phaseCompleted = false
-      GlobalGameState.sideWithInitiative = sideWithInitiative
+      console.log("AIR OPS, INITIATIVE = ", GlobalGameState.sideWithInitiative)
       if (GlobalGameState.sideWithInitiative === GlobalUnitsModel.Side.JAPAN) {
         setJapanStrikePanelEnabled(true)
         setUsStrikePanelEnabled(false)
@@ -205,8 +205,6 @@ export function App() {
     setEnabledJapanBoxes(() => enabledJapanBoxes)
 
     const enabledUSBoxes = getUSEnabledAirBoxes()
-    console.log("++++++++++++++++ QUACK ENABLED US BOXES = ", enabledUSBoxes)
-
     setEnabledUSBoxes(() => enabledUSBoxes)
   }
 
@@ -781,7 +779,9 @@ export function App() {
                   setAlertShow,
                   showZones,
                   USMapRegions,
+                  setUSMapRegions,
                   japanMapRegions,
+                  setJapanMapRegions,
                   enabledJapanBoxes,
                   enabledUSBoxes,
                   setEnabledUSBoxes,

@@ -55,9 +55,9 @@ export function saveGameState(controller, gameId) {
 
 
   // @TODO SAVE STRIKE GROUPS
+  // add controller.getStrikeGroups(side)
+  // will return GlobalUnitsModel.usStrikeGroups or GlobalUnitsModel.jpStrikeGroups
 
-  
-  // let savedGame = new Map()
   let savedGameDetails = {
     global: globalText,
     air: airText,
@@ -67,6 +67,7 @@ export function saveGameState(controller, gameId) {
     jpcards: jpCardText,
     uscards: usCardText,
     log: logItems,
+    // TODO: strike groups
   }
   // savedGame.set(gameId, savedGameDetails )
   localStorage.setItem("global", globalText)
@@ -164,7 +165,6 @@ export function loadGameStateForId(gameId) {
   const airText = gameDetails.air
   const airMap = new Map(JSON.parse(airText))
 
-  console.log("AIR UNITS")
   console.log(airMap)
 
   loadAirUnits(airMap)

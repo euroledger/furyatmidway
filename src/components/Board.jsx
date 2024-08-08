@@ -214,8 +214,8 @@ function Board({ scale, USMapRegions, japanMapRegions, japanStrikePanelEnabled, 
         <AirCounters counterData={GlobalInit.counters} getAirBox={getAirBox} setAirBox={setAirBox}></AirCounters>
         <StrikeCounters
           controller={GlobalInit.controller}
-          // onDrag={onDrag}
-          // onStop={onStop}
+          currentUSHex={currentUSHex}
+          currentJapanHex={currentJapanHex}
           counterData={GlobalInit.counters}
         ></StrikeCounters>
 

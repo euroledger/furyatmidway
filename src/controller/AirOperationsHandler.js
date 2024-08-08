@@ -3,11 +3,6 @@
 import GlobalGameState from "../model/GlobalGameState"
 import GlobalUnitsModel from "../model/GlobalUnitsModel"
 
-// which determines valid moves for air units based on their current location (ie box)
-export const VALID_DESTINATIONS = {
-  carrier: "",
-  box: "",
-}
 function getValidUSDestinationsRETURN1(controller, parentCarrier, side, useMidway) {
   // For returning strikers, always return to carrier in same TF if possible, or other TF if not
   let destinationsArray = new Array()

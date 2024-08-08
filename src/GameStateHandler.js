@@ -142,7 +142,13 @@ function airOperationsHandler({
     setUsStrikePanelEnabled(true)
     setJapanStrikePanelEnabled(false)
   }
+  // If at least one strike group has been created and all strike groups have moved
+  // allow next action
+
   GlobalGameState.updateGlobalState()
+
+
+
 }
 export default function handleAction({
   setUSMapRegions,
