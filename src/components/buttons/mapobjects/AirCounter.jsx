@@ -90,7 +90,7 @@ function AirCounter({ getAirBox, setAirBox, counterData, side }) {
   }
 
   const japanDrop = (counterData) => {
-    console.log("TRYING DROP....gamePhase = ", GlobalGameState.gamePhase)
+
     if (
       (counterData.carrier != GlobalGameState.getJapanCarrier() &&
         GlobalGameState.gamePhase === GlobalGameState.PHASE.JAPAN_SETUP) &&
@@ -245,7 +245,6 @@ function AirCounter({ getAirBox, setAirBox, counterData, side }) {
     setValidDestinationBoxes(controller, counterData.name, counterData.side)
     setBoxes(counterData)
 
-    console.log("HERE WE ARE!!!!!!!!!!!!!!!")
     // only the selected (clicked) air unit should be draggable
     setSelected(true)
   }

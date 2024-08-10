@@ -1,19 +1,19 @@
 import BaseUnit from "./BaseUnit"
 export default class StrikeGroupUnit extends BaseUnit {
-    constructor(name, longName, position, image, width, units, location, side, offsets, moved) {
+    constructor(name, longName, position, image, width, location, box, side, offsets, moved) {
     super(name, longName, position, offsets, image, width)
-    this.units = units
+    this.box = box
     this.location = location
     this.side = side
     this.moved = moved
   }
 
-  set units(u) {
-    this._units = u
+  set box(b) {
+    this._box = b
   }
 
-  get units() {
-    return this._units
+  get box() {
+    return this._box
   }
 
   set location(l) {

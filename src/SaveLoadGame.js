@@ -165,8 +165,6 @@ export function loadGameStateForId(gameId) {
   const airText = gameDetails.air
   const airMap = new Map(JSON.parse(airText))
 
-  console.log(airMap)
-
   loadAirUnits(airMap)
 
   const airUpdates = createAirUnitUpdates(airMap)

@@ -576,7 +576,7 @@ export function checkAllBoxesForReorganization(controller, unit, fromBox, side, 
 export function setValidDestinationBoxes(controller, airUnitName, side) {
   const location = controller.getAirUnitLocation(airUnitName)
 
-  console.log(airUnitName, "location -> ", location.boxName)
+  // console.log(airUnitName, "location -> ", location.boxName)
   if (location.boxName.includes("RETURNING (1)")) {
     // see if US CSF within two hexes of Midway
     let hexesBetweenMidwayAndCSF = controller.numHexesBetweenFleets(

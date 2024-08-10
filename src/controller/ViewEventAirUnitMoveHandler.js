@@ -18,29 +18,9 @@ class ViewEventAirUnitMoveHandler {
     this.controller.addAirUnitToBox(name, index, counterData)
     let command = new MoveCommand(COMMAND_TYPE.MOVE, counterData.longName, from, to)
 
-    console.log(">>>>>>>> name = ", name)
-    console.log(">>>>>>>> jp groups = ", GlobalUnitsModel.jpStrikeGroups)
-    console.log(">>>>>>>> us groups = ", GlobalUnitsModel.usStrikeGroups)
-
-    if (name.includes("STRIKE")) {
-      const strikeBox =
-        side === GlobalUnitsModel.Side.JAPAN
-          ? GlobalUnitsModel.jpStrikeGroups.get(name)
-          : GlobalUnitsModel.usStrikeGroups.get(name)
-      // Add unit to list of units for the strike group
-      console.log(">>>>>>>> strikeBox = ", strikeBox)
-      strikeBox.units.push(counterData)
-    }
-
-    if (from.includes("STRIKE")) {
-      // unit has moved from strike box - remove
-      const strikeBox =
-        side === GlobalUnitsModel.Side.JAPAN
-          ? GlobalUnitsModel.jpStrikeGroups.get(boxName)
-          : GlobalUnitsModel.usStrikeGroups.get(boxName)
-      // remove unit from list of units for the strike group
-      strikeBox.units = strikeBox.units.filter((unit) => unit.name !== counterData.name)
-    }
+    // console.log(">>>>>>>> name = ", name)
+    // console.log(">>>>>>>> jp groups = ", GlobalUnitsModel.jpStrikeGroups)
+    // console.log(">>>>>>>> us groups = ", GlobalUnitsModel.usStrikeGroups)
 
     if (!loading) {
       counterData.aircraftUnit.moved = true

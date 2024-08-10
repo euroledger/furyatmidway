@@ -2,7 +2,7 @@ import GlobalGameState from "../model/GlobalGameState";
 import COMMAND_TYPE from "../commands/COMMAND_TYPE";
 import HexCommand from "../commands/HexCommand";
 
-class ViewStrikeGroupMoveHandler {
+class ViewEventStrikeGroupMoveHandler {
   constructor(controller) {
     this.controller = controller
   }
@@ -13,6 +13,7 @@ class ViewStrikeGroupMoveHandler {
 
     // add strike group to map holding name -> current Hex
 
+    console.log("Add",counterData.name, "to map for side", side)
     this.controller.setStrikeGroupLocation(counterData.name, to, side)
 
     let cmdType = COMMAND_TYPE.MOVE
@@ -33,4 +34,4 @@ class ViewStrikeGroupMoveHandler {
 
   }
 }
-export default ViewStrikeGroupMoveHandler
+export default ViewEventStrikeGroupMoveHandler

@@ -16,7 +16,6 @@ class ViewEventAirUnitSetupHandler {
     const from = boxName === GlobalUnitsModel.AirBox.OFFBOARD ? "OFFBOARD" : boxName + " - box " + boxIndex
     const to = `${name} - box ${index}`
 
-    console.log(`Add air unit ${counterData.name} to box ${name}, index ${index}`)
     this.controller.addAirUnitToBox(name, index, counterData)
     let command = new MoveCommand(COMMAND_TYPE.MOVE, counterData.longName, from, to)
     // console.log("Next free zone -> ", this.controller.getFirstAvailableZone(name))

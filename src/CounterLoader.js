@@ -903,32 +903,32 @@ const usAirUnits = [
 ]
 
 const jpSGPosition1 = {
-  left: "63%",
+  left: "42.8%",
   top: "64%",
 }
 const jpSGPosition2 = {
-  left: "63%",
-  top: "68.5%",
+  left: "42.8%",
+  top: "68.2%",
 }
 const jpSGPosition3 = {
-  left: "63%",
-  top: "73%",
+  left: "42.8%",
+  top: "72.5%",
 }
 const jpSGPosition4 = {
-  left: "63%",
-  top: "77.5%",
+  left: "42.8%",
+  top: "77.0%",
 }
 const jpSGPosition5 = {
-  left: "63%",
-  top: "82%",
+  left: "42.8%",
+  top: "81.5%",
 }
 const jpSGPosition6 = {
-  left: "63%",
-  top: "86.5%",
+  left: "42.8%",
+  top: "86.0%",
 }
 const jpSGPosition7 = {
-  left: "63%",
-  top: "91%",
+  left: "42.8%",
+  top: "90.5%",
 }
 
 const japanStrikeGroups = [
@@ -956,7 +956,7 @@ const japanStrikeGroups = [
     name: "JP-SG3",
     longName: "Japan Strike Group 3",
     position: jpSGPosition3,
-    image: "/images/aircounters/ijnStrike1.png",
+    image: "/images/aircounters/ijnStrike3.png",
     width: "2.1%",
     box: GlobalUnitsModel.AirBox.JP_STRIKE_BOX_2,
     side: GlobalUnitsModel.Side.JAPAN,
@@ -988,7 +988,7 @@ const japanStrikeGroups = [
     position: jpSGPosition6,
     image: "/images/aircounters/ijnStrike6.png",
     width: "2.1%",
-    box: GlobalUnitsModel.AirBox.JP_STRIKE_BOX_4,
+    box: GlobalUnitsModel.AirBox.JP_STRIKE_BOX_5,
     side: GlobalUnitsModel.Side.JAPAN,
     units: new Array(), // list of air units in this strike group
   },
@@ -998,7 +998,7 @@ const japanStrikeGroups = [
     position: jpSGPosition7,
     image: "/images/aircounters/ijnStrike7.png",
     width: "2.1%",
-    box: GlobalUnitsModel.AirBox.JP_STRIKE_BOX_5,
+    box: GlobalUnitsModel.AirBox.JP_STRIKE_BOX_6,
     side: GlobalUnitsModel.Side.JAPAN,
     units: new Array(), // list of air units in this strike group
   },
@@ -1130,8 +1130,8 @@ function loadStrikeGroups(controller, counters) {
       group.position,
       group.image,
       group.width,
-      group.units,
       location,
+      group.box,
       GlobalUnitsModel.Side.JAPAN,
       {
         left: 500,
@@ -1152,8 +1152,8 @@ function loadStrikeGroups(controller, counters) {
       group.position,
       group.image,
       group.width,
-      group.units,
       location,
+      group.box,
       GlobalUnitsModel.Side.US,
       {
         left: 500,

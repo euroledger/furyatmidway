@@ -128,7 +128,6 @@ export function App() {
   const setUsFleetRegions = () => {
     GlobalGameState.phaseCompleted = true // may just want to skip any fleet movement (leave fleet where it is)
     const csfLocation = GlobalInit.controller.getFleetLocation("CSF", GlobalUnitsModel.Side.US)
-    console.log("csf location = ", csfLocation)
     const usRegion = allHexesWithinDistance(csfLocation.currentHex, 2, true)
     setUSMapRegions(usRegion)
     setFleetMoveAlertShow(true)

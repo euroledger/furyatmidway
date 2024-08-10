@@ -10,7 +10,6 @@ export default class AirOperationsModel {
   }
 
   setValidAirUnitDestinations(name, destination) {
-    console.log(name, "->", destination)
     this.airUnitDestinationMap.set(name, destination)
   }
 

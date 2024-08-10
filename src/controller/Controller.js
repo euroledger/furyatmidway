@@ -9,7 +9,7 @@ import GlobalGameState from "../model/GlobalGameState"
 import AirOperationsModel from "../model/AirOperationsModel"
 import ViewEventAirUnitMoveHandler from "./ViewEventAirUnitMoveHandler"
 import ViewDieRollEventHandler from "./ViewDieRollEventHandler"
-import ViewStrikeGroupMoveHandler from "./ViewStrikeGroupMoveHandler"
+import ViewEventStrikeGroupMoveHandler from "./ViewEventStrikeGroupMoveHandler"
 
 export default class Controller {
   static EventTypes = {
@@ -17,7 +17,7 @@ export default class Controller {
     FLEET_SETUP: "FleetSetup",
     AIR_UNIT_MOVE: "StrikeGroupSetup",
     INITIATIVE_ROLL: "InitiativeRoll",
-    STRIKE_GROUP_MOVE: "StrikeGroupMove"
+    STRIKE_GROUP_MOVE: "StrikeGroupMove",
   }
 
   static MIDWAY_HEX = {
@@ -40,7 +40,7 @@ export default class Controller {
     this.fleetUnitSetupHandler = new ViewEventFleetUnitSetupHandler(this)
     this.airUnitMoveHandler = new ViewEventAirUnitMoveHandler(this)
     this.dieRollEventHandler = new ViewDieRollEventHandler(this)
-    this.stikeGroupMoveEventHandler = new ViewStrikeGroupMoveHandler(this)
+    this.stikeGroupMoveEventHandler = new ViewEventStrikeGroupMoveHandler(this)
   }
 
   setCounters(counters) {
@@ -189,6 +189,30 @@ export default class Controller {
       return carriers
     }
   }
+
+  getAllStrikeGroups(side) {
+    // return list of strike groups containing one or more units
+
+    const boxes = this.airOperationsModel.getStrikeBoxesForSide(side)
+    const sgMap = side === GlobalUnitsModel.Side.US ? GlobalUnitsModel.usStrikeGroups : GlobalUnitsModel.jpStrikeGroups
+    let array = new Array()
+    for (const [_, value] of Object.entries(boxes)) {
+
+      const airUnits = this.getAllAirUnitsInBox(value)
+      if (airUnits.length > 0) {
+        const strikeGroup = new Map([...sgMap].filter(([_, v]) => v.box === value))
+        const valuesArray = Array.from(strikeGroup.values())
+        array = array.concat(valuesArray)
+      }
+    }
+    return array
+  }
+
+  getAirUnitsInStrikeGroups(name) {
+    const airUnits = this.getAllAirUnitsInBox(name)  
+    return airUnits
+  }
+
   getAllAirUnitsInBox = (boxName) => {
     return this.boxModel.getAllAirUnitsInBox(boxName)
   }
@@ -234,8 +258,11 @@ export default class Controller {
     return this.boxModel.getAirUnitLocation(airUnitName)
   }
 
-  getStrikeGroupLocation = (stikeGroupName) => {
-    return this.mapModel.getStrikeGroupLocation(stikeGroupName)
+  getAllStrikeGroupsInLocation = (location, side) => {
+    return this.mapModel.getAllStrikeGroupsInLocation(location, side)
+  }
+  getStrikeGroupLocation = (stikeGroupName, side) => {
+    return this.mapModel.getStrikeGroupLocation(stikeGroupName, side)
   }
 
   setStrikeGroupLocation(id, location, side) {
@@ -589,7 +616,6 @@ export default class Controller {
         this.dieRollEventHandler.handleEvent(event)
         break
 
-        
       case Controller.EventTypes.STRIKE_GROUP_MOVE:
         this.stikeGroupMoveEventHandler.handleEvent(event)
         break
