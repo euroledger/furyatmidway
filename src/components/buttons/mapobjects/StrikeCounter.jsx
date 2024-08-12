@@ -3,11 +3,12 @@ import "../../board.css"
 import Controller from "../../../controller/Controller"
 import GlobalUnitsModel from "../../../model/GlobalUnitsModel"
 import { BoardContext } from "../../../App"
+import GlobalGameState from "../../../model/GlobalGameState"
 import "./counter.css"
 import { allHexesWithinDistance } from "../../HexUtils"
 import HexCommand from "../../../commands/HexCommand"
 
-function StrikeCounter({ getStrikeGroupsAtLocation, currentUSHex, currentJapanHex, counterData, side }) {
+function StrikeCounter({ setStrikeGroupPopup, currentUSHex, currentJapanHex, counterData, side}) {
   const {
     controller,
     loading,
@@ -17,7 +18,6 @@ function StrikeCounter({ getStrikeGroupsAtLocation, currentUSHex, currentJapanHe
     setJapanMapRegions,
     japanMapRegions,
     onDrag,
-    onStop,
   } = useContext(BoardContext)
 
   const [currentHex, setCurrentHex] = useState({})
@@ -28,6 +28,7 @@ function StrikeCounter({ getStrikeGroupsAtLocation, currentUSHex, currentJapanHe
     top: counterData.position.top,
     currentHex: HexCommand.OFFBOARD,
   })
+  
   const handleClick = (e) => {
     if (side === GlobalUnitsModel.Side.US) {
       if (counterData.location === GlobalUnitsModel.AirBox.OFFBOARD) {
@@ -96,7 +97,7 @@ function StrikeCounter({ getStrikeGroupsAtLocation, currentUSHex, currentJapanHe
         setPosition({
           initial: false,
           left: currentUSHex.x + 603,
-          top: currentUSHex.y + 210,
+          top: currentUSHex.y + 220,
           currentHex: currentUSHex,
         })
         if (position.initial) {
@@ -119,7 +120,7 @@ function StrikeCounter({ getStrikeGroupsAtLocation, currentUSHex, currentJapanHe
         setPosition({
           initial: false,
           left: currentJapanHex.x + 157,
-          top: currentJapanHex.y + 180,
+          top: currentJapanHex.y + 190,
           currentHex: currentJapanHex,
         })
         if (position.initial) {
@@ -142,13 +143,26 @@ function StrikeCounter({ getStrikeGroupsAtLocation, currentUSHex, currentJapanHe
         loading,
       },
     })
-    getStrikeGroupsAtLocation(side)
+
+    const units = controller.getStrikeGroupsNotMoved(side)
+    if (units.length === 0) {
+      GlobalGameState.phaseCompleted = true
+    } else {
+      GlobalGameState.phaseCompleted = false
+    }
   }
   const zx = side === GlobalUnitsModel.Side.JAPAN ? 93 : 11
 
   const handleMouseEnter = () => {
     setIsMoveable(true)
-    console.log("BOOG!")
+    const location = controller.getStrikeGroupLocation(counterData.name, side)
+    console.log("LOCATION = ", location)
+    setStrikeGroupPopup(side, true, location)
+  }
+
+  const handleMouseLeave = () => {
+    setIsMoveable(false)
+    setStrikeGroupPopup(side, false)
   }
   //   console.log("counter data=", counterData)
   return (
@@ -170,7 +184,7 @@ function StrikeCounter({ getStrikeGroupsAtLocation, currentUSHex, currentJapanHe
         }}
         id="saveForm2"
         onMouseEnter={handleMouseEnter}
-        onMouseLeave={onStop}
+        onMouseLeave={handleMouseLeave}
         draggabble="true"
         onDragStart={onDrag}
         onDragEnd={handleDrop}

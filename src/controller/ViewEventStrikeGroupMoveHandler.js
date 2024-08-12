@@ -13,7 +13,6 @@ class ViewEventStrikeGroupMoveHandler {
 
     // add strike group to map holding name -> current Hex
 
-    console.log("Add",counterData.name, "to map for side", side)
     this.controller.setStrikeGroupLocation(counterData.name, to, side)
 
     let cmdType = COMMAND_TYPE.MOVE
@@ -24,7 +23,6 @@ class ViewEventStrikeGroupMoveHandler {
    
 
     GlobalGameState.log(`Command: ${command.toString()}`)
-
     if (!loading) {
       counterData.moved = true
     }

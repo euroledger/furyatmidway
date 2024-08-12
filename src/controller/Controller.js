@@ -190,6 +190,11 @@ export default class Controller {
     }
   }
 
+  getStrikeGroupsNotMoved(side) {
+    const strikeGroups = this.getAllStrikeGroups(side)
+    return strikeGroups.filter((sg) => sg.moved === false) 
+  }
+
   getAllStrikeGroups(side) {
     // return list of strike groups containing one or more units
 

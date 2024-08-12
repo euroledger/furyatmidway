@@ -84,7 +84,7 @@ export default class CanvasHex extends React.Component {
       if (hexType === POINTY) {
         this.drawPointyHex(this.canvasCoordinates, { x, y }, "lime", 3)
       } else {
-        // this.drawAndFillHex(this.canvasCoordinates, { x, y }, colors[this.state.side], 3)
+        this.drawAndFillHex(this.canvasCoordinates, { x, y }, colors[this.state.side], 3)
       }
       return true
     }
@@ -164,7 +164,7 @@ export default class CanvasHex extends React.Component {
 
     const x = center.x + this.state.hexSize * Math.cos(angle_rad)
     const y = center.y + this.state.hexSize * Math.sin(angle_rad)
-    return { x, y }
+    return { x, y:y+10 }
   }
 
   getPointyHexCornerCoord = (center, i) => {
@@ -414,6 +414,7 @@ export default class CanvasHex extends React.Component {
 
   handleMouseMove = (e) => {
     this.determineMousePosition(e)
+    this.props.setCurrentMousePosition(() => this.state.currentHex)
   }
 
   determineMousePosition = (e) => {

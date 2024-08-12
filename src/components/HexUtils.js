@@ -7,7 +7,7 @@ export const convertCoords = (q, r) => {
 
 export const hexOrigin = {
   x: -15.3,
-  y: -20.5,
+  y: -30.5,
 }
 
 export const hexSize = 29.07

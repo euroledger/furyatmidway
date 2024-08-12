@@ -30,6 +30,7 @@ function Board({ scale, USMapRegions, japanMapRegions, japanStrikePanelEnabled, 
   const [zone, setZone] = useState(0)
   const [currentJapanHex, setCurrentJapanHex] = useState({})
   const [currentUSHex, setCurrentUSHex] = useState({})
+  const [currentMouseHex, setCurrentMouseHex] = useState({})
   const [mifzone, setMIFZone] = useState(5)
   const [mgfzone, setMGFZone] = useState(6)
   const [airBox, setAirBox] = useState({})
@@ -41,6 +42,10 @@ function Board({ scale, USMapRegions, japanMapRegions, japanStrikePanelEnabled, 
 
   const setCurrentUSCoords = (currentHex) => {
     setCurrentUSHex(currentHex)
+  }
+
+  const setCurrentMousePosition = (currentHex) => {
+    setCurrentMouseHex(currentHex)
   }
 
   const handleDragEnter = (event, zone) => {
@@ -109,6 +114,7 @@ function Board({ scale, USMapRegions, japanMapRegions, japanStrikePanelEnabled, 
           <CanvasHex
             scale={scale}
             side="japan"
+            setCurrentMousePosition={setCurrentMousePosition}
             setCurrentCoords={setCurrentJapanCoords}
             usRegions={USMapRegions}
             jpRegions={japanMapRegions}
@@ -122,7 +128,13 @@ function Board({ scale, USMapRegions, japanMapRegions, japanStrikePanelEnabled, 
             top: `26.6%`,
           }}
         >
-          <CanvasHex scale={scale} side="us" setCurrentCoords={setCurrentUSCoords} usRegions={USMapRegions}></CanvasHex>
+          <CanvasHex
+            scale={scale}
+            side="us"
+            setCurrentMousePosition={setCurrentMousePosition}
+            setCurrentCoords={setCurrentUSCoords}
+            usRegions={USMapRegions}
+          ></CanvasHex>
         </div>
         <TurnMarkerButton image="/images/markers/turnmarker.png" />
         <div>
@@ -214,7 +226,9 @@ function Board({ scale, USMapRegions, japanMapRegions, japanStrikePanelEnabled, 
         <AirCounters counterData={GlobalInit.counters} getAirBox={getAirBox} setAirBox={setAirBox}></AirCounters>
         <StrikeCounters
           controller={GlobalInit.controller}
+          currentMouseHex={currentMouseHex}
           currentUSHex={currentUSHex}
+          setCurrentMouseHex={setCurrentMouseHex}
           currentJapanHex={currentJapanHex}
           counterData={GlobalInit.counters}
         ></StrikeCounters>

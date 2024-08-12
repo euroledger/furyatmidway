@@ -3,6 +3,7 @@ import loadCounters from "../src/CounterLoader"
 import GlobalUnitsModel from "../src/model/GlobalUnitsModel"
 import { createFleetMove } from "./TestUtils"
 import HexCommand from "../src/commands/HexCommand"
+import StrikeGroupUnit from "../src/components/buttons/mapobjects/StrikeGroupUnit"
 
 describe("Controller tests", () => {
   let controller
@@ -251,8 +252,8 @@ describe("Controller tests", () => {
       },
     })
 
-    strikeGroup = GlobalUnitsModel.jpStrikeGroups.get(GlobalUnitsModel.AirBox.JP_STRIKE_BOX_0)
-    unitsInGroup = controller.getAirUnitsInStrikeGroups(strikeGroup.box)
+    const strikeGroup0 = GlobalUnitsModel.jpStrikeGroups.get(GlobalUnitsModel.AirBox.JP_STRIKE_BOX_0)
+    unitsInGroup = controller.getAirUnitsInStrikeGroups(strikeGroup0.box)
     expect(unitsInGroup.length).toEqual(2)
 
     // SORYU
@@ -261,7 +262,7 @@ describe("Controller tests", () => {
     controller.viewEventHandler({
       type: Controller.EventTypes.AIR_UNIT_MOVE,
       data: {
-        name: GlobalUnitsModel.AirBox.JP_STRIKE_BOX_1,
+        name: GlobalUnitsModel.AirBox.JP_STRIKE_BOX_2,
         counterData,
         index: 0,
         side: GlobalUnitsModel.Side.JAPAN,
@@ -274,7 +275,7 @@ describe("Controller tests", () => {
     controller.viewEventHandler({
       type: Controller.EventTypes.AIR_UNIT_MOVE,
       data: {
-        name: GlobalUnitsModel.AirBox.JP_STRIKE_BOX_1,
+        name: GlobalUnitsModel.AirBox.JP_STRIKE_BOX_2,
         counterData,
         index: 1,
         side: GlobalUnitsModel.Side.JAPAN,
@@ -282,30 +283,52 @@ describe("Controller tests", () => {
       },
     })
 
-    strikeGroup = GlobalUnitsModel.jpStrikeGroups.get(GlobalUnitsModel.AirBox.JP_STRIKE_BOX_1)
-    unitsInGroup = controller.getAirUnitsInStrikeGroups(strikeGroup.box)
+    const strikeGroup1 = GlobalUnitsModel.jpStrikeGroups.get(GlobalUnitsModel.AirBox.JP_STRIKE_BOX_2)
+    unitsInGroup = controller.getAirUnitsInStrikeGroups(strikeGroup1.box)
     expect(unitsInGroup.length).toEqual(2)
 
     // // test that we have two strike groups, neither has yet moved
     const groups = controller.getAllStrikeGroups(GlobalUnitsModel.Side.JAPAN)
     expect(groups.length).toEqual(2)
 
-    const strikeCounter = {
-      name: "JP-SG1",
-      longName: "Strike Group 1",
-      position: {},
-      image: "/images/aircountersjpStrike1.png",
-      width: "2.1%",
-      box: GlobalUnitsModel.AirBox.JP_STRIKE_BOX_0,
-      side: GlobalUnitsModel.Side.JAPAN,
-    }
+    // const strikeCounter = {
+    //   name: "JP-SG1",
+    //   longName: "Strike Group 1",
+    //   position: {},
+    //   image: "/images/aircountersjpStrike1.png",
+    //   width: "2.1%",
+    //   box: GlobalUnitsModel.AirBox.JP_STRIKE_BOX_0,
+    //   side: GlobalUnitsModel.Side.JAPAN,
+    // }
+    // const strikeCounter = new StrikeGroupUnit(
+    //   "JP-SG1",
+    //   "Strike Group 1",
+    //   {},
+    //   "/images/aircounters/jpStrike1.png",
+    //   "2.1%",
+    //   {
+    //     currentHex: {
+    //       col: 3,
+    //       q: 5,
+    //       r: 1,
+    //       row: "E",
+    //       side: "jp",
+    //       x: 120,
+    //       y: 200,
+    //     },
+    //   },
+    //   GlobalUnitsModel.AirBox.JP_STRIKE_BOX_0,
+    //   GlobalUnitsModel.Side.JAPAN,
+    //   {},
+    //   false
+    // )
 
     //  Strike Group moves onto map - test location, moved etc.
     controller.viewEventHandler({
       type: Controller.EventTypes.STRIKE_GROUP_MOVE,
       data: {
         initial: true,
-        counterData: strikeCounter,
+        counterData: strikeGroup0,
         from: HexCommand.OFFBOARD,
         to: {
           currentHex: {
@@ -323,48 +346,68 @@ describe("Controller tests", () => {
       },
     })
 
-    const location = controller.getStrikeGroupLocation("JP-SG1", GlobalUnitsModel.Side.JAPAN)
-    expect(location.currentHex.row).toEqual("E")
+    // const strikeCounter2 = new StrikeGroupUnit(
+    //   "JP-SG3",
+    //   "Strike Group 3",
+    //   {},
+    //   "/images/aircounters/jpStrike3.png",
+    //   "2.1%",
+    //   {
+    //     currentHex: {
+    //       col: 3,
+    //       q: 5,
+    //       r: 1,
+    //       row: "E",
+    //       side: "jp",
+    //       x: 120,
+    //       y: 200,
+    //     },
+    //   },
+    //   GlobalUnitsModel.AirBox.JP_STRIKE_BOX_2,
+    //   GlobalUnitsModel.Side.JAPAN,
+    //   {},
+    //   false
+    // )
 
-    const strikeCounter2 = {
-      name: "JP-SG3",
-      longName: "Strike Group 3",
-      position: {},
-      image: "/images/aircounters/jpStrike3.png",
-      width: "2.1%",
-      box: GlobalUnitsModel.AirBox.JP_STRIKE_BOX_2,
-      side: GlobalUnitsModel.Side.JAPAN,
-    }
     controller.viewEventHandler({
       type: Controller.EventTypes.STRIKE_GROUP_MOVE,
       data: {
         initial: true,
-        counterData: strikeCounter2,
+        counterData: strikeGroup1,
         from: HexCommand.OFFBOARD,
-        to: { currentHex: {
-          col: 3,
-          q: 5,
-          r: 1,
-          row: "E",
-          side: "jp",
-          x: 120,
-          y:200
-        }},
+        to: {
+          currentHex: {
+            col: 3,
+            q: 5,
+            r: 1,
+            row: "E",
+            side: "jp",
+            x: 120,
+            y: 200,
+          },
+        },
         side: GlobalUnitsModel.Side.JAPAN,
-        loading: false
+        loading: false,
       },
     })
 
     let location2 = {
       currentHex: {
         q: 5,
-        r: 1
-      }
+        r: 1,
+      },
     }
 
     const strikeGroupsAtLocation = controller.getAllStrikeGroupsInLocation(location2, GlobalUnitsModel.Side.JAPAN)
     expect(strikeGroupsAtLocation.length).toEqual(2)
     expect(strikeGroupsAtLocation[0].name).toEqual("JP-SG1")
     expect(strikeGroupsAtLocation[1].name).toEqual("JP-SG3")
+
+
+    expect(strikeGroupsAtLocation[0].moved).toBe(true)
+
+    // get all strike groups which have not moved
+    const units = controller.getStrikeGroupsNotMoved(GlobalUnitsModel.Side.JAPAN)
+    expect(units.length).toEqual(0)
   })
 })

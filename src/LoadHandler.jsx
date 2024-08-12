@@ -7,8 +7,15 @@ function delay(ms) {
   })
 }
 
-async function loadHandler({ setTestClicked, setSplash, setAirUnitUpdate, setFleetUnitUpdate, loadState, id }) {
-
+async function loadHandler({
+  setTestClicked,
+  setSplash,
+  setAirUnitUpdate,
+  setFleetUnitUpdate,
+  loadState,
+  id,
+  setLoading,
+}) {
   setTestClicked(true)
   console.log("Load game from local storage")
   setSplash(false)
@@ -41,6 +48,7 @@ async function loadHandler({ setTestClicked, setSplash, setAirUnitUpdate, setFle
     boxName: "",
     index: -1,
   })
+  setLoading(false)
 }
 
 export default loadHandler

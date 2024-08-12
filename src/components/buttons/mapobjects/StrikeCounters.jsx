@@ -4,27 +4,46 @@ import "../../board.css"
 import GlobalGameState from "../../../model/GlobalGameState"
 import GlobalUnitsModel from "../../../model/GlobalUnitsModel"
 import StrikeCounter from "./StrikeCounter"
+import StrikeGroupPopUp from "./StrikeGroupPopUp"
 
-function StrikeCounters({ controller, onDrag, onStop, counterData, currentUSHex, currentJapanHex }) {
+function StrikeCounters({ controller, currentMouseHex, setCurrentMouseHex, counterData, currentUSHex, currentJapanHex }) {
+
   const [showPopup, setShowPopup] = useState(false)
+
+  const [popUpPosition, setPopUpPosition] = useState({})
+
+  const [strikeGroupsAtLocation, setstrikeGroupsAtLocation] = useState([])
 
   const counters = Array.from(counterData.values())
 
+  const [hex, setHex] = useState(currentMouseHex)
+
   const strikeUnits = counters.filter((unit) => unit.constructor.name === "StrikeGroupUnit")
 
-  function getStrikeGroupsAtLocation(side) {
-    const hex = {
-      currentHex: side === GlobalUnitsModel.Side.JAPAN ? currentJapanHex : currentUSHex,
-    }
-    console.log("CURRENT HEX = ", hex)
-    const strikeGroupsAtLocation = controller.getAllStrikeGroupsInLocation(hex, side)
+  function setStrikeGroupPopup(side, show, hex) {
 
-    console.log("Num Strike Groups =", strikeGroupsAtLocation.length)
-    if (strikeGroupsAtLocation.length > 1) {
+    if (show === false || hex === undefined) {
+      console.log("1 SET POP UP FALSE hex =", hex)
+      setShowPopup(false)
+      return
+    }
+    const hexy = hex
+    setHex(() => hex)
+
+    const groups = controller.getAllStrikeGroupsInLocation(hexy, side)
+    setstrikeGroupsAtLocation(() => groups)
+    if (groups.length > 0) {
+      console.log("SET POP UP TRUE")
+
       setShowPopup(true)
+      setPopUpPosition(() => hexy.currentHex)
     } else {
+      console.log("2 SET POP UP FALSE groups.length = ", groups.length)
+
       setShowPopup(false)
     }
+
+    setCurrentMouseHex({})
   }
   const sgCounters = strikeUnits.map((strikeGroupUnit) => {
     if (
@@ -36,7 +55,7 @@ function StrikeCounters({ controller, onDrag, onStop, counterData, currentUSHex,
 
     return (
       <StrikeCounter
-        getStrikeGroupsAtLocation={getStrikeGroupsAtLocation}
+        setStrikeGroupPopup={setStrikeGroupPopup}
         counterData={strikeGroupUnit}
         side={strikeGroupUnit.side}
         currentUSHex={currentUSHex}
@@ -44,24 +63,11 @@ function StrikeCounters({ controller, onDrag, onStop, counterData, currentUSHex,
       ></StrikeCounter>
     )
   })
-
   return (
     <>
       {sgCounters}
       {showPopup && (
-        <div
-          style={{
-            position: "absolute",
-            left: 620,
-            top: 200,
-            zIndex: 100,
-            width: "200px",
-            height: "100px",
-            background: "white",
-            borderRadius: "4px",
-            border: "3px solid #060000",
-          }}
-        ></div>
+        <StrikeGroupPopUp strikeGroup={strikeGroupsAtLocation} popUpPosition={popUpPosition} hex={hex}></StrikeGroupPopUp>
       )}
     </>
   )

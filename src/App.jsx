@@ -565,7 +565,7 @@ export function App() {
 
   function loadMyGame(id) {
     setLoading(() => true)
-    loadHandler({ setTestClicked, setSplash, setAirUnitUpdate, setFleetUnitUpdate, loadState, id })
+    loadHandler({ setTestClicked, setSplash, setAirUnitUpdate, setFleetUnitUpdate, loadState, id, setLoading })
   }
 
   async function loady() {

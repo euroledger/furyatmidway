@@ -65,6 +65,7 @@ function AirCounter({ getAirBox, setAirBox, counterData, side }) {
       left: airUnitUpdate.position.left + "%",
       top: airUnitUpdate.position.top - 0.2 + "%",
     }))
+
     if (GlobalGameState.gamePhase === GlobalGameState.PHASE.AIR_OPERATIONS) {
       controller.viewEventHandler({
         type: Controller.EventTypes.AIR_UNIT_MOVE,

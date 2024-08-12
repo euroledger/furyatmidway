@@ -21,7 +21,7 @@ function loadCounters(controller) {
       "1AF",
       "Japanese 1AF",
       position,
-      { x: 50, y: 58 }, // offsets
+      { x: 50, y: 68 }, // offsets
       "/images/fleetcounters/1AF.png",
       "3.0%"
     )
@@ -38,7 +38,7 @@ function loadCounters(controller) {
       "MIF",
       "Japanese Midway Invasion Force",
       position,
-      { x: 50, y: 58 }, // offsets
+      { x: 50, y: 68 }, // offsets
       "/images/fleetcounters/MIF.png",
       "3.0%"
     )
@@ -55,7 +55,7 @@ function loadCounters(controller) {
       "MIF-USMAP",
       "Japanese Midway Invasion Force (US Map)",
       position,
-      { x: 50, y: 58 }, // offsets
+      { x: 50, y: 68 }, // offsets
       "/images/fleetcounters/MIF.png",
       "3.0%"
     )
@@ -73,7 +73,7 @@ function loadCounters(controller) {
       "CSF",
       "US Carrier Strike Force",
       position,
-      { x: -3, y: 88 }, // offsets
+      { x: -3, y: 98 }, // offsets
       "/images/fleetcounters/CSF.png",
       "3.0%"
     )
@@ -91,7 +91,7 @@ function loadCounters(controller) {
       "CSF-JPMAP",
       "US Carrier Strike Force (Japan Map)",
       position,
-      { x: -50, y: 58 }, // offsets
+      { x: -50, y: 68 }, // offsets
       "/images/fleetcounters/CSF.png",
       "3.0%"
     )
@@ -108,7 +108,7 @@ function loadCounters(controller) {
       "1AF-USMAP",
       "Japanese 1AF (US Map)",
       position,
-      { x: -202, y: 88 }, // offsets
+      { x: -202, y: 98 }, // offsets
       "/images/fleetcounters/1AF.png",
       "3.0%"
     )
