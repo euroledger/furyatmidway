@@ -8,7 +8,7 @@ import "./counter.css"
 import { allHexesWithinDistance } from "../../HexUtils"
 import HexCommand from "../../../commands/HexCommand"
 
-function StrikeCounter({ setStrikeGroupPopup, currentUSHex, currentJapanHex, counterData, side}) {
+function StrikeCounter({ setStrikeGroupPopup, currentUSHex, currentJapanHex, counterData, side }) {
   const {
     controller,
     loading,
@@ -18,6 +18,7 @@ function StrikeCounter({ setStrikeGroupPopup, currentUSHex, currentJapanHex, cou
     setJapanMapRegions,
     japanMapRegions,
     onDrag,
+    fleetUnitUpdate,
   } = useContext(BoardContext)
 
   const [currentHex, setCurrentHex] = useState({})
@@ -28,33 +29,97 @@ function StrikeCounter({ setStrikeGroupPopup, currentUSHex, currentJapanHex, cou
     top: counterData.position.top,
     currentHex: HexCommand.OFFBOARD,
   })
-  
+
+  function setJapanPosition(hex) {
+    setPosition({
+      initial: false,
+      left: hex.x + 157,
+      top: hex.y + 190,
+      currentHex: hex,
+    })
+  }
+
+  function setUSPosition(hex) {
+    setPosition({
+      initial: false,
+      left: hex.x + 603,
+      top: hex.y + 220,
+      currentHex: hex,
+    })
+  }
+  // FLEET UNIT UPDATE CODE
+  let hex = {}
+  if (fleetUnitUpdate) {
+    hex = fleetUnitUpdate.position.currentHex
+  }
+
+  if (
+    fleetUnitUpdate &&
+    counterData.name === fleetUnitUpdate.name &&
+    (position.currentHex.q !== hex.q || position.currentHex.r !== hex.r)
+  ) {
+    console.log("I am ", fleetUnitUpdate.name, " -> STRIKE GROUP UPDATE, move to ", hex.q + ",", hex.r)
+
+    if (side === GlobalUnitsModel.Side.US) {
+      setUSPosition(hex)
+    } else {
+      setJapanPosition(hex)
+    }
+    let from, to
+    if (position.initial) {
+      from = HexCommand.OFFBOARD
+    } else {
+      from = { currentHex: position.currentHex }
+    }
+    to = { currentHex: hex }
+    controller.viewEventHandler({
+      type: Controller.EventTypes.STRIKE_GROUP_MOVE,
+      data: {
+        initial: position.initial,
+        counterData,
+        from,
+        to,
+        side,
+        loading: true,
+      },
+    })
+  }
+
+  function setJapanRegions() {
+    if (counterData.location === GlobalUnitsModel.AirBox.OFFBOARD) {
+      // Use 1AF
+      const locationOfCarrier = controller.getFleetLocation("1AF", GlobalUnitsModel.Side.JAPAN)
+
+      setCurrentHex(locationOfCarrier)
+      const jpRegion = allHexesWithinDistance(locationOfCarrier.currentHex, 2, true)
+      setJapanMapRegions(jpRegion)
+    }
+  }
+  function setUSRegions() {
+    // if naval strike group - use, counter CSF else use Midway
+    // determine this from first air unit
+    let usRegion, locationOfCarrier
+
+    if (counterData.location === GlobalUnitsModel.AirBox.OFFBOARD) {
+      const unitsInGroup = controller.getAirUnitsInStrikeGroups(counterData.box)
+      if (unitsInGroup[0].carrier === GlobalUnitsModel.Carrier.MIDWAY) {
+        locationOfCarrier = Controller.MIDWAY_HEX
+      } else {
+        locationOfCarrier = controller.getFleetLocation("CSF", GlobalUnitsModel.Side.US)
+      }
+    }
+
+    // @TODO set US Regions when strike counter is on the map
+
+    setCurrentHex(locationOfCarrier)
+    usRegion = allHexesWithinDistance(locationOfCarrier.currentHex, 2, true)
+    setUSMapRegions(usRegion)
+  }
   const handleClick = (e) => {
     if (side === GlobalUnitsModel.Side.US) {
-      if (counterData.location === GlobalUnitsModel.AirBox.OFFBOARD) {
-        // if naval strike group - use CSF else use Midway
-        // determine this from first air unit
-        const unitsInGroup = controller.getAirUnitsInStrikeGroups(counterData.box)
-        let usRegion, locationOfCarrier
-        if (unitsInGroup[0].carrier === GlobalUnitsModel.Carrier.MIDWAY) {
-          locationOfCarrier = Controller.MIDWAY_HEX
-        } else {
-          locationOfCarrier = controller.getFleetLocation("CSF", GlobalUnitsModel.Side.US)
-        }
-
-        setCurrentHex(locationOfCarrier)
-        usRegion = allHexesWithinDistance(locationOfCarrier.currentHex, 2, true)
-        setUSMapRegions(usRegion)
-      }
+        setUSRegions()
     } else {
-      if (counterData.location === GlobalUnitsModel.AirBox.OFFBOARD) {
-        // Use 1AF
-        const locationOfCarrier = controller.getFleetLocation("1AF", GlobalUnitsModel.Side.JAPAN)
-
-        setCurrentHex(locationOfCarrier)
-        const jpRegion = allHexesWithinDistance(locationOfCarrier.currentHex, 2, true)
-        setJapanMapRegions(jpRegion)
-      }
+        setJapanRegions()
     }
     // 1. US
     // if in strike box -> use location of CSF Fleet
@@ -94,35 +159,22 @@ function StrikeCounter({ setStrikeGroupPopup, currentUSHex, currentJapanHex, cou
 
         // also a means to select a counter in a stack
 
-        setPosition({
-          initial: false,
-          left: currentUSHex.x + 603,
-          top: currentUSHex.y + 220,
-          currentHex: currentUSHex,
-        })
+        setUSPosition(currentUSHex)
         if (position.initial) {
           from = HexCommand.OFFBOARD
         } else {
           from = { currentHex: position.currentHex }
         }
         to = { currentHex: currentUSHex }
+        setUSMapRegions([])
       }
     } else {
       const hex = { q: currentJapanHex.q, r: currentJapanHex.r }
-
-      console.log("japanMapRegions = ", japanMapRegions)
-      console.log("hex = ", hex)
       let isThere = japanMapRegions && japanMapRegions.find((h) => h.q === hex.q && h.r === hex.r)
       if (!isThere) {
-        console.log("NO WAY SUZUKI!")
         return
       } else {
-        setPosition({
-          initial: false,
-          left: currentJapanHex.x + 157,
-          top: currentJapanHex.y + 190,
-          currentHex: currentJapanHex,
-        })
+        setJapanPosition(currentJapanHex)
         if (position.initial) {
           from = HexCommand.OFFBOARD
         } else {
@@ -130,6 +182,7 @@ function StrikeCounter({ setStrikeGroupPopup, currentUSHex, currentJapanHex, cou
         }
         to = { currentHex: currentJapanHex }
       }
+      setJapanMapRegions([])
     }
 
     controller.viewEventHandler({
@@ -155,8 +208,12 @@ function StrikeCounter({ setStrikeGroupPopup, currentUSHex, currentJapanHex, cou
 
   const handleMouseEnter = () => {
     setIsMoveable(true)
+    if (side === GlobalUnitsModel.Side.JAPAN) {
+      setJapanRegions()
+    } else {
+      setUSRegions()
+    }
     const location = controller.getStrikeGroupLocation(counterData.name, side)
-    console.log("LOCATION = ", location)
     setStrikeGroupPopup(side, true, location)
   }
 
@@ -167,35 +224,33 @@ function StrikeCounter({ setStrikeGroupPopup, currentUSHex, currentJapanHex, cou
   //   console.log("counter data=", counterData)
   return (
     <>
-    <div>
-      <input
-        type="image"
-        src={counterData.image}
-        style={{
-          position: "absolute",
-          width: counterData.width,
-          left: position.left,
-          top: position.top,
-          zIndex: zx,
-          "&:focus": {
-            borderRadius: "2px",
-            border: "3px solid rgb(197,9,9)",
-          },
-        }}
-        id="saveForm2"
-        onMouseEnter={handleMouseEnter}
-        onMouseLeave={handleMouseLeave}
-        draggabble="true"
-        onDragStart={onDrag}
-        onDragEnd={handleDrop}
-        onClick={(e) => handleClick(e)}
-        // onContextMenu={(e) => handleRightClick(e)}
-        zIndex={side === GlobalUnitsModel.Side.JAPAN ? 91 : 11}
-      />
-     
-    </div>
-    
-   </>
+      <div>
+        <input
+          type="image"
+          src={counterData.image}
+          style={{
+            position: "absolute",
+            width: counterData.width,
+            left: position.left,
+            top: position.top,
+            zIndex: zx,
+            "&:focus": {
+              borderRadius: "2px",
+              border: "3px solid rgb(197,9,9)",
+            },
+          }}
+          id="saveForm2"
+          onMouseEnter={handleMouseEnter}
+          onMouseLeave={handleMouseLeave}
+          draggabble="true"
+          onDragStart={onDrag}
+          onDragEnd={handleDrop}
+          onClick={(e) => handleClick(e)}
+          // onContextMenu={(e) => handleRightClick(e)}
+          zIndex={side === GlobalUnitsModel.Side.JAPAN ? 91 : 11}
+        />
+      </div>
+    </>
   )
   //   });
 }

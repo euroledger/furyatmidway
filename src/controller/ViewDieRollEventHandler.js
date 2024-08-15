@@ -11,7 +11,7 @@ class ViewDieRollEventHandler {
 
     let command = new DiceCommand(event.type, jpRolls, usRolls)
   
-    GlobalGameState.log(`Command: ${command.toString()}`)
+    GlobalGameState.log(`${command.toString()}`)
   }
 }
 export default ViewDieRollEventHandler;

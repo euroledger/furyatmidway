@@ -15,14 +15,14 @@ class ViewEventStrikeGroupMoveHandler {
 
     this.controller.setStrikeGroupLocation(counterData.name, to, side)
 
-    let cmdType = COMMAND_TYPE.MOVE
+    let cmdType = COMMAND_TYPE.MOVE_STRIKE_GROUP
     if (initial) {
       cmdType = COMMAND_TYPE.PLACE
     }
     let command = new HexCommand(cmdType, counterData.longName, from, to, side)
    
 
-    GlobalGameState.log(`Command: ${command.toString()}`)
+    GlobalGameState.log(`${command.toString()}`)
     if (!loading) {
       counterData.moved = true
     }

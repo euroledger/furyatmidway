@@ -27,7 +27,7 @@ function FleetCounter({ id, currentHex, counterData, usRegions, jpRegions, enabl
     counterData.name === fleetUnitUpdate.name &&
     (position.currentHex.q !== hex.q || position.currentHex.r !== hex.r)
   ) {
-    // console.log("I am ", fleetUnitUpdate.name, " -> FLEET UNIT UPDATE, move to ", hex.q + ",", hex.r)
+    console.log("I am ", fleetUnitUpdate.name, " -> FLEET UNIT UPDATE, move to ", hex.q + ",", hex.r)
     setPosition({
       initial: false,
       left: hex.x + counterData.position.left + counterData.offsets.x,

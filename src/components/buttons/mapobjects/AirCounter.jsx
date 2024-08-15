@@ -77,6 +77,7 @@ function AirCounter({ getAirBox, setAirBox, counterData, side }) {
           loading: loading,
         },
       })
+
     } else {
       controller.viewEventHandler({
         type: Controller.EventTypes.AIR_UNIT_SETUP,
@@ -203,6 +204,13 @@ function AirCounter({ getAirBox, setAirBox, counterData, side }) {
           side: theSide,
         },
       })
+      const units = controller.getStrikeGroupsNotMoved(theSide)
+      console.log("QUACK 1 units.length=", units.length)
+      if (units.length === 0) {
+        GlobalGameState.phaseCompleted = true
+      } else {
+        GlobalGameState.phaseCompleted = false
+      }
       // remove valid destinations (do not allow change move, use undo for that)
       controller.setValidAirUnitDestinations(counterData.name, new Array())
       setBoxes(counterData)

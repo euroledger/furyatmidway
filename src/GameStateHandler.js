@@ -109,9 +109,14 @@ function usFleetMovementHandler({ setFleetUnitUpdate, setSearchValues, setSearch
     us_csf: sv.us_csf,
     us_midway: sv.us_midway,
   })
+  console.log("QUACK 1...................")
   setSearchValues(sv)
   GlobalGameState.airOperationPoints.japan = sr.JAPAN
   GlobalGameState.airOperationPoints.us = sr.US
+
+  console.log("GlobalGameState.airOperationPoints.japan=", GlobalGameState.airOperationPoints.japan)
+  console.log("GlobalGameState.airOperationPoints.us=", GlobalGameState.airOperationPoints.us)
+
   setSearchResults(sr)
   setSearchValuesAlertShow(true)
 }
@@ -127,7 +132,7 @@ function airOperationsHandler({
   setEnabledUSBoxes,
   setJapanStrikePanelEnabled,
   setUsStrikePanelEnabled,
-  sideWithInitiative
+  sideWithInitiative,
 }) {
   GlobalGameState.phaseCompleted = false
   GlobalGameState.sideWithInitiative = sideWithInitiative
@@ -136,19 +141,28 @@ function airOperationsHandler({
     setEnabledJapanBoxes(() => enabledBoxes)
     setJapanStrikePanelEnabled(true)
     setUsStrikePanelEnabled(false)
+    const units = GlobalInit.controller.getStrikeGroupsNotMoved(GlobalUnitsModel.Side.JAPAN)
+    if (units.length === 0) {
+      GlobalGameState.phaseCompleted = true
+    } else {
+      GlobalGameState.phaseCompleted = false
+    }
   } else {
     const enabledUSBoxes = getUSEnabledAirBoxes(sideWithInitiative)
     setEnabledUSBoxes(() => enabledUSBoxes)
     setUsStrikePanelEnabled(true)
     setJapanStrikePanelEnabled(false)
+    const units = GlobalInit.controller.getStrikeGroupsNotMoved(GlobalUnitsModel.Side.US)
+    if (units.length === 0) {
+      GlobalGameState.phaseCompleted = true
+    } else {
+      GlobalGameState.phaseCompleted = false
+    }
   }
   // If at least one strike group has been created and all strike groups have moved
   // allow next action
 
   GlobalGameState.updateGlobalState()
-
-
-
 }
 export default function handleAction({
   setUSMapRegions,
@@ -167,45 +181,45 @@ export default function handleAction({
   setSearchValuesAlertShow,
   setJapanStrikePanelEnabled,
   setUsStrikePanelEnabled,
-  sideWithInitiative
+  sideWithInitiative,
 }) {
-//   switch (
-    // GlobalGameState.gamePhase
-    // case GlobalGameState.PHASE.JAPAN_SETUP:
-    //     japanSetUpHandler()
-    //   break
+  //   switch (
+  // GlobalGameState.gamePhase
+  // case GlobalGameState.PHASE.JAPAN_SETUP:
+  //     japanSetUpHandler()
+  //   break
 
-    // case GlobalGameState.PHASE.JAPAN_CARD_DRAW:
-    //   break
+  // case GlobalGameState.PHASE.JAPAN_CARD_DRAW:
+  //   break
 
-    // case GlobalGameState.PHASE.US_SETUP_FLEET:
-    //   break
+  // case GlobalGameState.PHASE.US_SETUP_FLEET:
+  //   break
 
-    // case GlobalGameState.PHASE.US_SETUP_AIR:
-    //   break
-    // case GlobalGameState.PHASE.US_CARD_DRAW:
-    //   break
-    // case GlobalGameState.PHASE.JAPAN_MIDWAY:
-    //   break
-    // case GlobalGameState.PHASE.US_FLEET_MOVEMENT_PLANNING:
-    //   break
-    // case GlobalGameState.PHASE.JAPAN_FLEET_MOVEMENT:
-    //   break
-    // case GlobalGameState.PHASE.MIDWAY_ATTACK:
-    //   break
-    // case GlobalGameState.PHASE.US_FLEET_MOVEMENT:
-    //   break
+  // case GlobalGameState.PHASE.US_SETUP_AIR:
+  //   break
+  // case GlobalGameState.PHASE.US_CARD_DRAW:
+  //   break
+  // case GlobalGameState.PHASE.JAPAN_MIDWAY:
+  //   break
+  // case GlobalGameState.PHASE.US_FLEET_MOVEMENT_PLANNING:
+  //   break
+  // case GlobalGameState.PHASE.JAPAN_FLEET_MOVEMENT:
+  //   break
+  // case GlobalGameState.PHASE.MIDWAY_ATTACK:
+  //   break
+  // case GlobalGameState.PHASE.US_FLEET_MOVEMENT:
+  //   break
 
-    // case GlobalGameState.PHASE.AIR_SEARCH:
-    //   break
+  // case GlobalGameState.PHASE.AIR_SEARCH:
+  //   break
 
-    // case GlobalGameState.PHASE.AIR_OPERATIONS:
-    //   break
+  // case GlobalGameState.PHASE.AIR_OPERATIONS:
+  //   break
 
-    // default:
-    //   break
-//   ) {
-//   }
+  // default:
+  //   break
+  //   ) {
+  //   }
 
   if (GlobalGameState.gamePhase === GlobalGameState.PHASE.JAPAN_SETUP) {
     japanSetUpHandler()
@@ -240,8 +254,9 @@ export default function handleAction({
       setEnabledUSBoxes,
       setJapanStrikePanelEnabled,
       setUsStrikePanelEnabled,
-      sideWithInitiative
+      sideWithInitiative,
     })
+    GlobalGameState.updateGlobalState()
     return
   }
 

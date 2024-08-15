@@ -70,15 +70,16 @@ export function saveGameState(controller, gameId) {
     // TODO: strike groups
   }
   // savedGame.set(gameId, savedGameDetails )
-  localStorage.setItem("global", globalText)
-  localStorage.setItem("air", airText)
-  localStorage.setItem("airoperations", airOperationsText)
-  localStorage.setItem("jpMap", jpMapText)
-  localStorage.setItem("usMap", usMapText)
-  localStorage.setItem("jpcards", jpCardText)
-  localStorage.setItem("uscards", usCardText)
-  localStorage.setItem("log", logItems)
+  // localStorage.setItem("global", globalText)
+  // localStorage.setItem("air", airText)
+  // localStorage.setItem("airoperations", airOperationsText)
+  // localStorage.setItem("jpMap", jpMapText)
+  // localStorage.setItem("usMap", usMapText)
+  // localStorage.setItem("jpcards", jpCardText)
+  // localStorage.setItem("uscards", usCardText)
+  // localStorage.setItem("log", logItems)
 
+  console.log("Saving Map data:", savedGameDetails.usMap)
   localStorage.setItem(gameId, JSON.stringify(savedGameDetails))
 }
 function createFleetUpdates(fleetMap) {

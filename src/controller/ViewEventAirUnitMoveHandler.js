@@ -16,8 +16,9 @@ class ViewEventAirUnitMoveHandler {
     const to = `${name} - box ${index}`
 
     this.controller.addAirUnitToBox(name, index, counterData)
-    let command = new MoveCommand(COMMAND_TYPE.MOVE, counterData.longName, from, to)
+    let command = new MoveCommand(COMMAND_TYPE.MOVE_AIR_UNIT, counterData.longName, from, to)
 
+    
     // console.log(">>>>>>>> name = ", name)
     // console.log(">>>>>>>> jp groups = ", GlobalUnitsModel.jpStrikeGroups)
     // console.log(">>>>>>>> us groups = ", GlobalUnitsModel.usStrikeGroups)
@@ -25,7 +26,7 @@ class ViewEventAirUnitMoveHandler {
     if (!loading) {
       counterData.aircraftUnit.moved = true
     }
-    GlobalGameState.log(`Command: ${command.toString()}`)
+    GlobalGameState.log(`${command.toString()}`)
   }
 }
 export default ViewEventAirUnitMoveHandler

@@ -16,7 +16,7 @@ class ViewEventFleetUnitSetupHandler {
 
     this.controller.setFleetUnitLocation(id, to, side)
 
-    let cmdType = COMMAND_TYPE.MOVE
+    let cmdType = COMMAND_TYPE.MOVE_FLEET_UNIT
     if (initial) {
       cmdType = COMMAND_TYPE.PLACE
     }
@@ -24,7 +24,7 @@ class ViewEventFleetUnitSetupHandler {
    
     GlobalGameState.phaseCompleted = true
 
-    GlobalGameState.log(`Command: ${command.toString()}`)
+    GlobalGameState.log(`${command.toString()}`)
   }
 }
 export default ViewEventFleetUnitSetupHandler;

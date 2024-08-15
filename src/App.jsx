@@ -16,16 +16,14 @@ import CardPanel from "./components/dialogs/CardPanel"
 import GameStatusPanel from "./components/dialogs/GameStatusPanel"
 import SplashScreen from "./components/dialogs/SplashScreen"
 import "./style.css"
-import { createMapUpdateForFleet } from "./AirUnitTestData"
 import Controller from "./controller/Controller"
 import { determineAllUnitsDeployedForCarrier } from "./controller/AirUnitSetupHandler"
 import { usCSFStartHexes, japanAF1StartHexesNoMidway, japanAF1StartHexesMidway } from "./components/MapRegions"
 import YesNoDialog from "./components/dialogs/YesNoDialog"
-import { loadGameState, saveGameState } from "./SaveLoadGame"
+import { saveGameState } from "./SaveLoadGame"
 import loadHandler from "./LoadHandler"
 import { allHexesWithinDistance } from "./components/HexUtils"
 import DicePanel from "./components/dialogs/DicePanel"
-import { calculateSearchValues, calculateSearchResults } from "./model/SearchValues"
 import { AirOpsHeaders, AirOpsFooters } from "./AirOpsDataPanels"
 import { randomDice } from "./components/dialogs/DiceUtils"
 import UITester from "./UITester"
@@ -50,23 +48,11 @@ export function App() {
   useEffect(() => {
     setEnabledUSBoxes(getUSEnabledAirBoxes())
   }, [])
-  // TODO
-  // Have a list of the zones which are enabled for the current game phase
-  // and pass this down to the draganddrop components
-
-  // Maybe add a ZoneHandler to do the logic for this??
-
-  // This will create a list of enabled boxes for whatever game phase
-  // and work out which boxes are enabled during air operations
   const [enabledZones, setEnabledZones] = useState([])
-
-  // then in the component (ie air box) we can say
-  // If this air box is in the list -> enable, else disable
 
   const [gameState, setGameState] = useState(false)
 
   const [loading, setLoading] = useState(false)
-  // TODO set an effect hook on game state to trigger a game save
 
   const [isMoveable, setIsMoveable] = useState(false)
   const [scale, setScale] = useState(1)
@@ -151,6 +137,7 @@ export function App() {
     setFleetMoveAlertShow(true)
   }
 
+  // TODO Move into load handler
   const loadState = () => {
     if (GlobalGameState.gamePhase === GlobalGameState.PHASE.JAPAN_SETUP) {
       const carrier = GlobalGameState.getJapanCarrier()
@@ -206,130 +193,6 @@ export function App() {
     const enabledUSBoxes = getUSEnabledAirBoxes()
     setEnabledUSBoxes(() => enabledUSBoxes)
   }
-
-  // TODO move this into separate file
-  // const nextAction = (e) => {
-  //   e.preventDefault()
-  //   if (GlobalGameState.gamePhase === GlobalGameState.PHASE.JAPAN_SETUP) {
-  //     if (GlobalGameState.currentCarrier <= 2) {
-  //       GlobalGameState.currentCarrier++
-  //       GlobalGameState.currentCarrierDivision = GlobalGameState.currentCarrier <= 1 ? 1 : 2
-  //     } else {
-  //       GlobalGameState.gamePhase = GlobalGameState.PHASE.JAPAN_CARD_DRAW
-  //       GlobalInit.controller.drawJapanCards(3, true)
-  //       GlobalGameState.jpCardsDrawn = true
-  //     }
-  //     GlobalGameState.phaseCompleted = false
-  //   } else if (GlobalGameState.gamePhase === GlobalGameState.PHASE.JAPAN_CARD_DRAW) {
-  //     GlobalGameState.gamePhase = GlobalGameState.PHASE.US_SETUP_FLEET
-  //     GlobalGameState.currentCarrier = 0
-  //     setUSMapRegions(usCSFStartHexes)
-  //     setCSFAlertShow(true)
-  //     GlobalGameState.phaseCompleted = false
-  //   } else if (GlobalGameState.gamePhase === GlobalGameState.PHASE.US_SETUP_FLEET) {
-  //     GlobalGameState.gamePhase = GlobalGameState.PHASE.US_SETUP_AIR
-  //     GlobalGameState.usFleetPlaced = true
-  //     setUSMapRegions([])
-  //     GlobalGameState.phaseCompleted = false
-  //   } else if (GlobalGameState.gamePhase === GlobalGameState.PHASE.US_SETUP_AIR) {
-  //     GlobalGameState.currentCarrier++
-  //     GlobalGameState.currentTaskForce =
-  //       GlobalGameState.currentCarrier <= 1 ? 1 : GlobalGameState.currentCarrier === 2 ? 2 : 3 // 3 is Midway
-  //     if (GlobalGameState.currentCarrier === 4) {
-  //       console.log("Set game state to US Card Draw")
-  //       GlobalGameState.gamePhase = GlobalGameState.PHASE.US_CARD_DRAW
-  //       GlobalGameState.usSetUpComplete = true
-  //       GlobalInit.controller.drawUSCards(2, true)
-  //       GlobalGameState.usCardsDrawn = true
-  //     }
-  //     GlobalGameState.phaseCompleted = false
-  //   } else if (GlobalGameState.gamePhase === GlobalGameState.PHASE.US_CARD_DRAW) {
-  //     if (GlobalGameState.gameTurn != 1) {
-  //       console.log("Set game state to Both Card Draw")
-  //       GlobalGameState.gamePhase = GlobalGameState.PHASE.BOTH_CARD_DRAW
-  //     } else {
-  //       console.log("Set game state to Midway")
-  //       GlobalGameState.gamePhase = GlobalGameState.PHASE.JAPAN_MIDWAY
-  //       // @TODO hard wire or randomly select midway attack decision here
-  //       setMidwayDialogShow(true)
-  //     }
-  //     GlobalGameState.phaseCompleted = false
-  //   } else if (GlobalGameState.gamePhase === GlobalGameState.PHASE.JAPAN_MIDWAY) {
-  //     console.log("END OF Midway Declaration Phase")
-  //     GlobalGameState.gamePhase = GlobalGameState.PHASE.US_FLEET_MOVEMENT_PLANNING
-  //     setUsFleetRegions()
-  //     GlobalGameState.usFleetMoved = false
-  //     GlobalGameState.phaseCompleted = true
-  //   } else if (GlobalGameState.gamePhase === GlobalGameState.PHASE.US_FLEET_MOVEMENT_PLANNING) {
-  //     console.log("END OF US Fleet Movement Phase")
-  //     GlobalGameState.gamePhase = GlobalGameState.PHASE.JAPAN_FLEET_MOVEMENT
-  //     setUSMapRegions([])
-  //     if (GlobalGameState.midwayAttackDeclaration === true) {
-  //       setJapanMapRegions(japanAF1StartHexesMidway)
-  //     } else {
-  //       setJapanMapRegions(japanAF1StartHexesNoMidway)
-  //     }
-  //     setJpAlertShow(true)
-  //     GlobalGameState.phaseCompleted = false
-  //   } else if (GlobalGameState.gamePhase === GlobalGameState.PHASE.JAPAN_FLEET_MOVEMENT) {
-  //     console.log("END OF Japan Fleet Movement Phase")
-  //     GlobalGameState.gamePhase = GlobalGameState.PHASE.MIDWAY_ATTACK
-  //     setMidwayNoAttackAlertShow(true)
-  //     setJapanMapRegions([])
-  //     GlobalGameState.phaseCompleted = true
-  //     GlobalGameState.jpFleetPlaced = true
-  //     const update = createMapUpdateForFleet(GlobalInit.controller, "1AF", GlobalUnitsModel.Side.JAPAN)
-  //     setFleetUnitUpdate(update)
-  //   } else if (GlobalGameState.gamePhase === GlobalGameState.PHASE.MIDWAY_ATTACK) {
-  //     console.log("END OF Midway Attack Phase")
-  //     if (!GlobalGameState.midwayAttackDeclaration) {
-  //       GlobalGameState.phaseCompleted = true
-  //       GlobalGameState.gamePhase = GlobalGameState.PHASE.US_FLEET_MOVEMENT
-  //     }
-  //   } else if (GlobalGameState.gamePhase === GlobalGameState.PHASE.US_FLEET_MOVEMENT) {
-  //     const update = createMapUpdateForFleet(GlobalInit.controller, "CSF", GlobalUnitsModel.Side.US)
-  //     setFleetUnitUpdate(update)
-  //     GlobalGameState.gamePhase = GlobalGameState.PHASE.AIR_SEARCH
-  //     const sv = calculateSearchValues(GlobalInit.controller)
-  //     const sr = calculateSearchResults(GlobalInit.controller, {
-  //       jp_af: sv.jp_af,
-  //       us_csf: sv.us_csf,
-  //       us_midway: sv.us_midway,
-  //     })
-  //     setSearchValues(sv)
-  //     GlobalGameState.airOperationPoints.japan = sr.JAPAN
-  //     GlobalGameState.airOperationPoints.us = sr.US
-  //     setSearchResults(sr)
-  //     setSearchValuesAlertShow(true)
-  //   } else if (GlobalGameState.gamePhase === GlobalGameState.PHASE.AIR_SEARCH) {
-  //     setDicePanelShow(true)
-  //     GlobalGameState.gamePhase = GlobalGameState.PHASE.AIR_OPERATIONS
-  //     GlobalGameState.phaseCompleted = true
-  //   } else if (GlobalGameState.gamePhase === GlobalGameState.PHASE.AIR_OPERATIONS) {
-  //     GlobalGameState.phaseCompleted = false
-  //     GlobalGameState.sideWithInitiative = sideWithInitiative
-  //     if (GlobalGameState.sideWithInitiative === GlobalUnitsModel.Side.JAPAN) {
-  //       const enabledBoxes = getJapanEnabledAirBoxes(sideWithInitiative)
-  //       setEnabledJapanBoxes(() => enabledBoxes)
-  //       setJapanStrikePanelEnabled(true)
-  //       setUsStrikePanelEnabled(false)
-  //     } else {
-  //       const enabledUSBoxes = getUSEnabledAirBoxes(sideWithInitiative)
-  //       setEnabledUSBoxes(() => enabledUSBoxes)
-  //       setUsStrikePanelEnabled(true)
-  //       setJapanStrikePanelEnabled(false)
-  //     }
-  //     GlobalGameState.updateGlobalState()
-  //     return
-  //   }
-
-  //   GlobalGameState.setupPhase++
-  //   GlobalGameState.updateGlobalState()
-  //   const enabledBoxes = getJapanEnabledAirBoxes()
-  //   setEnabledJapanBoxes(() => enabledBoxes)
-  //   const enabledUSBoxes = getUSEnabledAirBoxes()
-  //   setEnabledUSBoxes(() => enabledUSBoxes)
-  // }
 
   const nextAction = (e) => {
     e.preventDefault()
@@ -571,7 +434,6 @@ export function App() {
   async function loady() {
     setSplash(false)
     setLoadPanelShow(true)
-    // loadHandler({ setTestClicked, setSplash, setAirUnitUpdate, setFleetUnitUpdate, loadState })
   }
 
   function onSplash() {
