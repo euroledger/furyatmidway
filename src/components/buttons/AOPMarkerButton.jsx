@@ -104,7 +104,7 @@ function AOPMarkerButton({ image, side, initialPosition, getZone, zIndex, increm
           type="image"
           src={image}
           name="saveForm"
-          class={"button-pos"}
+          className={"button-pos"}
           style={{
             position: "absolute",
             width: "2.8%",

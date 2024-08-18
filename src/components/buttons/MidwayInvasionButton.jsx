@@ -36,7 +36,7 @@ function MidwayInvasionButton({
           type="image"
           src={image}
           name="saveForm"
-          class={"button-pos dropdown-toggle"}
+          className={"button-pos dropdown-toggle"}
           style={{
             position: "absolute",
             width: "2.5%",

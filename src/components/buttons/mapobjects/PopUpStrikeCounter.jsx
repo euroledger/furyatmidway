@@ -23,7 +23,6 @@ function PopUpStrikeCounter({ counterData }) {
             top: position.top,
             zIndex: 101,
             marginLeft: "5px",
-
             marginTop: "-15px"
           }}
           id="popupcounter"
@@ -31,7 +30,6 @@ function PopUpStrikeCounter({ counterData }) {
       </div>
     </>
   )
-  //   });
 }
 
 export default PopUpStrikeCounter

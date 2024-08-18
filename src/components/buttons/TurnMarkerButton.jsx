@@ -79,7 +79,7 @@ function TurnMarkerButton({ image, gameStateHandler }) {
           type="image"
           src={image}
           name="saveForm"
-          class={"button-pos dropdown-toggle"}
+          className={"button-pos dropdown-toggle"}
           style={{ position: 'absolute', width: '40px', left: `${position.left}%`, top: `${position.top}%` }}
           id="saveForm"
           onClick={handleChange}

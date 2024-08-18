@@ -8,7 +8,7 @@ import "./counter.css"
 import { allHexesWithinDistance } from "../../HexUtils"
 import HexCommand from "../../../commands/HexCommand"
 
-function StrikeCounter({ setStrikeGroupPopup, currentUSHex, currentJapanHex, counterData, side }) {
+function StrikeCounter({ setStrikeGroupPopup, currentUSHex, currentJapanHex, counterData, side, index }) {
   const {
     controller,
     loading,
@@ -22,6 +22,9 @@ function StrikeCounter({ setStrikeGroupPopup, currentUSHex, currentJapanHex, cou
   } = useContext(BoardContext)
 
   const [currentHex, setCurrentHex] = useState({})
+
+  const [zIndex, setZIndex] = useState(11) // TODO FIX FOR JAPAN
+  const [japanZIndex, setJapanZIndex] = useState(11) // TODO FIX FOR JAPAN
 
   const [position, setPosition] = useState({
     initial: true,
@@ -86,41 +89,61 @@ function StrikeCounter({ setStrikeGroupPopup, currentUSHex, currentJapanHex, cou
   }
 
   function setJapanRegions() {
-    if (counterData.location === GlobalUnitsModel.AirBox.OFFBOARD) {
+    const locationOfStrikeGroup = controller.getStrikeGroupLocation(counterData.name, side)
+
+    // if (locationOfStrikeGroup === undefined) {
       // Use 1AF
       const locationOfCarrier = controller.getFleetLocation("1AF", GlobalUnitsModel.Side.JAPAN)
 
       setCurrentHex(locationOfCarrier)
       const jpRegion = allHexesWithinDistance(locationOfCarrier.currentHex, 2, true)
       setJapanMapRegions(jpRegion)
-    }
+    // }
   }
   function setUSRegions() {
     // if naval strike group - use, counter CSF else use Midway
     // determine this from first air unit
     let usRegion, locationOfCarrier
 
-    if (counterData.location === GlobalUnitsModel.AirBox.OFFBOARD) {
-      const unitsInGroup = controller.getAirUnitsInStrikeGroups(counterData.box)
-      if (unitsInGroup[0].carrier === GlobalUnitsModel.Carrier.MIDWAY) {
-        locationOfCarrier = Controller.MIDWAY_HEX
-      } else {
-        locationOfCarrier = controller.getFleetLocation("CSF", GlobalUnitsModel.Side.US)
-      }
+    const locationOfStrikeGroup = controller.getStrikeGroupLocation(counterData.name, side)
+
+    // TODO need some new flag -> counterData.comingFromOffboard
+    // to allow for remove (eg if player accidentally drops onto wrong hex)
+    // if (locationOfStrikeGroup === undefined) {
+    const unitsInGroup = controller.getAirUnitsInStrikeGroups(counterData.box)
+    if (unitsInGroup[0].carrier === GlobalUnitsModel.Carrier.MIDWAY) {
+      locationOfCarrier = Controller.MIDWAY_HEX
+    } else {
+      locationOfCarrier = controller.getFleetLocation("CSF", GlobalUnitsModel.Side.US)
     }
-
-    // @TODO set US Regions when strike counter is on the map
-
     setCurrentHex(locationOfCarrier)
     usRegion = allHexesWithinDistance(locationOfCarrier.currentHex, 2, true)
     setUSMapRegions(usRegion)
+    // }
+
+    // @TODO set US Regions when strike counter is on the map
   }
   const handleClick = (e) => {
     if (side === GlobalUnitsModel.Side.US) {
-        setUSRegions()
+      setUSRegions()
     } else {
-        setJapanRegions()
+      setJapanRegions()
     }
+    if (position.initial) {
+      return
+    }
+
+    const location = controller.getStrikeGroupLocation(counterData.name, side)
+    const groups = controller.getAllStrikeGroupsInLocation(location, side)
+
+    if (groups.length > 1) {
+      if (side === GlobalUnitsModel.Side.US) {
+        setZIndex(() => zIndex + groups.length * 20)
+      } else {
+        setJapanZIndex(() => zIndex + groups.length * 20)
+      }
+    }
+    console.log("SET ZINDEX HERE BOY! Num Groups=", groups.length)
     // 1. US
     // if in strike box -> use location of CSF Fleet
     // if on map -> use location of this counter
@@ -155,10 +178,13 @@ function StrikeCounter({ setStrikeGroupPopup, currentUSHex, currentJapanHex, cou
         // we will need each counter to have an index in the stack
         // and the offset will be a factor of the index
 
-        // will also need some hover capability to show the stack better like Vassal
-
         // also a means to select a counter in a stack
 
+      
+        if (index > 0) {
+          currentUSHex.x += 6 * index
+          currentUSHex.y -= 6 * index
+        }
         setUSPosition(currentUSHex)
         if (position.initial) {
           from = HexCommand.OFFBOARD
@@ -167,6 +193,7 @@ function StrikeCounter({ setStrikeGroupPopup, currentUSHex, currentJapanHex, cou
         }
         to = { currentHex: currentUSHex }
         setUSMapRegions([])
+        setCurrentHex(currentUSHex)
       }
     } else {
       const hex = { q: currentJapanHex.q, r: currentJapanHex.r }
@@ -174,6 +201,10 @@ function StrikeCounter({ setStrikeGroupPopup, currentUSHex, currentJapanHex, cou
       if (!isThere) {
         return
       } else {
+        if (index > 0) {
+          currentJapanHex.x += 6 * index
+          currentJapanHex.y -= 6 * index
+        }
         setJapanPosition(currentJapanHex)
         if (position.initial) {
           from = HexCommand.OFFBOARD
@@ -183,6 +214,7 @@ function StrikeCounter({ setStrikeGroupPopup, currentUSHex, currentJapanHex, cou
         to = { currentHex: currentJapanHex }
       }
       setJapanMapRegions([])
+      setCurrentHex(currentJapanHex)
     }
 
     controller.viewEventHandler({
@@ -198,6 +230,7 @@ function StrikeCounter({ setStrikeGroupPopup, currentUSHex, currentJapanHex, cou
     })
 
     const units = controller.getStrikeGroupsNotMoved(side)
+    console.log("WOOF UNITS = ", units)
     if (units.length === 0) {
       GlobalGameState.phaseCompleted = true
     } else {
@@ -217,6 +250,13 @@ function StrikeCounter({ setStrikeGroupPopup, currentUSHex, currentJapanHex, cou
     setStrikeGroupPopup(side, true, location)
   }
 
+  const handleFocusOut = () => {
+    if (side === GlobalUnitsModel.Side.JAPAN) {
+      setJapanMapRegions([])
+    } else {
+      setUSMapRegions([])
+    }
+  }
   const handleMouseLeave = () => {
     setIsMoveable(false)
     setStrikeGroupPopup(side, false)
@@ -233,7 +273,7 @@ function StrikeCounter({ setStrikeGroupPopup, currentUSHex, currentJapanHex, cou
             width: counterData.width,
             left: position.left,
             top: position.top,
-            zIndex: zx,
+            zIndex: zIndex,
             "&:focus": {
               borderRadius: "2px",
               border: "3px solid rgb(197,9,9)",
@@ -242,6 +282,7 @@ function StrikeCounter({ setStrikeGroupPopup, currentUSHex, currentJapanHex, cou
           id="saveForm2"
           onMouseEnter={handleMouseEnter}
           onMouseLeave={handleMouseLeave}
+          onBlur={handleFocusOut}
           draggabble="true"
           onDragStart={onDrag}
           onDragEnd={handleDrop}

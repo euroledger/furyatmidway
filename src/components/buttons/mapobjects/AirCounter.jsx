@@ -40,7 +40,9 @@ function AirCounter({ getAirBox, setAirBox, counterData, side }) {
       return
     }
 
-    setValidDestinationBoxes(controller, counterData.name, counterData.side)
+    if (GlobalGameState.gamePhase === GlobalGameState.PHASE.AIR_OPERATIONS) {
+      setValidDestinationBoxes(controller, counterData.name, counterData.side)
+    }
     setBoxes(counterData)
   }
   const [selected, setSelected] = useState(false)
@@ -77,7 +79,6 @@ function AirCounter({ getAirBox, setAirBox, counterData, side }) {
           loading: loading,
         },
       })
-
     } else {
       controller.viewEventHandler({
         type: Controller.EventTypes.AIR_UNIT_SETUP,
@@ -92,14 +93,13 @@ function AirCounter({ getAirBox, setAirBox, counterData, side }) {
   }
 
   const japanDrop = (counterData) => {
-
     if (
-      (counterData.carrier != GlobalGameState.getJapanCarrier() &&
-        GlobalGameState.gamePhase === GlobalGameState.PHASE.JAPAN_SETUP) &&
+      counterData.carrier != GlobalGameState.getJapanCarrier() &&
+      GlobalGameState.gamePhase === GlobalGameState.PHASE.JAPAN_SETUP &&
       GlobalGameState.gamePhase !== GlobalGameState.PHASE.AIR_OPERATIONS
     ) {
       // cannot move units from carrier other than the current one being set up
-      
+
       return false
     }
     const { name, offsets } = getAirBox()
@@ -205,7 +205,6 @@ function AirCounter({ getAirBox, setAirBox, counterData, side }) {
         },
       })
       const units = controller.getStrikeGroupsNotMoved(theSide)
-      console.log("QUACK 1 units.length=", units.length)
       if (units.length === 0) {
         GlobalGameState.phaseCompleted = true
       } else {
@@ -235,6 +234,8 @@ function AirCounter({ getAirBox, setAirBox, counterData, side }) {
   const setBoxes = (counterData) => {
     const destBoxes = controller.getValidAirUnitDestinations(counterData.name)
     if (counterData.side === GlobalUnitsModel.Side.JAPAN) {
+      console.log("set enabled valid destinations JAPAN = ", destBoxes)
+
       setEnabledJapanBoxes(() => destBoxes)
     } else {
       setEnabledUSBoxes(() => destBoxes)
@@ -242,6 +243,7 @@ function AirCounter({ getAirBox, setAirBox, counterData, side }) {
   }
   const handleClick = (e) => {
     if (counterData.side !== GlobalGameState.sideWithInitiative) {
+      console.log("QUACK 1")
       return
     }
     if (
@@ -249,9 +251,16 @@ function AirCounter({ getAirBox, setAirBox, counterData, side }) {
       GlobalGameState.gamePhase === GlobalGameState.PHASE.JAPAN_SETUP ||
       GlobalGameState.gamePhase === GlobalGameState.PHASE.US_SETUP_AIR
     ) {
+      console.log("QUACK 2")
+
       return
     }
-    setValidDestinationBoxes(controller, counterData.name, counterData.side)
+    if (GlobalGameState.gamePhase === GlobalGameState.PHASE.AIR_OPERATIONS) {
+      console.log("set valid destinations")
+
+      setValidDestinationBoxes(controller, counterData.name, counterData.side)
+    }
+    console.log("PHASE = ", GlobalGameState.gamePhase)
     setBoxes(counterData)
 
     // only the selected (clicked) air unit should be draggable
@@ -294,7 +303,7 @@ function AirCounter({ getAirBox, setAirBox, counterData, side }) {
         onDragEnd={handleDrop}
         onClick={(e) => handleClick(e)}
         onContextMenu={(e) => handleRightClick(e)}
-        zIndex={side === GlobalUnitsModel.Side.JAPAN ? 91 : 11}
+        // zIndex={side === GlobalUnitsModel.Side.JAPAN ? 91 : 11}
       />
       <span className="circle"></span>
       {/* </a> */}
