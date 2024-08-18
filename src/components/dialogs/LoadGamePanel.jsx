@@ -90,7 +90,7 @@ function LoadGamePanel(props) {
         )}
         {Array.from({ length: savedGameArray.length }).map((_, idx) => {
           return (
-            <row style={{ display: "flex", paddingLeft: "10px", paddingTop: "5px", height: "50px" }}>
+            <row key={idx} style={{ display: "flex", paddingLeft: "10px", paddingTop: "5px", height: "50px" }}>
               <Col style={{ minWidth: "600px" }} key={idx}>
                 {savedGameArray[idx]}
               </Col>

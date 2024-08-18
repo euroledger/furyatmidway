@@ -20,7 +20,7 @@ function DragAndDropSmall({ name, handleDragEnter, zones, enabled, side }) {
     return (
       <div
         key={index}
-        class={dropClass}
+        className={dropClass}
         style={{
           left: p.left + "%",
           top: p.top + "%",

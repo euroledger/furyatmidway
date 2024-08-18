@@ -4,9 +4,12 @@ import Button from "react-bootstrap/Button";
 
 
 function SplashScreen(props) {
+
+  const { loady, splashy, ...rest } = props
+
   return (
     <Modal
-      {...props}
+      {...rest}
       // style={{ width: "1480px" }}
       aria-labelledby="contained-modal-title-vcenter"
       centered
@@ -21,8 +24,8 @@ function SplashScreen(props) {
         }}
       >
         <img src="/images/furysplash.jpg"/>;
-        <Button className="button-88" size="lg" onClick={props.loady} style={{width: "190px", position:"absolute", top: "68%", right:"61%"}}>LOAD GAME</Button>
-        <Button className="button-88" size="lg" onClick={props.onSplash} style={{width: "190px", position:"absolute", top: "68%", right:"7%"}}>NEW GAME</Button>
+        <Button className="button-88" size="lg" onClick={loady} style={{width: "190px", position:"absolute", top: "68%", right:"61%"}}>LOAD GAME</Button>
+        <Button className="button-88" size="lg" onClick={splashy} style={{width: "190px", position:"absolute", top: "68%", right:"7%"}}>NEW GAME</Button>
       </div>
     </Modal>
   );
