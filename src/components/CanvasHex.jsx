@@ -463,11 +463,17 @@ export default class CanvasHex extends React.Component {
   handleDragEnd(e) {
     e.preventDefault()
 
+    if (!this.state.currentHex) {
+      return
+    }
     this.setState({
       currentHex: { ...this.state.currentHex, side: this.state.side },
     })
   }
   handleClick = (e) => {
+    if (!this.state.currentHex) {
+      return
+    }
     const { q, r } = this.state.currentHex
     this.drawNeighbours({ q, r })
   }

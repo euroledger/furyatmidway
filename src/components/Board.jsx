@@ -206,7 +206,7 @@ function Board({ scale, USMapRegions, japanMapRegions, japanStrikePanelEnabled, 
           id="CSF-JPMAP"
           counterData={GlobalInit.counters.get("CSF-JPMAP")}
           enabled={true}
-          side={GlobalUnitsModel.Side.JP}
+          side={GlobalUnitsModel.Side.JAPAN}
         ></FleetCounter>
         <FleetCounter
           currentHex={currentJapanHex}

@@ -173,16 +173,32 @@ export function App() {
       setJapanMapRegions([])
       GlobalGameState.phaseCompleted = true
     } else if (GlobalGameState.gamePhase === GlobalGameState.PHASE.AIR_OPERATIONS) {
+      console.log("RESTORE AIR OPERATIONS STATE")
       GlobalGameState.phaseCompleted = false
-      console.log("AIR OPS, INITIATIVE = ", GlobalGameState.sideWithInitiative)
       if (GlobalGameState.sideWithInitiative === GlobalUnitsModel.Side.JAPAN) {
+        console.log("JAPAN HAS INITIATIVE")
         setJapanStrikePanelEnabled(true)
         setUsStrikePanelEnabled(false)
+        const units = GlobalInit.controller.getStrikeGroupsNotMoved(GlobalUnitsModel.Side.JAPAN)
+        console.log("QUack JAP units.length=", units.length)
+
+        if (units.length === 0) {
+          GlobalGameState.phaseCompleted = true
+        } else {
+          GlobalGameState.phaseCompleted = false
+        }
       } else {
         setUsStrikePanelEnabled(true)
         setJapanStrikePanelEnabled(false)
-      }
+        const units = GlobalInit.controller.getStrikeGroupsNotMoved(GlobalUnitsModel.Side.US)
+        console.log("QUack units.length=", units.length)
+        if (units.length === 0) {
+          GlobalGameState.phaseCompleted = true
+        } else {
+          GlobalGameState.phaseCompleted = false
         }
+      }
+    }
     // If we don't do this, a drag and drop move fires a fleet update and the fleet does not move
     setFleetUnitUpdate(undefined)
 
@@ -196,7 +212,7 @@ export function App() {
 
   const nextAction = (e) => {
     e.preventDefault()
-   
+
     handleAction({
       setUSMapRegions,
       setCSFAlertShow,
@@ -214,7 +230,7 @@ export function App() {
       setSearchValuesAlertShow,
       setJapanStrikePanelEnabled,
       setUsStrikePanelEnabled,
-      sideWithInitiative
+      sideWithInitiative,
     })
   }
 
@@ -244,6 +260,10 @@ export function App() {
       image = "/images/bothflags.jpg"
     }
 
+    const disabled =
+      !GlobalGameState.phaseCompleted ||
+      (GlobalGameState.gamePhase === GlobalGameState.PHASE.JAPAN_FLEET_MOVEMENT && !GlobalGameState.jpFleetPlaced) ||
+      (GlobalGameState.gamePhase === GlobalGameState.PHASE.US_SETUP_FLEET && !GlobalGameState.usFleetPlaced)
     return (
       <Navbar bg="black" data-bs-theme="dark" fixed="top" className="justify-content-between navbar-fixed-top">
         <Container>
@@ -341,12 +361,7 @@ export function App() {
                 className="me-1"
                 variant="secondary"
                 onClick={(e) => nextAction(e)}
-                disabled={
-                  !GlobalGameState.phaseCompleted ||
-                  (GlobalGameState.gamePhase === GlobalGameState.PHASE.JAPAN_FLEET_MOVEMENT &&
-                    !GlobalGameState.jpFleetPlaced) ||
-                  (GlobalGameState.gamePhase === GlobalGameState.PHASE.US_SETUP_FLEET && !GlobalGameState.usFleetPlaced)
-                }
+                disabled={disabled}
                 style={{ background: "#9e1527" }}
               >
                 Next Action
@@ -427,6 +442,8 @@ export function App() {
   }
 
   function loadMyGame(id) {
+    console.log("LOAD MY GAME")
+
     setLoading(() => true)
     loadHandler({ setTestClicked, setSplash, setAirUnitUpdate, setFleetUnitUpdate, loadState, id, setLoading })
   }
@@ -436,7 +453,7 @@ export function App() {
     setLoadPanelShow(true)
   }
 
-  function onSplash() {
+  function splashy() {
     setSplash(false)
   }
   // window height
@@ -455,7 +472,7 @@ export function App() {
           transform: "translate(-50%, -50%)",
         }}
       >
-        <SplashScreen show={splash} onSplash={onSplash} loady={loady}></SplashScreen>
+        <SplashScreen show={splash} splashy={splashy} loady={loady}></SplashScreen>
       </div>
     )
   }
@@ -478,7 +495,8 @@ export function App() {
       <AirOpsHeaders></AirOpsHeaders>
     </>
   )
-  function doRoll(roll0, roll1)  { // for automated testing
+  function doRoll(roll0, roll1) {
+    // for automated testing
     let sideWithInitiative
     let jpRolls, usRolls
     if (roll0 && roll1) {
@@ -491,9 +509,9 @@ export function App() {
       jpRolls = [rolls[0]]
       usRolls = [rolls[1]]
     }
- 
+
     GlobalInit.controller.viewEventHandler({
-      type: Controller.EventTypes.INITIATIVE_ROLL, 
+      type: Controller.EventTypes.INITIATIVE_ROLL,
       data: {
         jpRolls,
         usRolls,
@@ -502,7 +520,7 @@ export function App() {
     setSideWithInitiative(() => sideWithInitiative)
 
     // @TODO
-    // add a controller view event for die rolls (so the rolls get logged)  
+    // add a controller view event for die rolls (so the rolls get logged)
   }
 
   return (
@@ -648,7 +666,7 @@ export function App() {
                   setEnabledUSBoxes,
                   setEnabledJapanBoxes,
                   setIsMoveable,
-                  loading
+                  loading,
                 }}
               >
                 <Board

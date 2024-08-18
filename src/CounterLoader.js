@@ -11,8 +11,8 @@ function loadCounters(controller) {
   // 1AF Counter
   let position = {
     hexCoords: {},
-    left: 102,
-    top: 117,
+    left: 104,
+    top: 119,
   }
 
   counters.set(
@@ -23,7 +23,7 @@ function loadCounters(controller) {
       position,
       { x: 50, y: 68 }, // offsets
       "/images/fleetcounters/1AF.png",
-      "3.0%"
+      "2.5%"
     )
   )
 
@@ -40,7 +40,7 @@ function loadCounters(controller) {
       position,
       { x: 50, y: 68 }, // offsets
       "/images/fleetcounters/MIF.png",
-      "3.0%"
+      "2.5%"
     )
   )
 
@@ -57,14 +57,14 @@ function loadCounters(controller) {
       position,
       { x: 50, y: 68 }, // offsets
       "/images/fleetcounters/MIF.png",
-      "3.0%"
+      "2.5%"
     )
   )
 
   position = {
     hexCoords: {},
-    left: 602,
-    top: 117,
+    left: 605,
+    top: 119,
   }
 
   counters.set(
@@ -75,13 +75,13 @@ function loadCounters(controller) {
       position,
       { x: -3, y: 98 }, // offsets
       "/images/fleetcounters/CSF.png",
-      "3.0%"
+      "2.5%"
     )
   )
 
   position = {
     hexCoords: {},
-    left: 202,
+    left: 210,
     top: 117,
   }
 
@@ -91,9 +91,9 @@ function loadCounters(controller) {
       "CSF-JPMAP",
       "US Carrier Strike Force (Japan Map)",
       position,
-      { x: -50, y: 68 }, // offsets
+      { x: -55, y: 70 }, // offsets
       "/images/fleetcounters/CSF.png",
-      "3.0%"
+      "2.5%"
     )
   )
 
@@ -108,9 +108,9 @@ function loadCounters(controller) {
       "1AF-USMAP",
       "Japanese 1AF (US Map)",
       position,
-      { x: -202, y: 98 }, // offsets
+      { x: -200, y: 99 }, // offsets
       "/images/fleetcounters/1AF.png",
-      "3.0%"
+      "2.5%"
     )
   )
 

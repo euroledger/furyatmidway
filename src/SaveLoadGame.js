@@ -34,6 +34,11 @@ export function saveGameState(controller, gameId) {
   const globalText = JSON.stringify(Array.from(globalState.entries()))
   const airText = JSON.stringify(Array.from(airState.entries()))
 
+  const jpStrikeText = JSON.stringify(Array.from(GlobalUnitsModel.jpStrikeGroups.entries()))
+  const usStrikeText = JSON.stringify(Array.from(GlobalUnitsModel.usStrikeGroups.entries()))
+
+  console.log("**********US STRKE GFRUPS: ", usStrikeText)
+
   const jpCardText = JSON.stringify(GlobalUnitsModel.jpCards)
   const usCardText = JSON.stringify(GlobalUnitsModel.usCards)
   // console.log(jpCardText)
@@ -53,21 +58,17 @@ export function saveGameState(controller, gameId) {
 
   const airOperationsText = JSON.stringify(GlobalGameState.airOperationPoints)
 
-
-  // @TODO SAVE STRIKE GROUPS
-  // add controller.getStrikeGroups(side)
-  // will return GlobalUnitsModel.usStrikeGroups or GlobalUnitsModel.jpStrikeGroups
-
   let savedGameDetails = {
     global: globalText,
     air: airText,
+    jpStrike: jpStrikeText,
+    usStrike: usStrikeText,
     airoperations: airOperationsText,
     jpMap: jpMapText,
     usMap: usMapText,
     jpcards: jpCardText,
     uscards: usCardText,
     log: logItems,
-    // TODO: strike groups
   }
   // savedGame.set(gameId, savedGameDetails )
   // localStorage.setItem("global", globalText)
@@ -79,7 +80,6 @@ export function saveGameState(controller, gameId) {
   // localStorage.setItem("uscards", usCardText)
   // localStorage.setItem("log", logItems)
 
-  console.log("Saving Map data:", savedGameDetails.usMap)
   localStorage.setItem(gameId, JSON.stringify(savedGameDetails))
 }
 function createFleetUpdates(fleetMap) {
@@ -127,20 +127,41 @@ function createAirUnitUpdates(airUnitMap) {
   return airUpdates
 }
 
+
 function loadAirUnits(airUnitMap) {
   for (const key of airUnitMap.keys()) {
-
     const airUnit = airUnitMap.get(key)
-   
+
     const globalAirUnit = GlobalInit.controller.getAirUnitForName(key)
 
     if (airUnit.counterData._aircraftUnit._moved) {
       globalAirUnit.aircraftUnit.moved = true
     }
-   
+
     // TODO steps, damage to fleets etc
   }
 }
+
+function loadUSStrikeUnits(loadedMap) {
+    for (let key of loadedMap.keys()) {
+      const sg = GlobalUnitsModel.usStrikeGroups.get(key)
+      const loadedSG = loadedMap.get(key)
+      sg.moved = loadedSG._moved
+      GlobalUnitsModel.usStrikeGroups.set(key, sg)
+    }
+}
+
+function loadJapanStrikeUnits(loadedMap) {
+  for (let key of loadedMap.keys()) {
+    const sg = GlobalUnitsModel.jpStrikeGroups.get(key)
+    const loadedSG = loadedMap.get(key)
+    sg.moved = loadedSG._moved
+    GlobalUnitsModel.jpStrikeGroups.set(key, sg)
+
+
+  }
+}
+
 export function loadGameStateForId(gameId) {
   const loadedJson = localStorage.getItem(gameId)
 
@@ -165,8 +186,19 @@ export function loadGameStateForId(gameId) {
 
   const airText = gameDetails.air
   const airMap = new Map(JSON.parse(airText))
-
   loadAirUnits(airMap)
+
+  const jpStrikeText = gameDetails.jpStrike
+  if (jpStrikeText) {
+    // GlobalUnitsModel.jpStrikeGroups = new Map(JSON.parse(jpStrikeText))
+    loadJapanStrikeUnits(new Map(JSON.parse(jpStrikeText)))
+  }
+
+  const usStrikeText = gameDetails.usStrike
+  if (usStrikeText) {
+    // GlobalUnitsModel.usStrikeGroups = new Map(JSON.parse(usStrikeText))
+    loadUSStrikeUnits(new Map(JSON.parse(usStrikeText)))
+  } 
 
   const airUpdates = createAirUnitUpdates(airMap)
 
