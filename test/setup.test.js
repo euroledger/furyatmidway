@@ -30,10 +30,10 @@ describe("Controller tests", () => {
     expect(af).toBeTruthy();
     expect(af.name).toEqual("1AF");
     expect(af.longName).toEqual("Japanese 1AF");
-    expect(af.position.left).toEqual(102);
-    expect(af.position.top).toEqual(117);
+    expect(af.position.left).toEqual(104);
+    expect(af.position.top).toEqual(119);
     expect(af.image).toEqual("/images/fleetcounters/1AF.png");
-    expect(af.width).toEqual("3.0%");
+    expect(af.width).toEqual("2.5%");
   });
 
   test("check setup phase messages", () => {

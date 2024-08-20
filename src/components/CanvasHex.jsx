@@ -457,6 +457,9 @@ export default class CanvasHex extends React.Component {
   handleDragOver(e) {
     e.preventDefault()
     this.determineMousePosition(e)
+    // if (this.state.currentHex) {
+    //   console.log("Set current coords to", this.state.currentHex.row, this.state.currentHex.col)
+    // }
     this.props.setCurrentCoords(this.state.currentHex)
   }
 

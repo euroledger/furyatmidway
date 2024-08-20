@@ -37,8 +37,6 @@ export function saveGameState(controller, gameId) {
   const jpStrikeText = JSON.stringify(Array.from(GlobalUnitsModel.jpStrikeGroups.entries()))
   const usStrikeText = JSON.stringify(Array.from(GlobalUnitsModel.usStrikeGroups.entries()))
 
-  console.log("**********US STRKE GFRUPS: ", usStrikeText)
-
   const jpCardText = JSON.stringify(GlobalUnitsModel.jpCards)
   const usCardText = JSON.stringify(GlobalUnitsModel.usCards)
   // console.log(jpCardText)

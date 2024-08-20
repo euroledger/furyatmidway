@@ -2,6 +2,7 @@ import Modal from "react-bootstrap/Modal"
 import Col from "react-bootstrap/Col"
 import Row from "react-bootstrap/Row"
 import Button from "react-bootstrap/Button"
+import GlobalGameState from "../../model/GlobalGameState"
 import Die from "./Die"
 import "./modal.css"
 
@@ -55,7 +56,16 @@ function DicePanel(props) {
         <Button disabled={disabled} onClick={() => doRoll()}>
           Roll Dice
         </Button>
-        <Button disabled={!disabled} onClick={onHide}>Close</Button>
+        <Button
+          disabled={!disabled}
+          onClick={(e) => {
+            // TODO pass this in as a prop (nextState)
+            GlobalGameState.gamePhase = GlobalGameState.PHASE.AIR_OPERATIONS 
+            onHide(e)
+          }}
+        >
+          Close
+        </Button>
       </Modal.Footer>
     </Modal>
   )

@@ -2,20 +2,29 @@ import GlobalUnitsModel from "../../../model/GlobalUnitsModel"
 import "../../board.css"
 import PopUpStrikeCounter from "./PopUpStrikeCounter"
 
-function StrikeGroupPopUp({ strikeGroup, popUpPosition, hex, side }) {
-  const width =  strikeGroup.length * 50 
-  const sgCounters = strikeGroup.map((strikeGroupUnit, index) => {
-    strikeGroupUnit.position.left = 3 + (30 * index)
+function StrikeGroupPopUp({ strikeGroup, fleetUnits, popUpPosition, hex, side }) {
+  let index = 0
+  const fleetCounters = fleetUnits.map((fleetUnit) => {
+    fleetUnit.position.left = 3 + 30 * index
+    fleetUnit.position.top = 30
+    index += 1
+    return <PopUpStrikeCounter counterData={fleetUnit}></PopUpStrikeCounter>
+  })
+  const sgCounters = strikeGroup.map((strikeGroupUnit) => {
+    strikeGroupUnit.position.left = 3 + 30 * index
     strikeGroupUnit.position.top = 30
+    index += 1
     return <PopUpStrikeCounter counterData={strikeGroupUnit}></PopUpStrikeCounter>
   })
+  const width = 40 + (index * 30)
 
-  const row=hex.currentHex.row
-  const col=hex.currentHex.col
+  const wstr = `${width}px`
+  const row = hex.currentHex.row
+  const col = hex.currentHex.col
 
   const sideStr = side === GlobalUnitsModel.Side.US ? "USN" : "IJN"
   const coords = `${sideStr} - Hex ${row}${col}`
-  
+
   const leftOffset = side === GlobalUnitsModel.Side.US ? 600 : 170
   const topOffset = side === GlobalUnitsModel.Side.US ? 150 : 130
 
@@ -27,7 +36,7 @@ function StrikeGroupPopUp({ strikeGroup, popUpPosition, hex, side }) {
         left: popUpPosition.x + leftOffset,
         top: popUpPosition.y + topOffset,
         zIndex: 100,
-        width: "150px",
+        width: wstr,
         height: "50px",
         background: "white",
         background: bg,
@@ -38,6 +47,7 @@ function StrikeGroupPopUp({ strikeGroup, popUpPosition, hex, side }) {
     >
       <p style={{ marginTop: "2px", marginLeft: "2px", fontSize: "8px" }}>{coords}</p>
 
+      {fleetCounters}
       {sgCounters}
     </div>
   )

@@ -174,8 +174,12 @@ function Board({ scale, USMapRegions, japanMapRegions, japanStrikePanelEnabled, 
         />
         <FleetCounter
           currentHex={currentJapanHex}
+          currentMouseHex={currentMouseHex}
+          setCurrentMouseHex={setCurrentMouseHex}
           id="1AF"
           counterData={GlobalInit.counters.get("1AF")}
+          setCurrentJapanHex={setCurrentJapanHex}
+          setCurrentUSHex={setCurrentUSHex}
           jpRegions={japanMapRegions}
           enabled={
             GlobalGameState.gamePhase === GlobalGameState.PHASE.JAPAN_FLEET_MOVEMENT ||
@@ -185,16 +189,24 @@ function Board({ scale, USMapRegions, japanMapRegions, japanStrikePanelEnabled, 
         ></FleetCounter>
         <FleetCounter
           currentHex={currentJapanHex}
+          currentMouseHex={currentMouseHex}
+          setCurrentMouseHex={setCurrentMouseHex}
           id="MIF"
           counterData={GlobalInit.counters.get("MIF")}
+          setCurrentJapanHex={setCurrentJapanHex}
+          setCurrentUSHex={setCurrentUSHex}
           jpRegions={japanMapRegions}
           enabled={true}
           side={GlobalUnitsModel.Side.JAPAN}
         ></FleetCounter>
         <FleetCounter
           currentHex={currentUSHex}
+          currentMouseHex={currentMouseHex}
+          setCurrentMouseHex={setCurrentMouseHex}
           id="CSF"
           counterData={GlobalInit.counters.get("CSF")}
+          setCurrentJapanHex={setCurrentJapanHex}
+          setCurrentUSHex={setCurrentUSHex}
           usRegions={USMapRegions}
           enabled={
             GlobalGameState.gamePhase === GlobalGameState.PHASE.US_SETUP_FLEET || GlobalGameState.usFleetPlaced === true
@@ -203,20 +215,34 @@ function Board({ scale, USMapRegions, japanMapRegions, japanStrikePanelEnabled, 
         ></FleetCounter>
         <FleetCounter
           currentHex={currentUSHex}
+          currentMouseHex={currentMouseHex}
+          setCurrentMouseHex={setCurrentMouseHex}
           id="CSF-JPMAP"
           counterData={GlobalInit.counters.get("CSF-JPMAP")}
+          setCurrentJapanHex={setCurrentJapanHex}
+          setCurrentUSHex={setCurrentUSHex}
           enabled={true}
           side={GlobalUnitsModel.Side.JAPAN}
         ></FleetCounter>
         <FleetCounter
           currentHex={currentJapanHex}
+          currentMouseHex={currentUSHex}
           id="1AF-USMAP"
           counterData={GlobalInit.counters.get("1AF-USMAP")}
+          setCurrentMouseHex={setCurrentMouseHex}
+          setCurrentUSHex={setCurrentUSHex}
+          setCurrentJapanHex={setCurrentJapanHex}
+
           enabled={true}
           side={GlobalUnitsModel.Side.US}
         ></FleetCounter>
         <FleetCounter
           currentHex={currentJapanHex}
+          currentMouseHex={currentMouseHex}
+          setCurrentMouseHex={setCurrentMouseHex}
+          setCurrentUSHex={setCurrentUSHex}
+          setCurrentJapanHex={setCurrentJapanHex}
+
           id="MIF-USMAP"
           counterData={GlobalInit.counters.get("MIF-USMAP")}
           enabled={true}

@@ -15,7 +15,8 @@ export default class GlobalGameState {
     MIDWAY_ATTACK: "Midway Attack Phase",
     US_FLEET_MOVEMENT: "US Fleet Movement",
     AIR_SEARCH: "Search Phase",
-    AIR_OPERATIONS: "Air Operations Phase"
+    AIR_OPERATIONS: "Air Operations Phase",
+    AIR_ATTACK: "Air Attack Phase"
   }
 
   static usSetUpComplete = false

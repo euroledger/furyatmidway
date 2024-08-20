@@ -100,6 +100,7 @@ const UITester = async ({ e, setTestClicked, setAirUnitUpdate, setFleetUnitUpdat
 
   nextAction(e)
 
+  console.log("Now allocate US Air Units to strike boxes")
   // Allocate Air Units to Strike Boxes
   for (const unit of strikeGroupsUS) {
     update = calcStrikeDataUS(unit, GlobalInit.controller)
@@ -111,6 +112,7 @@ const UITester = async ({ e, setTestClicked, setAirUnitUpdate, setFleetUnitUpdat
     let position1 = USAirBoxOffsets.find((box) => box.name === update.boxName)
 
     update.position = position1.offsets[update.index]
+    console.log("Send Air Unit update:", update)
     setAirUnitUpdate(update)
 
     await delay(1)

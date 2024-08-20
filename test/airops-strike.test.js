@@ -17,6 +17,7 @@ describe("Controller tests", () => {
     controller = new Controller()
     counters = loadCounters(controller)
     createFleetMove(controller, 7, 1, "CSF", GlobalUnitsModel.Side.US) // G-4
+    createFleetMove(controller, 7, 2, "1AF", GlobalUnitsModel.Side.JAPAN) // G-5
 
     ef1 = counters.get("Enterprise-F4F4-1")
     ef2 = counters.get("Enterprise-F4F4-2")
@@ -291,37 +292,7 @@ describe("Controller tests", () => {
     const groups = controller.getAllStrikeGroups(GlobalUnitsModel.Side.JAPAN)
     expect(groups.length).toEqual(2)
 
-    // const strikeCounter = {
-    //   name: "JP-SG1",
-    //   longName: "Strike Group 1",
-    //   position: {},
-    //   image: "/images/aircountersjpStrike1.png",
-    //   width: "2.1%",
-    //   box: GlobalUnitsModel.AirBox.JP_STRIKE_BOX_0,
-    //   side: GlobalUnitsModel.Side.JAPAN,
-    // }
-    // const strikeCounter = new StrikeGroupUnit(
-    //   "JP-SG1",
-    //   "Strike Group 1",
-    //   {},
-    //   "/images/aircounters/jpStrike1.png",
-    //   "2.1%",
-    //   {
-    //     currentHex: {
-    //       col: 3,
-    //       q: 5,
-    //       r: 1,
-    //       row: "E",
-    //       side: "jp",
-    //       x: 120,
-    //       y: 200,
-    //     },
-    //   },
-    //   GlobalUnitsModel.AirBox.JP_STRIKE_BOX_0,
-    //   GlobalUnitsModel.Side.JAPAN,
-    //   {},
-    //   false
-    // )
+  
 
     //  Strike Group moves onto map - test location, moved etc.
     controller.viewEventHandler({
@@ -345,29 +316,6 @@ describe("Controller tests", () => {
         loading: false,
       },
     })
-
-    // const strikeCounter2 = new StrikeGroupUnit(
-    //   "JP-SG3",
-    //   "Strike Group 3",
-    //   {},
-    //   "/images/aircounters/jpStrike3.png",
-    //   "2.1%",
-    //   {
-    //     currentHex: {
-    //       col: 3,
-    //       q: 5,
-    //       r: 1,
-    //       row: "E",
-    //       side: "jp",
-    //       x: 120,
-    //       y: 200,
-    //     },
-    //   },
-    //   GlobalUnitsModel.AirBox.JP_STRIKE_BOX_2,
-    //   GlobalUnitsModel.Side.JAPAN,
-    //   {},
-    //   false
-    // )
 
     controller.viewEventHandler({
       type: Controller.EventTypes.STRIKE_GROUP_MOVE,
@@ -410,4 +358,142 @@ describe("Controller tests", () => {
     const units = controller.getStrikeGroupsNotMoved(GlobalUnitsModel.Side.JAPAN)
     expect(units.length).toEqual(0)
   })
+
+  test("US Air Units in same hex as Japanese Fleet triggers Air Attack", () => {
+    let counterData = counters.get(ef1.name)
+
+    controller.viewEventHandler({
+      type: Controller.EventTypes.AIR_UNIT_MOVE,
+      data: {
+        name: GlobalUnitsModel.AirBox.US_STRIKE_BOX_0,
+        counterData,
+        index: 0,
+        side: GlobalUnitsModel.Side.US,
+        loading: false,
+      },
+    })
+
+    let strikeGroup = GlobalUnitsModel.usStrikeGroups.get(GlobalUnitsModel.AirBox.US_STRIKE_BOX_0)
+    let unitsInGroup = controller.getAirUnitsInStrikeGroups(strikeGroup.box)
+    expect(unitsInGroup.length).toEqual(1)
+
+    counterData = counters.get(edb1.name)
+
+    controller.viewEventHandler({
+      type: Controller.EventTypes.AIR_UNIT_MOVE,
+      data: {
+        name: GlobalUnitsModel.AirBox.US_STRIKE_BOX_0,
+        counterData,
+        index: 1,
+        side: GlobalUnitsModel.Side.US,
+        loading: false,
+      },
+    })
+
+    strikeGroup = GlobalUnitsModel.usStrikeGroups.get(GlobalUnitsModel.AirBox.US_STRIKE_BOX_0)
+    unitsInGroup = controller.getAirUnitsInStrikeGroups(strikeGroup.box)
+
+    //HORNET
+    counterData = counters.get(hf1.name)
+
+    controller.viewEventHandler({
+      type: Controller.EventTypes.AIR_UNIT_MOVE,
+      data: {
+        name: GlobalUnitsModel.AirBox.US_STRIKE_BOX_1,
+        counterData,
+        index: 0,
+        side: GlobalUnitsModel.Side.US,
+        loading: false,
+      },
+    })
+
+    counterData = counters.get(hdb1.name)
+
+    controller.viewEventHandler({
+      type: Controller.EventTypes.AIR_UNIT_MOVE,
+      data: {
+        name: GlobalUnitsModel.AirBox.US_STRIKE_BOX_1,
+        counterData,
+        index: 1,
+        side: GlobalUnitsModel.Side.US,
+        loading: false,
+      },
+    })
+
+    strikeGroup = GlobalUnitsModel.usStrikeGroups.get(GlobalUnitsModel.AirBox.US_STRIKE_BOX_1)
+
+    const strikeCounter = {
+      name: "US-SG1",
+      longName: "Strike Group 1",
+      position: {},
+      image: "/images/aircounters/usStrike1.png",
+      width: "2.1%",
+      box: GlobalUnitsModel.AirBox.US_STRIKE_BOX_0,
+      side: GlobalUnitsModel.Side.US,
+    }
+
+    //  Strike Group moves onto map - test location, moved etc.
+    controller.viewEventHandler({
+      type: Controller.EventTypes.STRIKE_GROUP_MOVE,
+      data: {
+        initial: true,
+        counterData: strikeCounter,
+        from: HexCommand.OFFBOARD,
+        to: {
+          currentHex: {
+            col: 3,
+            q: 7,
+            r: 2,
+            row: "G",
+            side: "us",
+            x: 120,
+            y: 200,
+          },
+        },
+        side: GlobalUnitsModel.Side.US,
+        loading: false,
+      },
+    })
+
+    const strikeCounter2 = {
+      name: "US-SG3",
+      longName: "Strike Group 3",
+      position: {},
+      image: "/images/aircounters/usStrike3.png",
+      width: "2.1%",
+      box: GlobalUnitsModel.AirBox.US_STRIKE_BOX_2,
+      side: GlobalUnitsModel.Side.US,
+    }
+    controller.viewEventHandler({
+      type: Controller.EventTypes.STRIKE_GROUP_MOVE,
+      data: {
+        initial: true,
+        counterData: strikeCounter2,
+        from: HexCommand.OFFBOARD,
+        to: {
+          currentHex: {
+            col: 3,
+            q: 7,
+            r: 2,
+            row: "G",
+            side: "us",
+            x: 120,
+            y: 200,
+          },
+        },
+        side: GlobalUnitsModel.Side.US,
+        loading: false,
+      },
+    })
+
+    let location2 = {
+      currentHex: {
+        q: 7,
+        r: 2,
+      },
+    }
+    const isAirAttackTriggered = controller.checkForAirAttack(location2, GlobalUnitsModel.Side.US)
+    expect(isAirAttackTriggered).toEqual(true)
+  })
+
 })

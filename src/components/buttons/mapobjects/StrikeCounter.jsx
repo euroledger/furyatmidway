@@ -143,7 +143,6 @@ function StrikeCounter({ setStrikeGroupPopup, currentUSHex, currentJapanHex, cou
         setJapanZIndex(() => zIndex + groups.length * 20)
       }
     }
-    console.log("SET ZINDEX HERE BOY! Num Groups=", groups.length)
     // 1. US
     // if in strike box -> use location of CSF Fleet
     // if on map -> use location of this counter
@@ -159,10 +158,12 @@ function StrikeCounter({ setStrikeGroupPopup, currentUSHex, currentJapanHex, cou
     let from = HexCommand.OFFBOARD
     let to = { currentHex }
     if (side === GlobalUnitsModel.Side.US) {
+      console.log("MOVING STRIKE GROUP TO ", currentUSHex.row, currentUSHex.col)
       const hex = { q: currentUSHex.q, r: currentUSHex.r }
 
       let isThere = USMapRegions && USMapRegions.find((h) => h.q === hex.q && h.r === hex.r)
       if (!isThere) {
+        console.log("NAH, computer says no!")
         return
       } else {
         // ??
@@ -196,6 +197,8 @@ function StrikeCounter({ setStrikeGroupPopup, currentUSHex, currentJapanHex, cou
         setCurrentHex(currentUSHex)
       }
     } else {
+      console.log("MOVING STRIKE GROUP TO ", currentJapanHex.row, currentJapanHex.col)
+
       const hex = { q: currentJapanHex.q, r: currentJapanHex.r }
       let isThere = japanMapRegions && japanMapRegions.find((h) => h.q === hex.q && h.r === hex.r)
       if (!isThere) {
@@ -230,7 +233,6 @@ function StrikeCounter({ setStrikeGroupPopup, currentUSHex, currentJapanHex, cou
     })
 
     const units = controller.getStrikeGroupsNotMoved(side)
-    console.log("WOOF UNITS = ", units)
     if (units.length === 0) {
       GlobalGameState.phaseCompleted = true
     } else {
@@ -260,6 +262,11 @@ function StrikeCounter({ setStrikeGroupPopup, currentUSHex, currentJapanHex, cou
   const handleMouseLeave = () => {
     setIsMoveable(false)
     setStrikeGroupPopup(side, false)
+    if (side === GlobalUnitsModel.Side.JAPAN) {
+      setJapanMapRegions([])
+    } else {
+      setUSMapRegions([])
+    }
   }
   //   console.log("counter data=", counterData)
   return (

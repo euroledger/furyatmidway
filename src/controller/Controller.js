@@ -190,9 +190,24 @@ export default class Controller {
     }
   }
 
+  setAllUnitsToNotMoved() {
+    const airunits = this.counters.values().filter((unit) => unit.constructor.name === "AirUnit")
+
+    for (const unit of airunits) {
+      unit.aircraftUnit.moved = false
+      this.counters.set(unit.name, unit)
+    }
+
+    const strikeUnits = this.counters.values().filter((unit) => unit.constructor.name === "StrikeGroupUnit")
+
+    for (const unit of strikeUnits) {
+      unit.moved = false
+      this.counters.set(unit.name, unit)
+    }
+  }
   getStrikeGroupsNotMoved(side) {
     const strikeGroups = this.getAllStrikeGroups(side)
-    return strikeGroups.filter((sg) => sg.moved === false) 
+    return strikeGroups.length > 0 && strikeGroups.filter((sg) => sg.moved === false || sg.moved === undefined)
   }
 
   getAllStrikeGroups(side) {
@@ -202,7 +217,6 @@ export default class Controller {
     const sgMap = side === GlobalUnitsModel.Side.US ? GlobalUnitsModel.usStrikeGroups : GlobalUnitsModel.jpStrikeGroups
     let array = new Array()
     for (const [_, value] of Object.entries(boxes)) {
-
       const airUnits = this.getAllAirUnitsInBox(value)
       if (airUnits.length > 0) {
         const strikeGroup = new Map([...sgMap].filter(([_, v]) => v.box === value))
@@ -214,7 +228,7 @@ export default class Controller {
   }
 
   getAirUnitsInStrikeGroups(name) {
-    const airUnits = this.getAllAirUnitsInBox(name)  
+    const airUnits = this.getAllAirUnitsInBox(name)
     return airUnits
   }
 
@@ -261,6 +275,19 @@ export default class Controller {
 
   getAirUnitLocation = (airUnitName) => {
     return this.boxModel.getAirUnitLocation(airUnitName)
+  }
+
+  // side is attacker so use other side for defender (ie fleets)
+  checkForAirAttack = (location, side) => {
+    const otherSide = side === GlobalUnitsModel.Side.JAPAN ? GlobalUnitsModel.Side.US : GlobalUnitsModel.Side.JAPAN
+    const fleets = this.getAllFleetsInLocation(location, otherSide)
+
+    const strikeGroups = this.getAllStrikeGroupsInLocation(location, side)
+    return (fleets.length > 0 && strikeGroups.length > 0)
+  }
+
+  getAllFleetsInLocation(location, side) {
+    return this.mapModel.getAllFleetsInLocation(location, side, this.counters)
   }
 
   getAllStrikeGroupsInLocation = (location, side) => {

@@ -243,7 +243,6 @@ function AirCounter({ getAirBox, setAirBox, counterData, side }) {
   }
   const handleClick = (e) => {
     if (counterData.side !== GlobalGameState.sideWithInitiative) {
-      console.log("QUACK 1")
       return
     }
     if (
@@ -251,8 +250,6 @@ function AirCounter({ getAirBox, setAirBox, counterData, side }) {
       GlobalGameState.gamePhase === GlobalGameState.PHASE.JAPAN_SETUP ||
       GlobalGameState.gamePhase === GlobalGameState.PHASE.US_SETUP_AIR
     ) {
-      console.log("QUACK 2")
-
       return
     }
     if (GlobalGameState.gamePhase === GlobalGameState.PHASE.AIR_OPERATIONS) {
@@ -260,7 +257,6 @@ function AirCounter({ getAirBox, setAirBox, counterData, side }) {
 
       setValidDestinationBoxes(controller, counterData.name, counterData.side)
     }
-    console.log("PHASE = ", GlobalGameState.gamePhase)
     setBoxes(counterData)
 
     // only the selected (clicked) air unit should be draggable
@@ -276,6 +272,16 @@ function AirCounter({ getAirBox, setAirBox, counterData, side }) {
   const transform = counterData.aircraftUnit.moved ? "rotate(45deg)" : ""
 
   // console.log(counterData.name, transform)
+
+  let disp = "block"
+  if (
+    !loading &&
+    (GlobalGameState.gamePhase === GlobalGameState.PHASE.AIR_OPERATIONS || GlobalGameState.PHASE.AIR_ATTACK)
+  ) {
+    if (side !== GlobalGameState.sideWithInitiative) {
+      disp = "none"
+    }
+  }
   return (
     <div>
       {/* <a> */}
@@ -288,6 +294,7 @@ function AirCounter({ getAirBox, setAirBox, counterData, side }) {
           width: counterData.width,
           left: position.left,
           top: position.top,
+          display: disp,
           zIndex: zx,
           "&:focus": {
             borderRadius: "2px",

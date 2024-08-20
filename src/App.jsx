@@ -48,6 +48,7 @@ export function App() {
   useEffect(() => {
     setEnabledUSBoxes(getUSEnabledAirBoxes())
   }, [])
+
   const [enabledZones, setEnabledZones] = useState([])
 
   const [gameState, setGameState] = useState(false)
@@ -85,7 +86,8 @@ export function App() {
   const [usHandShow, setusHandShow] = useState(false)
 
   const [gameStateShow, setGameStateShow] = useState(false)
-  const [dicePanelShow, setDicePanelShow] = useState(false)
+  const [initiativePanelShow, setInitiativePanelShow] = useState(false)
+  const [targetPanelShow, setTargetPanelShow] = useState(false)
 
   const [airUnitUpdate, setAirUnitUpdate] = useState({
     name: "",
@@ -103,6 +105,12 @@ export function App() {
   const [japanMapRegions, setJapanMapRegions] = useState([])
 
   const [sideWithInitiative, setSideWithInitiative] = useState(null)
+
+  useEffect(() => {
+    if (GlobalGameState.gamePhase === GlobalGameState.PHASE.AIR_ATTACK) {
+      setTargetPanelShow(true)
+    }
+  }, [GlobalGameState.gamePhase ])
 
   const onDrag = () => {
     setIsMoveable(true)
@@ -173,15 +181,12 @@ export function App() {
       setJapanMapRegions([])
       GlobalGameState.phaseCompleted = true
     } else if (GlobalGameState.gamePhase === GlobalGameState.PHASE.AIR_OPERATIONS) {
-      console.log("RESTORE AIR OPERATIONS STATE")
       GlobalGameState.phaseCompleted = false
+      setSideWithInitiative(GlobalGameState.sideWithInitiative)
       if (GlobalGameState.sideWithInitiative === GlobalUnitsModel.Side.JAPAN) {
-        console.log("JAPAN HAS INITIATIVE")
         setJapanStrikePanelEnabled(true)
         setUsStrikePanelEnabled(false)
         const units = GlobalInit.controller.getStrikeGroupsNotMoved(GlobalUnitsModel.Side.JAPAN)
-        console.log("QUack JAP units.length=", units.length)
-
         if (units.length === 0) {
           GlobalGameState.phaseCompleted = true
         } else {
@@ -221,7 +226,7 @@ export function App() {
       setJpAlertShow,
       setEnabledJapanBoxes,
       setEnabledUSBoxes,
-      setDicePanelShow,
+      setInitiativePanelShow,
       setUsFleetRegions,
       setMidwayNoAttackAlertShow,
       setFleetUnitUpdate,
@@ -231,6 +236,7 @@ export function App() {
       setJapanStrikePanelEnabled,
       setUsStrikePanelEnabled,
       sideWithInitiative,
+      setSideWithInitiative,
     })
   }
 
@@ -264,6 +270,7 @@ export function App() {
       !GlobalGameState.phaseCompleted ||
       (GlobalGameState.gamePhase === GlobalGameState.PHASE.JAPAN_FLEET_MOVEMENT && !GlobalGameState.jpFleetPlaced) ||
       (GlobalGameState.gamePhase === GlobalGameState.PHASE.US_SETUP_FLEET && !GlobalGameState.usFleetPlaced)
+
     return (
       <Navbar bg="black" data-bs-theme="dark" fixed="top" className="justify-content-between navbar-fixed-top">
         <Container>
@@ -442,8 +449,6 @@ export function App() {
   }
 
   function loadMyGame(id) {
-    console.log("LOAD MY GAME")
-
     setLoading(() => true)
     loadHandler({ setTestClicked, setSplash, setAirUnitUpdate, setFleetUnitUpdate, loadState, id, setLoading })
   }
@@ -484,6 +489,11 @@ export function App() {
     jpOpsText = `Japan Air Operations Points: ${searchResults.JAPAN}`
     usOpsText = `US Air Operations Points: ${searchResults.US}`
   }
+  const targetHeaders = (
+    <div>Choose a Target</div> // Buttons needed here for choosing target
+  )
+
+  const targetFooters = <div>Air Attack on Japanese CD1</div>
 
   const airOpsFooters = (
     <>
@@ -518,11 +528,12 @@ export function App() {
       },
     })
     setSideWithInitiative(() => sideWithInitiative)
-
-    // @TODO
-    // add a controller view event for die rolls (so the rolls get logged)
   }
 
+  // if (GlobalGameState.gamePhase === GlobalGameState.PHASE.AIR_ATTACK) {
+  //   console.log("READY FOR AIR ATTACK PHASE")
+  //   // setTargetPanelShow(true)
+  // }
   return (
     <>
       <LoadGamePanel
@@ -606,12 +617,25 @@ export function App() {
       </AlertPanel>
       <DicePanel
         numDice={2}
-        show={!testClicked && dicePanelShow}
+        show={!testClicked && initiativePanelShow}
         headerText="Air Ops Initiative"
         headers={airOpsHeaders}
         footers={airOpsFooters}
         onHide={(e) => {
-          setDicePanelShow(false)
+          setInitiativePanelShow(false)
+          nextAction(e)
+        }}
+        doRoll={doRoll}
+        disabled={sideWithInitiative !== null}
+      ></DicePanel>
+      <DicePanel
+        numDice={1}
+        show={!testClicked && targetPanelShow}
+        headerText="Target Determination"
+        headers={targetHeaders}
+        footers={targetFooters}
+        onHide={(e) => {
+          setTargetPanelShow(false)
           nextAction(e)
         }}
         doRoll={doRoll}

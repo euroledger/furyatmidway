@@ -98,32 +98,29 @@ function midwayAttackHandler() {
     GlobalGameState.gamePhase = GlobalGameState.PHASE.US_FLEET_MOVEMENT
   }
 }
-
-function usFleetMovementHandler({ setFleetUnitUpdate, setSearchValues, setSearchResults, setSearchValuesAlertShow }) {
-  const update = createMapUpdateForFleet(GlobalInit.controller, "CSF", GlobalUnitsModel.Side.US)
-  setFleetUnitUpdate(update)
-  GlobalGameState.gamePhase = GlobalGameState.PHASE.AIR_SEARCH
+function calcAirOpsPoints({ setSearchValues, setSearchResults, setSearchValuesAlertShow }) {
   const sv = calculateSearchValues(GlobalInit.controller)
   const sr = calculateSearchResults(GlobalInit.controller, {
     jp_af: sv.jp_af,
     us_csf: sv.us_csf,
     us_midway: sv.us_midway,
   })
-  console.log("QUACK 1...................")
   setSearchValues(sv)
   GlobalGameState.airOperationPoints.japan = sr.JAPAN
   GlobalGameState.airOperationPoints.us = sr.US
-
-  console.log("GlobalGameState.airOperationPoints.japan=", GlobalGameState.airOperationPoints.japan)
-  console.log("GlobalGameState.airOperationPoints.us=", GlobalGameState.airOperationPoints.us)
-
   setSearchResults(sr)
   setSearchValuesAlertShow(true)
 }
 
-function airSearchHandler({ setDicePanelShow }) {
-  setDicePanelShow(true)
-  GlobalGameState.gamePhase = GlobalGameState.PHASE.AIR_OPERATIONS
+function usFleetMovementHandler({ setFleetUnitUpdate, setSearchValues, setSearchResults, setSearchValuesAlertShow }) {
+  const update = createMapUpdateForFleet(GlobalInit.controller, "CSF", GlobalUnitsModel.Side.US)
+  setFleetUnitUpdate(update)
+  GlobalGameState.gamePhase = GlobalGameState.PHASE.AIR_SEARCH
+  calcAirOpsPoints({ setSearchValues, setSearchResults, setSearchValuesAlertShow })
+}
+
+function initiativeHandler({ setInitiativePanelShow }) {
+  setInitiativePanelShow(true)
   GlobalGameState.phaseCompleted = true
 }
 
@@ -133,28 +130,53 @@ function airOperationsHandler({
   setJapanStrikePanelEnabled,
   setUsStrikePanelEnabled,
   sideWithInitiative,
+  setInitiativePanelShow,
+  setSearchValues, 
+  setSearchResults, 
+  setSearchValuesAlertShow,
+  setSideWithInitiative
 }) {
   GlobalGameState.phaseCompleted = false
   GlobalGameState.sideWithInitiative = sideWithInitiative
+
   if (GlobalGameState.sideWithInitiative === GlobalUnitsModel.Side.JAPAN) {
     const enabledBoxes = getJapanEnabledAirBoxes(sideWithInitiative)
     setEnabledJapanBoxes(() => enabledBoxes)
+    setEnabledUSBoxes()
     setJapanStrikePanelEnabled(true)
     setUsStrikePanelEnabled(false)
     const units = GlobalInit.controller.getStrikeGroupsNotMoved(GlobalUnitsModel.Side.JAPAN)
     if (units.length === 0) {
       GlobalGameState.phaseCompleted = true
+      GlobalGameState.airOperationPoints.japan =
+        GlobalGameState.airOperationPoints.japan > 0 ? GlobalGameState.airOperationPoints.japan - 1 : 0
+      GlobalGameState.phaseCompleted = true
+      // GlobalGameState.gamePhase = GlobalGameState.PHASE.AIR_SEARCH
+      // calcAirOpsPoints({ setSearchValues, setSearchResults, setSearchValuesAlertShow })
+
+      GlobalInit.controller.setAllUnitsToNotMoved()
+      setSideWithInitiative(null) // ensure roll dice button is enabled
+      initiativeHandler({ setInitiativePanelShow })
     } else {
       GlobalGameState.phaseCompleted = false
     }
   } else {
     const enabledUSBoxes = getUSEnabledAirBoxes(sideWithInitiative)
     setEnabledUSBoxes(() => enabledUSBoxes)
+    setEnabledJapanBoxes(() => [])
+
     setUsStrikePanelEnabled(true)
     setJapanStrikePanelEnabled(false)
     const units = GlobalInit.controller.getStrikeGroupsNotMoved(GlobalUnitsModel.Side.US)
     if (units.length === 0) {
+      GlobalGameState.airOperationPoints.us =
+        GlobalGameState.airOperationPoints.us > 0 ? GlobalGameState.airOperationPoints.us - 1 : 0
       GlobalGameState.phaseCompleted = true
+      // GlobalGameState.gamePhase = GlobalGameState.PHASE.AIR_SEARCH
+      
+      GlobalInit.controller.setAllUnitsToNotMoved()
+      setSideWithInitiative(null) // ensure roll dice button is enabled
+      initiativeHandler({ setInitiativePanelShow })
     } else {
       GlobalGameState.phaseCompleted = false
     }
@@ -172,7 +194,7 @@ export default function handleAction({
   setJpAlertShow,
   setEnabledJapanBoxes,
   setEnabledUSBoxes,
-  setDicePanelShow,
+  setInitiativePanelShow,
   setUsFleetRegions,
   setMidwayNoAttackAlertShow,
   setFleetUnitUpdate,
@@ -182,6 +204,7 @@ export default function handleAction({
   setJapanStrikePanelEnabled,
   setUsStrikePanelEnabled,
   sideWithInitiative,
+  setSideWithInitiative
 }) {
   //   switch (
   // GlobalGameState.gamePhase
@@ -221,6 +244,7 @@ export default function handleAction({
   //   ) {
   //   }
 
+  console.log("QUACK PHASE = ", GlobalGameState.gamePhase)
   if (GlobalGameState.gamePhase === GlobalGameState.PHASE.JAPAN_SETUP) {
     japanSetUpHandler()
   } else if (GlobalGameState.gamePhase === GlobalGameState.PHASE.JAPAN_CARD_DRAW) {
@@ -247,7 +271,13 @@ export default function handleAction({
       setSearchValuesAlertShow,
     })
   } else if (GlobalGameState.gamePhase === GlobalGameState.PHASE.AIR_SEARCH) {
-    airSearchHandler({ setDicePanelShow })
+    initiativeHandler({ setInitiativePanelShow })
+    // GlobalGameState.updateGlobalState()
+    // const enabledBoxes = getJapanEnabledAirBoxes()
+    // setEnabledJapanBoxes(() => enabledBoxes)
+    // const enabledUSBoxes = getUSEnabledAirBoxes()
+    // setEnabledUSBoxes(() => enabledUSBoxes)
+    return
   } else if (GlobalGameState.gamePhase === GlobalGameState.PHASE.AIR_OPERATIONS) {
     airOperationsHandler({
       setEnabledJapanBoxes,
@@ -255,6 +285,11 @@ export default function handleAction({
       setJapanStrikePanelEnabled,
       setUsStrikePanelEnabled,
       sideWithInitiative,
+      setInitiativePanelShow,
+      setSearchValues, 
+      setSearchResults, 
+      setSearchValuesAlertShow,
+      setSideWithInitiative
     })
     GlobalGameState.updateGlobalState()
     return

@@ -14,9 +14,28 @@ export default class CardModel {
       this.usMap.set(id, location)
     }
   }
-
   locationsEqual(locationA, locationB) {
+    if (locationA.currentHex === undefined || locationB.currentHex === undefined) {
+      return false
+    }
     return locationA.currentHex.q === locationB.currentHex.q && locationA.currentHex.r === locationB.currentHex.r
+  }
+
+  getAllFleetsInLocation(location, side, counters) {
+    let fleets = new Array()
+
+    const fleetMap =
+      side === GlobalUnitsModel.Side.JAPAN ? GlobalUnitsModel.jpFleetUnits : GlobalUnitsModel.usFleetUnits
+    const mapMap = side === GlobalUnitsModel.Side.JAPAN ? this.jpMap : this.usMap
+    // this gives us a map where keys are all non strike groups at this location
+    const fleetLocations = new Map(
+      [...mapMap].filter(([k, v]) => !k.includes("SG") && this.locationsEqual(v, location))
+    )
+    for (let sg of fleetLocations.keys()) {
+      fleets.push(counters.get(sg))
+    }
+
+    return fleets
   }
 
   getAllStrikeGroupsInLocation(location, side) {

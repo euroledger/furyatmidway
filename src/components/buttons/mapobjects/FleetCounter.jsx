@@ -4,8 +4,23 @@ import HexCommand from "../../../commands/HexCommand"
 import Controller from "../../../controller/Controller"
 import GlobalGameState from "../../../model/GlobalGameState"
 import { BoardContext } from "../../../App"
+import StrikeGroupPopUp from "./StrikeGroupPopUp"
+import GlobalUnitsModel from "../../../model/GlobalUnitsModel"
 
-function FleetCounter({ id, currentHex, counterData, usRegions, jpRegions, enabled, side }) {
+function FleetCounter({
+  id,
+  currentHex,
+  counterData,
+  usRegions,
+  jpRegions,
+  enabled,
+  side,
+  currentMouseHex,
+  setCurrentMouseHex,
+  setCurrentUSHex,
+  setCurrentJapanHex
+}) {
+  const { setIsMoveable } = useContext(BoardContext)
   const { controller, onDrag, onStop, fleetUnitUpdate } = useContext(BoardContext)
   const [position, setPosition] = useState({
     initial: true,
@@ -13,6 +28,35 @@ function FleetCounter({ id, currentHex, counterData, usRegions, jpRegions, enabl
     top: counterData.position.top,
     currentHex: {},
   })
+
+  const [showPopup, setShowPopup] = useState(false)
+  const [popUpPosition, setPopUpPosition] = useState({})
+
+  const [strikeGroupsAtLocation, setstrikeGroupsAtLocation] = useState([])
+  const [fleetsAtLocation, setFleetsAtLocation] = useState([])
+  const [hexw, setHexw] = useState(currentMouseHex)
+
+  function setStrikeGroupPopup(side, show, hex) {
+    if (show === false || hex === undefined) {
+      setShowPopup(false)
+      return
+    }
+    setHexw(() => hex)
+    const groups = controller.getAllStrikeGroupsInLocation(hex, side)
+    setstrikeGroupsAtLocation(() => groups)
+
+    const fleets = controller.getAllFleetsInLocation(hex, side)
+    setFleetsAtLocation(() => fleets)
+
+    if (groups.length > 0 || fleets.length > 0) {
+      setShowPopup(true)
+      setPopUpPosition(() => hex.currentHex)
+    } else {
+      setShowPopup(false)
+    }
+
+    setCurrentMouseHex({})
+  }
   let hex = {}
   if (fleetUnitUpdate) {
     hex = fleetUnitUpdate.position.currentHex
@@ -57,6 +101,7 @@ function FleetCounter({ id, currentHex, counterData, usRegions, jpRegions, enabl
       },
     })
   }
+
   const handleDrop = (event) => {
     const hex = { q: currentHex.q, r: currentHex.r }
 
@@ -122,6 +167,26 @@ function FleetCounter({ id, currentHex, counterData, usRegions, jpRegions, enabl
     console.log("You clicked on a fleet counter!")
   }
 
+  const handleMouseEnter = () => {
+    setIsMoveable(true)
+    const location = controller.getFleetLocation(counterData.name, side)
+    setStrikeGroupPopup(side, true, location)
+  }
+
+  const handleMouseLeave = () => {
+    setIsMoveable(false)
+    setStrikeGroupPopup(side, false)
+  }
+  const handleDragEnter = () => {
+    const location = controller.getFleetLocation(counterData.name, side).currentHex
+
+    if (side === GlobalUnitsModel.Side.US) {
+      setCurrentUSHex(location)
+    } else {
+      setCurrentJapanHex(location)
+    }
+  }
+
   return (
     <div>
       {enabled && (
@@ -134,11 +199,21 @@ function FleetCounter({ id, currentHex, counterData, usRegions, jpRegions, enabl
             left: position.left,
             top: position.top,
           }}
-          onMouseEnter={onDrag}
-          onMouseLeave={onStop}
+          onDragEnter={handleDragEnter}
+          onMouseEnter={handleMouseEnter}
+          onMouseLeave={handleMouseLeave}
           onDragEnd={handleDrop}
           // onClick={handleClick}
         />
+      )}
+      {showPopup && (
+        <StrikeGroupPopUp
+          strikeGroup={strikeGroupsAtLocation}
+          fleetUnits={fleetsAtLocation}
+          side={side}
+          popUpPosition={popUpPosition}
+          hex={hexw}
+        ></StrikeGroupPopUp>
       )}
     </div>
   )

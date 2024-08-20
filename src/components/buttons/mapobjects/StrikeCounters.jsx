@@ -19,6 +19,7 @@ function StrikeCounters({
   const [popUpPosition, setPopUpPosition] = useState({})
 
   const [strikeGroupsAtLocation, setstrikeGroupsAtLocation] = useState([])
+  const [fleetsAtLocation, setFleetsAtLocation] = useState([])
 
   const counters = Array.from(counterData.values())
 
@@ -39,9 +40,9 @@ function StrikeCounters({
     setstrikeGroupsAtLocation(() => groups)
 
     const fleets = controller.getAllFleetsInLocation(hexy, side)
-    console.log("FLEETS =", fleets)
+    setFleetsAtLocation(() => fleets)
 
-    if (groups.length > 0) {
+    if (groups.length > 0 || fleets.length > 0) {
       setShowPopup(true)
       setPopUpPosition(() => hexy.currentHex)
     } else {
@@ -53,7 +54,8 @@ function StrikeCounters({
   const sgCounters = strikeUnits.map((strikeGroupUnit) => {
     if (
       (GlobalGameState.gamePhase !== GlobalGameState.PHASE.AIR_OPERATIONS &&
-        GlobalGameState.gamePhase !== GlobalGameState.PHASE.AIR_SEARCH) ||
+        GlobalGameState.gamePhase !== GlobalGameState.PHASE.AIR_SEARCH &&
+        GlobalGameState.gamePhase !== GlobalGameState.PHASE.AIR_ATTACK) ||
       controller.getAirUnitsInStrikeGroups(strikeGroupUnit.box).length === 0
     ) {
       return
@@ -86,6 +88,7 @@ function StrikeCounters({
       {showPopup && (
         <StrikeGroupPopUp
           strikeGroup={strikeGroupsAtLocation}
+          fleetUnits={fleetsAtLocation}
           side={side}
           popUpPosition={popUpPosition}
           hex={hex}

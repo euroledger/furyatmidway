@@ -1,14 +1,19 @@
+import React, { useContext } from "react"
 import "../../board.css"
 import AirCounter from "./AirCounter"
 import GlobalGameState from "../../../model/GlobalGameState"
 import GlobalUnitsModel from "../../../model/GlobalUnitsModel"
+import { BoardContext } from "../../../App"
+
 
 function AirCounters({ controller, onDrag, onStop, getAirBox, setAirBox, counterData, airUnitUpdate, setAlertShow }) {
+  const { loading } = useContext(BoardContext)
   const counters = Array.from(counterData.values())
 
   const airunits = counters.filter((unit) => unit.constructor.name === "AirUnit")
 
   const airCounters = airunits.map((airUnit) => {
+
     if (airUnit.side === GlobalUnitsModel.Side.JAPAN) {
       const carrierIndex = GlobalGameState.JAPAN_CARRIERS.indexOf(airUnit.carrier)
       if (

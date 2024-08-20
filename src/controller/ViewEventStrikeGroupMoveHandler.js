@@ -25,6 +25,9 @@ class ViewEventStrikeGroupMoveHandler {
     GlobalGameState.log(`${command.toString()}`)
     if (!loading) {
       counterData.moved = true
+      if (this.controller.checkForAirAttack(to, side)) {
+        GlobalGameState.gamePhase = GlobalGameState.PHASE.AIR_ATTACK
+      }
     }
 
     // check if all stike groups moved - can that be done here?
