@@ -1,14 +1,24 @@
 import GlobalUnitsModel from "../../../model/GlobalUnitsModel"
 import "../../board.css"
 import PopUpStrikeCounter from "./PopUpStrikeCounter"
+import BaseUnit from "./BaseUnit"
 
 function StrikeGroupPopUp({ strikeGroup, fleetUnits, popUpPosition, hex, side }) {
   let index = 0
   const fleetCounters = fleetUnits.map((fleetUnit) => {
-    fleetUnit.position.left = 3 + 30 * index
-    fleetUnit.position.top = 30
+    let newFleetUnit = new BaseUnit(
+      fleetUnit.name,
+      fleetUnit.longName,
+      {
+        left: 3 + 30 * index,
+        top: 30
+      },
+      { x: 50, y: 68 }, // offsets
+      fleetUnit.image,
+      fleetUnit.width
+    )
     index += 1
-    return <PopUpStrikeCounter counterData={fleetUnit}></PopUpStrikeCounter>
+    return <PopUpStrikeCounter counterData={newFleetUnit}></PopUpStrikeCounter>
   })
   const sgCounters = strikeGroup.map((strikeGroupUnit) => {
     strikeGroupUnit.position.left = 3 + 30 * index
@@ -16,7 +26,7 @@ function StrikeGroupPopUp({ strikeGroup, fleetUnits, popUpPosition, hex, side })
     index += 1
     return <PopUpStrikeCounter counterData={strikeGroupUnit}></PopUpStrikeCounter>
   })
-  const width = 40 + (index * 30)
+  const width = 40 + index * 30
 
   const wstr = `${width}px`
   const row = hex.currentHex.row

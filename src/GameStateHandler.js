@@ -131,14 +131,9 @@ function airOperationsHandler({
   setUsStrikePanelEnabled,
   sideWithInitiative,
   setInitiativePanelShow,
-  setSearchValues, 
-  setSearchResults, 
-  setSearchValuesAlertShow,
   setSideWithInitiative
 }) {
   GlobalGameState.phaseCompleted = false
-  GlobalGameState.sideWithInitiative = sideWithInitiative
-
   if (GlobalGameState.sideWithInitiative === GlobalUnitsModel.Side.JAPAN) {
     const enabledBoxes = getJapanEnabledAirBoxes(sideWithInitiative)
     setEnabledJapanBoxes(() => enabledBoxes)
@@ -151,8 +146,6 @@ function airOperationsHandler({
       GlobalGameState.airOperationPoints.japan =
         GlobalGameState.airOperationPoints.japan > 0 ? GlobalGameState.airOperationPoints.japan - 1 : 0
       GlobalGameState.phaseCompleted = true
-      // GlobalGameState.gamePhase = GlobalGameState.PHASE.AIR_SEARCH
-      // calcAirOpsPoints({ setSearchValues, setSearchResults, setSearchValuesAlertShow })
 
       GlobalInit.controller.setAllUnitsToNotMoved()
       setSideWithInitiative(null) // ensure roll dice button is enabled
@@ -206,6 +199,8 @@ export default function handleAction({
   sideWithInitiative,
   setSideWithInitiative
 }) {
+
+
   //   switch (
   // GlobalGameState.gamePhase
   // case GlobalGameState.PHASE.JAPAN_SETUP:
@@ -244,7 +239,6 @@ export default function handleAction({
   //   ) {
   //   }
 
-  console.log("QUACK PHASE = ", GlobalGameState.gamePhase)
   if (GlobalGameState.gamePhase === GlobalGameState.PHASE.JAPAN_SETUP) {
     japanSetUpHandler()
   } else if (GlobalGameState.gamePhase === GlobalGameState.PHASE.JAPAN_CARD_DRAW) {
@@ -272,11 +266,6 @@ export default function handleAction({
     })
   } else if (GlobalGameState.gamePhase === GlobalGameState.PHASE.AIR_SEARCH) {
     initiativeHandler({ setInitiativePanelShow })
-    // GlobalGameState.updateGlobalState()
-    // const enabledBoxes = getJapanEnabledAirBoxes()
-    // setEnabledJapanBoxes(() => enabledBoxes)
-    // const enabledUSBoxes = getUSEnabledAirBoxes()
-    // setEnabledUSBoxes(() => enabledUSBoxes)
     return
   } else if (GlobalGameState.gamePhase === GlobalGameState.PHASE.AIR_OPERATIONS) {
     airOperationsHandler({
@@ -286,9 +275,6 @@ export default function handleAction({
       setUsStrikePanelEnabled,
       sideWithInitiative,
       setInitiativePanelShow,
-      setSearchValues, 
-      setSearchResults, 
-      setSearchValuesAlertShow,
       setSideWithInitiative
     })
     GlobalGameState.updateGlobalState()

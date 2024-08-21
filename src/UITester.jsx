@@ -10,14 +10,14 @@ import {
 } from "./AirUnitTestData"
 import JapanAirBoxOffsets from "./components/draganddrop/JapanAirBoxOffsets"
 import USAirBoxOffsets from "./components/draganddrop/USAirBoxOffsets"
-import { airUnitDataJapan, airUnitDataUS, strikeGroupsUS } from "./AirUnitTestData"
+import { airUnitDataJapan, airUnitDataUS, airUnitsToStrikeGroupsUS, createStrikeGroupUpdate } from "./AirUnitTestData"
 
 function delay(ms) {
   return new Promise((resolve) => {
     setTimeout(resolve, ms)
   })
 }
-const UITester = async ({ e, setTestClicked, setAirUnitUpdate, setFleetUnitUpdate, nextAction, doRoll }) => {
+const UITester = async ({ e, setTestClicked, setAirUnitUpdate, setFleetUnitUpdate, setStrikeGroupUpdate, nextAction, doRoll }) => {
   setTestClicked(true)
 
   let update
@@ -73,7 +73,7 @@ const UITester = async ({ e, setTestClicked, setAirUnitUpdate, setFleetUnitUpdat
   nextAction(e) // midway
   console.log("GAME STATE = ", GlobalGameState.gamePhase)
 
-  const usFleetMove = createFleetUpdate("CSF", 5, 1)
+  const usFleetMove = createFleetUpdate("CSF", 4, 1)
   setFleetUnitUpdate(usFleetMove)
 
   // setFleetUnitUpdate(undefined)
@@ -82,7 +82,7 @@ const UITester = async ({ e, setTestClicked, setAirUnitUpdate, setFleetUnitUpdat
 
   console.log("GAME STATE = ", GlobalGameState.gamePhase)
 
-  const jpFleetMove = createFleetUpdate("1AF", 2, 3)
+  const jpFleetMove = createFleetUpdate("1AF", 2, 2)
   setFleetUnitUpdate(jpFleetMove)
   await delay(1)
   nextAction(e)
@@ -95,14 +95,14 @@ const UITester = async ({ e, setTestClicked, setAirUnitUpdate, setFleetUnitUpdat
 
   // Set dice roll automatically -> US initiative
   doRoll(2, 3)
-  nextAction(e)
-  console.log("GAME STATE = ", GlobalGameState.gamePhase)
-
+  
+  console.log("SIDE WITH INITIATIVE=", GlobalGameState.sideWithInitiative)
+  GlobalGameState.gamePhase = GlobalGameState.PHASE.AIR_OPERATIONS 
   nextAction(e)
 
   console.log("Now allocate US Air Units to strike boxes")
   // Allocate Air Units to Strike Boxes
-  for (const unit of strikeGroupsUS) {
+  for (const unit of airUnitsToStrikeGroupsUS) {
     update = calcStrikeDataUS(unit, GlobalInit.controller)
     if (!update) {
       continue
@@ -112,7 +112,7 @@ const UITester = async ({ e, setTestClicked, setAirUnitUpdate, setFleetUnitUpdat
     let position1 = USAirBoxOffsets.find((box) => box.name === update.boxName)
 
     update.position = position1.offsets[update.index]
-    console.log("Send Air Unit update:", update)
+    // console.log("Send Air Unit update:", update)
     setAirUnitUpdate(update)
 
     await delay(1)
@@ -121,6 +121,12 @@ const UITester = async ({ e, setTestClicked, setAirUnitUpdate, setFleetUnitUpdat
     }
   }
   await delay(1)
+
+  const usStrikeGroupMove = createStrikeGroupUpdate("US-SG1", 2, 2)
+  setStrikeGroupUpdate(usStrikeGroupMove)
+
+  await delay(1)
+
 }
 
 export default UITester

@@ -276,9 +276,20 @@ function AirCounter({ getAirBox, setAirBox, counterData, side }) {
   let disp = "block"
   if (
     !loading &&
-    (GlobalGameState.gamePhase === GlobalGameState.PHASE.AIR_OPERATIONS || GlobalGameState.PHASE.AIR_ATTACK)
+    (GlobalGameState.gamePhase === GlobalGameState.PHASE.AIR_OPERATIONS ||
+      GlobalGameState.gamePhase === GlobalGameState.PHASE.TARGET_DETERMINATION)
   ) {
     if (side !== GlobalGameState.sideWithInitiative) {
+      // console.log(
+      //   "side with initiative=",
+      //   GlobalGameState.sideWithInitiative,
+      //   "name:",
+      //   counterData.name,
+      //   "Computer SAys NOOOOOO, phase=",
+      //   GlobalGameState.gamePhase,
+      //   "side=",
+      //   side
+      // )
       disp = "none"
     }
   }

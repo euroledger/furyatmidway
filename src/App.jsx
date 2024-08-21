@@ -24,7 +24,8 @@ import { saveGameState } from "./SaveLoadGame"
 import loadHandler from "./LoadHandler"
 import { allHexesWithinDistance } from "./components/HexUtils"
 import DicePanel from "./components/dialogs/DicePanel"
-import { AirOpsHeaders, AirOpsFooters } from "./AirOpsDataPanels"
+import { AirOpsHeaders, AirOpsFooters } from "./AirOpsDataPanels" 
+import { TargetHeaders, TargetFooters } from "./TargetPanel"
 import { randomDice } from "./components/dialogs/DiceUtils"
 import UITester from "./UITester"
 import { getJapanEnabledAirBoxes, getUSEnabledAirBoxes } from "./AirBoxZoneHandler"
@@ -101,16 +102,27 @@ export function App() {
     position: {},
   })
 
+  const [strikeGroupUpdate, setStrikeGroupUpdate] = useState({
+    name: "",
+    position: {}
+  })
+
   const [USMapRegions, setUSMapRegions] = useState([])
   const [japanMapRegions, setJapanMapRegions] = useState([])
 
   const [sideWithInitiative, setSideWithInitiative] = useState(null)
 
+  const [targetDetermined, setTargetDetermined] = useState(false)
+  const [targetSelected, setTargetSelected] = useState(false)
+
   useEffect(() => {
-    if (GlobalGameState.gamePhase === GlobalGameState.PHASE.AIR_ATTACK) {
+    if (GlobalGameState.gamePhase === GlobalGameState.PHASE.TARGET_DETERMINATION) {
+      // @TODO CHECK IF JAPANESE PLAYER HOLDS CARD 11 
+      // ("US STRIKE LOST")
+      // Will want to display an alert to ask if the player wants to play this card
       setTargetPanelShow(true)
     }
-  }, [GlobalGameState.gamePhase ])
+  }, [GlobalGameState.gamePhase])
 
   const onDrag = () => {
     setIsMoveable(true)
@@ -181,6 +193,7 @@ export function App() {
       setJapanMapRegions([])
       GlobalGameState.phaseCompleted = true
     } else if (GlobalGameState.gamePhase === GlobalGameState.PHASE.AIR_OPERATIONS) {
+      console.log("IN AIR OPERATIONS STATE, initiative:", GlobalGameState.sideWithInitiative)
       GlobalGameState.phaseCompleted = false
       setSideWithInitiative(GlobalGameState.sideWithInitiative)
       if (GlobalGameState.sideWithInitiative === GlobalUnitsModel.Side.JAPAN) {
@@ -196,7 +209,6 @@ export function App() {
         setUsStrikePanelEnabled(true)
         setJapanStrikePanelEnabled(false)
         const units = GlobalInit.controller.getStrikeGroupsNotMoved(GlobalUnitsModel.Side.US)
-        console.log("QUack units.length=", units.length)
         if (units.length === 0) {
           GlobalGameState.phaseCompleted = true
         } else {
@@ -206,7 +218,7 @@ export function App() {
     }
     // If we don't do this, a drag and drop move fires a fleet update and the fleet does not move
     setFleetUnitUpdate(undefined)
-
+    setStrikeGroupUpdate(undefined)
     GlobalGameState.updateGlobalState()
     const enabledJapanBoxes = getJapanEnabledAirBoxes()
     setEnabledJapanBoxes(() => enabledJapanBoxes)
@@ -241,7 +253,7 @@ export function App() {
   }
 
   const testUi = async (e) => {
-    await UITester({ e, setTestClicked, setAirUnitUpdate, setFleetUnitUpdate, nextAction, doRoll })
+    await UITester({ e, setTestClicked, setAirUnitUpdate, setFleetUnitUpdate, setStrikeGroupUpdate, nextAction, doRoll: doIntiativeRoll })
   }
 
   var v = process.env.REACT_APP_MYVAR || "none"
@@ -450,7 +462,7 @@ export function App() {
 
   function loadMyGame(id) {
     setLoading(() => true)
-    loadHandler({ setTestClicked, setSplash, setAirUnitUpdate, setFleetUnitUpdate, loadState, id, setLoading })
+    loadHandler({ setTestClicked, setSplash, setAirUnitUpdate, setFleetUnitUpdate, setStrikeGroupUpdate, loadState, id, setLoading })
   }
 
   async function loady() {
@@ -490,10 +502,16 @@ export function App() {
     usOpsText = `US Air Operations Points: ${searchResults.US}`
   }
   const targetHeaders = (
-    <div>Choose a Target</div> // Buttons needed here for choosing target
+    <>
+    <TargetHeaders setTargetSelected={setTargetSelected}></TargetHeaders>
+  </>
   )
 
-  const targetFooters = <div>Air Attack on Japanese CD1</div>
+  const targetFooters = (
+    <>
+    <TargetFooters show={targetDetermined}></TargetFooters>
+  </>
+  )
 
   const airOpsFooters = (
     <>
@@ -505,7 +523,7 @@ export function App() {
       <AirOpsHeaders></AirOpsHeaders>
     </>
   )
-  function doRoll(roll0, roll1) {
+  function doIntiativeRoll(roll0, roll1) {
     // for automated testing
     let sideWithInitiative
     let jpRolls, usRolls
@@ -519,6 +537,7 @@ export function App() {
       jpRolls = [rolls[0]]
       usRolls = [rolls[1]]
     }
+    GlobalGameState.sideWithInitiative = sideWithInitiative
 
     GlobalInit.controller.viewEventHandler({
       type: Controller.EventTypes.INITIATIVE_ROLL,
@@ -528,12 +547,30 @@ export function App() {
       },
     })
     setSideWithInitiative(() => sideWithInitiative)
+    GlobalGameState.updateGlobalState()
   }
 
-  // if (GlobalGameState.gamePhase === GlobalGameState.PHASE.AIR_ATTACK) {
-  //   console.log("READY FOR AIR ATTACK PHASE")
-  //   // setTargetPanelShow(true)
-  // }
+  function doTargetSelectionRoll(roll0) {
+    GlobalGameState.dieRolls = 0
+
+    // for automated testing
+    let actualTarget
+    let theRoll
+    if (roll0) {
+      actualTarget = GlobalInit.controller.determineTarget(roll0) 
+      theRoll = [roll0]
+    } else {
+      const rolls = randomDice(1)
+      actualTarget = GlobalInit.controller.determineTarget(rolls[0])
+      theRoll = [rolls[0]]
+    }
+    GlobalGameState.airAttackTarget = actualTarget
+
+    setTargetDetermined(true)
+    GlobalGameState.updateGlobalState()
+
+  
+  }
   return (
     <>
       <LoadGamePanel
@@ -621,12 +658,15 @@ export function App() {
         headerText="Air Ops Initiative"
         headers={airOpsHeaders}
         footers={airOpsFooters}
+        showDice={true}
         onHide={(e) => {
           setInitiativePanelShow(false)
           nextAction(e)
         }}
-        doRoll={doRoll}
-        disabled={sideWithInitiative !== null}
+        doRoll={doIntiativeRoll}
+        nextState={GlobalGameState.PHASE.AIR_OPERATIONS}
+        diceButtonDisabled={sideWithInitiative !== null}
+        closeButtonDisabled={sideWithInitiative === null}
       ></DicePanel>
       <DicePanel
         numDice={1}
@@ -634,12 +674,18 @@ export function App() {
         headerText="Target Determination"
         headers={targetHeaders}
         footers={targetFooters}
+        width={30}
+        showDice={targetSelected}
+        margin={300}
+        diceButtonDisabled={targetSelected === targetDetermined}
+        closeButtonDisabled={!targetDetermined}
+        nextState={GlobalGameState.PHASE.CAP_INTERCEPTION}
         onHide={(e) => {
           setTargetPanelShow(false)
           nextAction(e)
         }}
-        doRoll={doRoll}
-        disabled={sideWithInitiative !== null}
+        doRoll={doTargetSelectionRoll}
+        disabled={true}
       ></DicePanel>
       <GameStatusPanel show={gameStateShow} gameState={gameState} onHide={() => setGameStateShow(false)} />
       <CardPanel show={jpHandShow} side={GlobalUnitsModel.Side.JAPAN} onHide={() => setjpHandShow(false)}></CardPanel>
@@ -679,6 +725,7 @@ export function App() {
                   scale,
                   airUnitUpdate,
                   fleetUnitUpdate,
+                  strikeGroupUpdate,
                   setAlertShow,
                   showZones,
                   USMapRegions,

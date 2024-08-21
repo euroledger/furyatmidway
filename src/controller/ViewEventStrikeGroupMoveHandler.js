@@ -26,7 +26,7 @@ class ViewEventStrikeGroupMoveHandler {
     if (!loading) {
       counterData.moved = true
       if (this.controller.checkForAirAttack(to, side)) {
-        GlobalGameState.gamePhase = GlobalGameState.PHASE.AIR_ATTACK
+        GlobalGameState.gamePhase = GlobalGameState.PHASE.TARGET_DETERMINATION
       }
     }
 

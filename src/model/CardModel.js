@@ -41,4 +41,8 @@ export default class CardModel {
   getCards(side) {
     return side === GlobalUnitsModel.Side.JAPAN ? GlobalUnitsModel.jpCards : GlobalUnitsModel.usCards
   }
+
+  japanHandContainsCard(cardNum) {
+    console.log("JP CARDS = ", GlobalUnitsModel.jpCards)
+  }
 }

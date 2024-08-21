@@ -283,7 +283,7 @@ export default class Controller {
     const fleets = this.getAllFleetsInLocation(location, otherSide)
 
     const strikeGroups = this.getAllStrikeGroupsInLocation(location, side)
-    return (fleets.length > 0 && strikeGroups.length > 0)
+    return fleets.length > 0 && strikeGroups.length > 0
   }
 
   getAllFleetsInLocation(location, side) {
@@ -479,6 +479,14 @@ export default class Controller {
     this.cardModel.drawUSCards(num, initial)
   }
 
+  japanHandContainsCard(cardNum) {
+    return this.cardModel.japanHandContainsCard(cardNum)
+  }
+
+  usHandContainsCard(cardNum) {
+    return this.cardModel.usHandContainsCard(cardNum)
+  }
+
   setFleetUnitLocation(id, location, side) {
     this.mapModel.setFleetUnitLocation(id, location, side)
   }
@@ -594,6 +602,25 @@ export default class Controller {
     return airUnitsArray
   }
 
+  determineTarget = (roll) => {
+    let actualTarget = GlobalGameState.airAttackTarget
+    const side = GlobalGameState.sideWithInitiative
+    if (side === GlobalUnitsModel.Side.US) {
+      if (roll < 6) {
+        return actualTarget
+      }
+      return actualTarget === GlobalUnitsModel.TaskForce.CARRIER_DIV_1
+        ? GlobalUnitsModel.TaskForce.CARRIER_DIV_2
+        : GlobalUnitsModel.TaskForce.CARRIER_DIV_1
+    } else {
+      if (roll < 4) {
+        return actualTarget
+      }
+      return actualTarget === GlobalUnitsModel.TaskForce.TASK_FORCE_16
+        ? GlobalUnitsModel.TaskForce.TASK_FORCE_17
+        : GlobalUnitsModel.TaskForce.TASK_FORCE_16
+    }
+  }
   determineInitiative = (japanDieRoll, usDieRoll) => {
     if (GlobalGameState.airOperationPoints.japan === 0 && GlobalGameState.airOperationPoints.us > 0) {
       return GlobalUnitsModel.Side.US

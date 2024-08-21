@@ -22,6 +22,7 @@ function FleetCounter({
 }) {
   const { setIsMoveable } = useContext(BoardContext)
   const { controller, onDrag, onStop, fleetUnitUpdate } = useContext(BoardContext)
+
   const [position, setPosition] = useState({
     initial: true,
     left: counterData.position.left,
@@ -45,7 +46,8 @@ function FleetCounter({
     const groups = controller.getAllStrikeGroupsInLocation(hex, side)
     setstrikeGroupsAtLocation(() => groups)
 
-    const fleets = controller.getAllFleetsInLocation(hex, side)
+    let fleets=[]
+    fleets = controller.getAllFleetsInLocation(hex, side)
     setFleetsAtLocation(() => fleets)
 
     if (groups.length > 0 || fleets.length > 0) {
@@ -62,16 +64,15 @@ function FleetCounter({
     hex = fleetUnitUpdate.position.currentHex
   }
 
-  // if (fleetUnitUpdate) {
-  //   console.log("GOT AN UPDATE FOR FLEET ",fleetUnitUpdate.name, " - moving to ",hex )
-  // }
   // This code for the test mode fleet unit updates
   if (
     fleetUnitUpdate &&
     counterData.name === fleetUnitUpdate.name &&
     (position.currentHex.q !== hex.q || position.currentHex.r !== hex.r)
   ) {
-    console.log("I am ", fleetUnitUpdate.name, "side:", side, "-> FLEET UNIT UPDATE, move to ", hex.q + ",", hex.r)
+    hex = fleetUnitUpdate.position.currentHex
+
+    console.log("I am", fleetUnitUpdate.name, "side:", side, "-> FLEET UNIT UPDATE, move to", hex.row + ",", hex.col)
     setPosition({
       initial: false,
       left: hex.x + counterData.position.left + counterData.offsets.x,
@@ -122,21 +123,21 @@ function FleetCounter({
       GlobalGameState.jpFleetMoved = true
     }
 
-    // console.log(
-    //   `Fleet Unit ${counterData.name} moves to q:${hex.q}, r:${hex.r} => x:${currentHex.x},y:${currentHex.y}, row: ${currentHex.row}, col: ${currentHex.col}`
-    // )
+    console.log(
+      `Fleet Unit ${counterData.name} moves to q:${hex.q}, r:${hex.r} => x:${currentHex.x},y:${currentHex.y}, row: ${currentHex.row}, col: ${currentHex.col}`
+    )
 
-    // console.log("currenthex.x =", currentHex.x)
-    // console.log("currentHex.y =", currentHex.y)
+    console.log("currenthex.x =", currentHex.x)
+    console.log("currentHex.y =", currentHex.y)
 
-    // console.log("counterData.position.left=", counterData.position.left)
-    // console.log("counterData.position.top=", counterData.position.top)
+    console.log("counterData.position.left=", counterData.position.left)
+    console.log("counterData.position.top=", counterData.position.top)
 
-    // console.log("counterData.offsets.x=",counterData.offsets.x)
-    // console.log("counterData.offsets.y=",counterData.offsets.y)
+    console.log("counterData.offsets.x=",counterData.offsets.x)
+    console.log("counterData.offsets.y=",counterData.offsets.y)
 
-    // console.log("SET left to ", currentHex.x + counterData.position.left + counterData.offsets.x)
-    // console.log("SET top to ", currentHex.y + counterData.position.top + counterData.offsets.y)
+    console.log("SET left to ", currentHex.x + counterData.position.left + counterData.offsets.x)
+    console.log("SET top to ", currentHex.y + counterData.position.top + counterData.offsets.y)
 
     setPosition({
       initial: false,
@@ -178,12 +179,17 @@ function FleetCounter({
     setStrikeGroupPopup(side, false)
   }
   const handleDragEnter = () => {
-    const location = controller.getFleetLocation(counterData.name, side).currentHex
+    
+    const location = controller.getFleetLocation(counterData.name, side)
+
+    if (!location) {
+      return // (fleet could be OFFBOARD)
+    }
 
     if (side === GlobalUnitsModel.Side.US) {
-      setCurrentUSHex(location)
+      setCurrentUSHex(location.currentHex)
     } else {
-      setCurrentJapanHex(location)
+      setCurrentJapanHex(location.currentHex)
     }
   }
 

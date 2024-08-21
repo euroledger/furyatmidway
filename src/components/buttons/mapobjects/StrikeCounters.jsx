@@ -55,9 +55,13 @@ function StrikeCounters({
     if (
       (GlobalGameState.gamePhase !== GlobalGameState.PHASE.AIR_OPERATIONS &&
         GlobalGameState.gamePhase !== GlobalGameState.PHASE.AIR_SEARCH &&
-        GlobalGameState.gamePhase !== GlobalGameState.PHASE.AIR_ATTACK) ||
+        GlobalGameState.gamePhase !== GlobalGameState.PHASE.TARGET_DETERMINATION) ||
       controller.getAirUnitsInStrikeGroups(strikeGroupUnit.box).length === 0
     ) {
+      return
+    }
+
+    if (strikeGroupUnit.side != GlobalGameState.sideWithInitiative) {
       return
     }
 

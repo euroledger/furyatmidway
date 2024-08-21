@@ -16,6 +16,8 @@ export default class GlobalGameState {
     US_FLEET_MOVEMENT: "US Fleet Movement",
     AIR_SEARCH: "Search Phase",
     AIR_OPERATIONS: "Air Operations Phase",
+    TARGET_DETERMINATION: "Target Determination Phase",
+    CAP_INTERCEPTION:"CAP Interception Phase",
     AIR_ATTACK: "Air Attack Phase"
   }
 
@@ -61,6 +63,8 @@ export default class GlobalGameState {
     us: 0,
   };
 
+  static airAttackTarget = ""
+  
   static stateHandler = () => {};
 
   static dieRolls = new Array()

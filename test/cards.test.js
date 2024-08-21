@@ -38,4 +38,8 @@ describe("Cards tests", () => {
     const arrayUniqueByKey = [...new Map(GlobalUnitsModel.usCards.map((item) => [item[key], item])).values()]
     expect(arrayUniqueByKey.length).toEqual(2)
   })
+
+  test("Does a particular hand contain a certain card", () => {
+
+  })
 })

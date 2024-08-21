@@ -18,7 +18,7 @@ function StrikeCounter({ setStrikeGroupPopup, currentUSHex, currentJapanHex, cou
     setJapanMapRegions,
     japanMapRegions,
     onDrag,
-    fleetUnitUpdate,
+    strikeGroupUpdate,
   } = useContext(BoardContext)
 
   const [currentHex, setCurrentHex] = useState({})
@@ -50,18 +50,18 @@ function StrikeCounter({ setStrikeGroupPopup, currentUSHex, currentJapanHex, cou
       currentHex: hex,
     })
   }
-  // FLEET UNIT UPDATE CODE
+  // STRIKE GROUP UPDATE CODE
   let hex = {}
-  if (fleetUnitUpdate) {
-    hex = fleetUnitUpdate.position.currentHex
+  if (strikeGroupUpdate) {
+    hex = strikeGroupUpdate.position.currentHex
   }
 
   if (
-    fleetUnitUpdate &&
-    counterData.name === fleetUnitUpdate.name &&
+    strikeGroupUpdate &&
+    counterData.name === strikeGroupUpdate.name &&
     (position.currentHex.q !== hex.q || position.currentHex.r !== hex.r)
   ) {
-    console.log("I am ", fleetUnitUpdate.name, " -> STRIKE GROUP UPDATE, move to ", hex.q + ",", hex.r)
+    console.log("I am", strikeGroupUpdate.name, " -> STRIKE GROUP UPDATE, move to", hex.row + ",", hex.col)
 
     if (side === GlobalUnitsModel.Side.US) {
       setUSPosition(hex)
@@ -158,7 +158,6 @@ function StrikeCounter({ setStrikeGroupPopup, currentUSHex, currentJapanHex, cou
     let from = HexCommand.OFFBOARD
     let to = { currentHex }
     if (side === GlobalUnitsModel.Side.US) {
-      console.log("MOVING STRIKE GROUP TO ", currentUSHex.row, currentUSHex.col)
       const hex = { q: currentUSHex.q, r: currentUSHex.r }
 
       let isThere = USMapRegions && USMapRegions.find((h) => h.q === hex.q && h.r === hex.r)
@@ -197,8 +196,6 @@ function StrikeCounter({ setStrikeGroupPopup, currentUSHex, currentJapanHex, cou
         setCurrentHex(currentUSHex)
       }
     } else {
-      console.log("MOVING STRIKE GROUP TO ", currentJapanHex.row, currentJapanHex.col)
-
       const hex = { q: currentJapanHex.q, r: currentJapanHex.r }
       let isThere = japanMapRegions && japanMapRegions.find((h) => h.q === hex.q && h.r === hex.r)
       if (!isThere) {
@@ -252,21 +249,15 @@ function StrikeCounter({ setStrikeGroupPopup, currentUSHex, currentJapanHex, cou
     setStrikeGroupPopup(side, true, location)
   }
 
-  const handleFocusOut = () => {
-    if (side === GlobalUnitsModel.Side.JAPAN) {
-      setJapanMapRegions([])
-    } else {
-      setUSMapRegions([])
-    }
-  }
+
   const handleMouseLeave = () => {
     setIsMoveable(false)
     setStrikeGroupPopup(side, false)
-    if (side === GlobalUnitsModel.Side.JAPAN) {
-      setJapanMapRegions([])
-    } else {
-      setUSMapRegions([])
-    }
+    // if (side === GlobalUnitsModel.Side.JAPAN) {
+    //   setJapanMapRegions([])
+    // } else {
+    //   setUSMapRegions([])
+    // }
   }
   //   console.log("counter data=", counterData)
   return (
@@ -289,7 +280,7 @@ function StrikeCounter({ setStrikeGroupPopup, currentUSHex, currentJapanHex, cou
           id="saveForm2"
           onMouseEnter={handleMouseEnter}
           onMouseLeave={handleMouseLeave}
-          onBlur={handleFocusOut}
+          // onBlur={handleFocusOut}
           draggabble="true"
           onDragStart={onDrag}
           onDragEnd={handleDrop}

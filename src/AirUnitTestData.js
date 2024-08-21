@@ -170,7 +170,7 @@ export const airUnitDataUS = [
   },
 ]
 
-export const strikeGroupsUS = [
+export const airUnitsToStrikeGroupsUS = [
   {
     name: "Yorktown-SBD3-1",
     boxName: GlobalUnitsModel.AirBox.US_STRIKE_BOX_0,
@@ -179,6 +179,41 @@ export const strikeGroupsUS = [
     name: "Yorktown-F4F4-2",
     boxName: GlobalUnitsModel.AirBox.US_STRIKE_BOX_0,
   },
+  {
+    name: "Enterprise-SBD3-1",
+    boxName: GlobalUnitsModel.AirBox.US_STRIKE_BOX_1,
+  },
+  {
+    name: "Enterprise-F4F4-2",
+    boxName: GlobalUnitsModel.AirBox.US_STRIKE_BOX_1,
+  },
+  {
+    name: "Enterprise-SBD3-2",
+    boxName: GlobalUnitsModel.AirBox.US_ENTERPRISE_FLIGHT_DECK,
+  },
+  {
+    name: "Enterprise-TBD1",
+    boxName: GlobalUnitsModel.AirBox.US_ENTERPRISE_FLIGHT_DECK,
+  },
+  {
+    name: "Hornet-SBD3-1",
+    boxName: GlobalUnitsModel.AirBox.US_STRIKE_BOX_2,
+  },
+  {
+    name: "Hornet-F4F4-2",
+    boxName: GlobalUnitsModel.AirBox.US_STRIKE_BOX_2,
+  },
+  {
+    name: "Hornet-SBD3-2",
+    boxName: GlobalUnitsModel.AirBox.US_HORNET_FLIGHT_DECK,
+  },
+]
+
+export const strikeGroupsUS = [
+  {
+    name: "US-SG1",
+
+  }
 ]
 
 export function calcTestDataUS(unit, controller) {
@@ -222,7 +257,7 @@ export function createMapUpdateForFleet(controller, name, side) {
   return createFleetUpdate(otherName, location.currentHex.q, location.currentHex.r)
 }
 
-export function createFleetUpdate(name, q, r) {
+function convertHex(name, q, r) {
   let hex = {
     q: q,
     r: r,
@@ -249,8 +284,16 @@ export function createFleetUpdate(name, q, r) {
     },
   }
 }
+export function createFleetUpdate(name, q, r) {
+  return convertHex(name, q, r)
+}
+
+export function createStrikeGroupUpdate(name, q, r) {
+  return convertHex(name, q, r)
+}
+
 export function getFleetUnitUpdateUS(name) {
-  return createFleetUpdate(name, 7, 1)
+  return createFleetUpdate(name, 6, 1)
 }
 
 export function calcRandomJapanTestData(unit, controller) {

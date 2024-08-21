@@ -7,14 +7,42 @@ import Die from "./Die"
 import "./modal.css"
 
 function DicePanel(props) {
-  const { numDice, headerText, headers, footers, disabled, onHide, doRoll, ...rest } = props
+  const {
+    numDice,
+    headerText,
+    headers,
+    footers,
+    diceButtonDisabled,
+    nextState,
+    closeButtonDisabled,
+    onHide,
+    width,
+    margin,
+    showDice,
+    doRoll,
+    ...rest
+  } = props
   // const numDice = props.numDice
 
   const bg = "#293a4b"
   const rowClass = `g-${numDice}`
 
-  const myBigBollocks = "modal-width" + numDice
+  let myBigBollocks = "modal-width" + numDice
+  let myBigMargin = 0
+
+  let showDicePanel = showDice
+
+  if (width) {
+    myBigBollocks = `maxWidth: ${width}%`
+  }
+
+  if (margin) {
+    myBigMargin = margin
+  }
+  
   //   const sizey = numDice >= 4 ? "xl" : "lg"
+
+  const diceButtonStr = numDice > 1 ? "Roll Dice" : "Roll Die"
   return (
     <Modal
       {...rest}
@@ -38,29 +66,33 @@ function DicePanel(props) {
       <Modal.Body style={{ background: `${bg}`, color: "black" }}>
         <div style={{ marginLeft: "28px" }}>
           {headers}
-          <Row xs={1} md={numDice} className={rowClass}>
-            {Array.from({ length: numDice }).map((_, idx) => {
-              const dieName = "dice" + (idx + 1)
-              return (
-                <Col key={idx} className="d-flex">
-                  <Die name={dieName}></Die>
-                </Col>
-              )
-            })}
-          </Row>
+
+          {showDicePanel && (
+            <Row xs={1} md={numDice} className={rowClass}>
+              {Array.from({ length: numDice }).map((_, idx) => {
+                const dieName = "dice" + (idx + 1)
+                return (
+                  <div style={{ marginLeft: `${myBigMargin}px` }}>
+                    <Col key={idx} className="d-flex">
+                      <Die name={dieName}></Die>
+                    </Col>
+                  </div>
+                )
+              })}
+            </Row>
+          )}
           {footers}
         </div>
       </Modal.Body>
 
       <Modal.Footer style={{ background: `${bg}`, color: "black" }}>
-        <Button disabled={disabled} onClick={() => doRoll()}>
-          Roll Dice
+        <Button disabled={diceButtonDisabled} onClick={() => doRoll()}>
+          {diceButtonStr}
         </Button>
         <Button
-          disabled={!disabled}
+          disabled={closeButtonDisabled}
           onClick={(e) => {
-            // TODO pass this in as a prop (nextState)
-            GlobalGameState.gamePhase = GlobalGameState.PHASE.AIR_OPERATIONS 
+            GlobalGameState.gamePhase = nextState
             onHide(e)
           }}
         >
