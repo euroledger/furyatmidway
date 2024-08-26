@@ -1,5 +1,5 @@
 export default class AircraftUnit {
-    constructor(name, strength, movement, attack, diveBomber, steps, moved) {
+    constructor(name, strength, movement, attack, diveBomber, steps, moved, intercepting) {
         this.name = name;
         this.strength = strength;
         this.movement = movement;
@@ -7,6 +7,7 @@ export default class AircraftUnit {
         this.diveBomber = diveBomber
         this.steps = steps,
         this.moved = moved
+        this.intercepting = intercepting
     };
 
     get movement() {
@@ -62,5 +63,13 @@ export default class AircraftUnit {
 
     set moved(m) {
         this._moved = m
+    }
+
+    get intercepting() {
+        return this._intercepting
+    }
+
+    set intercepting(i) {
+        this._intercepting = i
     }
 }

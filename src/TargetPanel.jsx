@@ -2,12 +2,22 @@ import { React, useState } from "react"
 import Button from "react-bootstrap/Button"
 import GlobalUnitsModel from "./model/GlobalUnitsModel"
 import GlobalGameState from "./model/GlobalGameState"
+import Controller from "./controller/Controller"
 
-export function TargetHeaders({ setTargetSelected }) {
+export function TargetHeaders({ controller, setTargetSelected }) {
   const [buttonsDisabled, setButtonsDisabled] = useState(false)
   const [myTarget, setMyTarget] = useState("")
   const handleClick = (target) => {
     GlobalGameState.airAttackTarget = target
+
+    controller.viewEventHandler({
+      type: Controller.EventTypes.TARGET_SELECTION,
+      data: {
+        target: target,
+        side: GlobalGameState.sideWithInitiative
+      },
+    })
+
     setTargetSelected(true)
     setButtonsDisabled(true)
     setMyTarget(target)

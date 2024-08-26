@@ -10,14 +10,18 @@ import AirOperationsModel from "../model/AirOperationsModel"
 import ViewEventAirUnitMoveHandler from "./ViewEventAirUnitMoveHandler"
 import ViewDieRollEventHandler from "./ViewDieRollEventHandler"
 import ViewEventStrikeGroupMoveHandler from "./ViewEventStrikeGroupMoveHandler"
+import ViewEventSelectionHandler from "./ViewEventSelectionHandler"
+
 
 export default class Controller {
   static EventTypes = {
     AIR_UNIT_SETUP: "AirUnitSetup",
     FLEET_SETUP: "FleetSetup",
     AIR_UNIT_MOVE: "StrikeGroupSetup",
-    INITIATIVE_ROLL: "InitiativeRoll",
+    INITIATIVE_ROLL: "Initiative Roll",
     STRIKE_GROUP_MOVE: "StrikeGroupMove",
+    TARGET_SELECTION_ROLL: "Target Selection Roll",
+    TARGET_SELECTION: "Target Selection"
   }
 
   static MIDWAY_HEX = {
@@ -41,6 +45,7 @@ export default class Controller {
     this.airUnitMoveHandler = new ViewEventAirUnitMoveHandler(this)
     this.dieRollEventHandler = new ViewDieRollEventHandler(this)
     this.stikeGroupMoveEventHandler = new ViewEventStrikeGroupMoveHandler(this)
+    this.selectionEventHandler = new ViewEventSelectionHandler(this)
   }
 
   setCounters(counters) {
@@ -128,6 +133,24 @@ export default class Controller {
 
   getReturn1AirBoxForNamedTaskForce(side, tf) {
     return Object.values(this.airOperationsModel.getReturn1AirBoxForNamedTaskForce(side, tf))[0]
+  }
+
+  getCAPBoxForTaskForce(tf, side) {
+    if (side === GlobalUnitsModel.Side.JAPAN) {
+      if (tf === GlobalUnitsModel.TaskForce.CARRIER_DIV_1) {
+        return GlobalUnitsModel.AirBox.JP_CD1_CAP
+      } else {
+        return GlobalUnitsModel.AirBox.JP_CD2_CAP
+      }
+    } else {
+      if (tf === GlobalUnitsModel.TaskForce.TASK_FORCE_16) {
+        return GlobalUnitsModel.AirBox.US_TF16_CAP
+      }
+      if (tf === GlobalUnitsModel.TaskForce.TASK_FORCE_17) {
+        return GlobalUnitsModel.AirBox.US_TF17_CAP
+      }
+      return GlobalUnitsModel.AirBox.US_MIDWAY_CAP
+    }
   }
 
   getTaskForceForCarrier(name, side) {
@@ -672,7 +695,14 @@ export default class Controller {
         break
 
       case Controller.EventTypes.INITIATIVE_ROLL:
-        this.dieRollEventHandler.handleEvent(event)
+        this.dieRollEventHandler.handlInitiativeDiceRollEvent(event)
+        break
+
+      case Controller.EventTypes.TARGET_SELECTION:
+        this.selectionEventHandler.handleSelectTargetEvent(event)
+        break
+      case Controller.EventTypes.TARGET_SELECTION_ROLL:
+        this.dieRollEventHandler.handleTargetSelectionDiceRollEvent(event)
         break
 
       case Controller.EventTypes.STRIKE_GROUP_MOVE:

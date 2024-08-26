@@ -1178,6 +1178,7 @@ function loadAirCounters(controller, counters) {
       unit.aircraftUnit.attack,
       unit.aircraftUnit.diveBomber,
       unit.aircraftUnit.steps,
+      false,
       false
     )
     const airUnitCounter = new AirUnit(
@@ -1208,6 +1209,7 @@ function loadAirCounters(controller, counters) {
       unit.aircraftUnit.attack,
       unit.aircraftUnit.diveBomber,
       unit.aircraftUnit.steps,
+      false,
       false
     )
     const airUnitCounter = new AirUnit(

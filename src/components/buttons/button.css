@@ -8,5 +8,5 @@ button.list-group-item:hover {
   color: white;
 }
 .selected {
-  outline: 2px solid blue;
+  outline: 2px solid green;
 }
