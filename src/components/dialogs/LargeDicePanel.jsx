@@ -23,12 +23,9 @@ function LargeDicePanel(props) {
     doRoll,
     ...rest
   } = props
-  // const numDice = props.numDice
 
   const bg = "#293a4b"
   const rowClass = `g-${numDice}`
-
-  console.log("NUM DICE = ", numDice)
 
   let myBigBollocks = "m-width" + numDice
   let myBigMargin = 0

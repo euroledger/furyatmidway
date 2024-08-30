@@ -249,7 +249,7 @@ function Board({ scale, USMapRegions, japanMapRegions, japanStrikePanelEnabled, 
           side={GlobalUnitsModel.Side.US}
         ></FleetCounter>
 
-        <AirCounters counterData={GlobalInit.counters} getAirBox={getAirBox} setAirBox={setAirBox}></AirCounters>
+        <AirCounters controller={GlobalInit.controller} counterData={GlobalInit.counters} getAirBox={getAirBox} setAirBox={setAirBox}></AirCounters>
         <StrikeCounters
           controller={GlobalInit.controller}
           currentMouseHex={currentMouseHex}

@@ -44,7 +44,6 @@ export default class BoxModels {
     this.japanCarrierMap.set(GlobalUnitsModel.Carrier.HIRYU, new Array())
     this.japanCarrierMap.set(GlobalUnitsModel.Carrier.SORYU, new Array())
 
-
     this.japanStrikeBox0 = new Array(this.getNumberOfJapanZones(GlobalUnitsModel.AirBox.JP_STRIKE_BOX_0))
     this.japanStrikeBox1 = new Array(this.getNumberOfJapanZones(GlobalUnitsModel.AirBox.JP_STRIKE_BOX_1))
     this.japanStrikeBox2 = new Array(this.getNumberOfJapanZones(GlobalUnitsModel.AirBox.JP_STRIKE_BOX_2))
@@ -54,7 +53,6 @@ export default class BoxModels {
     this.japanStrikeBox6 = new Array(this.getNumberOfJapanZones(GlobalUnitsModel.AirBox.JP_STRIKE_BOX_6))
 
     this.japanStrikeBoxes = new Array()
-
 
     // US Model
     this.usTF16CapBoxes = new Array(this.getNumberOfUSZones(GlobalUnitsModel.AirBox.US_TF16_CAP))
@@ -83,6 +81,8 @@ export default class BoxModels {
     this.usYorktownFlightDeck = new Array(this.getNumberOfUSZones(GlobalUnitsModel.AirBox.US_YORKTOWN_FLIGHT_DECK))
     this.usMidwayFlightDeck = new Array(this.getNumberOfUSZones(GlobalUnitsModel.AirBox.US_MIDWAY_FLIGHT_DECK))
     this.offboard = new Array()
+    this.jpEliminated = new Array()
+    this.usEliminated = new Array()
 
     this.usCarrierMap = new Map() // key = carrier name, value = array of air units
     this.usCarrierMap.set(GlobalUnitsModel.Carrier.ENTERPRISE, new Array())
@@ -101,6 +101,10 @@ export default class BoxModels {
     // as an array. Each element in th array may or may not contain an air unit
     this.boxMap = new Map()
     this.boxMap.set(GlobalUnitsModel.AirBox.OFFBOARD, this.offboard)
+
+    this.boxMap.set(GlobalUnitsModel.AirBox.JP_ELIMINATED, this.jpEliminated)
+    this.boxMap.set(GlobalUnitsModel.AirBox.US_ELIMINATED, this.usEliminated)
+
     this.boxMap.set(GlobalUnitsModel.AirBox.JP_CD1_CAP, this.japanDiv1CapBoxes)
     this.boxMap.set(GlobalUnitsModel.AirBox.JP_CD2_CAP, this.japanDiv2CapBoxes)
 
@@ -170,6 +174,7 @@ export default class BoxModels {
     this.boxMap.set(GlobalUnitsModel.AirBox.US_STRIKE_BOX_4, this.usStrikeBox4)
     this.boxMap.set(GlobalUnitsModel.AirBox.US_STRIKE_BOX_5, this.usStrikeBox5)
     this.boxMap.set(GlobalUnitsModel.AirBox.US_STRIKE_BOX_6, this.usStrikeBox6)
+
     // map of air unit -> location
     // This maps the name of an air unit to its location (ie box name, index)
     this.airUnitLocationMap = new Map()
@@ -186,12 +191,15 @@ export default class BoxModels {
     }
     // remove from previous location
     const prevLocation = this.getAirUnitLocation(value.name)
-
     if (prevLocation != undefined) {
       // console.log(` => Air Unit ${value.name}: remove from box ${prevLocation.boxName}`)
       this.removeAirUnitFromBox(prevLocation.boxName, prevLocation.boxIndex)
     }
-    if (boxName === GlobalUnitsModel.AirBox.OFFBOARD) {
+    if (
+      boxName === GlobalUnitsModel.AirBox.OFFBOARD ||
+      boxName === GlobalUnitsModel.AirBox.JP_ELIMINATED ||
+      boxName === GlobalUnitsModel.US_ELIMINATED
+    ) {
       box.push(value)
     } else {
       box[index] = value
@@ -215,6 +223,7 @@ export default class BoxModels {
     if (!box) {
       return null
     }
+    // console.log("SET BOX TO undefined: ", box)
     box[index] = undefined
   }
 

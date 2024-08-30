@@ -14,6 +14,11 @@ function AirCounters({ controller, onDrag, onStop, getAirBox, setAirBox, counter
 
   const airCounters = airunits.map((airUnit) => {
 
+    const location = controller.getAirUnitLocation(airUnit.name)
+
+    if (location.boxName === GlobalUnitsModel.AirBox.JP_ELIMINATED || location.boxName === GlobalUnitsModel.AirBox.US_ELIMINATED) {
+      return
+    }
     if (airUnit.side === GlobalUnitsModel.Side.JAPAN) {
       const carrierIndex = GlobalGameState.JAPAN_CARRIERS.indexOf(airUnit.carrier)
       if (

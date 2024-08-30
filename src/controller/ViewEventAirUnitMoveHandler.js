@@ -13,15 +13,13 @@ class ViewEventAirUnitMoveHandler {
 
     const { boxName, boxIndex } = this.controller.getAirUnitLocation(counterData.name)
     const from = boxName === GlobalUnitsModel.AirBox.OFFBOARD ? "OFFBOARD" : boxName + " - box " + boxIndex
-    const to = `${name} - box ${index}`
+    const to =
+      name === GlobalUnitsModel.AirBox.JP_ELIMINATED || name === GlobalUnitsModel.AirBox.US_ELIMINATED
+        ? name
+        : `${name} - box ${index}`
 
     this.controller.addAirUnitToBox(name, index, counterData)
     let command = new MoveCommand(COMMAND_TYPE.MOVE_AIR_UNIT, counterData.longName, from, to)
-
-    
-    // console.log(">>>>>>>> name = ", name)
-    // console.log(">>>>>>>> jp groups = ", GlobalUnitsModel.jpStrikeGroups)
-    // console.log(">>>>>>>> us groups = ", GlobalUnitsModel.usStrikeGroups)
 
     if (!loading) {
       counterData.aircraftUnit.moved = true

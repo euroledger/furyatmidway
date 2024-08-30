@@ -2,6 +2,7 @@ import { randomDice } from "./components/dialogs/DiceUtils"
 import GlobalGameState from "./model/GlobalGameState"
 import Controller from "./controller/Controller"
 import GlobalUnitsModel from "./model/GlobalUnitsModel"
+import GlobalInit from "./model/GlobalInit"
 
 export function doIntiativeRoll(controller, roll0, roll1) {
   // for automated testing
@@ -56,7 +57,6 @@ export function doSelectionRoll(controller, roll0) {
 }
 
 export function doCAP(controller, capAirUnits, fightersPresent, testRolls) {
-
   const sideBeingAttacked =
     GlobalGameState.sideWithInitiative === GlobalUnitsModel.Side.US
       ? GlobalUnitsModel.Side.JAPAN
@@ -67,7 +67,8 @@ export function doCAP(controller, capAirUnits, fightersPresent, testRolls) {
 
   const drm = fightersPresent ? 0 : 1
   // compare each roll with the steps of the defending units, and the corresponding attack factor
-  let hits = 0, index = 0
+  let hits = 0,
+    index = 0
   for (let unit of capAirUnits) {
     for (let i = 0; i < unit.aircraftUnit.steps; i++) {
       const attackFactor = unit.aircraftUnit.strength + drm
@@ -79,4 +80,35 @@ export function doCAP(controller, capAirUnits, fightersPresent, testRolls) {
   }
   GlobalGameState.dieRolls = 1
   GlobalGameState.capHits = hits
+}
+
+export function doDamageAllocation(controller, airUnit) {
+  if (airUnit.aircraftUnit.steps === 2) {
+    airUnit.aircraftUnit.steps = 1
+    const newImage = airUnit.image.replace("front", "back")
+    airUnit.image = newImage
+  } else if (airUnit.aircraftUnit.steps === 1) {
+    // air unit is eliminated
+    airUnit.aircraftUnit.steps = 0
+
+    // move unit to eliminated box
+    const location = controller.getAirUnitLocation(airUnit.name)
+    const toBox =
+      airUnit.side === GlobalUnitsModel.Side.JAPAN
+        ? GlobalUnitsModel.AirBox.JP_ELIMINATED
+        : GlobalUnitsModel.AirBox.US_ELIMINATED
+
+    controller.addAirUnitToBox(toBox, 0, airUnit)
+
+    controller.viewEventHandler({
+      type: Controller.EventTypes.AIR_UNIT_MOVE,
+      data: {
+        name: toBox,
+        counterData: airUnit,
+        index: location.boxIndex,
+        side: GlobalGameState.sideWithInitiative,
+        loading: false,
+      },
+    })
+  }
 }

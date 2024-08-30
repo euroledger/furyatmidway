@@ -73,6 +73,8 @@ export default class GlobalUnitsModel {
     US_STRIKE_BOX_5: "US STRIKE BOX 5",
     US_STRIKE_BOX_6: "US STRIKE BOX 6",
 
+    JP_ELIMINATED: "JAPAN ELIMINATED BOX",
+    US_ELIMINATED: "US ELIMINATED BOX"
   }
 
   static Side = {

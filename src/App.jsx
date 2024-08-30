@@ -120,6 +120,9 @@ export function App() {
   const [targetDetermined, setTargetDetermined] = useState(false)
   const [targetSelected, setTargetSelected] = useState(false)
 
+  const [eliminatedSteps, setEliminatedSteps] = useState(0)
+
+  const [stepsLeft, setStepsLeft] = useState(0)
   useEffect(() => {
     if (GlobalGameState.gamePhase === GlobalGameState.PHASE.TARGET_DETERMINATION) {
       // @TODO CHECK IF JAPANESE PLAYER HOLDS CARD 11
@@ -565,17 +568,16 @@ export function App() {
     <>
       <DamageHeaders
         controller={GlobalInit.controller}
-        capAirUnits={capAirUnits}
-        setCapAirUnits={setCapAirUnits}
-        capSteps={capSteps}
-        setCapSteps={setCapSteps}
+        eliminatedSteps={eliminatedSteps}
+        setEliminatedSteps={setEliminatedSteps}
+        setStepsLeft={setStepsLeft}
       ></DamageHeaders>
     </>
   )
 
   const damageFooters = (
     <>
-      <DamageFooters></DamageFooters>
+      <DamageFooters eliminatedSteps={eliminatedSteps}></DamageFooters>
     </>
   )
 
@@ -761,6 +763,7 @@ export function App() {
         }}
         doRoll={doCAPRolls}
         disabled={true}
+        closeButtonDisabled={eliminatedSteps !== GlobalGameState.capHits && stepsLeft !== 0}
       ></LargeDicePanel>
 
       <GameStatusPanel show={gameStateShow} gameState={gameState} onHide={() => setGameStateShow(false)} />

@@ -340,10 +340,7 @@ export default class Controller {
 
   // side is attacker so use other side for defender (ie fleets)
   checkForAirAttack = (location, side) => {
-    const otherSide = side === GlobalUnitsModel.Side.JAPAN ? GlobalUnitsModel.Side.US : GlobalUnitsModel.Side.JAPAN
-
     const fleets = this.getAllFleetsInLocation(location, side)
-
     const strikeGroups = this.getAllStrikeGroupsInLocation(location, side)
     return fleets.length > 0 && strikeGroups.length > 0
   }
@@ -667,7 +664,7 @@ export default class Controller {
     if (side === GlobalUnitsModel.Side.JAPAN) {
       return "1AF"
     }
-    if (tf.name.toUpperCase() != "MIDWAY") return "CSF"
+    if (tf.toUpperCase() != "MIDWAY") return "CSF"
     return "MIDWAY"
   }
   determineTarget = (roll) => {

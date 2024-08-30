@@ -3,10 +3,9 @@ import "./cap.css"
 import GlobalUnitsModel from "./model/GlobalUnitsModel"
 import GlobalGameState from "./model/GlobalGameState"
 import Controller from "./controller/Controller"
+import { doDamageAllocation } from "./DiceHandler"
 
-export function DamageHeaders({ controller, capAirUnits, setCapAirUnits }) {
-  const [eliminatedSteps, setEliminatedSteps] = useState(0)
-
+export function DamageHeaders({ controller, eliminatedSteps, setEliminatedSteps, setStepsLeft }) {
   const sideBeingAttacked =
     GlobalGameState.sideWithInitiative === GlobalUnitsModel.Side.US
       ? GlobalUnitsModel.Side.JAPAN
@@ -21,8 +20,15 @@ export function DamageHeaders({ controller, capAirUnits, setCapAirUnits }) {
 
   let unitsInGroup = controller.getAirUnitsInStrikeGroups(strikeGroups[0].box)
 
+  let totalSteps = 0
   const airCounters = unitsInGroup.map((airUnit) => {
-    const outline = airUnit.aircraftUnit.intercepting ? "5px solid rgb(184,29,29)" : ""
+    if (airUnit.aircraftUnit.steps === 0) {
+      console.log("SET STEPS LEFT TO 0")
+      setStepsLeft(0)
+      return <></>
+    }
+    totalSteps += airUnit.aircraftUnit.steps
+    const stepStr = `(${airUnit.aircraftUnit.steps})`
     return (
       <div>
         <input
@@ -33,9 +39,7 @@ export function DamageHeaders({ controller, capAirUnits, setCapAirUnits }) {
             width: "80px",
             height: "80px",
             marginLeft: "20px",
-
             marginRight: "55px",
-            outline: outline,
           }}
           id="bollocks"
         />
@@ -47,19 +51,29 @@ export function DamageHeaders({ controller, capAirUnits, setCapAirUnits }) {
         >
           {airUnit.name}
         </p>
+        <p
+          style={{
+            marginTop: "-10px",
+            marginLeft: "55px",
+            color: "white",
+          }}
+        >
+          {stepStr}
+        </p>
       </div>
     )
   })
+  setStepsLeft(totalSteps)
+
   const handleClick = (airUnit) => {
-    // if (airUnit.aircraftUnit.intercepting) {
-    //   setCapSteps(() => capSteps - airUnit.aircraftUnit.steps)
-    // } else {
-    //   setCapSteps(() => capSteps + airUnit.aircraftUnit.steps)
-    // }
-    // airUnit.aircraftUnit.intercepting = !airUnit.aircraftUnit.intercepting
-    // setCapAirUnits(() => controller.getAllCAPDefenders(sideBeingAttacked))
-    // GlobalGameState.updateGlobalState()
+    if (eliminatedSteps === GlobalGameState.capHits) {
+      return // don't allow more steps to be eliminated than is necessary
+    }
+    doDamageAllocation(controller, airUnit)
+    setEliminatedSteps(() => eliminatedSteps + 1)
+    GlobalGameState.updateGlobalState()
   }
+
   return (
     <>
       <div>
@@ -71,7 +85,7 @@ export function DamageHeaders({ controller, capAirUnits, setCapAirUnits }) {
             color: "white",
           }}
         >
-          {msg} &nbsp;<strong>{GlobalGameState.capHits}</strong>&nbsp;
+          {msg} &nbsp;<strong>{GlobalGameState.capHits}</strong>&nbsp; <br></br>
         </p>
       </div>
       <div
@@ -93,7 +107,8 @@ export function DamageHeaders({ controller, capAirUnits, setCapAirUnits }) {
             color: "white",
           }}
         >
-          Select Steps to Elimintate
+          Select Steps to Elimintate <br></br>
+          (click on air unit to eliminate a step)
         </p>
       </div>
       <div>
@@ -113,30 +128,30 @@ export function DamageHeaders({ controller, capAirUnits, setCapAirUnits }) {
   )
 }
 
-export function DamageFooters() {
-  //   const show =  GlobalGameState.capHits > 0
-  //   const msg="Number of Hits:"
-  //   return (
-  //     <>
-  //       {show && (
-  //         <div
-  //           style={{
-  //             marginTop: "10px",
-  //             marginLeft: "-28px",
-  //           }}
-  //         >
-  //           <p
-  //             style={{
-  //               display: "flex",
-  //               justifyContent: "center",
-  //               alignItems: "center",
-  //               color: "white",
-  //             }}
-  //           >
-  //             {msg} &nbsp;<strong>{GlobalGameState.capHits}</strong>&nbsp;
-  //           </p>
-  //         </div>
-  //       )}
-  //     </>
-  //   )
+export function DamageFooters({ eliminatedSteps }) {
+  console.log("eliminatedSteps = ", eliminatedSteps)
+  const show = eliminatedSteps === GlobalGameState.capHits
+  return (
+    <>
+      {show && (
+        <div
+          style={{
+            marginTop: "10px",
+            marginLeft: "-28px",
+          }}
+        >
+          <p
+            style={{
+              display: "flex",
+              justifyContent: "center",
+              alignItems: "center",
+              color: "white",
+            }}
+          >
+            All Done!
+          </p>
+        </div>
+      )}
+    </>
+  )
 }

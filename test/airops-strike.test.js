@@ -18,6 +18,7 @@ describe("Controller tests", () => {
     counters = loadCounters(controller)
     createFleetMove(controller, 7, 1, "CSF", GlobalUnitsModel.Side.US) // G-4
     createFleetMove(controller, 7, 2, "1AF", GlobalUnitsModel.Side.JAPAN) // G-5
+    createFleetMove(controller, 7, 2, "1AF-USMAP", GlobalUnitsModel.Side.US) // G-5
 
     ef1 = counters.get("Enterprise-F4F4-1")
     ef2 = counters.get("Enterprise-F4F4-2")

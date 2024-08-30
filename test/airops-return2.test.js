@@ -68,7 +68,7 @@ describe("Air Operations tests for air units in Return 2 boxes", () => {
     expect(destinations[0]).toEqual(GlobalUnitsModel.AirBox.JP_CD2_RETURN1)
   })
 
-  test.skip("Create Lists of Valid Destination Boxes for each US Air Units in Return 2 Boxes", () => {
+  test("Create Lists of Valid Destination Boxes for each US Air Units in Return 2 Boxes", () => {
     handleAirUnitMoves(controller, GlobalUnitsModel.Side.US)
 
     let destinations = controller.getValidAirUnitDestinations(ef1.name)

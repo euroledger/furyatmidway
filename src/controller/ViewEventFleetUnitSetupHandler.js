@@ -13,6 +13,7 @@ class ViewEventFleetUnitSetupHandler {
     // to = currentHex
 
     // add fleet unit to map holding name -> current Hex
+
     this.controller.setFleetUnitLocation(id, to, side)
 
     let cmdType = COMMAND_TYPE.MOVE_FLEET_UNIT
