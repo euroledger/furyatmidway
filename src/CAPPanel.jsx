@@ -4,11 +4,7 @@ import GlobalUnitsModel from "./model/GlobalUnitsModel"
 import GlobalGameState from "./model/GlobalGameState"
 import Controller from "./controller/Controller"
 
-export function CAPHeaders({ controller, setNumCapSteps }) {
-  const [buttonsDisabled, setButtonsDisabled] = useState(false)
-
-  const [steps, setSteps] = useState(0)
-
+export function CAPHeaders({ controller, setCapAirUnits, capSteps, setCapSteps }) {
   const sideBeingAttacked =
     GlobalGameState.sideWithInitiative === GlobalUnitsModel.Side.US
       ? GlobalUnitsModel.Side.JAPAN
@@ -22,21 +18,17 @@ export function CAPHeaders({ controller, setNumCapSteps }) {
 
   const handleClick = (airUnit) => {
     if (airUnit.aircraftUnit.intercepting) {
-      console.log("AIR UNIT STEPS = ", airUnit.aircraftUnit.steps)
-      setSteps(() => steps - airUnit.aircraftUnit.steps)
-      setNumCapSteps(() => steps - airUnit.aircraftUnit.steps)
+      setCapSteps(() => capSteps - airUnit.aircraftUnit.steps)
     } else {
-      setSteps(() => steps + airUnit.aircraftUnit.steps)
-      setNumCapSteps(() => steps + airUnit.aircraftUnit.steps)
+      setCapSteps(() => capSteps + airUnit.aircraftUnit.steps)
     }
     airUnit.aircraftUnit.intercepting = !airUnit.aircraftUnit.intercepting
-    console.log("CLICKED on", airUnit.name, "intercepting =", airUnit.aircraftUnit.intercepting)
-    GlobalGameState.updateGlobalState()
-    
+    setCapAirUnits(() => controller.getAllCAPDefenders(sideBeingAttacked))
+    GlobalGameState.updateGlobalState()    
   }
+
   const airCounters = capUnits.map((airUnit) => {
     const outline = airUnit.aircraftUnit.intercepting ? "5px solid rgb(184,29,29)" : ""
-    console.log("OUTLINE=", outline)
     return (
       <div>
         <input
@@ -46,14 +38,16 @@ export function CAPHeaders({ controller, setNumCapSteps }) {
           style={{
             width: "80px",
             height: "80px",
-            marginRight: "75px",
+            marginLeft: "20px",
+
+            marginRight: "55px",
             outline: outline
           }}
           id="bollocks"
         />
         <p
           style={{
-            marginLeft: "-10px",
+            marginLeft: "5px",
             color: "white",
           }}
         >
@@ -109,19 +103,34 @@ export function CAPHeaders({ controller, setNumCapSteps }) {
             color: "white",
           }}
         >
-          Steps Selected: &nbsp;<strong>{steps}</strong>&nbsp;
+          Steps Selected: &nbsp;<strong>{capSteps}</strong>&nbsp;
         </p>
       </div>
     </>
   )
 }
 
-export function CAPFooters() {
-  const show = GlobalGameState.dieRolls > 0
+export function CAPFooters({controller, setFightersPresent}) {
+  const show =  GlobalGameState.capHits > 0
+
+  const msg="Number of Hits:"
+
+  const sideBeingAttacked =
+  GlobalGameState.sideWithInitiative === GlobalUnitsModel.Side.US
+    ? GlobalUnitsModel.Side.JAPAN
+    : GlobalUnitsModel.Side.US
+
+const fighters = controller.anyFightersInStrike(GlobalGameState.airAttackTarget, sideBeingAttacked)
+
+  let fighterMsg = ""
+  if (!fighters) {
+    setFightersPresent(false)
+    fighterMsg = "There are no fighters in this strike group - combat strengths increased by 1"
+  }
 
   return (
     <>
-      {/* {show && (
+      {show && (
         <div
           style={{
             marginTop: "10px",
@@ -136,10 +145,20 @@ export function CAPFooters() {
               color: "white",
             }}
           >
-            {msg} &nbsp;<strong>{GlobalGameState.airAttackTarget}</strong>&nbsp;
+            {fighterMsg}<br></br>
+          </p>
+          <p
+            style={{
+              display: "flex",
+              justifyContent: "center",
+              alignItems: "center",
+              color: "white",
+            }}
+          >
+            {msg} &nbsp;<strong>{GlobalGameState.capHits}</strong>&nbsp;
           </p>
         </div>
-      )} */}
+      )}
     </>
   )
 }

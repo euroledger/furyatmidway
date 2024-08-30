@@ -28,11 +28,15 @@ export default class CardModel {
       side === GlobalUnitsModel.Side.JAPAN ? GlobalUnitsModel.jpFleetUnits : GlobalUnitsModel.usFleetUnits
     const mapMap = side === GlobalUnitsModel.Side.JAPAN ? this.jpMap : this.usMap
     // this gives us a map where keys are all non strike groups at this location
+
     const fleetLocations = new Map(
       [...mapMap].filter(([k, v]) => !k.includes("SG") && this.locationsEqual(v, location))
     )
     for (let sg of fleetLocations.keys()) {
-      fleets.push(counters.get(sg))
+      const counter = counters.get(sg)
+      if (counter.side !== side) {
+        fleets.push(counters.get(sg))
+      }
     }
 
     return fleets
@@ -75,8 +79,11 @@ export default class CardModel {
   }
   getFleetLocation(id, side) {
     if (side === GlobalUnitsModel.Side.JAPAN) {
+      console.log("JAPAN MAP=", this.jpMap)
       return this.jpMap.get(id)
     } else {
+      console.log("US MAP=", this.usMap)
+
       return this.usMap.get(id)
     }
   }

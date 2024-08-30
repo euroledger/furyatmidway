@@ -1,13 +1,21 @@
 export default class BaseUnit {
-    constructor(name, longName, position, offsets, image, width) {
+    constructor(name, longName, position, offsets, image, width, side) {
         this.name = name;
         this.longName = longName
         this.position = position
         this.offsets = offsets
         this.image = image
         this.width = width
+        this.side = side
     };
 
+    set side(s) {
+        this._side = s;
+    }
+
+    get side() {
+        return this._side;
+    }
     set name(n) {
         this._name = n;
     }

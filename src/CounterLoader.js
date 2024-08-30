@@ -23,7 +23,8 @@ function loadCounters(controller) {
       position,
       { x: 50, y: 68 }, // offsets
       "/images/fleetcounters/1AF.png",
-      "2.5%"
+      "2.5%",
+      GlobalUnitsModel.Side.JAPAN
     )
   )
 
@@ -40,7 +41,8 @@ function loadCounters(controller) {
       position,
       { x: 50, y: 68 }, // offsets
       "/images/fleetcounters/MIF.png",
-      "2.5%"
+      "2.5%",
+      GlobalUnitsModel.Side.JAPAN
     )
   )
 
@@ -57,7 +59,8 @@ function loadCounters(controller) {
       position,
       { x: 50, y: 68 }, // offsets
       "/images/fleetcounters/MIF.png",
-      "2.5%"
+      "2.5%",
+      GlobalUnitsModel.Side.JAPAN
     )
   )
 
@@ -75,7 +78,8 @@ function loadCounters(controller) {
       position,
       { x: -3, y: 98 }, // offsets
       "/images/fleetcounters/CSF.png",
-      "2.5%"
+      "2.5%",
+      GlobalUnitsModel.Side.US
     )
   )
 
@@ -93,7 +97,8 @@ function loadCounters(controller) {
       position,
       { x: -55, y: 70 }, // offsets
       "/images/fleetcounters/CSF.png",
-      "2.5%"
+      "2.5%",
+      GlobalUnitsModel.Side.US
     )
   )
 
@@ -110,7 +115,8 @@ function loadCounters(controller) {
       position,
       { x: -200, y: 99 }, // offsets
       "/images/fleetcounters/1AF.png",
-      "2.5%"
+      "2.5%",
+      GlobalUnitsModel.Side.JAPAN
     )
   )
 
@@ -1135,7 +1141,7 @@ function loadStrikeGroups(controller, counters) {
       GlobalUnitsModel.Side.JAPAN,
       {
         left: 500,
-        top: 50
+        top: 50,
       },
       false // moved
     )
@@ -1157,7 +1163,7 @@ function loadStrikeGroups(controller, counters) {
       GlobalUnitsModel.Side.US,
       {
         left: 500,
-        top: 50
+        top: 50,
       },
       false // moved
     )
@@ -1165,7 +1171,6 @@ function loadStrikeGroups(controller, counters) {
     GlobalUnitsModel.usStrikeGroups.set(group.box, sgu)
     counters.set(group.name, sgu)
     controller.addAirUnitToBox(GlobalUnitsModel.AirBox.OFFBOARD, 0, sgu)
-
   }
 }
 

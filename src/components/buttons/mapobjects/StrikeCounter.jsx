@@ -116,6 +116,9 @@ function StrikeCounter({ setStrikeGroupPopup, currentUSHex, currentJapanHex, cou
     } else {
       locationOfCarrier = controller.getFleetLocation("CSF", GlobalUnitsModel.Side.US)
     }
+    if (!locationOfCarrier) {
+      return
+    }
     setCurrentHex(locationOfCarrier)
     usRegion = allHexesWithinDistance(locationOfCarrier.currentHex, 2, true)
     setUSMapRegions(usRegion)

@@ -1,6 +1,4 @@
 import GlobalGameState from "../../model/GlobalGameState";
-
-var audio = new Audio("/sounds/dice.wav");
 	
 export const randomDice = (num) => {
   const rolls = new Array()
@@ -43,7 +41,10 @@ const spin = (r, dice) => {
   }
 }
 const rollDice = (rolls) => {
+  console.log("ROLLS LEN=",rolls.length)
   const diceElements = new Array()
+  var audio = new Audio("/sounds/dice.wav");
+
   audio.play();
   for (let i = 0; i < rolls.length; i++) {
     const dice = document.querySelector(".dice" + (i+1))

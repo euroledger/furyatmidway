@@ -3,8 +3,8 @@ import loadCounters from "../src/CounterLoader"
 import GlobalUnitsModel from "../src/model/GlobalUnitsModel"
 import { createFleetMove } from "./TestUtils"
 import HexCommand from "../src/commands/HexCommand"
-import StrikeGroupUnit from "../src/components/buttons/mapobjects/StrikeGroupUnit"
 import GlobalGameState from "../src/model/GlobalGameState"
+import { doCAP } from "../src/DiceHandler"
 
 describe("Controller tests", () => {
   let controller
@@ -64,6 +64,9 @@ describe("Controller tests", () => {
     controller.addAirUnitToBox(GlobalUnitsModel.AirBox.US_STRIKE_BOX_2, 0, mf1)
     controller.addAirUnitToBox(GlobalUnitsModel.AirBox.US_STRIKE_BOX_2, 1, mtb)
     controller.addAirUnitToBox(GlobalUnitsModel.AirBox.US_STRIKE_BOX_2, 2, mdb)
+
+    controller.addAirUnitToBox(GlobalUnitsModel.AirBox.US_STRIKE_BOX_3, 0, edb1)
+    controller.addAirUnitToBox(GlobalUnitsModel.AirBox.US_STRIKE_BOX_3, 1, edb2)
 
     // let counterData = counters.get(ef1.name)
 
@@ -149,6 +152,47 @@ describe("Controller tests", () => {
     expect(capUnits.length).toEqual(4)
 
     // defender selects the two Hiryu CAP fighter units 
+    haf1.aircraftUnit.intercepting = true
+    haf2.aircraftUnit.intercepting = true
+
+    const defenders = controller.getAllCAPDefenders(GlobalUnitsModel.Side.JAPAN)
+    expect(defenders.length).toEqual(2)
+
+    const defendingSteps = controller.getNumDefendingSteps(GlobalUnitsModel.Side.JAPAN)
+    expect(defendingSteps).toEqual(4)
+
+    let rolls = [1, 5, 4, 1]
+    doCAP(controller, defenders, true, rolls)
+
+    expect(GlobalGameState.capHits).toEqual(2)
+  })
+
+  test("Enterprise Strike Against Japanese CD2 with no Fighter Escort", () => {
+    let units = controller.getAllAirUnitsInBox(GlobalUnitsModel.AirBox.US_STRIKE_BOX_3)
+    expect(units.length).toEqual(2)
+
     
+
+    // // determine if there are fighters in the CAP box
+    // const capBox = controller.getCAPBoxForTaskForce(GlobalGameState.airAttackTarget, GlobalUnitsModel.Side.JAPAN)
+    // expect(capBox).toEqual(GlobalUnitsModel.AirBox.JP_CD2_CAP)
+
+    // const capUnits = controller.getAllAirUnitsInBox(capBox)
+    // expect(capUnits.length).toEqual(4)
+
+    // // defender selects the two Hiryu CAP fighter units 
+    // haf1.aircraftUnit.intercepting = true
+    // haf2.aircraftUnit.intercepting = true
+
+    // const defenders = controller.getAllCAPDefenders(GlobalUnitsModel.Side.JAPAN)
+    // expect(defenders.length).toEqual(2)
+
+    // const defendingSteps = controller.getNumDefendingSteps(GlobalUnitsModel.Side.JAPAN)
+    // expect(defendingSteps).toEqual(4)
+
+    // let rolls = [1, 5, 4, 1]
+    // doCAP(controller, defenders, rolls)
+
+    // expect(GlobalGameState.capHits).toEqual(2)
   })
 })

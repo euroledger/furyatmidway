@@ -16,7 +16,7 @@ import CardPanel from "./components/dialogs/CardPanel"
 import GameStatusPanel from "./components/dialogs/GameStatusPanel"
 import SplashScreen from "./components/dialogs/SplashScreen"
 import "./style.css"
-import Controller from "./controller/Controller"
+import { doIntiativeRoll, doSelectionRoll, doCAP } from "./DiceHandler"
 import { determineAllUnitsDeployedForCarrier } from "./controller/AirUnitSetupHandler"
 import { usCSFStartHexes, japanAF1StartHexesNoMidway, japanAF1StartHexesMidway } from "./components/MapRegions"
 import YesNoDialog from "./components/dialogs/YesNoDialog"
@@ -24,9 +24,11 @@ import { saveGameState } from "./SaveLoadGame"
 import loadHandler from "./LoadHandler"
 import { allHexesWithinDistance } from "./components/HexUtils"
 import DicePanel from "./components/dialogs/DicePanel"
-import { AirOpsHeaders, AirOpsFooters } from "./AirOpsDataPanels" 
+import LargeDicePanel from "./components/dialogs/LargeDicePanel"
+import { AirOpsHeaders, AirOpsFooters } from "./AirOpsDataPanels"
 import { TargetHeaders, TargetFooters } from "./TargetPanel"
-import { randomDice } from "./components/dialogs/DiceUtils"
+import { CAPHeaders, CAPFooters } from "./CAPPanel"
+import { DamageHeaders, DamageFooters } from "./DamageAllocationPanel"
 import UITester from "./UITester"
 import { getJapanEnabledAirBoxes, getUSEnabledAirBoxes } from "./AirBoxZoneHandler"
 import handleAction from "./GameStateHandler"
@@ -78,17 +80,20 @@ export function App() {
   const [searchResults, setSearchResults] = useState({})
 
   const [alertShow, setAlertShow] = useState(false) // TO DO param should be an object with boolean and alert text
-  // const [alertShow, setAlertShow] = useState({
-  //   display: false,
-  //   alertText: ""
-  // })
-
   const [jpHandShow, setjpHandShow] = useState(false)
   const [usHandShow, setusHandShow] = useState(false)
 
   const [gameStateShow, setGameStateShow] = useState(false)
   const [initiativePanelShow, setInitiativePanelShow] = useState(false)
   const [targetPanelShow, setTargetPanelShow] = useState(false)
+  const [capInterceptionPanelShow, setCapInterceptionPanelShow] = useState(false)
+
+  const [damageAllocationPanelShow, setDamageAllocationPanelShow] = useState(false)
+
+  const [capAirUnits, setCapAirUnits] = useState([])
+  const [capSteps, setCapSteps] = useState(0)
+
+  const [fightersPresent, setFightersPresent] = useState(true)
 
   const [airUnitUpdate, setAirUnitUpdate] = useState({
     name: "",
@@ -104,7 +109,7 @@ export function App() {
 
   const [strikeGroupUpdate, setStrikeGroupUpdate] = useState({
     name: "",
-    position: {}
+    position: {},
   })
 
   const [USMapRegions, setUSMapRegions] = useState([])
@@ -117,10 +122,25 @@ export function App() {
 
   useEffect(() => {
     if (GlobalGameState.gamePhase === GlobalGameState.PHASE.TARGET_DETERMINATION) {
-      // @TODO CHECK IF JAPANESE PLAYER HOLDS CARD 11 
+      // @TODO CHECK IF JAPANESE PLAYER HOLDS CARD 11
       // ("US STRIKE LOST")
       // Will want to display an alert to ask if the player wants to play this card
       setTargetPanelShow(true)
+      GlobalGameState.dieRolls = 0
+      GlobalGameState.capHits = undefined
+    }
+  }, [GlobalGameState.gamePhase])
+
+  useEffect(() => {
+    if (GlobalGameState.gamePhase === GlobalGameState.PHASE.CAP_INTERCEPTION) {
+      setFightersPresent(true)
+      setCapInterceptionPanelShow(true)
+    }
+  }, [GlobalGameState.gamePhase])
+
+  useEffect(() => {
+    if (GlobalGameState.gamePhase === GlobalGameState.PHASE.CAP_DAMAGE_ALLOCATION) {
+      setDamageAllocationPanelShow(true)
     }
   }, [GlobalGameState.gamePhase])
 
@@ -253,7 +273,15 @@ export function App() {
   }
 
   const testUi = async (e) => {
-    await UITester({ e, setTestClicked, setAirUnitUpdate, setFleetUnitUpdate, setStrikeGroupUpdate, nextAction, doRoll: doIntiativeRoll })
+    await UITester({
+      e,
+      setTestClicked,
+      setAirUnitUpdate,
+      setFleetUnitUpdate,
+      setStrikeGroupUpdate,
+      nextAction,
+      doRoll: doInitiativeRoll,
+    })
   }
 
   var v = process.env.REACT_APP_MYVAR || "none"
@@ -462,7 +490,16 @@ export function App() {
 
   function loadMyGame(id) {
     setLoading(() => true)
-    loadHandler({ setTestClicked, setSplash, setAirUnitUpdate, setFleetUnitUpdate, setStrikeGroupUpdate, loadState, id, setLoading })
+    loadHandler({
+      setTestClicked,
+      setSplash,
+      setAirUnitUpdate,
+      setFleetUnitUpdate,
+      setStrikeGroupUpdate,
+      loadState,
+      id,
+      setLoading,
+    })
   }
 
   async function loady() {
@@ -503,16 +540,50 @@ export function App() {
   }
   const targetHeaders = (
     <>
-    <TargetHeaders setTargetSelected={setTargetSelected}></TargetHeaders>
-  </>
+      <TargetHeaders controller={GlobalInit.controller} setTargetSelected={setTargetSelected}></TargetHeaders>
+    </>
   )
 
   const targetFooters = (
     <>
-    <TargetFooters show={targetDetermined}></TargetFooters>
-  </>
+      <TargetFooters show={targetDetermined}></TargetFooters>
+    </>
   )
 
+  const capHeaders = (
+    <>
+      <CAPHeaders
+        controller={GlobalInit.controller}
+        capAirUnits={capAirUnits}
+        setCapAirUnits={setCapAirUnits}
+        capSteps={capSteps}
+        setCapSteps={setCapSteps}
+      ></CAPHeaders>
+    </>
+  )
+  const damageHeaders = (
+    <>
+      <DamageHeaders
+        controller={GlobalInit.controller}
+        capAirUnits={capAirUnits}
+        setCapAirUnits={setCapAirUnits}
+        capSteps={capSteps}
+        setCapSteps={setCapSteps}
+      ></DamageHeaders>
+    </>
+  )
+
+  const damageFooters = (
+    <>
+      <DamageFooters></DamageFooters>
+    </>
+  )
+
+  const capFooters = (
+    <>
+      <CAPFooters controller={GlobalInit.controller} setFightersPresent={setFightersPresent}></CAPFooters>
+    </>
+  )
   const airOpsFooters = (
     <>
       <AirOpsFooters controller={GlobalInit.controller}></AirOpsFooters>
@@ -523,53 +594,23 @@ export function App() {
       <AirOpsHeaders></AirOpsHeaders>
     </>
   )
-  function doIntiativeRoll(roll0, roll1) {
+  function doInitiativeRoll(roll0, roll1) {
     // for automated testing
-    let sideWithInitiative
-    let jpRolls, usRolls
-    if (roll0 && roll1) {
-      sideWithInitiative = GlobalInit.controller.determineInitiative(roll0, roll1)
-      jpRolls = [roll0]
-      usRolls = [roll1]
-    } else {
-      const rolls = randomDice(2)
-      sideWithInitiative = GlobalInit.controller.determineInitiative(rolls[0], rolls[1])
-      jpRolls = [rolls[0]]
-      usRolls = [rolls[1]]
-    }
-    GlobalGameState.sideWithInitiative = sideWithInitiative
-
-    GlobalInit.controller.viewEventHandler({
-      type: Controller.EventTypes.INITIATIVE_ROLL,
-      data: {
-        jpRolls,
-        usRolls,
-      },
-    })
+    const sideWithInitiative = doIntiativeRoll(GlobalInit.controller, roll0, roll1)
     setSideWithInitiative(() => sideWithInitiative)
     GlobalGameState.updateGlobalState()
   }
 
   function doTargetSelectionRoll(roll0) {
-    GlobalGameState.dieRolls = 0
-
-    // for automated testing
-    let actualTarget
-    let theRoll
-    if (roll0) {
-      actualTarget = GlobalInit.controller.determineTarget(roll0) 
-      theRoll = [roll0]
-    } else {
-      const rolls = randomDice(1)
-      actualTarget = GlobalInit.controller.determineTarget(rolls[0])
-      theRoll = [rolls[0]]
-    }
-    GlobalGameState.airAttackTarget = actualTarget
+    doSelectionRoll(GlobalInit.controller, roll0)
 
     setTargetDetermined(true)
     GlobalGameState.updateGlobalState()
+  }
 
-  
+  function doCAPRolls() {
+    doCAP(GlobalInit.controller, capAirUnits, fightersPresent)
+    GlobalGameState.updateGlobalState()
   }
   return (
     <>
@@ -663,7 +704,7 @@ export function App() {
           setInitiativePanelShow(false)
           nextAction(e)
         }}
-        doRoll={doIntiativeRoll}
+        doRoll={doInitiativeRoll}
         nextState={GlobalGameState.PHASE.AIR_OPERATIONS}
         diceButtonDisabled={sideWithInitiative !== null}
         closeButtonDisabled={sideWithInitiative === null}
@@ -687,6 +728,41 @@ export function App() {
         doRoll={doTargetSelectionRoll}
         disabled={true}
       ></DicePanel>
+      <LargeDicePanel
+        numDice={capSteps}
+        diceButtonDisabled={capAirUnits.length === 0 || GlobalGameState.capHits !== undefined}
+        show={!testClicked && capInterceptionPanelShow}
+        headerText="CAP Interception"
+        headers={capHeaders}
+        footers={capFooters}
+        // width={100}
+        showDice={true}
+        nextState={GlobalGameState.PHASE.CAP_DAMAGE_ALLOCATION}
+        margin={0}
+        onHide={(e) => {
+          setCapInterceptionPanelShow(false)
+          nextAction(e)
+        }}
+        doRoll={doCAPRolls}
+        disabled={true}
+      ></LargeDicePanel>
+      <LargeDicePanel
+        numDice={0}
+        show={!testClicked && damageAllocationPanelShow}
+        headerText="Damage Allocation"
+        headers={damageHeaders}
+        footers={damageFooters}
+        // width={100}
+        showDice={true}
+        margin={0}
+        onHide={(e) => {
+          setDamageAllocationPanelShow(false)
+          nextAction(e)
+        }}
+        doRoll={doCAPRolls}
+        disabled={true}
+      ></LargeDicePanel>
+
       <GameStatusPanel show={gameStateShow} gameState={gameState} onHide={() => setGameStateShow(false)} />
       <CardPanel show={jpHandShow} side={GlobalUnitsModel.Side.JAPAN} onHide={() => setjpHandShow(false)}></CardPanel>
       <CardPanel show={usHandShow} side={GlobalUnitsModel.Side.US} onHide={() => setusHandShow(false)}></CardPanel>

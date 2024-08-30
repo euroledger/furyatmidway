@@ -11,7 +11,9 @@
 .dice3,
 .dice4,
 .dice5,
-.dice6 {
+.dice6,
+.dice7,
+.dice8 {
   width: 100px;
   height: 100px;
   transform-style: preserve-3d;
@@ -44,6 +46,16 @@
   }
 }
 @keyframes rolling6 {
+  50% {
+    transform: rotateX(455deg) rotateY(455deg);
+  }
+}
+@keyframes rolling7 {
+  50% {
+    transform: rotateX(455deg) rotateY(455deg);
+  }
+}
+@keyframes rolling8 {
   50% {
     transform: rotateX(455deg) rotateY(455deg);
   }

@@ -12,7 +12,6 @@ import ViewDieRollEventHandler from "./ViewDieRollEventHandler"
 import ViewEventStrikeGroupMoveHandler from "./ViewEventStrikeGroupMoveHandler"
 import ViewEventSelectionHandler from "./ViewEventSelectionHandler"
 
-
 export default class Controller {
   static EventTypes = {
     AIR_UNIT_SETUP: "AirUnitSetup",
@@ -21,7 +20,7 @@ export default class Controller {
     INITIATIVE_ROLL: "Initiative Roll",
     STRIKE_GROUP_MOVE: "StrikeGroupMove",
     TARGET_SELECTION_ROLL: "Target Selection Roll",
-    TARGET_SELECTION: "Target Selection"
+    TARGET_SELECTION: "Target Selection",
   }
 
   static MIDWAY_HEX = {
@@ -56,6 +55,30 @@ export default class Controller {
     const units = Array.from(this.counters.values())
     const airCounters = units.filter((unit) => unit.constructor.name === "AirUnit" && unit.side === side)
     return airCounters
+  }
+
+  getAllCAPDefenders(side) {
+    const units = Array.from(this.counters.values())
+    const defenders = units.filter(
+      (unit) => unit.constructor.name === "AirUnit" && unit.side === side && unit.aircraftUnit.intercepting
+    )
+    return defenders
+  }
+
+  getNumDefendingSteps(side) {
+    const defenders = this.getAllCAPDefenders(side)
+    var result = defenders.reduce(function (acc, obj) {
+      return acc + obj.aircraftUnit.steps
+    }, 0)
+    return result
+  }
+
+  resetAllCapDefenders() {
+    const units = Array.from(this.counters.values())
+    for (let unit of units) {
+      let airUnit = this.counters.get(unit.name)
+      airUnit.aircraftUnit.intercepting = false
+    }
   }
   addAirUnitToBox = (boxName, index, value) => {
     this.boxModel.addAirUnitToBox(boxName, index, value)
@@ -250,6 +273,21 @@ export default class Controller {
     return array
   }
 
+  getAttackingStrikeUnitsForTF(tf, side) {
+    const fleetBeingAttacked = this.getFleetForTaskForce(tf, side)
+    const location = this.getFleetLocation(fleetBeingAttacked, side)
+
+    const strikeGroups = this.getAllStrikeGroupsInLocation(location, GlobalGameState.sideWithInitiative)
+
+    let unitsInGroup = this.getAirUnitsInStrikeGroups(strikeGroups[0].box)
+    return unitsInGroup
+  }
+
+  anyFightersInStrike(tf, side) {
+    const units = this.getAttackingStrikeUnitsForTF(tf, side).filter((airUnit) => !airUnit.aircraftUnit.attack)
+    return units.length > 0
+  }
+
   getAirUnitsInStrikeGroups(name) {
     const airUnits = this.getAllAirUnitsInBox(name)
     return airUnits
@@ -303,7 +341,8 @@ export default class Controller {
   // side is attacker so use other side for defender (ie fleets)
   checkForAirAttack = (location, side) => {
     const otherSide = side === GlobalUnitsModel.Side.JAPAN ? GlobalUnitsModel.Side.US : GlobalUnitsModel.Side.JAPAN
-    const fleets = this.getAllFleetsInLocation(location, otherSide)
+
+    const fleets = this.getAllFleetsInLocation(location, side)
 
     const strikeGroups = this.getAllStrikeGroupsInLocation(location, side)
     return fleets.length > 0 && strikeGroups.length > 0
@@ -624,7 +663,13 @@ export default class Controller {
 
     return airUnitsArray
   }
-
+  getFleetForTaskForce(tf, side) {
+    if (side === GlobalUnitsModel.Side.JAPAN) {
+      return "1AF"
+    }
+    if (tf.name.toUpperCase() != "MIDWAY") return "CSF"
+    return "MIDWAY"
+  }
   determineTarget = (roll) => {
     let actualTarget = GlobalGameState.airAttackTarget
     const side = GlobalGameState.sideWithInitiative
@@ -636,7 +681,8 @@ export default class Controller {
         ? GlobalUnitsModel.TaskForce.CARRIER_DIV_2
         : GlobalUnitsModel.TaskForce.CARRIER_DIV_1
     } else {
-      if (roll < 4) {
+      if (roll < 7) {
+        // QUACK set back to 4
         return actualTarget
       }
       return actualTarget === GlobalUnitsModel.TaskForce.TASK_FORCE_16
