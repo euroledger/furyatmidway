@@ -4,7 +4,7 @@ import GlobalUnitsModel from "../src/model/GlobalUnitsModel"
 import { createFleetMove } from "./TestUtils"
 import HexCommand from "../src/commands/HexCommand"
 import GlobalGameState from "../src/model/GlobalGameState"
-import { doCAP, doDamageAllocation } from "../src/DiceHandler"
+import { doCAP, doDamageAllocation, doFighterCounterattack } from "../src/DiceHandler"
 
 describe("Controller tests", () => {
   let controller
@@ -96,40 +96,40 @@ describe("Controller tests", () => {
 
     // 2. Move strike groups into Japanese 1AF fleet location
     const strikeCounter = {
-        name: "US-SG1",
-        longName: "Strike Group 1",
-        position: {},
-        image: "/images/aircounters/usStrike1.png",
-        width: "2.1%",
-        box: GlobalUnitsModel.AirBox.US_STRIKE_BOX_0,
-        side: GlobalUnitsModel.Side.US,
-      }
-  
-      //  Strike Group moves onto map - test location, moved etc.
-      controller.viewEventHandler({
-        type: Controller.EventTypes.STRIKE_GROUP_MOVE,
-        data: {
-          initial: true,
-          counterData: strikeCounter,
-          from: HexCommand.OFFBOARD,
-          to: {
-            currentHex: {
-              col: 5,
-              q: 7,
-              r: 2,
-              row: "G",
-              side: "us",
-              x: 120,
-              y: 200,
-            },
-          },
-          side: GlobalUnitsModel.Side.US,
-          loading: false,
-        },
-      })
+      name: "US-SG1",
+      longName: "Strike Group 1",
+      position: {},
+      image: "/images/aircounters/usStrike1.png",
+      width: "2.1%",
+      box: GlobalUnitsModel.AirBox.US_STRIKE_BOX_0,
+      side: GlobalUnitsModel.Side.US,
+    }
 
-      // 3. set target of strike
-      GlobalGameState.airAttackTarget=GlobalUnitsModel.TaskForce.CARRIER_DIV_2
+    //  Strike Group moves onto map - test location, moved etc.
+    controller.viewEventHandler({
+      type: Controller.EventTypes.STRIKE_GROUP_MOVE,
+      data: {
+        initial: true,
+        counterData: strikeCounter,
+        from: HexCommand.OFFBOARD,
+        to: {
+          currentHex: {
+            col: 5,
+            q: 7,
+            r: 2,
+            row: "G",
+            side: "us",
+            x: 120,
+            y: 200,
+          },
+        },
+        side: GlobalUnitsModel.Side.US,
+        loading: false,
+      },
+    })
+
+    // 3. set target of strike
+    GlobalGameState.airAttackTarget = GlobalUnitsModel.TaskForce.CARRIER_DIV_2
   }
 
   function setupJapaneseCAP() {
@@ -151,7 +151,7 @@ describe("Controller tests", () => {
     const capUnits = controller.getAllAirUnitsInBox(capBox)
     expect(capUnits.length).toEqual(4)
 
-    // defender selects the two Hiryu CAP fighter units 
+    // defender selects the two Hiryu CAP fighter units
     haf1.aircraftUnit.intercepting = true
     haf2.aircraftUnit.intercepting = true
 
@@ -177,7 +177,7 @@ describe("Controller tests", () => {
     const capUnits = controller.getAllAirUnitsInBox(capBox)
     expect(capUnits.length).toEqual(4)
 
-    // defender selects the two Hiryu CAP fighter units 
+    // defender selects the two Hiryu CAP fighter units
     haf1.aircraftUnit.intercepting = true
     haf2.aircraftUnit.intercepting = true
 
@@ -195,7 +195,7 @@ describe("Controller tests", () => {
   })
 
   test("Enterprise Strike Against Japanese CD2 - Damage Allocation", () => {
-    // defender selects the two Hiryu CAP fighter units 
+    // defender selects the two Hiryu CAP fighter units
     haf1.aircraftUnit.intercepting = true
     haf2.aircraftUnit.intercepting = true
 
@@ -212,6 +212,36 @@ describe("Controller tests", () => {
 
     doDamageAllocation(controller, etb)
     expect(etb.aircraftUnit.steps === 0)
+  })
 
+  test("Enterprise Strike Against CD2 - Fighter Escort Counterattack", () => {
+    haf1.aircraftUnit.intercepting = true
+    haf2.aircraftUnit.intercepting = true
+
+    const defenders = controller.getAllCAPDefenders(GlobalUnitsModel.Side.JAPAN)
+
+    let rolls = [6, 5, 4, 1]
+
+    // one hit from CAP on Enterprise fighter escort
+    doCAP(controller, defenders, true, rolls)
+
+    expect(GlobalGameState.capHits).toEqual(1)
+
+    doDamageAllocation(controller, ef1)
+    expect(etb.aircraftUnit.steps === 1)
+
+    // Now 1 remaining step of fighter can attack the CAP units
+    rolls = [2]
+
+    GlobalGameState.airAttackTarget = "1AF"
+    GlobalGameState.sideWithInitiative = GlobalUnitsModel.Side.US
+
+    doFighterCounterattack(controller, rolls)
+    expect(GlobalGameState.fighterHits).toEqual(1)
+
+    doDamageAllocation(controller, haf1)
+    expect(haf1.aircraftUnit.steps === 1)
+
+    // @TODO anti aircraft fire
   })
 })

@@ -61,7 +61,7 @@ function DicePanel(props) {
           color: "white",
         }}
       >
-        <p className="text-center">{headerText}</p>
+        <p className="text-center"><h4>{headerText}</h4></p>
       </Modal.Header>
       <Modal.Body style={{ background: `${bg}`, color: "black" }}>
         <div style={{ marginLeft: "28px" }}>
@@ -92,7 +92,9 @@ function DicePanel(props) {
         <Button
           disabled={closeButtonDisabled}
           onClick={(e) => {
-            GlobalGameState.gamePhase = nextState
+            if (nextState) {
+              GlobalGameState.gamePhase = nextState
+            }
             onHide(e)
           }}
         >

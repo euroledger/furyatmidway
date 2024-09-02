@@ -1,8 +1,7 @@
-import { React, useState } from "react"
+import { React } from "react"
 import "./cap.css"
 import GlobalUnitsModel from "./model/GlobalUnitsModel"
 import GlobalGameState from "./model/GlobalGameState"
-import Controller from "./controller/Controller"
 
 export function CAPHeaders({ controller, setCapAirUnits, capSteps, setCapSteps }) {
   const sideBeingAttacked =
@@ -111,7 +110,7 @@ export function CAPHeaders({ controller, setCapAirUnits, capSteps, setCapSteps }
 }
 
 export function CAPFooters({controller, setFightersPresent}) {
-  const show =  GlobalGameState.capHits > 0
+  const show =  GlobalGameState.dieRolls.length > 0
 
   const msg="Number of Hits:"
 
@@ -130,7 +129,7 @@ const fighters = controller.anyFightersInStrike(GlobalGameState.airAttackTarget,
 
   return (
     <>
-      {show && (
+   
         <div
           style={{
             marginTop: "10px",
@@ -147,6 +146,7 @@ const fighters = controller.anyFightersInStrike(GlobalGameState.airAttackTarget,
           >
             {fighterMsg}<br></br>
           </p>
+          {show && (
           <p
             style={{
               display: "flex",
@@ -156,9 +156,8 @@ const fighters = controller.anyFightersInStrike(GlobalGameState.airAttackTarget,
             }}
           >
             {msg} &nbsp;<strong>{GlobalGameState.capHits}</strong>&nbsp;
-          </p>
+          </p>)}
         </div>
-      )}
     </>
   )
 }

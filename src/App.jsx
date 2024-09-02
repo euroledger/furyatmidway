@@ -16,7 +16,15 @@ import CardPanel from "./components/dialogs/CardPanel"
 import GameStatusPanel from "./components/dialogs/GameStatusPanel"
 import SplashScreen from "./components/dialogs/SplashScreen"
 import "./style.css"
-import { doIntiativeRoll, doSelectionRoll, doCAP } from "./DiceHandler"
+import {
+  doIntiativeRoll,
+  doSelectionRoll,
+  doCAP,
+  getNumEscortFighterSteps,
+  doDamageAllocation,
+  doCAPEvent,
+  doFighterCounterattack,
+} from "./DiceHandler"
 import { determineAllUnitsDeployedForCarrier } from "./controller/AirUnitSetupHandler"
 import { usCSFStartHexes, japanAF1StartHexesNoMidway, japanAF1StartHexesMidway } from "./components/MapRegions"
 import YesNoDialog from "./components/dialogs/YesNoDialog"
@@ -29,6 +37,8 @@ import { AirOpsHeaders, AirOpsFooters } from "./AirOpsDataPanels"
 import { TargetHeaders, TargetFooters } from "./TargetPanel"
 import { CAPHeaders, CAPFooters } from "./CAPPanel"
 import { DamageHeaders, DamageFooters } from "./DamageAllocationPanel"
+import { EscortHeaders, EscortFooters } from "./EscortPanel"
+
 import UITester from "./UITester"
 import { getJapanEnabledAirBoxes, getUSEnabledAirBoxes } from "./AirBoxZoneHandler"
 import handleAction from "./GameStateHandler"
@@ -90,8 +100,11 @@ export function App() {
 
   const [damageAllocationPanelShow, setDamageAllocationPanelShow] = useState(false)
 
+  const [escortPanelShow, setEscortPanelShow] = useState(false)
+
   const [capAirUnits, setCapAirUnits] = useState([])
   const [capSteps, setCapSteps] = useState(0)
+  const [escortSteps, setEscortSteps] = useState(0)
 
   const [fightersPresent, setFightersPresent] = useState(true)
 
@@ -138,12 +151,23 @@ export function App() {
     if (GlobalGameState.gamePhase === GlobalGameState.PHASE.CAP_INTERCEPTION) {
       setFightersPresent(true)
       setCapInterceptionPanelShow(true)
+      GlobalGameState.dieRolls = 0
     }
   }, [GlobalGameState.gamePhase])
 
   useEffect(() => {
-    if (GlobalGameState.gamePhase === GlobalGameState.PHASE.CAP_DAMAGE_ALLOCATION) {
+    if (
+      GlobalGameState.gamePhase === GlobalGameState.PHASE.CAP_DAMAGE_ALLOCATION ||
+      GlobalGameState.gamePhase === GlobalGameState.PHASE.ESCORT_DAMAGE_ALLOCATION
+    ) {
+      setEliminatedSteps(0)
       setDamageAllocationPanelShow(true)
+    }
+  }, [GlobalGameState.gamePhase])
+
+  useEffect(() => {
+    if (GlobalGameState.gamePhase === GlobalGameState.PHASE.ESCORT_COUNTERATTACK) {
+      setEscortPanelShow(true)
     }
   }, [GlobalGameState.gamePhase])
 
@@ -272,6 +296,7 @@ export function App() {
       setUsStrikePanelEnabled,
       sideWithInitiative,
       setSideWithInitiative,
+      capSteps,
     })
   }
 
@@ -571,6 +596,9 @@ export function App() {
         eliminatedSteps={eliminatedSteps}
         setEliminatedSteps={setEliminatedSteps}
         setStepsLeft={setStepsLeft}
+        capAirUnits={
+          GlobalGameState.gamePhase === GlobalGameState.PHASE.ESCORT_DAMAGE_ALLOCATION ? capAirUnits : undefined
+        }
       ></DamageHeaders>
     </>
   )
@@ -578,6 +606,18 @@ export function App() {
   const damageFooters = (
     <>
       <DamageFooters eliminatedSteps={eliminatedSteps}></DamageFooters>
+    </>
+  )
+
+  const escortHeaders = (
+    <>
+      <EscortHeaders controller={GlobalInit.controller}></EscortHeaders>
+    </>
+  )
+
+  const escortFooters = (
+    <>
+      <EscortFooters></EscortFooters>
     </>
   )
 
@@ -613,6 +653,14 @@ export function App() {
   function doCAPRolls() {
     doCAP(GlobalInit.controller, capAirUnits, fightersPresent)
     GlobalGameState.updateGlobalState()
+  }
+
+  function doCounterattackRolls() {
+    doFighterCounterattack(GlobalInit.controller)
+  }
+
+  function sendCapEvent() {
+    doCAPEvent(GlobalInit.controller, capAirUnits)
   }
   return (
     <>
@@ -722,7 +770,7 @@ export function App() {
         margin={300}
         diceButtonDisabled={targetSelected === targetDetermined}
         closeButtonDisabled={!targetDetermined}
-        nextState={GlobalGameState.PHASE.CAP_INTERCEPTION}
+        // nextState={GlobalGameState.PHASE.CAP_INTERCEPTION}
         onHide={(e) => {
           setTargetPanelShow(false)
           nextAction(e)
@@ -739,10 +787,13 @@ export function App() {
         footers={capFooters}
         // width={100}
         showDice={true}
-        nextState={GlobalGameState.PHASE.CAP_DAMAGE_ALLOCATION}
+        // nextState={
+        //   capSteps > 0 ? GlobalGameState.PHASE.CAP_DAMAGE_ALLOCATION : GlobalGameState.PHASE.ANTI_AIRCRAFT_FIRE
+        // }
         margin={0}
         onHide={(e) => {
           setCapInterceptionPanelShow(false)
+          sendCapEvent()
           nextAction(e)
         }}
         doRoll={doCAPRolls}
@@ -761,11 +812,28 @@ export function App() {
           setDamageAllocationPanelShow(false)
           nextAction(e)
         }}
-        doRoll={doCAPRolls}
+        doRoll={doDamageAllocation}
         disabled={true}
         closeButtonDisabled={eliminatedSteps !== GlobalGameState.capHits && stepsLeft !== 0}
       ></LargeDicePanel>
-
+      <LargeDicePanel
+        numDice={getNumEscortFighterSteps(GlobalInit.controller)}
+        show={!testClicked && escortPanelShow}
+        headerText="Escort Counterattack"
+        headers={escortHeaders}
+        footers={escortFooters}
+        // width={100}
+        showDice={true}
+        margin={0}
+        onHide={(e) => {
+          console.log("GET OUTTA HERE...QUACK")
+          setEscortPanelShow(false)
+          nextAction(e)
+        }}
+        doRoll={doCounterattackRolls}
+        closeButtonDisabled={false}
+        disabled={false}
+      ></LargeDicePanel>
       <GameStatusPanel show={gameStateShow} gameState={gameState} onHide={() => setGameStateShow(false)} />
       <CardPanel show={jpHandShow} side={GlobalUnitsModel.Side.JAPAN} onHide={() => setjpHandShow(false)}></CardPanel>
       <CardPanel show={usHandShow} side={GlobalUnitsModel.Side.US} onHide={() => setusHandShow(false)}></CardPanel>

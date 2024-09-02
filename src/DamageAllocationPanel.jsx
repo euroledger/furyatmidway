@@ -1,29 +1,25 @@
-import { React, useState } from "react"
+import { React } from "react"
 import "./cap.css"
 import GlobalUnitsModel from "./model/GlobalUnitsModel"
 import GlobalGameState from "./model/GlobalGameState"
-import Controller from "./controller/Controller"
 import { doDamageAllocation } from "./DiceHandler"
 
-export function DamageHeaders({ controller, eliminatedSteps, setEliminatedSteps, setStepsLeft }) {
-  const sideBeingAttacked =
-    GlobalGameState.sideWithInitiative === GlobalUnitsModel.Side.US
-      ? GlobalUnitsModel.Side.JAPAN
-      : GlobalUnitsModel.Side.US
 
+// @TODO Move this into Util file somewhere (or to controller?)
+
+
+// @TODO extend this component to allow damage to CAP units (in response to fighter escort counterattack)
+export function DamageHeaders({ controller, eliminatedSteps, setEliminatedSteps, setStepsLeft, capAirUnits }) {
   const msg = "Number of Hits to Allocate:"
 
-  const fleetBeingAttacked = controller.getFleetForTaskForce(GlobalGameState.airAttackTarget, sideBeingAttacked)
-  const location = controller.getFleetLocation(fleetBeingAttacked, sideBeingAttacked)
+  console.log("capAirUnits = ", capAirUnits)
+  const unitsInGroup = capAirUnits ?? controller.getAttackingStrikeUnits()
 
-  const strikeGroups = controller.getAllStrikeGroupsInLocation(location, GlobalGameState.sideWithInitiative)
-
-  let unitsInGroup = controller.getAirUnitsInStrikeGroups(strikeGroups[0].box)
-
+  console.log("unitsInGroup=", unitsInGroup)
+ 
   let totalSteps = 0
   const airCounters = unitsInGroup.map((airUnit) => {
     if (airUnit.aircraftUnit.steps === 0) {
-      console.log("SET STEPS LEFT TO 0")
       setStepsLeft(0)
       return <></>
     }
@@ -67,12 +63,14 @@ export function DamageHeaders({ controller, eliminatedSteps, setEliminatedSteps,
 
   const handleClick = (airUnit) => {
     if (eliminatedSteps === GlobalGameState.capHits) {
+      setEliminatedSteps(0)
       return // don't allow more steps to be eliminated than is necessary
     }
     doDamageAllocation(controller, airUnit)
     setEliminatedSteps(() => eliminatedSteps + 1)
     GlobalGameState.updateGlobalState()
   }
+
 
   return (
     <>
@@ -85,7 +83,7 @@ export function DamageHeaders({ controller, eliminatedSteps, setEliminatedSteps,
             color: "white",
           }}
         >
-          {msg} &nbsp;<strong>{GlobalGameState.capHits}</strong>&nbsp; <br></br>
+          {msg} &nbsp;<strong>{GlobalGameState.capHits !== undefined ?  GlobalGameState.capHits : 0}</strong>&nbsp; <br></br>
         </p>
       </div>
       <div
@@ -129,7 +127,6 @@ export function DamageHeaders({ controller, eliminatedSteps, setEliminatedSteps,
 }
 
 export function DamageFooters({ eliminatedSteps }) {
-  console.log("eliminatedSteps = ", eliminatedSteps)
   const show = eliminatedSteps === GlobalGameState.capHits
   return (
     <>

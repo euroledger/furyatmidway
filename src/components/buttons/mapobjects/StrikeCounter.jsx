@@ -75,6 +75,7 @@ function StrikeCounter({ setStrikeGroupPopup, currentUSHex, currentJapanHex, cou
       from = { currentHex: position.currentHex }
     }
     to = { currentHex: hex }
+    console.log("QUACK STRIKE GROUP MOVE:",counterData.name)
     controller.viewEventHandler({
       type: Controller.EventTypes.STRIKE_GROUP_MOVE,
       data: {

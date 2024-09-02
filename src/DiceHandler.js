@@ -56,6 +56,67 @@ export function doSelectionRoll(controller, roll0) {
   })
 }
 
+export function doFighterCounterattack(controller, testRolls) {
+  let attackers = getFightersForStrikeGroup(controller)
+  let numSteps = getNumEscortFighterSteps(controller)
+
+  let rolls = testRolls === undefined ? randomDice(numSteps) : testRolls
+
+  let hits = 0,
+    index = 0
+  for (let unit of attackers) {
+    for (let i = 0; i < unit.aircraftUnit.steps; i++) {
+      if (rolls[index] <= unit.aircraftUnit.strength) {
+        hits++
+      }
+      index++
+    }
+  }
+  GlobalGameState.fighterHits = hits
+}
+
+function getFightersForStrikeGroup(controller) {
+  const sideBeingAttacked =
+    GlobalGameState.sideWithInitiative === GlobalUnitsModel.Side.US
+      ? GlobalUnitsModel.Side.JAPAN
+      : GlobalUnitsModel.Side.US
+
+  const fleetBeingAttacked = controller.getFleetForTaskForce(GlobalGameState.airAttackTarget, sideBeingAttacked)
+  const location = controller.getFleetLocation(fleetBeingAttacked, sideBeingAttacked)
+
+  const strikeGroups = controller.getAllStrikeGroupsInLocation(location, GlobalGameState.sideWithInitiative)
+  if (!strikeGroups || strikeGroups.length === 0) {
+    return []
+  }
+  let fighters = controller.getAllFightersInBox(strikeGroups[0].box)
+  return fighters
+}
+
+export function getNumEscortFighterSteps(controller) {
+  let fighters = getFightersForStrikeGroup(controller)
+ 
+  let steps = 0
+
+  for (let unit of fighters) {
+    steps += unit.aircraftUnit.steps
+  }
+  return steps
+}
+export function doCAPEvent(controller, capAirUnits) {
+
+  const sideBeingAttacked =
+  GlobalGameState.sideWithInitiative === GlobalUnitsModel.Side.US
+    ? GlobalUnitsModel.Side.JAPAN
+    : GlobalUnitsModel.Side.US
+  
+  controller.viewEventHandler({
+    type: Controller.EventTypes.SELECT_CAP_UNITS,
+    data: {
+      side: sideBeingAttacked,
+      capUnits: capAirUnits
+    },
+  })
+}
 export function doCAP(controller, capAirUnits, fightersPresent, testRolls) {
   const sideBeingAttacked =
     GlobalGameState.sideWithInitiative === GlobalUnitsModel.Side.US
@@ -98,7 +159,6 @@ export function doDamageAllocation(controller, airUnit) {
         ? GlobalUnitsModel.AirBox.JP_ELIMINATED
         : GlobalUnitsModel.AirBox.US_ELIMINATED
 
-    controller.addAirUnitToBox(toBox, 0, airUnit)
 
     controller.viewEventHandler({
       type: Controller.EventTypes.AIR_UNIT_MOVE,
@@ -110,5 +170,7 @@ export function doDamageAllocation(controller, airUnit) {
         loading: false,
       },
     })
+    controller.addAirUnitToBox(toBox, 0, airUnit)
+
   }
 }

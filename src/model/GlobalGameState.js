@@ -19,7 +19,10 @@ export default class GlobalGameState {
     TARGET_DETERMINATION: "Target Determination Phase",
     CAP_INTERCEPTION:"CAP Interception Phase",
     AIR_ATTACK: "Air Attack Phase",
-    CAP_DAMAGE_ALLOCATION: "CAP Damage Allocation Phase"
+    CAP_DAMAGE_ALLOCATION: "CAP Damage Allocation Phase",
+    ESCORT_COUNTERATTACK: "Escort Fighter Counterattack Phase",
+    ESCORT_DAMAGE_ALLOCATION: "Escort Damage Allocation Phase",
+    ANTI_AIRCRAFT_FIRE: "Anti-Aircraft (AAA) Fire Phase"
   }
 
   static usSetUpComplete = false
@@ -120,6 +123,7 @@ export default class GlobalGameState {
   static airAttacksComplete = false; // set to true after all air attacks - triggers CAP return etc
 
   static capHits = undefined
+  static fighterHits = undefined
 
   static getJapanCarrier = () => {
     return this.JAPAN_CARRIERS[this.setupPhase]

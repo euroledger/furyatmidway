@@ -12,7 +12,8 @@ class ViewEventAirUnitMoveHandler {
     const { counterData, name, index, side, loading } = event.data
 
     const { boxName, boxIndex } = this.controller.getAirUnitLocation(counterData.name)
-    const from = boxName === GlobalUnitsModel.AirBox.OFFBOARD ? "OFFBOARD" : boxName + " - box " + boxIndex
+    let from = boxName === GlobalUnitsModel.AirBox.OFFBOARD ? "OFFBOARD" : boxName + " - box " + boxIndex
+
     const to =
       name === GlobalUnitsModel.AirBox.JP_ELIMINATED || name === GlobalUnitsModel.AirBox.US_ELIMINATED
         ? name

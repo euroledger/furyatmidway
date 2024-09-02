@@ -131,7 +131,7 @@ function airOperationsHandler({
   setUsStrikePanelEnabled,
   sideWithInitiative,
   setInitiativePanelShow,
-  setSideWithInitiative
+  setSideWithInitiative,
 }) {
   GlobalGameState.phaseCompleted = false
   if (GlobalGameState.sideWithInitiative === GlobalUnitsModel.Side.JAPAN) {
@@ -166,7 +166,7 @@ function airOperationsHandler({
         GlobalGameState.airOperationPoints.us > 0 ? GlobalGameState.airOperationPoints.us - 1 : 0
       GlobalGameState.phaseCompleted = true
       // GlobalGameState.gamePhase = GlobalGameState.PHASE.AIR_SEARCH
-      
+
       GlobalInit.controller.setAllUnitsToNotMoved()
       setSideWithInitiative(null) // ensure roll dice button is enabled
       initiativeHandler({ setInitiativePanelShow })
@@ -197,10 +197,9 @@ export default function handleAction({
   setJapanStrikePanelEnabled,
   setUsStrikePanelEnabled,
   sideWithInitiative,
-  setSideWithInitiative
+  setSideWithInitiative,
+  capSteps
 }) {
-
-
   //   switch (
   // GlobalGameState.gamePhase
   // case GlobalGameState.PHASE.JAPAN_SETUP:
@@ -239,6 +238,8 @@ export default function handleAction({
   //   ) {
   //   }
 
+  console.log("GLOBAL GAME STATE phase =", GlobalGameState.gamePhase)
+
   if (GlobalGameState.gamePhase === GlobalGameState.PHASE.JAPAN_SETUP) {
     japanSetUpHandler()
   } else if (GlobalGameState.gamePhase === GlobalGameState.PHASE.JAPAN_CARD_DRAW) {
@@ -275,13 +276,28 @@ export default function handleAction({
       setUsStrikePanelEnabled,
       sideWithInitiative,
       setInitiativePanelShow,
-      setSideWithInitiative
+      setSideWithInitiative,
     })
     GlobalGameState.updateGlobalState()
     return
+  } else if (GlobalGameState.gamePhase === GlobalGameState.PHASE.TARGET_DETERMINATION) {
+    console.log("GOING TO CAP INTERCEPTION")
+    GlobalGameState.gamePhase = GlobalGameState.PHASE.CAP_INTERCEPTION 
   }
-
+   else if (GlobalGameState.gamePhase === GlobalGameState.PHASE.CAP_INTERCEPTION) {
+    console.log("GOING TO DAMAGE ALLOCATION (1)")
+    GlobalGameState.gamePhase =
+      capSteps > 0 ? GlobalGameState.PHASE.CAP_DAMAGE_ALLOCATION : GlobalGameState.PHASE.ANTI_AIRCRAFT_FIRE
+  } else if (GlobalGameState.gamePhase === GlobalGameState.PHASE.CAP_DAMAGE_ALLOCATION) {
+    console.log("GOING TO ESCORT COUNTERATTACK")
+    GlobalGameState.gamePhase = GlobalGameState.PHASE.ESCORT_COUNTERATTACK
+  } else if (GlobalGameState.gamePhase === GlobalGameState.PHASE.ESCORT_COUNTERATTACK) {
+    console.log("GOING TO DAMAGE ALLOCATION (2)")
+    GlobalGameState.gamePhase =  GlobalGameState.PHASE.ESCORT_DAMAGE_ALLOCATION
+  }
+  
   GlobalGameState.setupPhase++
+
   GlobalGameState.updateGlobalState()
   const enabledBoxes = getJapanEnabledAirBoxes()
   setEnabledJapanBoxes(() => enabledBoxes)

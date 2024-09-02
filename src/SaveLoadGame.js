@@ -53,6 +53,11 @@ export function saveGameState(controller, gameId) {
 
   const logItems = JSON.stringify(Array.from(GlobalGameState.logItems.entries()))
   // console.log(logItems)
+  // const size = new TextEncoder().encode(logItems).length
+  // const kiloBytes = size / 1024;
+  // const megaBytes = kiloBytes / 1024;
+
+  // console.log("SIZE =", kiloBytes, "Kb")
 
   const airOperationsText = JSON.stringify(GlobalGameState.airOperationPoints)
 
@@ -247,7 +252,11 @@ export function loadGameState() {
   GlobalUnitsModel.usCards = JSON.parse(usCardText)
 
   const items = localStorage.getItem("log")
+
+  
   const logItems = new Map(JSON.parse(items))
+
+  
 
   const jpMapText = localStorage.getItem("jpMap")
   const jpFleetMap = new Map(JSON.parse(jpMapText))

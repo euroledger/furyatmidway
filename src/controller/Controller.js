@@ -11,6 +11,7 @@ import ViewEventAirUnitMoveHandler from "./ViewEventAirUnitMoveHandler"
 import ViewDieRollEventHandler from "./ViewDieRollEventHandler"
 import ViewEventStrikeGroupMoveHandler from "./ViewEventStrikeGroupMoveHandler"
 import ViewEventSelectionHandler from "./ViewEventSelectionHandler"
+import ViewEventCapHandler from "./ViewEventCapHandler"
 
 export default class Controller {
   static EventTypes = {
@@ -21,6 +22,8 @@ export default class Controller {
     STRIKE_GROUP_MOVE: "StrikeGroupMove",
     TARGET_SELECTION_ROLL: "Target Selection Roll",
     TARGET_SELECTION: "Target Selection",
+    SELECT_CAP_UNITS: "Select CAP Units",
+    ALLOCATE_DAMAGE: "Damage Allocation",
   }
 
   static MIDWAY_HEX = {
@@ -45,6 +48,7 @@ export default class Controller {
     this.dieRollEventHandler = new ViewDieRollEventHandler(this)
     this.stikeGroupMoveEventHandler = new ViewEventStrikeGroupMoveHandler(this)
     this.selectionEventHandler = new ViewEventSelectionHandler(this)
+    this.capHandler = new ViewEventCapHandler(this)
   }
 
   setCounters(counters) {
@@ -273,6 +277,21 @@ export default class Controller {
     return array
   }
 
+  getAttackingStrikeUnits() {
+    const sideBeingAttacked =
+    GlobalGameState.sideWithInitiative === GlobalUnitsModel.Side.US
+      ? GlobalUnitsModel.Side.JAPAN
+      : GlobalUnitsModel.Side.US
+    const fleetBeingAttacked = this.getFleetForTaskForce(GlobalGameState.airAttackTarget, sideBeingAttacked)
+    const location = this.getFleetLocation(fleetBeingAttacked, sideBeingAttacked)
+  
+    const strikeGroups = this.getAllStrikeGroupsInLocation(location, GlobalGameState.sideWithInitiative)
+  
+    let unitsInGroup = this.getAirUnitsInStrikeGroups(strikeGroups[0].box)
+  
+    return unitsInGroup
+  }
+
   getAttackingStrikeUnitsForTF(tf, side) {
     const fleetBeingAttacked = this.getFleetForTaskForce(tf, side)
     const location = this.getFleetLocation(fleetBeingAttacked, side)
@@ -295,6 +314,11 @@ export default class Controller {
 
   getAllAirUnitsInBox = (boxName) => {
     return this.boxModel.getAllAirUnitsInBox(boxName)
+  }
+
+  getAllFightersInBox = (boxName) => {
+    let attackers = this.getAllAirUnitsInBox(boxName)
+    return attackers.filter((unit) => !unit.aircraftUnit.attack)
   }
 
   getNumberZonesInBox = (boxName) => {
@@ -752,6 +776,9 @@ export default class Controller {
         this.stikeGroupMoveEventHandler.handleEvent(event)
         break
 
+      case Controller.EventTypes.SELECT_CAP_UNITS:
+        this.capHandler.handleCapSelectionEvent(event)
+        break
       default:
         console.log(`Unknown event type: ${event.type}`)
     }
