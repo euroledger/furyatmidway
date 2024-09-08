@@ -57,7 +57,9 @@ function StrikeCounters({
         GlobalGameState.gamePhase !== GlobalGameState.PHASE.AIR_SEARCH &&
         GlobalGameState.gamePhase !== GlobalGameState.PHASE.TARGET_DETERMINATION &&
         GlobalGameState.gamePhase !== GlobalGameState.PHASE.CAP_INTERCEPTION &&
-        GlobalGameState.gamePhase !== GlobalGameState.PHASE.CAP_DAMAGE_ALLOCATION) ||
+        GlobalGameState.gamePhase !== GlobalGameState.PHASE.CAP_DAMAGE_ALLOCATION && 
+        GlobalGameState.gamePhase !== GlobalGameState.PHASE.MIDWAY_ATTACK)
+       ||
       controller.getAirUnitsInStrikeGroups(strikeGroupUnit.box).length === 0
     ) {
       return

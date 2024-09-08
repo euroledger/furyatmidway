@@ -40,7 +40,10 @@ function AirCounter({ getAirBox, setAirBox, counterData, side }) {
       return
     }
 
-    if (GlobalGameState.gamePhase === GlobalGameState.PHASE.AIR_OPERATIONS) {
+    if (
+      GlobalGameState.gamePhase === GlobalGameState.PHASE.AIR_OPERATIONS ||
+      GlobalGameState.gamePhase === GlobalGameState.PHASE.MIDWAY_ATTACK
+    ) {
       setValidDestinationBoxes(controller, counterData.name, counterData.side)
     }
     setBoxes(counterData)
@@ -68,7 +71,10 @@ function AirCounter({ getAirBox, setAirBox, counterData, side }) {
       top: airUnitUpdate.position.top - 0.2 + "%",
     }))
 
-    if (GlobalGameState.gamePhase === GlobalGameState.PHASE.AIR_OPERATIONS) {
+    if (
+      GlobalGameState.gamePhase === GlobalGameState.PHASE.AIR_OPERATIONS ||
+      GlobalGameState.gamePhase === GlobalGameState.PHASE.MIDWAY_ATTACK
+    ) {
       controller.viewEventHandler({
         type: Controller.EventTypes.AIR_UNIT_MOVE,
         data: {
@@ -194,7 +200,10 @@ function AirCounter({ getAirBox, setAirBox, counterData, side }) {
       top: offsets.top - 0.2 + "%",
     })
 
-    if (GlobalGameState.gamePhase === GlobalGameState.PHASE.AIR_OPERATIONS) {
+    if (
+      GlobalGameState.gamePhase === GlobalGameState.PHASE.AIR_OPERATIONS ||
+      GlobalGameState.gamePhase === GlobalGameState.PHASE.MIDWAY_ATTACK
+    ) {
       controller.viewEventHandler({
         type: Controller.EventTypes.AIR_UNIT_MOVE,
         data: {
@@ -234,8 +243,6 @@ function AirCounter({ getAirBox, setAirBox, counterData, side }) {
   const setBoxes = (counterData) => {
     const destBoxes = controller.getValidAirUnitDestinations(counterData.name)
     if (counterData.side === GlobalUnitsModel.Side.JAPAN) {
-      console.log("set enabled valid destinations JAPAN = ", destBoxes)
-
       setEnabledJapanBoxes(() => destBoxes)
     } else {
       setEnabledUSBoxes(() => destBoxes)
@@ -252,9 +259,10 @@ function AirCounter({ getAirBox, setAirBox, counterData, side }) {
     ) {
       return
     }
-    if (GlobalGameState.gamePhase === GlobalGameState.PHASE.AIR_OPERATIONS) {
-      console.log("set valid destinations")
-
+    if (
+      GlobalGameState.gamePhase === GlobalGameState.PHASE.AIR_OPERATIONS ||
+      GlobalGameState.gamePhase === GlobalGameState.PHASE.MIDWAY_ATTACK
+    ) {
       setValidDestinationBoxes(controller, counterData.name, counterData.side)
     }
     setBoxes(counterData)
@@ -277,7 +285,8 @@ function AirCounter({ getAirBox, setAirBox, counterData, side }) {
   if (
     !loading &&
     (GlobalGameState.gamePhase === GlobalGameState.PHASE.AIR_OPERATIONS ||
-      GlobalGameState.gamePhase === GlobalGameState.PHASE.TARGET_DETERMINATION)
+      GlobalGameState.gamePhase === GlobalGameState.PHASE.TARGET_DETERMINATION ||
+      GlobalGameState.gamePhase === GlobalGameState.PHASE.MIDWAY_ATTACK)
   ) {
     if (side !== GlobalGameState.sideWithInitiative) {
       // console.log(

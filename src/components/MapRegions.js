@@ -41,4 +41,15 @@ export const japanAF1StartHexesNoMidway = [
   { q: 2, r: 1 },
   { q: 2, r: 2 },
   { q: 2, r: 3 },
+
+  { q: 3, r: 1 },
+  { q: 3, r: 2 },
+  { q: 3, r: 3 },
+  { q: 3, r: 4 },
+
+  // TEST ONLY...
+  { q: 4, r: 1 },
+  { q: 4, r: 2 },
+  { q: 4, r: 3 },
+  { q: 4, r: 4 },
 ]

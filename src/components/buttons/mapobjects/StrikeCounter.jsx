@@ -5,7 +5,7 @@ import GlobalUnitsModel from "../../../model/GlobalUnitsModel"
 import { BoardContext } from "../../../App"
 import GlobalGameState from "../../../model/GlobalGameState"
 import "./counter.css"
-import { allHexesWithinDistance } from "../../HexUtils"
+import { allHexesWithinDistance, hexesInTwoRegions } from "../../HexUtils"
 import HexCommand from "../../../commands/HexCommand"
 
 function StrikeCounter({ setStrikeGroupPopup, currentUSHex, currentJapanHex, counterData, side, index }) {
@@ -17,7 +17,6 @@ function StrikeCounter({ setStrikeGroupPopup, currentUSHex, currentJapanHex, cou
     setIsMoveable,
     setJapanMapRegions,
     japanMapRegions,
-    onDrag,
     strikeGroupUpdate,
   } = useContext(BoardContext)
 
@@ -75,7 +74,6 @@ function StrikeCounter({ setStrikeGroupPopup, currentUSHex, currentJapanHex, cou
       from = { currentHex: position.currentHex }
     }
     to = { currentHex: hex }
-    console.log("QUACK STRIKE GROUP MOVE:",counterData.name)
     controller.viewEventHandler({
       type: Controller.EventTypes.STRIKE_GROUP_MOVE,
       data: {
@@ -90,6 +88,7 @@ function StrikeCounter({ setStrikeGroupPopup, currentUSHex, currentJapanHex, cou
   }
 
   function setJapanRegions() {
+    let jpRegion1
     const locationOfStrikeGroup = controller.getStrikeGroupLocation(counterData.name, side)
 
     // if (locationOfStrikeGroup === undefined) {
@@ -97,9 +96,17 @@ function StrikeCounter({ setStrikeGroupPopup, currentUSHex, currentJapanHex, cou
       const locationOfCarrier = controller.getFleetLocation("1AF", GlobalUnitsModel.Side.JAPAN)
 
       setCurrentHex(locationOfCarrier)
-      const jpRegion = allHexesWithinDistance(locationOfCarrier.currentHex, 2, true)
-      setJapanMapRegions(jpRegion)
+      jpRegion1 = allHexesWithinDistance(locationOfCarrier.currentHex, 2, true)
+      setJapanMapRegions(jpRegion1)
     // }
+
+    // If this is the first Midway AirOp and strike group is more than two hexes from Midway
+    // ensure that SG moves to within two hexes of Midway
+    if (GlobalGameState.gamePhase === GlobalGameState.PHASE.MIDWAY_ATTACK && GlobalGameState.midwayAirOp === 1) {
+      const jpRegion2 = allHexesWithinDistance(Controller.MIDWAY_HEX.currentHex, 3, true)
+      const hexes = hexesInTwoRegions(jpRegion1, jpRegion2)
+      setJapanMapRegions(hexes)
+    }
   }
   function setUSRegions() {
     // if naval strike group - use, counter CSF else use Midway
@@ -108,7 +115,7 @@ function StrikeCounter({ setStrikeGroupPopup, currentUSHex, currentJapanHex, cou
 
     const locationOfStrikeGroup = controller.getStrikeGroupLocation(counterData.name, side)
 
-    // TODO need some new flag -> counterData.comingFromOffboard
+    // @TODO need some new flag -> counterData.comingFromOffboard
     // to allow for remove (eg if player accidentally drops onto wrong hex)
     // if (locationOfStrikeGroup === undefined) {
     const unitsInGroup = controller.getAirUnitsInStrikeGroups(counterData.box)
@@ -233,6 +240,15 @@ function StrikeCounter({ setStrikeGroupPopup, currentUSHex, currentJapanHex, cou
       },
     })
 
+    // Since air units cannot move again after being added to a strike group,
+    // once that strike group has moved, we should rotate the air counters back to normal position
+
+    const unitsInThisSG = controller.getAirUnitsInStrikeGroups(counterData.box)
+
+    for (const unit of unitsInThisSG) {
+      unit.aircraftUnit.moved = false
+    }
+
     const units = controller.getStrikeGroupsNotMoved(side)
     if (units.length === 0) {
       GlobalGameState.phaseCompleted = true
@@ -253,15 +269,23 @@ function StrikeCounter({ setStrikeGroupPopup, currentUSHex, currentJapanHex, cou
     setStrikeGroupPopup(side, true, location)
   }
 
+  const onDrag = () => {
+    setIsMoveable(true)
+    if (side === GlobalUnitsModel.Side.JAPAN) {
+      setJapanRegions()
+    } else {
+      setUSRegions()
+    }
+  }
 
   const handleMouseLeave = () => {
     setIsMoveable(false)
     setStrikeGroupPopup(side, false)
-    // if (side === GlobalUnitsModel.Side.JAPAN) {
-    //   setJapanMapRegions([])
-    // } else {
-    //   setUSMapRegions([])
-    // }
+    if (side === GlobalUnitsModel.Side.JAPAN) {
+      setJapanMapRegions([])
+    } else {
+      setUSMapRegions([])
+    }
   }
   //   console.log("counter data=", counterData)
   return (

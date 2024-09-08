@@ -164,10 +164,6 @@ function FleetCounter({
     })
   }
 
-  const handleClick = (event) => {
-    console.log("You clicked on a fleet counter!")
-  }
-
   const handleMouseEnter = () => {
     setIsMoveable(true)
     const location = controller.getFleetLocation(counterData.name, side)

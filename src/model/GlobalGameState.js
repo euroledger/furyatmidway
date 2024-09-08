@@ -18,10 +18,11 @@ export default class GlobalGameState {
     AIR_OPERATIONS: "Air Operations Phase",
     TARGET_DETERMINATION: "Target Determination Phase",
     CAP_INTERCEPTION:"CAP Interception Phase",
-    AIR_ATTACK: "Air Attack Phase",
+    AIR_ATTACK: "Attack Resolution Phase",
     CAP_DAMAGE_ALLOCATION: "CAP Damage Allocation Phase",
     ESCORT_COUNTERATTACK: "Escort Fighter Counterattack Phase",
     ESCORT_DAMAGE_ALLOCATION: "Escort Damage Allocation Phase",
+    AAA_DAMAGE_ALLOCATION: "Anti-Aircaft Fire Damage Allocation Phase",
     ANTI_AIRCRAFT_FIRE: "Anti-Aircraft (AAA) Fire Phase"
   }
 
@@ -124,6 +125,10 @@ export default class GlobalGameState {
 
   static capHits = undefined
   static fighterHits = undefined
+  static attackingStepsRemaining = undefined
+  static antiaircraftHits = undefined
+
+  static midwayAirOp = 1 // can be two air ops in Midway attack
 
   static getJapanCarrier = () => {
     return this.JAPAN_CARRIERS[this.setupPhase]

@@ -24,6 +24,7 @@ import {
   doDamageAllocation,
   doCAPEvent,
   doFighterCounterattack,
+  doAntiAircraftFireRolls,
 } from "./DiceHandler"
 import { determineAllUnitsDeployedForCarrier } from "./controller/AirUnitSetupHandler"
 import { usCSFStartHexes, japanAF1StartHexesNoMidway, japanAF1StartHexesMidway } from "./components/MapRegions"
@@ -38,6 +39,7 @@ import { TargetHeaders, TargetFooters } from "./TargetPanel"
 import { CAPHeaders, CAPFooters } from "./CAPPanel"
 import { DamageHeaders, DamageFooters } from "./DamageAllocationPanel"
 import { EscortHeaders, EscortFooters } from "./EscortPanel"
+import { AAAHeaders, AAAFooters } from "./AAAPanel"
 
 import UITester from "./UITester"
 import { getJapanEnabledAirBoxes, getUSEnabledAirBoxes } from "./AirBoxZoneHandler"
@@ -101,6 +103,7 @@ export function App() {
   const [damageAllocationPanelShow, setDamageAllocationPanelShow] = useState(false)
 
   const [escortPanelShow, setEscortPanelShow] = useState(false)
+  const [aaaPanelShow, setAaaPanelShow] = useState(false)
 
   const [capAirUnits, setCapAirUnits] = useState([])
   const [capSteps, setCapSteps] = useState(0)
@@ -158,7 +161,8 @@ export function App() {
   useEffect(() => {
     if (
       GlobalGameState.gamePhase === GlobalGameState.PHASE.CAP_DAMAGE_ALLOCATION ||
-      GlobalGameState.gamePhase === GlobalGameState.PHASE.ESCORT_DAMAGE_ALLOCATION
+      GlobalGameState.gamePhase === GlobalGameState.PHASE.ESCORT_DAMAGE_ALLOCATION ||
+      GlobalGameState.gamePhase === GlobalGameState.PHASE.AAA_DAMAGE_ALLOCATION
     ) {
       setEliminatedSteps(0)
       setDamageAllocationPanelShow(true)
@@ -167,7 +171,15 @@ export function App() {
 
   useEffect(() => {
     if (GlobalGameState.gamePhase === GlobalGameState.PHASE.ESCORT_COUNTERATTACK) {
+      GlobalGameState.dieRolls = 0
       setEscortPanelShow(true)
+    }
+  }, [GlobalGameState.gamePhase])
+
+  useEffect(() => {
+    if (GlobalGameState.gamePhase === GlobalGameState.PHASE.ANTI_AIRCRAFT_FIRE) {
+      GlobalGameState.dieRolls = 0
+      setAaaPanelShow(true)
     }
   }, [GlobalGameState.gamePhase])
 
@@ -230,17 +242,19 @@ export function App() {
     } else if (GlobalGameState.gamePhase === GlobalGameState.PHASE.JAPAN_FLEET_MOVEMENT) {
       setJapanFleetRegions()
       GlobalGameState.phaseCompleted = GlobalGameState.jpFleetMoved
-    } else if (GlobalGameState.gamePhase === GlobalGameState.PHASE.MIDWAY_ATTACK) {
-      setJapanMapRegions([])
-      GlobalGameState.phaseCompleted = true
+    // } else if (GlobalGameState.gamePhase === GlobalGameState.PHASE.MIDWAY_ATTACK) {
+    //   setJapanMapRegions([])
+    //   GlobalGameState.phaseCompleted = true
     } else if (GlobalGameState.gamePhase === GlobalGameState.PHASE.US_FLEET_MOVEMENT) {
       setJapanMapRegions([])
       GlobalGameState.phaseCompleted = true
     } else if (GlobalGameState.gamePhase === GlobalGameState.PHASE.AIR_SEARCH) {
       setJapanMapRegions([])
       GlobalGameState.phaseCompleted = true
-    } else if (GlobalGameState.gamePhase === GlobalGameState.PHASE.AIR_OPERATIONS) {
-      console.log("IN AIR OPERATIONS STATE, initiative:", GlobalGameState.sideWithInitiative)
+    } else if (
+      GlobalGameState.gamePhase === GlobalGameState.PHASE.AIR_OPERATIONS ||
+      GlobalGameState.gamePhase === GlobalGameState.PHASE.MIDWAY_ATTACK
+    ) {
       GlobalGameState.phaseCompleted = false
       setSideWithInitiative(GlobalGameState.sideWithInitiative)
       if (GlobalGameState.sideWithInitiative === GlobalUnitsModel.Side.JAPAN) {
@@ -297,6 +311,7 @@ export function App() {
       sideWithInitiative,
       setSideWithInitiative,
       capSteps,
+      capAirUnits,
     })
   }
 
@@ -339,6 +354,16 @@ export function App() {
       (GlobalGameState.gamePhase === GlobalGameState.PHASE.JAPAN_FLEET_MOVEMENT && !GlobalGameState.jpFleetPlaced) ||
       (GlobalGameState.gamePhase === GlobalGameState.PHASE.US_SETUP_FLEET && !GlobalGameState.usFleetPlaced)
 
+    let midwayMsg = ""
+
+    if (GlobalGameState.gamePhase === GlobalGameState.PHASE.MIDWAY_ATTACK) {
+      console.log("GlobalGameState.midwayAirOp=", GlobalGameState.midwayAirOp)
+      if (GlobalGameState.midwayAirOp === 1) {
+        midwayMsg = "(First Air Op)"
+      } else {
+        midwayMsg = "(Second Air Op)"
+      }
+    }
     return (
       <Navbar bg="black" data-bs-theme="dark" fixed="top" className="justify-content-between navbar-fixed-top">
         <Container>
@@ -417,7 +442,8 @@ export function App() {
                 marginRight: "45px",
               }}
             >
-              {GlobalGameState.gamePhase}
+              {GlobalGameState.gamePhase} <br></br>
+              {midwayMsg}
             </p>
             <p
               className="navbar-text"
@@ -605,7 +631,12 @@ export function App() {
 
   const damageFooters = (
     <>
-      <DamageFooters eliminatedSteps={eliminatedSteps}></DamageFooters>
+      <DamageFooters
+        eliminatedSteps={eliminatedSteps}
+        capAirUnits={
+          GlobalGameState.gamePhase === GlobalGameState.PHASE.ESCORT_DAMAGE_ALLOCATION ? capAirUnits : undefined
+        }
+      ></DamageFooters>
     </>
   )
 
@@ -618,6 +649,18 @@ export function App() {
   const escortFooters = (
     <>
       <EscortFooters></EscortFooters>
+    </>
+  )
+
+  const aaaHeaders = (
+    <>
+      <AAAHeaders></AAAHeaders>
+    </>
+  )
+
+  const aaaFooters = (
+    <>
+      <AAAFooters></AAAFooters>
     </>
   )
 
@@ -659,8 +702,22 @@ export function App() {
     doFighterCounterattack(GlobalInit.controller)
   }
 
+  function doAntiAircraftRolls() {
+    doAntiAircraftFireRolls()
+    GlobalGameState.updateGlobalState()
+  }
+
   function sendCapEvent() {
     doCAPEvent(GlobalInit.controller, capAirUnits)
+  }
+
+  let closeDamageButtonDisabled = true
+  if (GlobalGameState.gamePhase === GlobalGameState.PHASE.CAP_DAMAGE_ALLOCATION) {
+    closeDamageButtonDisabled = eliminatedSteps !== GlobalGameState.capHits && stepsLeft !== 0
+  } else if (GlobalGameState.gamePhase === GlobalGameState.PHASE.ESCORT_DAMAGE_ALLOCATION) {
+    closeDamageButtonDisabled = eliminatedSteps !== GlobalGameState.fighterHits && stepsLeft !== 0
+  } else if (GlobalGameState.gamePhase === GlobalGameState.PHASE.AAA_DAMAGE_ALLOCATION) {
+    closeDamageButtonDisabled = eliminatedSteps !== GlobalGameState.antiaircraftHits && stepsLeft !== 0
   }
   return (
     <>
@@ -814,7 +871,7 @@ export function App() {
         }}
         doRoll={doDamageAllocation}
         disabled={true}
-        closeButtonDisabled={eliminatedSteps !== GlobalGameState.capHits && stepsLeft !== 0}
+        closeButtonDisabled={closeDamageButtonDisabled}
       ></LargeDicePanel>
       <LargeDicePanel
         numDice={getNumEscortFighterSteps(GlobalInit.controller)}
@@ -826,12 +883,29 @@ export function App() {
         showDice={true}
         margin={0}
         onHide={(e) => {
-          console.log("GET OUTTA HERE...QUACK")
           setEscortPanelShow(false)
           nextAction(e)
         }}
         doRoll={doCounterattackRolls}
-        closeButtonDisabled={false}
+        diceButtonDisabled={GlobalGameState.dieRolls !== 0}
+        closeButtonDisabled={GlobalGameState.dieRolls === 0 && getNumEscortFighterSteps(GlobalInit.controller) !== 0}
+        disabled={false}
+      ></LargeDicePanel>
+      <LargeDicePanel
+        numDice={2}
+        show={!testClicked && aaaPanelShow} // also check for any attacking steps left
+        headerText="Anti-Aircraft Fire"
+        headers={aaaHeaders}
+        footers={aaaFooters}
+        showDice={true}
+        margin={0}
+        onHide={(e) => {
+          setAaaPanelShow(false)
+          nextAction(e)
+        }}
+        doRoll={doAntiAircraftRolls}
+        diceButtonDisabled={GlobalGameState.dieRolls !== 0}
+        closeButtonDisabled={GlobalGameState.dieRolls === 0}
         disabled={false}
       ></LargeDicePanel>
       <GameStatusPanel show={gameStateShow} gameState={gameState} onHide={() => setGameStateShow(false)} />

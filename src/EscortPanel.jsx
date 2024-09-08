@@ -38,7 +38,6 @@ export function EscortHeaders({ controller, setEscortSteps }) {
     return (
       <div>
         <input
-          onClick={() => handleClick(airUnit)}
           type="image"
           src={airUnit.image}
           style={{
@@ -104,49 +103,30 @@ export function EscortHeaders({ controller, setEscortSteps }) {
 }
 
 export function EscortFooters({ controller, setFightersPresent }) {
-  //   const show =  GlobalGameState.capHits > 0
-  //   const msg="Number of Hits:"
-  //   const sideBeingAttacked =
-  //   GlobalGameState.sideWithInitiative === GlobalUnitsModel.Side.US
-  //     ? GlobalUnitsModel.Side.JAPAN
-  //     : GlobalUnitsModel.Side.US
-  // const fighters = controller.anyFightersInStrike(GlobalGameState.airAttackTarget, sideBeingAttacked)
-  //   let fighterMsg = ""
-  //   if (!fighters) {
-  //     setFightersPresent(false)
-  //     fighterMsg = "There are no fighters in this strike group - combat strengths increased by 1"
-  //   }
-  //   return (
-  //     <>
-  //       {show && (
-  //         <div
-  //           style={{
-  //             marginTop: "10px",
-  //             marginLeft: "-28px",
-  //           }}
-  //         >
-  //           <p
-  //             style={{
-  //               display: "flex",
-  //               justifyContent: "center",
-  //               alignItems: "center",
-  //               color: "white",
-  //             }}
-  //           >
-  //             {fighterMsg}<br></br>
-  //           </p>
-  //           <p
-  //             style={{
-  //               display: "flex",
-  //               justifyContent: "center",
-  //               alignItems: "center",
-  //               color: "white",
-  //             }}
-  //           >
-  //             {msg} &nbsp;<strong>{GlobalGameState.capHits}</strong>&nbsp;
-  //           </p>
-  //         </div>
-  //       )}
-  //     </>
-  //   )
+    const show =  true
+    const msg="Number of Hits:"
+ 
+    return (
+      <>
+        {show && (
+          <div
+            style={{
+              marginTop: "10px",
+              marginLeft: "-28px",
+            }}
+          >
+            <p
+              style={{
+                display: "flex",
+                justifyContent: "center",
+                alignItems: "center",
+                color: "white",
+              }}
+            >
+              {msg} &nbsp;<strong>{GlobalGameState.fighterHits}</strong>&nbsp;
+            </p>
+          </div>
+        )}
+      </>
+    )
 }

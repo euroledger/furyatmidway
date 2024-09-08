@@ -265,7 +265,14 @@ export function doCapReturn(controller, name, side) {
 // CAP -> CAP RETURN occurs after CAP has intercepted a Strike Group
 export function doCap(controller, name, side) {
   if (!GlobalGameState.airAttacksComplete) {
-    controller.setValidAirUnitDestinations(name, new Array())
+    const parentCarrier = controller.getCarrierForAirUnit(name)
+    let destinationsArray = new Array()
+    if (side === GlobalUnitsModel.Side.US) {
+      destinationsArray = getValidUSDestinationsCAP(controller, parentCarrier, side)
+    } else {
+      destinationsArray = getValidJapanDestinationsCAP(controller, parentCarrier, side)
+    }
+    controller.setValidAirUnitDestinations(name, destinationsArray)
     return
   }
   const parentCarrier = controller.getCarrierForAirUnit(name)

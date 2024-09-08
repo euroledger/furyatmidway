@@ -21,9 +21,8 @@ export default class CardModel {
     return locationA.currentHex.q === locationB.currentHex.q && locationA.currentHex.r === locationB.currentHex.r
   }
 
-  getAllFleetsInLocation(location, side, counters) {
+  getAllFleetsInLocation(location, side, counters, filterOutOtherSide) {
     let fleets = new Array()
-
 
     const mapMap = side === GlobalUnitsModel.Side.JAPAN ? this.jpMap : this.usMap
     // this gives us a map where keys are all non strike groups at this location
@@ -31,10 +30,14 @@ export default class CardModel {
     const fleetLocations = new Map(
       [...mapMap].filter(([k, v]) => !k.includes("SG") && this.locationsEqual(v, location))
     )
-    for (let sg of fleetLocations.keys()) {
-      const counter = counters.get(sg)
-      if (counter.side !== side) {
-        fleets.push(counters.get(sg))
+    for (let fleetUnit of fleetLocations.keys()) {
+      const counter = counters.get(fleetUnit)
+      if (filterOutOtherSide === true) {
+        if (counter.side !== side) {
+          fleets.push(counters.get(fleetUnit))
+        }
+      } else {
+        fleets.push(counters.get(fleetUnit))
       }
     }
 
@@ -49,7 +52,9 @@ export default class CardModel {
 
     const mapMap = side === GlobalUnitsModel.Side.JAPAN ? this.jpMap : this.usMap
     // this gives us a map where keys are all strike boxes at this location
-    const strikeGroupLocations = new Map([...mapMap].filter(([k, v]) => k.includes("SG") && this.locationsEqual(v, location)))
+    const strikeGroupLocations = new Map(
+      [...mapMap].filter(([k, v]) => k.includes("SG") && this.locationsEqual(v, location))
+    )
 
     // for each key get the strike group and add to array
     for (let sg of strikeGroupLocations.keys()) {

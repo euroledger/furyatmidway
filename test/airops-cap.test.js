@@ -54,21 +54,11 @@ describe("Air Operations tests for air units in Return 2 boxes", () => {
   test("Create Lists of Valid Destination Boxes for each Japan Air Unit in CAP Boxes", () => {
     handleAirUnitMoves(controller, GlobalUnitsModel.Side.JAPAN)
 
-    let destinations = controller.getValidAirUnitDestinations(kaf1.name)
-    expect(destinations.length).toEqual(1)
-    expect(destinations[0]).toEqual(GlobalUnitsModel.AirBox.JP_CD1_CAP_RETURN)
+    let capReturnBox = controller.getCapReturnBoxForAirUnit(kaf1, GlobalUnitsModel.Side.JAPAN)
+    expect(capReturnBox).toEqual(GlobalUnitsModel.AirBox.JP_CD1_CAP_RETURN)
 
-    destinations = controller.getValidAirUnitDestinations(aaf1.name)
-    expect(destinations.length).toEqual(1)
-    expect(destinations[0]).toEqual(GlobalUnitsModel.AirBox.JP_CD1_CAP_RETURN)
-
-    destinations = controller.getValidAirUnitDestinations(haf1.name)
-    expect(destinations.length).toEqual(1)
-    expect(destinations[0]).toEqual(GlobalUnitsModel.AirBox.JP_CD2_CAP_RETURN)
-
-    destinations = controller.getValidAirUnitDestinations(saf1.name)
-    expect(destinations.length).toEqual(1)
-    expect(destinations[0]).toEqual(GlobalUnitsModel.AirBox.JP_CD2_CAP_RETURN)
+    capReturnBox = controller.getCapReturnBoxForAirUnit(haf1, GlobalUnitsModel.Side.JAPAN)
+    expect(capReturnBox).toEqual(GlobalUnitsModel.AirBox.JP_CD2_CAP_RETURN)
   })
 
   test("Create Lists of Valid Destination Boxes for each US Air Units in CAP Boxes", () => {

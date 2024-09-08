@@ -133,6 +133,19 @@ export default class Controller {
         let carriers = airUnitsInBox.map((a) => a.carrier)
         return carriers.includes(carrier) || carriers.length === 0
       })
+    } else {
+      // If this is Japan Midway attack, only allow one strike group.
+      // If one already exists only allow those boxes as destination
+      // 1. Get num strike groups
+      //    => if none, we're done
+      //    => If 1, return only those boxes
+      if (GlobalGameState.gamePhase === GlobalGameState.PHASE.MIDWAY_ATTACK) {
+        const groups = this.getAllStrikeGroups(GlobalUnitsModel.Side.JAPAN)
+        if (groups.length === 1) {
+          strikeBoxes = new Array()
+          strikeBoxes.push(groups[0].box)
+        }  
+      }
     }
     return strikeBoxes
   }
@@ -152,6 +165,11 @@ export default class Controller {
   getHangarBoxForNamedCarrier(carrierName, side) {
     const tf = this.getTaskForceForCarrier(carrierName, side)
     return Object.values(this.airOperationsModel.getHangarBoxForNamedCarrier(side, tf))[0]
+  }
+
+  getCapReturnBoxForAirUnit(airUnit, side) {
+    const tf = this.getTaskForceForCarrier(airUnit.carrier, side)
+    return this.getCapReturnAirBoxForNamedTaskForce(side, tf)
   }
 
   getCapReturnAirBoxForNamedTaskForce(side, tf) {
@@ -279,16 +297,16 @@ export default class Controller {
 
   getAttackingStrikeUnits() {
     const sideBeingAttacked =
-    GlobalGameState.sideWithInitiative === GlobalUnitsModel.Side.US
-      ? GlobalUnitsModel.Side.JAPAN
-      : GlobalUnitsModel.Side.US
+      GlobalGameState.sideWithInitiative === GlobalUnitsModel.Side.US
+        ? GlobalUnitsModel.Side.JAPAN
+        : GlobalUnitsModel.Side.US
     const fleetBeingAttacked = this.getFleetForTaskForce(GlobalGameState.airAttackTarget, sideBeingAttacked)
     const location = this.getFleetLocation(fleetBeingAttacked, sideBeingAttacked)
-  
+
     const strikeGroups = this.getAllStrikeGroupsInLocation(location, GlobalGameState.sideWithInitiative)
-  
+
     let unitsInGroup = this.getAirUnitsInStrikeGroups(strikeGroups[0].box)
-  
+
     return unitsInGroup
   }
 
@@ -296,8 +314,10 @@ export default class Controller {
     const fleetBeingAttacked = this.getFleetForTaskForce(tf, side)
     const location = this.getFleetLocation(fleetBeingAttacked, side)
 
+    console.log("LOCATION=", location)
     const strikeGroups = this.getAllStrikeGroupsInLocation(location, GlobalGameState.sideWithInitiative)
 
+    console.log("STRIKE GROUPS=", strikeGroups)
     let unitsInGroup = this.getAirUnitsInStrikeGroups(strikeGroups[0].box)
     return unitsInGroup
   }
@@ -364,13 +384,14 @@ export default class Controller {
 
   // side is attacker so use other side for defender (ie fleets)
   checkForAirAttack = (location, side) => {
-    const fleets = this.getAllFleetsInLocation(location, side)
+    const fleets = this.getAllFleetsInLocation(location, side, true)
+
     const strikeGroups = this.getAllStrikeGroupsInLocation(location, side)
     return fleets.length > 0 && strikeGroups.length > 0
   }
 
-  getAllFleetsInLocation(location, side) {
-    return this.mapModel.getAllFleetsInLocation(location, side, this.counters)
+  getAllFleetsInLocation(location, side, filterOtherSide) {
+    return this.mapModel.getAllFleetsInLocation(location, side, this.counters, filterOtherSide)
   }
 
   getAllStrikeGroupsInLocation = (location, side) => {

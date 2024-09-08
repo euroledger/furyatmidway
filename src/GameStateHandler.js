@@ -60,7 +60,6 @@ function setupUSAirHandler() {
 }
 
 function midwayDeclarationHandler({ setUsFleetRegions }) {
-  console.log("END OF Midway Declaration Phase")
   GlobalGameState.gamePhase = GlobalGameState.PHASE.US_FLEET_MOVEMENT_PLANNING
   setUsFleetRegions()
   GlobalGameState.usFleetMoved = false
@@ -82,8 +81,14 @@ function usFleetMovementPlanningHandler({ setUSMapRegions, setJapanMapRegions, s
 
 function japanFleetMovementHandler({ setMidwayNoAttackAlertShow, setJapanMapRegions, setFleetUnitUpdate }) {
   console.log("END OF Japan Fleet Movement Phase")
-  GlobalGameState.gamePhase = GlobalGameState.PHASE.MIDWAY_ATTACK
-  setMidwayNoAttackAlertShow(true)
+  if (!GlobalGameState.midwayAttackDeclaration) {
+    setMidwayNoAttackAlertShow(true)
+    GlobalGameState.gamePhase = GlobalGameState.PHASE.US_FLEET_MOVEMENT
+  } else {
+    console.log("BEGIN MIDWAY ATTACK...")
+    GlobalGameState.gamePhase = GlobalGameState.PHASE.MIDWAY_ATTACK
+    GlobalGameState.sideWithInitiative = GlobalUnitsModel.Side.JAPAN
+  }
   setJapanMapRegions([])
   GlobalGameState.phaseCompleted = true
   GlobalGameState.jpFleetPlaced = true
@@ -92,11 +97,22 @@ function japanFleetMovementHandler({ setMidwayNoAttackAlertShow, setJapanMapRegi
 }
 
 function midwayAttackHandler() {
+
+  // conduct attack on Midway:
+
+  // 1. Allocate AirOps points (range 0-2 hexes -> 1 AOP, 3-5 hexess -> 2 AOP)
+
+  // 2. change game state to AIR OPERATIONS with sidewithinitiative set to JAPAN
+
+  // 3. Only allow a single strike group to be performed
+
+  // 4. This strike group can only move to within 2 hexes of Midway (3-5 range) or
+  // to Midway base (0-2 range)
+
+  // for now, this needs to be done at the end of the air operation
+  GlobalGameState.phaseCompleted = true
+  GlobalGameState.gamePhase = GlobalGameState.PHASE.US_FLEET_MOVEMENT
   console.log("END OF Midway Attack Phase")
-  if (!GlobalGameState.midwayAttackDeclaration) {
-    GlobalGameState.phaseCompleted = true
-    GlobalGameState.gamePhase = GlobalGameState.PHASE.US_FLEET_MOVEMENT
-  }
 }
 function calcAirOpsPoints({ setSearchValues, setSearchResults, setSearchValuesAlertShow }) {
   const sv = calculateSearchValues(GlobalInit.controller)
@@ -110,6 +126,16 @@ function calcAirOpsPoints({ setSearchValues, setSearchResults, setSearchValuesAl
   GlobalGameState.airOperationPoints.us = sr.US
   setSearchResults(sr)
   setSearchValuesAlertShow(true)
+}
+
+export function calcAirOpsPointsMidway(distanceFromFleetToMidway) {
+  if (distanceFromFleetToMidway <=2) {
+    GlobalGameState.airOperationPoints.japan = 1
+  } else if (distanceFromFleetToMidway <= 5) {
+    GlobalGameState.airOperationPoints.japan = 2
+  } else {
+    // error do nothing for now
+  }
 }
 
 function usFleetMovementHandler({ setFleetUnitUpdate, setSearchValues, setSearchResults, setSearchValuesAlertShow }) {
@@ -198,7 +224,8 @@ export default function handleAction({
   setUsStrikePanelEnabled,
   sideWithInitiative,
   setSideWithInitiative,
-  capSteps
+  capSteps,
+  capAirUnits,
 }) {
   //   switch (
   // GlobalGameState.gamePhase
@@ -256,8 +283,20 @@ export default function handleAction({
     usFleetMovementPlanningHandler({ setUSMapRegions, setJapanMapRegions, setJpAlertShow })
   } else if (GlobalGameState.gamePhase === GlobalGameState.PHASE.JAPAN_FLEET_MOVEMENT) {
     japanFleetMovementHandler({ setMidwayNoAttackAlertShow, setJapanMapRegions, setFleetUnitUpdate })
-  } else if (GlobalGameState.gamePhase === GlobalGameState.PHASE.MIDWAY_ATTACK) {
-    midwayAttackHandler()
+    if (GlobalGameState.midwayAttackDeclaration) {
+      GlobalGameState.midwayAirOp=1
+      airOperationsHandler({
+        setEnabledJapanBoxes,
+        setEnabledUSBoxes,
+        setJapanStrikePanelEnabled,
+        setUsStrikePanelEnabled,
+        sideWithInitiative,
+        setInitiativePanelShow,
+        setSideWithInitiative,
+      })
+    }
+  // } else if (GlobalGameState.gamePhase === GlobalGameState.PHASE.MIDWAY_ATTACK) {
+  //   midwayAttackHandler()
   } else if (GlobalGameState.gamePhase === GlobalGameState.PHASE.US_FLEET_MOVEMENT) {
     usFleetMovementHandler({
       setFleetUnitUpdate,
@@ -268,7 +307,7 @@ export default function handleAction({
   } else if (GlobalGameState.gamePhase === GlobalGameState.PHASE.AIR_SEARCH) {
     initiativeHandler({ setInitiativePanelShow })
     return
-  } else if (GlobalGameState.gamePhase === GlobalGameState.PHASE.AIR_OPERATIONS) {
+  } else if (GlobalGameState.gamePhase === GlobalGameState.PHASE.AIR_OPERATIONS || GlobalGameState.gamePhase === GlobalGameState.PHASE.MIDWAY_ATTACK) {
     airOperationsHandler({
       setEnabledJapanBoxes,
       setEnabledUSBoxes,
@@ -281,21 +320,46 @@ export default function handleAction({
     GlobalGameState.updateGlobalState()
     return
   } else if (GlobalGameState.gamePhase === GlobalGameState.PHASE.TARGET_DETERMINATION) {
-    console.log("GOING TO CAP INTERCEPTION")
-    GlobalGameState.gamePhase = GlobalGameState.PHASE.CAP_INTERCEPTION 
-  }
-   else if (GlobalGameState.gamePhase === GlobalGameState.PHASE.CAP_INTERCEPTION) {
-    console.log("GOING TO DAMAGE ALLOCATION (1)")
+    GlobalGameState.gamePhase = GlobalGameState.PHASE.CAP_INTERCEPTION
+  } else if (GlobalGameState.gamePhase === GlobalGameState.PHASE.CAP_INTERCEPTION) {
     GlobalGameState.gamePhase =
       capSteps > 0 ? GlobalGameState.PHASE.CAP_DAMAGE_ALLOCATION : GlobalGameState.PHASE.ANTI_AIRCRAFT_FIRE
   } else if (GlobalGameState.gamePhase === GlobalGameState.PHASE.CAP_DAMAGE_ALLOCATION) {
-    console.log("GOING TO ESCORT COUNTERATTACK")
     GlobalGameState.gamePhase = GlobalGameState.PHASE.ESCORT_COUNTERATTACK
   } else if (GlobalGameState.gamePhase === GlobalGameState.PHASE.ESCORT_COUNTERATTACK) {
-    console.log("GOING TO DAMAGE ALLOCATION (2)")
-    GlobalGameState.gamePhase =  GlobalGameState.PHASE.ESCORT_DAMAGE_ALLOCATION
+    if (GlobalGameState.fighterHits > 0) {
+      GlobalGameState.gamePhase = GlobalGameState.PHASE.ESCORT_DAMAGE_ALLOCATION
+    } else {
+      GlobalGameState.gamePhase = GlobalGameState.PHASE.ANTI_AIRCRAFT_FIRE
+    }
+  } else if (GlobalGameState.gamePhase === GlobalGameState.PHASE.ESCORT_DAMAGE_ALLOCATION) {
+    if (GlobalGameState.attackingStepsRemaining > 0) {
+      GlobalGameState.gamePhase = GlobalGameState.PHASE.ANTI_AIRCRAFT_FIRE
+    } else {
+      GlobalGameState.gamePhase = GlobalGameState.PHASE.AIR_OPERATIONS
+    }
+  } else if (GlobalGameState.gamePhase === GlobalGameState.PHASE.ANTI_AIRCRAFT_FIRE) {
+    if (GlobalGameState.antiaircraftHits > 0) {
+      GlobalGameState.gamePhase = GlobalGameState.PHASE.AAA_DAMAGE_ALLOCATION
+    } else if (GlobalGameState.attackingStepsRemaining > 0) {
+      GlobalGameState.gamePhase = GlobalGameState.PHASE.AIR_ATTACK
+    } else {
+      GlobalGameState.gamePhase = GlobalGameState.PHASE.AIR_OPERATIONS
+    }
+  } else if (GlobalGameState.gamePhase === GlobalGameState.PHASE.ESCORT_DAMAGE_ALLOCATION) {
+    if (GlobalGameState.attackingStepsRemaining > 0) {
+      GlobalGameState.gamePhase = GlobalGameState.PHASE.AIR_ATTACK
+    } else {
+      GlobalGameState.gamePhase = GlobalGameState.PHASE.AIR_OPERATIONS
+    }
   }
-  
+
+  // @TODO if all air units in a strike are eliminated maybe display a dialog saying "Air Attack Phase over, no
+  // air units left or something"
+
+  // @TODO At end of Air Attack phase, move any defending CAP units into their respective CAP
+  //  return boxes
+
   GlobalGameState.setupPhase++
 
   GlobalGameState.updateGlobalState()

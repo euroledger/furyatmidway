@@ -3,9 +3,10 @@ import loadCounters from "../src/CounterLoader"
 import GlobalUnitsModel from "../src/model/GlobalUnitsModel"
 import { createFleetMove } from "./TestUtils"
 import HexCommand from "../src/commands/HexCommand"
-import StrikeGroupUnit from "../src/components/buttons/mapobjects/StrikeGroupUnit"
+import GlobalGameState from "../src/model/GlobalGameState"
+import { calcAirOpsPointsMidway } from "../src/GameStateHandler"
 
-describe("Controller tests", () => {
+describe("Strike Group tests", () => {
   let controller
   let counters
   let saf1, saf2, sdb, stb
@@ -293,8 +294,6 @@ describe("Controller tests", () => {
     const groups = controller.getAllStrikeGroups(GlobalUnitsModel.Side.JAPAN)
     expect(groups.length).toEqual(2)
 
-  
-
     //  Strike Group moves onto map - test location, moved etc.
     controller.viewEventHandler({
       type: Controller.EventTypes.STRIKE_GROUP_MOVE,
@@ -351,7 +350,6 @@ describe("Controller tests", () => {
     expect(strikeGroupsAtLocation.length).toEqual(2)
     expect(strikeGroupsAtLocation[0].name).toEqual("JP-SG1")
     expect(strikeGroupsAtLocation[1].name).toEqual("JP-SG3")
-
 
     expect(strikeGroupsAtLocation[0].moved).toBe(true)
 
@@ -497,4 +495,77 @@ describe("Controller tests", () => {
     expect(isAirAttackTriggered).toEqual(true)
   })
 
+  test("US Air Units in same hex as US Fleet does NOT trigger Air Attack", () => {
+    const strikeCounter = {
+      name: "US-SG1",
+      longName: "Strike Group 1",
+      position: {},
+      image: "/images/aircounters/usStrike1.png",
+      width: "2.1%",
+      box: GlobalUnitsModel.AirBox.US_STRIKE_BOX_0,
+      side: GlobalUnitsModel.Side.US,
+    }
+
+    //  Strike Group moves onto map - test location, moved etc.
+    controller.viewEventHandler({
+      type: Controller.EventTypes.STRIKE_GROUP_MOVE,
+      data: {
+        initial: true,
+        counterData: strikeCounter,
+        from: HexCommand.OFFBOARD,
+        to: {
+          currentHex: {
+            col: 4,
+            q: 7,
+            r: 1,
+            row: "G",
+            side: "us",
+            x: 120,
+            y: 200,
+          },
+        },
+        side: GlobalUnitsModel.Side.US,
+        loading: false,
+      },
+    })
+
+    const location = controller.getStrikeGroupLocation("US-SG1")
+    expect(location.currentHex.row).toEqual("G")
+    expect(location.currentHex.col).toEqual(4)
+
+    let location2 = {
+      currentHex: {
+        q: 7,
+        r: 1,
+      },
+    }
+    const isAirAttackTriggered = controller.checkForAirAttack(location2, GlobalUnitsModel.Side.US)
+    expect(isAirAttackTriggered).toEqual(false)
+  })
+
+  test("Set Japan AOPs when attacking Midway base", () => {
+    createFleetMove(controller, 2, 3, "1AF", GlobalUnitsModel.Side.JAPAN) // B-4
+
+    // if 1AF is more than 2 hexes from Midway -> AOPs = 2
+
+    // if 1AF is 2 or fewer hexes from Midway -> AOPs = 1
+
+    let distance = controller.numHexesBetweenFleets(
+      { name: "1AF", side: GlobalUnitsModel.Side.JAPAN },
+      { name: "MIDWAY" }
+    )
+
+    expect(distance).toEqual(4)
+
+    calcAirOpsPointsMidway(distance)
+    expect(GlobalGameState.airOperationPoints.japan).toEqual(2)
+
+    createFleetMove(controller, 7, 2, "1AF", GlobalUnitsModel.Side.JAPAN) // G-5
+    distance = controller.numHexesBetweenFleets({ name: "1AF", side: GlobalUnitsModel.Side.JAPAN }, { name: "MIDWAY" })
+
+    expect(distance).toEqual(1)
+
+    calcAirOpsPointsMidway(distance)
+    expect(GlobalGameState.airOperationPoints.japan).toEqual(1)
+  })
 })

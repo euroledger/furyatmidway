@@ -129,3 +129,22 @@ export const allHexesWithinDistance = (hex, distance, excludeMidway) => {
   return region
 }
 
+export const isHexInRegion = (hex, region) => {
+  for (const h of region) {
+    if (h.q === hex.q && h.r === hex.r) {
+      return true
+    }
+  }
+  return false
+}
+
+export const hexesInTwoRegions = (region1, region2) => {
+  let hexes = new Array()
+  for (const h1 of region1) {
+    if (isHexInRegion(h1, region2)) {
+      hexes.push(h1)
+    }
+  }
+  return hexes
+}
+

@@ -72,14 +72,33 @@ export function doFighterCounterattack(controller, testRolls) {
       index++
     }
   }
+  GlobalGameState.dieRolls = 1
   GlobalGameState.fighterHits = hits
 }
 
+export function doAntiAircraftFireRolls(testRolls) {
+  let rolls = testRolls === undefined ? randomDice(2) : testRolls
+
+  let hits = 0
+  for (const roll of rolls) {
+    if (roll === 1) {
+      hits++
+    }
+  }
+  GlobalGameState.dieRolls = 1
+  GlobalGameState.antiaircraftHits = hits
+}
+
 function getFightersForStrikeGroup(controller) {
+  if (GlobalGameState.airAttackTarget === undefined) {
+    return []
+  }
+
   const sideBeingAttacked =
     GlobalGameState.sideWithInitiative === GlobalUnitsModel.Side.US
       ? GlobalUnitsModel.Side.JAPAN
       : GlobalUnitsModel.Side.US
+
 
   const fleetBeingAttacked = controller.getFleetForTaskForce(GlobalGameState.airAttackTarget, sideBeingAttacked)
   const location = controller.getFleetLocation(fleetBeingAttacked, sideBeingAttacked)
@@ -94,7 +113,7 @@ function getFightersForStrikeGroup(controller) {
 
 export function getNumEscortFighterSteps(controller) {
   let fighters = getFightersForStrikeGroup(controller)
- 
+
   let steps = 0
 
   for (let unit of fighters) {
@@ -103,17 +122,16 @@ export function getNumEscortFighterSteps(controller) {
   return steps
 }
 export function doCAPEvent(controller, capAirUnits) {
-
   const sideBeingAttacked =
-  GlobalGameState.sideWithInitiative === GlobalUnitsModel.Side.US
-    ? GlobalUnitsModel.Side.JAPAN
-    : GlobalUnitsModel.Side.US
-  
+    GlobalGameState.sideWithInitiative === GlobalUnitsModel.Side.US
+      ? GlobalUnitsModel.Side.JAPAN
+      : GlobalUnitsModel.Side.US
+
   controller.viewEventHandler({
     type: Controller.EventTypes.SELECT_CAP_UNITS,
     data: {
       side: sideBeingAttacked,
-      capUnits: capAirUnits
+      capUnits: capAirUnits,
     },
   })
 }
@@ -159,7 +177,6 @@ export function doDamageAllocation(controller, airUnit) {
         ? GlobalUnitsModel.AirBox.JP_ELIMINATED
         : GlobalUnitsModel.AirBox.US_ELIMINATED
 
-
     controller.viewEventHandler({
       type: Controller.EventTypes.AIR_UNIT_MOVE,
       data: {
@@ -171,6 +188,5 @@ export function doDamageAllocation(controller, airUnit) {
       },
     })
     controller.addAirUnitToBox(toBox, 0, airUnit)
-
   }
 }
