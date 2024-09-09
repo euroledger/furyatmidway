@@ -1,7 +1,11 @@
 // this should be a state (box) flow model
 
 import GlobalGameState from "../model/GlobalGameState"
+import GlobalInit from "../model/GlobalInit"
 import GlobalUnitsModel from "../model/GlobalUnitsModel"
+import Controller from "./Controller"
+import USAirBoxOffsets from "../components/draganddrop/USAirBoxOffsets"
+import JapanAirBoxOffsets from "../components/draganddrop/JapanAirBoxOffsets"
 
 function getValidUSDestinationsRETURN1(controller, parentCarrier, side, useMidway) {
   // For returning strikers, always return to carrier in same TF if possible, or other TF if not
@@ -214,11 +218,11 @@ export function doFlightDeck(controller, name, side) {
     destinationsArray.push(capBox)
   }
   //  ii) Strike Box
-  // Note For US air units, we will need to filter out any strike boxes 
+  // Note For US air units, we will need to filter out any strike boxes
   // containing air units from other carriers
   const strikeBoxes = controller.getStrikeBoxes(name, side)
   destinationsArray = destinationsArray.concat(strikeBoxes)
-  
+
   //  iii) Hangar
   const hangarBox = controller.getAirBoxForNamedShip(side, carrierName, "HANGAR")
   destinationsArray.push(hangarBox)
@@ -260,6 +264,47 @@ export function doCapReturn(controller, name, side) {
     controller.setAirUnitEliminated(name, side)
   }
   return destinationsArray
+}
+
+export function moveCAPtoReturnBox(controller, capAirUnits, setAirUnitUpdate) {
+  const sideBeingAttacked =
+    GlobalGameState.sideWithInitiative === GlobalUnitsModel.Side.US
+      ? GlobalUnitsModel.Side.JAPAN
+      : GlobalUnitsModel.Side.US
+
+  for (const capUnit of capAirUnits) {
+    const location = GlobalInit.controller.getAirUnitLocation(capUnit.name)
+    let update={}
+
+    const parentCarrier = controller.getCarrierForAirUnit(capUnit.name)
+    const tf = controller.getTaskForceForCarrier(parentCarrier, sideBeingAttacked)
+    const destBox = controller.getCapReturnAirBoxForNamedTaskForce(sideBeingAttacked, tf)
+
+    let position1 = USAirBoxOffsets.find((box) => box.name === destBox)
+
+    if (GlobalGameState.sideWithInitiative === GlobalUnitsModel.Side.US) {
+      position1 = JapanAirBoxOffsets.find((box) => box.name === destBox)
+    }
+    update.boxName=location.boxName
+
+    const index = GlobalInit.controller.getFirstAvailableZone(destBox)
+    update.position = position1.offsets[location.boxIndex]
+    update.name = capUnit.name
+    console.log("SEND CAP UPDATE...")
+    setAirUnitUpdate(update)
+
+    // const index = controller.getFirstAvailableZone(destBox)
+    controller.viewEventHandler({
+      type: Controller.EventTypes.AIR_UNIT_MOVE,
+      data: {
+        name: destBox,
+        counterData: capUnit,
+        index: index,
+        side: sideBeingAttacked,
+        loading: true,
+      },
+    })
+  }
 }
 
 // CAP -> CAP RETURN occurs after CAP has intercepted a Strike Group

@@ -162,9 +162,7 @@ export function DamageHeaders({ controller, eliminatedSteps, setEliminatedSteps,
 }
 
 export function DamageFooters({ eliminatedSteps, capAirUnits }) {
-  console.log("eliminatedSteps =", eliminatedSteps, "cap hits=", GlobalGameState.capHits)
   let show = eliminatedSteps === GlobalGameState.capHits
-  console.log("CAP air units=", capAirUnits)
   if (capAirUnits) {
     show = eliminatedSteps === GlobalGameState.fighterHits
   } else {

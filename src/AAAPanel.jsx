@@ -29,8 +29,11 @@ export function AAAHeaders() {
       width: "100px",
     }
   } else if (GlobalGameState.airAttackTarget === GlobalUnitsModel.TaskForce.MIDWAY) {
-    // @TODO
-  }
+    tfUnderAttack = {
+      image: "/images/fleetcounters/midway.jpg",
+      name: GlobalUnitsModel.TaskForce.MIDWAY,
+      width: "200px",
+    }  }
   
 
   const msg = `TF Under Attack:`
@@ -58,7 +61,7 @@ export function AAAHeaders() {
             color: "white",
           }}
         >
-          Roll 2 dice. Each 1 rolled is a hit
+          Roll 2 dice. Each "1" rolled is a hit
         </p> 
         <div
           style={{
@@ -84,7 +87,8 @@ export function AAAHeaders() {
 }
 
 export function AAAFooters({ controller, setFightersPresent }) {
-  const show =  true
+  const show =  GlobalGameState.dieRolls.length > 0
+
   const msg="Number of Hits:"
   return (
     <>

@@ -12,6 +12,7 @@ import ViewDieRollEventHandler from "./ViewDieRollEventHandler"
 import ViewEventStrikeGroupMoveHandler from "./ViewEventStrikeGroupMoveHandler"
 import ViewEventSelectionHandler from "./ViewEventSelectionHandler"
 import ViewEventCapHandler from "./ViewEventCapHandler"
+import { isMidwayHex } from "../components/HexUtils"
 
 export default class Controller {
   static EventTypes = {
@@ -144,7 +145,7 @@ export default class Controller {
         if (groups.length === 1) {
           strikeBoxes = new Array()
           strikeBoxes.push(groups[0].box)
-        }  
+        }
       }
     }
     return strikeBoxes
@@ -301,7 +302,12 @@ export default class Controller {
         ? GlobalUnitsModel.Side.JAPAN
         : GlobalUnitsModel.Side.US
     const fleetBeingAttacked = this.getFleetForTaskForce(GlobalGameState.airAttackTarget, sideBeingAttacked)
-    const location = this.getFleetLocation(fleetBeingAttacked, sideBeingAttacked)
+    let location
+    if (fleetBeingAttacked === "MIDWAY") {
+      location = Controller.MIDWAY_HEX
+    } else {
+      location = this.getFleetLocation(fleetBeingAttacked, sideBeingAttacked)
+    }
 
     const strikeGroups = this.getAllStrikeGroupsInLocation(location, GlobalGameState.sideWithInitiative)
 
@@ -311,13 +317,19 @@ export default class Controller {
   }
 
   getAttackingStrikeUnitsForTF(tf, side) {
+    const sideBeingAttacked =
+    GlobalGameState.sideWithInitiative === GlobalUnitsModel.Side.US
+      ? GlobalUnitsModel.Side.JAPAN
+      : GlobalUnitsModel.Side.US
     const fleetBeingAttacked = this.getFleetForTaskForce(tf, side)
-    const location = this.getFleetLocation(fleetBeingAttacked, side)
 
-    console.log("LOCATION=", location)
+    let location
+    if (fleetBeingAttacked === "MIDWAY") {
+      location = Controller.MIDWAY_HEX
+    } else {
+      location = this.getFleetLocation(fleetBeingAttacked, sideBeingAttacked)
+    }
     const strikeGroups = this.getAllStrikeGroupsInLocation(location, GlobalGameState.sideWithInitiative)
-
-    console.log("STRIKE GROUPS=", strikeGroups)
     let unitsInGroup = this.getAirUnitsInStrikeGroups(strikeGroups[0].box)
     return unitsInGroup
   }
@@ -384,9 +396,12 @@ export default class Controller {
 
   // side is attacker so use other side for defender (ie fleets)
   checkForAirAttack = (location, side) => {
+    const strikeGroups = this.getAllStrikeGroupsInLocation(location, side)
+    if (side === GlobalUnitsModel.Side.JAPAN && isMidwayHex(location.currentHex)) {
+      return strikeGroups.length > 0
+    }
     const fleets = this.getAllFleetsInLocation(location, side, true)
 
-    const strikeGroups = this.getAllStrikeGroupsInLocation(location, side)
     return fleets.length > 0 && strikeGroups.length > 0
   }
 

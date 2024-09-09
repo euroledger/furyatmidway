@@ -76,7 +76,7 @@ export function doFighterCounterattack(controller, testRolls) {
   GlobalGameState.fighterHits = hits
 }
 
-export function doAntiAircraftFireRolls(testRolls) {
+export function doAAAFireRolls(testRolls) {
   let rolls = testRolls === undefined ? randomDice(2) : testRolls
 
   let hits = 0
@@ -87,6 +87,7 @@ export function doAntiAircraftFireRolls(testRolls) {
   }
   GlobalGameState.dieRolls = 1
   GlobalGameState.antiaircraftHits = hits
+ 
 }
 
 function getFightersForStrikeGroup(controller) {
@@ -101,9 +102,16 @@ function getFightersForStrikeGroup(controller) {
 
 
   const fleetBeingAttacked = controller.getFleetForTaskForce(GlobalGameState.airAttackTarget, sideBeingAttacked)
-  const location = controller.getFleetLocation(fleetBeingAttacked, sideBeingAttacked)
+
+  let location
+  if (fleetBeingAttacked==="MIDWAY") {
+    location = Controller.MIDWAY_HEX
+  } else {
+    location = controller.getFleetLocation(fleetBeingAttacked, sideBeingAttacked)
+  }
 
   const strikeGroups = controller.getAllStrikeGroupsInLocation(location, GlobalGameState.sideWithInitiative)
+
   if (!strikeGroups || strikeGroups.length === 0) {
     return []
   }

@@ -940,7 +940,7 @@ const jpSGPosition7 = {
 const japanStrikeGroups = [
   {
     name: "JP-SG1",
-    longName: "Japan Strike Group 1",
+    longName: "Strike Group 1",
     position: jpSGPosition1,
     image: "/images/aircounters/ijnStrike1.png",
     width: "2.1%",
@@ -950,7 +950,7 @@ const japanStrikeGroups = [
   },
   {
     name: "JP-SG2",
-    longName: "Japan Strike Group 2",
+    longName: "Strike Group 2",
     position: jpSGPosition2,
     image: "/images/aircounters/ijnStrike2.png",
     width: "2.1%",
@@ -960,7 +960,7 @@ const japanStrikeGroups = [
   },
   {
     name: "JP-SG3",
-    longName: "Japan Strike Group 3",
+    longName: "Strike Group 3",
     position: jpSGPosition3,
     image: "/images/aircounters/ijnStrike3.png",
     width: "2.1%",
@@ -970,7 +970,7 @@ const japanStrikeGroups = [
   },
   {
     name: "JP-SG4",
-    longName: "Japan Strike Group 4",
+    longName: "Strike Group 4",
     position: jpSGPosition4,
     image: "/images/aircounters/ijnStrike4.png",
     width: "2.1%",
@@ -980,7 +980,7 @@ const japanStrikeGroups = [
   },
   {
     name: "JP-SG5",
-    longName: "Japan Strike Group 5",
+    longName: "Strike Group 5",
     position: jpSGPosition5,
     image: "/images/aircounters/ijnStrike5.png",
     width: "2.1%",
@@ -990,7 +990,7 @@ const japanStrikeGroups = [
   },
   {
     name: "JP-SG6",
-    longName: "Japan Strike Group 6",
+    longName: "Strike Group 6",
     position: jpSGPosition6,
     image: "/images/aircounters/ijnStrike6.png",
     width: "2.1%",
@@ -1000,7 +1000,7 @@ const japanStrikeGroups = [
   },
   {
     name: "JP-SG7",
-    longName: "Japan Strike Group 7",
+    longName: "Strike Group 7",
     position: jpSGPosition7,
     image: "/images/aircounters/ijnStrike7.png",
     width: "2.1%",

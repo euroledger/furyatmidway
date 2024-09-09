@@ -35,6 +35,7 @@ export function saveGameState(controller, gameId) {
   const airText = JSON.stringify(Array.from(airState.entries()))
 
   const jpStrikeText = JSON.stringify(Array.from(GlobalUnitsModel.jpStrikeGroups.entries()))
+
   const usStrikeText = JSON.stringify(Array.from(GlobalUnitsModel.usStrikeGroups.entries()))
 
   const jpCardText = JSON.stringify(GlobalUnitsModel.jpCards)
@@ -101,6 +102,25 @@ function createFleetUpdates(fleetMap) {
   return updates
 }
 
+function createStrikeGroupUpdates(strikeGroupMap) {
+  let updates = new Array()
+  for (const key of strikeGroupMap.keys()) {
+    let update
+    const sg =strikeGroupMap.get(key)
+    const cHex = sg._location.currentHex
+
+    update = {
+      name: sg._name,
+      position: {
+        currentHex: cHex,
+      },
+    }
+    updates.push(update)
+  }
+  return updates
+}
+
+
 function createAirUnitUpdates(airUnitMap) {
   let airUpdates = new Array()
   for (const unit of airUnitMap.keys()) {
@@ -155,13 +175,18 @@ function loadUSStrikeUnits(loadedMap) {
 }
 
 function loadJapanStrikeUnits(loadedMap) {
+  console.log("loadedMap=", loadedMap)
+
   for (let key of loadedMap.keys()) {
+    console.log("KEY=", key)
+
     const sg = GlobalUnitsModel.jpStrikeGroups.get(key)
+    console.log("sg=", sg)
+
     const loadedSG = loadedMap.get(key)
+    console.log("LOADED SG=", loadedSG)
     sg.moved = loadedSG._moved
     GlobalUnitsModel.jpStrikeGroups.set(key, sg)
-
-
   }
 }
 
@@ -192,16 +217,18 @@ export function loadGameStateForId(gameId) {
   loadAirUnits(airMap)
 
   const jpStrikeText = gameDetails.jpStrike
+  const jpStrikeMap = new Map(JSON.parse(jpStrikeText))
   if (jpStrikeText) {
-    // GlobalUnitsModel.jpStrikeGroups = new Map(JSON.parse(jpStrikeText))
-    loadJapanStrikeUnits(new Map(JSON.parse(jpStrikeText)))
+    loadJapanStrikeUnits(jpStrikeMap)
   }
 
   const usStrikeText = gameDetails.usStrike
+  const usStrikeMap = new Map(JSON.parse(usStrikeText))
   if (usStrikeText) {
-    // GlobalUnitsModel.usStrikeGroups = new Map(JSON.parse(usStrikeText))
-    loadUSStrikeUnits(new Map(JSON.parse(usStrikeText)))
+    loadUSStrikeUnits(usStrikeMap)
   } 
+  const jpStrikeUpdates = createStrikeGroupUpdates(jpStrikeMap)
+  const usStrikeUpdates = createStrikeGroupUpdates(usStrikeMap)
 
   const airUpdates = createAirUnitUpdates(airMap)
 
@@ -223,7 +250,7 @@ export function loadGameStateForId(gameId) {
   const usfleetUpdates = createFleetUpdates(usFleetMap)
   const jpfleetUpdates = createFleetUpdates(jpFleetMap)
 
-  return { airUpdates, jpfleetUpdates, usfleetUpdates, logItems }
+  return { airUpdates, jpfleetUpdates, usfleetUpdates, jpStrikeUpdates, usStrikeUpdates, logItems }
 }
 
 export function loadGameState() {

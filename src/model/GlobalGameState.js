@@ -22,7 +22,7 @@ export default class GlobalGameState {
     CAP_DAMAGE_ALLOCATION: "CAP Damage Allocation Phase",
     ESCORT_COUNTERATTACK: "Escort Fighter Counterattack Phase",
     ESCORT_DAMAGE_ALLOCATION: "Escort Damage Allocation Phase",
-    AAA_DAMAGE_ALLOCATION: "Anti-Aircaft Fire Damage Allocation Phase",
+    AAA_DAMAGE_ALLOCATION: "AAA Fire Damage Allocation Phase",
     ANTI_AIRCRAFT_FIRE: "Anti-Aircraft (AAA) Fire Phase"
   }
 

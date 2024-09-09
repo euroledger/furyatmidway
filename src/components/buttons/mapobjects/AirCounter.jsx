@@ -289,17 +289,7 @@ function AirCounter({ getAirBox, setAirBox, counterData, side }) {
       GlobalGameState.gamePhase === GlobalGameState.PHASE.MIDWAY_ATTACK)
   ) {
     if (side !== GlobalGameState.sideWithInitiative) {
-      // console.log(
-      //   "side with initiative=",
-      //   GlobalGameState.sideWithInitiative,
-      //   "name:",
-      //   counterData.name,
-      //   "Computer SAys NOOOOOO, phase=",
-      //   GlobalGameState.gamePhase,
-      //   "side=",
-      //   side
-      // )
-      disp = "none"
+      // disp = "none"
     }
   }
   return (

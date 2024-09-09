@@ -24,9 +24,12 @@ import {
   doDamageAllocation,
   doCAPEvent,
   doFighterCounterattack,
-  doAntiAircraftFireRolls,
+  doAAAFireRolls,
 } from "./DiceHandler"
 import { determineAllUnitsDeployedForCarrier } from "./controller/AirUnitSetupHandler"
+import JapanAirBoxOffsets from "./components/draganddrop/JapanAirBoxOffsets"
+import USAirBoxOffsets from "./components/draganddrop/USAirBoxOffsets"
+
 import { usCSFStartHexes, japanAF1StartHexesNoMidway, japanAF1StartHexesMidway } from "./components/MapRegions"
 import YesNoDialog from "./components/dialogs/YesNoDialog"
 import { saveGameState } from "./SaveLoadGame"
@@ -43,7 +46,7 @@ import { AAAHeaders, AAAFooters } from "./AAAPanel"
 
 import UITester from "./UITester"
 import { getJapanEnabledAirBoxes, getUSEnabledAirBoxes } from "./AirBoxZoneHandler"
-import handleAction from "./GameStateHandler"
+import handleAction, { calcAirOpsPointsMidway } from "./GameStateHandler"
 
 export default App
 
@@ -200,8 +203,6 @@ export function App() {
 
   const setJapanFleetRegions = () => {
     if (GlobalGameState.gamePhase === GlobalGameState.PHASE.JAPAN_FLEET_MOVEMENT && GlobalGameState.gameTurn === 1) {
-      // @TODO if Midway attack declared, remove any hexes out of range
-
       if (GlobalGameState.midwayAttackDeclaration === true) {
         setJapanMapRegions(japanAF1StartHexesMidway)
       } else {
@@ -210,7 +211,6 @@ export function App() {
     } else {
       const af1Location = GlobalInit.controller.getFleetLocation("1AF", GlobalUnitsModel.Side.JAPAN)
       const jpRegion = allHexesWithinDistance(af1Location.currentHex, 2, true)
-      // @TODO if Midway attack declared, remove any hexes out of range
       setJapanMapRegions(jpRegion)
     }
     setFleetMoveAlertShow(true)
@@ -242,9 +242,9 @@ export function App() {
     } else if (GlobalGameState.gamePhase === GlobalGameState.PHASE.JAPAN_FLEET_MOVEMENT) {
       setJapanFleetRegions()
       GlobalGameState.phaseCompleted = GlobalGameState.jpFleetMoved
-    // } else if (GlobalGameState.gamePhase === GlobalGameState.PHASE.MIDWAY_ATTACK) {
-    //   setJapanMapRegions([])
-    //   GlobalGameState.phaseCompleted = true
+      // } else if (GlobalGameState.gamePhase === GlobalGameState.PHASE.MIDWAY_ATTACK) {
+      //   setJapanMapRegions([])
+      //   GlobalGameState.phaseCompleted = true
     } else if (GlobalGameState.gamePhase === GlobalGameState.PHASE.US_FLEET_MOVEMENT) {
       setJapanMapRegions([])
       GlobalGameState.phaseCompleted = true
@@ -265,6 +265,17 @@ export function App() {
           GlobalGameState.phaseCompleted = true
         } else {
           GlobalGameState.phaseCompleted = false
+        }
+        if (GlobalGameState.gamePhase === GlobalGameState.PHASE.MIDWAY_ATTACK) {
+          if (GlobalGameState.midwayAirOp === 1) {
+            let distance = GlobalInit.controller.numHexesBetweenFleets(
+              { name: "1AF", side: GlobalUnitsModel.Side.JAPAN },
+              { name: "MIDWAY" }
+            )
+            calcAirOpsPointsMidway(distance)
+          } else {
+            GlobalGameState.airOperationPoints.japan = 1
+          }
         }
       } else {
         setUsStrikePanelEnabled(true)
@@ -312,6 +323,7 @@ export function App() {
       setSideWithInitiative,
       capSteps,
       capAirUnits,
+      setAirUnitUpdate,
     })
   }
 
@@ -357,7 +369,6 @@ export function App() {
     let midwayMsg = ""
 
     if (GlobalGameState.gamePhase === GlobalGameState.PHASE.MIDWAY_ATTACK) {
-      console.log("GlobalGameState.midwayAirOp=", GlobalGameState.midwayAirOp)
       if (GlobalGameState.midwayAirOp === 1) {
         midwayMsg = "(First Air Op)"
       } else {
@@ -703,7 +714,8 @@ export function App() {
   }
 
   function doAntiAircraftRolls() {
-    doAntiAircraftFireRolls()
+    doAAAFireRolls()
+
     GlobalGameState.updateGlobalState()
   }
 

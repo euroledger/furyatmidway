@@ -51,6 +51,7 @@ export default class CardModel {
       side === GlobalUnitsModel.Side.JAPAN ? GlobalUnitsModel.jpStrikeGroups : GlobalUnitsModel.usStrikeGroups
 
     const mapMap = side === GlobalUnitsModel.Side.JAPAN ? this.jpMap : this.usMap
+
     // this gives us a map where keys are all strike boxes at this location
     const strikeGroupLocations = new Map(
       [...mapMap].filter(([k, v]) => k.includes("SG") && this.locationsEqual(v, location))
@@ -62,7 +63,6 @@ export default class CardModel {
       let values = Array.from(group.values())
       strikeGroups.push(values[0]) // should only ever be 1
     }
-
     return strikeGroups
   }
 

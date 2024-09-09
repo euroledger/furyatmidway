@@ -37,7 +37,7 @@ function AirCounters({ controller, onDrag, onStop, getAirBox, setAirBox, counter
         return
       }
     }
-
+    // console.log("DISPLAY AIR UNIT", airUnit.name)
     return (
       <AirCounter
         controller={controller}

@@ -52,13 +52,23 @@ function StrikeCounter({ setStrikeGroupPopup, currentUSHex, currentJapanHex, cou
   // STRIKE GROUP UPDATE CODE
   let hex = {}
   if (strikeGroupUpdate) {
+    console.log("GOT A STRIKE UPDATE: ", strikeGroupUpdate)
+    console.log("\t=>SG name=", strikeGroupUpdate.name)
+    console.log("\t=>counter data name=", counterData.name)
+    console.log("\t=>position=", position)
+    console.log("\t=>position.currentHex=", position.currentHex)
+
     hex = strikeGroupUpdate.position.currentHex
+    console.log("\t=>hex=", hex)
+
   }
 
   if (
     strikeGroupUpdate &&
+    hex != undefined &&
+    strikeGroupUpdate.name != "" &&
     counterData.name === strikeGroupUpdate.name &&
-    (position.currentHex.q !== hex.q || position.currentHex.r !== hex.r)
+    (strikeGroupUpdate.position.currentHex != undefined && position.currentHex.q !== hex.q || position.currentHex.r !== hex.r)
   ) {
     console.log("I am", strikeGroupUpdate.name, " -> STRIKE GROUP UPDATE, move to", hex.row + ",", hex.col)
 
@@ -106,6 +116,12 @@ function StrikeCounter({ setStrikeGroupPopup, currentUSHex, currentJapanHex, cou
       const jpRegion2 = allHexesWithinDistance(Controller.MIDWAY_HEX.currentHex, 3, true)
       const hexes = hexesInTwoRegions(jpRegion1, jpRegion2)
       setJapanMapRegions(hexes)
+    }
+
+    // If this is the second Midway AirOp ensure SG moves to Midway
+    if (GlobalGameState.gamePhase === GlobalGameState.PHASE.MIDWAY_ATTACK && GlobalGameState.midwayAirOp === 2) {
+      const midway = [ {q: 6, r: 3}]
+      setJapanMapRegions(midway)
     }
   }
   function setUSRegions() {

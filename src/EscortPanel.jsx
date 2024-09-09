@@ -2,6 +2,7 @@ import { React } from "react"
 import "./cap.css"
 import GlobalUnitsModel from "./model/GlobalUnitsModel"
 import GlobalGameState from "./model/GlobalGameState"
+import Controller from "./controller/Controller"
 
 export function EscortHeaders({ controller, setEscortSteps }) {
   const sideBeingAttacked =
@@ -12,7 +13,13 @@ export function EscortHeaders({ controller, setEscortSteps }) {
   const msg = "Target For Air Attack:"
 
   const fleetBeingAttacked = controller.getFleetForTaskForce(GlobalGameState.airAttackTarget, sideBeingAttacked)
-  const location = controller.getFleetLocation(fleetBeingAttacked, sideBeingAttacked)
+
+  let location
+  if (fleetBeingAttacked === "MIDWAY") {
+    location = Controller.MIDWAY_HEX
+  } else {
+    location = controller.getFleetLocation(fleetBeingAttacked, sideBeingAttacked)
+  }
 
   const strikeGroups = controller.getAllStrikeGroupsInLocation(location, GlobalGameState.sideWithInitiative)
 
@@ -103,7 +110,8 @@ export function EscortHeaders({ controller, setEscortSteps }) {
 }
 
 export function EscortFooters({ controller, setFightersPresent }) {
-    const show =  true
+  const show =  GlobalGameState.dieRolls.length > 0
+
     const msg="Number of Hits:"
  
     return (

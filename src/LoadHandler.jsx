@@ -91,6 +91,7 @@ async function loadHandler({
   setSplash,
   setAirUnitUpdate,
   setFleetUnitUpdate,
+  setStrikeGroupUpdate,
   loadState,
   id,
   setLoading,
@@ -98,7 +99,7 @@ async function loadHandler({
   setTestClicked(true)
   console.log("Load game from local storage")
   setSplash(false)
-  const { airUpdates, jpfleetUpdates, usfleetUpdates, logItems } = loadGameStateForId(id)
+  const { airUpdates, jpfleetUpdates, usfleetUpdates, jpStrikeUpdates, usStrikeUpdates, logItems } = loadGameStateForId(id)
   for (const update of airUpdates) {
     setAirUnitUpdate(update)
     await delay(1)
@@ -111,6 +112,16 @@ async function loadHandler({
 
   for (const update of jpfleetUpdates) {
     setFleetUnitUpdate(update)
+    await delay(1)
+  }
+
+  for (const update of jpStrikeUpdates) {
+    console.log(">>>>>>> SET JP STRIKE UPDATE:", update)
+    setStrikeGroupUpdate(update)
+    await delay(1)
+  }
+  for (const update of usStrikeUpdates) {
+    setStrikeGroupUpdate(update)
     await delay(1)
   }
 
