@@ -103,7 +103,7 @@ describe("CAP Interception tests", () => {
     })
 
     // 3. set target of strike
-    GlobalGameState.airAttackTarget = GlobalUnitsModel.TaskForce.CARRIER_DIV_2
+    GlobalGameState.taskForceTarget = GlobalUnitsModel.TaskForce.CARRIER_DIV_2
   }
 
   function setupJapaneseCAP() {
@@ -119,7 +119,7 @@ describe("CAP Interception tests", () => {
     expect(units.length).toEqual(2)
 
     // determine if there are fighters in the CAP box
-    const capBox = controller.getCAPBoxForTaskForce(GlobalGameState.airAttackTarget, GlobalUnitsModel.Side.JAPAN)
+    const capBox = controller.getCAPBoxForTaskForce(GlobalGameState.taskForceTarget, GlobalUnitsModel.Side.JAPAN)
     expect(capBox).toEqual(GlobalUnitsModel.AirBox.JP_CD2_CAP)
 
     const capUnits = controller.getAllAirUnitsInBox(capBox)
@@ -145,7 +145,7 @@ describe("CAP Interception tests", () => {
     let units = controller.getAllAirUnitsInBox(GlobalUnitsModel.AirBox.US_STRIKE_BOX_3)
     expect(units.length).toEqual(2)
 
-    const capBox = controller.getCAPBoxForTaskForce(GlobalGameState.airAttackTarget, GlobalUnitsModel.Side.JAPAN)
+    const capBox = controller.getCAPBoxForTaskForce(GlobalGameState.taskForceTarget, GlobalUnitsModel.Side.JAPAN)
     expect(capBox).toEqual(GlobalUnitsModel.AirBox.JP_CD2_CAP)
 
     const capUnits = controller.getAllAirUnitsInBox(capBox)
@@ -207,7 +207,7 @@ describe("CAP Interception tests", () => {
     // Now 1 remaining step of fighter can attack the CAP units
     rolls = [2]
 
-    GlobalGameState.airAttackTarget = "1AF"
+    GlobalGameState.taskForceTarget = "1AF"
     GlobalGameState.sideWithInitiative = GlobalUnitsModel.Side.US
 
     doFighterCounterattack(controller, rolls)

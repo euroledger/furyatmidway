@@ -143,6 +143,34 @@ export function calcAirOpsPointsMidway(distanceFromFleetToMidway) {
   }
 }
 
+export function displayAttackTargetPanel(controller) {
+  if (
+    GlobalGameState.taskForceTarget === GlobalUnitsModel.TaskForce.TASK_FORCE_17 ||
+    GlobalGameState.taskForceTarget === GlobalUnitsModel.TaskForce.MIDWAY
+  ) {
+    return false
+  }
+
+  if (GlobalGameState.taskForceTarget === GlobalUnitsModel.TaskForce.CARRIER_DIV_1) {
+    if (controller.isSunk(GlobalUnitsModel.Carrier.AKAGI) || controller.isSunk(GlobalUnitsModel.Carrier.KAGA)) {
+      return false
+    }
+  }
+  
+  if (GlobalGameState.taskForceTarget === GlobalUnitsModel.TaskForce.CARRIER_DIV_2) {
+    if (controller.isSunk(GlobalUnitsModel.Carrier.HIRYU) || controller.isSunk(GlobalUnitsModel.Carrier.SORYU)) {
+      return false
+    }
+  }
+
+  if (GlobalGameState.taskForceTarget === GlobalUnitsModel.TaskForce.TASK_FORCE_16) {
+    if (controller.isSunk(GlobalUnitsModel.Carrier.ENTERPRISE) || controller.isSunk(GlobalUnitsModel.Carrier.HORNET)) {
+      return false
+    }
+  }
+  return true
+}
+
 function usFleetMovementHandler({ setFleetUnitUpdate, setSearchValues, setSearchResults, setSearchValuesAlertShow }) {
   const update = createMapUpdateForFleet(GlobalInit.controller, "CSF", GlobalUnitsModel.Side.US)
   setFleetUnitUpdate(update)
@@ -164,7 +192,7 @@ function airOperationsHandler({
   setInitiativePanelShow,
   setSideWithInitiative,
   capAirUnits,
-  setAirUnitUpdate
+  setAirUnitUpdate,
 }) {
   GlobalGameState.phaseCompleted = false
   if (GlobalGameState.sideWithInitiative === GlobalUnitsModel.Side.JAPAN) {
@@ -248,7 +276,7 @@ export default function handleAction({
   setSideWithInitiative,
   capSteps,
   capAirUnits,
-  setAirUnitUpdate
+  setAirUnitUpdate,
 }) {
   //   switch (
   // GlobalGameState.gamePhase
@@ -317,7 +345,7 @@ export default function handleAction({
         setInitiativePanelShow,
         setSideWithInitiative,
         capAirUnits,
-        setAirUnitUpdate
+        setAirUnitUpdate,
       })
     }
     // } else if (GlobalGameState.gamePhase === GlobalGameState.PHASE.MIDWAY_ATTACK) {
@@ -345,7 +373,7 @@ export default function handleAction({
       setInitiativePanelShow,
       setSideWithInitiative,
       capAirUnits,
-      setAirUnitUpdate
+      setAirUnitUpdate,
     })
     GlobalGameState.updateGlobalState()
     return
@@ -386,7 +414,7 @@ export default function handleAction({
     } else {
       GlobalGameState.gamePhase = GlobalGameState.PHASE.AIR_OPERATIONS
     }
-  } 
+  }
 
   // @TODO if all air units in a strike are eliminated maybe display a dialog saying "Air Attack Phase over, no
   // air units left or something"

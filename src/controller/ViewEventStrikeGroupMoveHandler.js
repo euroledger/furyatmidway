@@ -13,8 +13,6 @@ class ViewEventStrikeGroupMoveHandler {
     // to = currentHex
 
     // add strike group to map holding name -> current Hex
-    console.log("set SG location:", counterData.name, to)
-
     this.controller.setStrikeGroupLocation(counterData.name, to, side)
 
     if (side === GlobalUnitsModel.Side.JAPAN) {
@@ -39,7 +37,7 @@ class ViewEventStrikeGroupMoveHandler {
       if (this.controller.checkForAirAttack(to, side)) {
         if (GlobalGameState.gamePhase === GlobalGameState.PHASE.MIDWAY_ATTACK) {
           GlobalGameState.gamePhase = GlobalGameState.PHASE.CAP_INTERCEPTION
-          GlobalGameState.airAttackTarget = GlobalUnitsModel.TaskForce.MIDWAY
+          GlobalGameState.taskForceTarget = GlobalUnitsModel.TaskForce.MIDWAY
         } else {
           GlobalGameState.gamePhase = GlobalGameState.PHASE.TARGET_DETERMINATION
         }

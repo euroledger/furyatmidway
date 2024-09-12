@@ -1,7 +1,7 @@
 import { React } from "react"
 import "./cap.css"
-import GlobalUnitsModel from "./model/GlobalUnitsModel"
-import GlobalGameState from "./model/GlobalGameState"
+import GlobalUnitsModel from "../model/GlobalUnitsModel"
+import GlobalGameState from "../model/GlobalGameState"
 
 export function CAPHeaders({ controller, setCapAirUnits, capSteps, setCapSteps }) {
   const sideBeingAttacked =
@@ -11,7 +11,7 @@ export function CAPHeaders({ controller, setCapAirUnits, capSteps, setCapSteps }
 
   const msg = "Target For Air Attack:"
 
-  const capBox = controller.getCAPBoxForTaskForce(GlobalGameState.airAttackTarget, sideBeingAttacked)
+  const capBox = controller.getCAPBoxForTaskForce(GlobalGameState.taskForceTarget, sideBeingAttacked)
 
   const capUnits = controller.getAllAirUnitsInBox(capBox)
 
@@ -67,7 +67,7 @@ export function CAPHeaders({ controller, setCapAirUnits, capSteps, setCapSteps }
             color: "white",
           }}
         >
-          {msg} &nbsp;<strong>{GlobalGameState.airAttackTarget}</strong>&nbsp;
+          {msg} &nbsp;<strong>{GlobalGameState.taskForceTarget}</strong>&nbsp;
         </p>
       </div>
       <div
@@ -119,7 +119,7 @@ export function CAPFooters({controller, setFightersPresent}) {
     ? GlobalUnitsModel.Side.JAPAN
     : GlobalUnitsModel.Side.US
 
-const fighters = controller.anyFightersInStrike(GlobalGameState.airAttackTarget, sideBeingAttacked)
+const fighters = controller.anyFightersInStrike(GlobalGameState.taskForceTarget, sideBeingAttacked)
 
   let fighterMsg = ""
   if (!fighters) {

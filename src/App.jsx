@@ -37,12 +37,13 @@ import loadHandler from "./LoadHandler"
 import { allHexesWithinDistance } from "./components/HexUtils"
 import DicePanel from "./components/dialogs/DicePanel"
 import LargeDicePanel from "./components/dialogs/LargeDicePanel"
-import { AirOpsHeaders, AirOpsFooters } from "./AirOpsDataPanels"
-import { TargetHeaders, TargetFooters } from "./TargetPanel"
-import { CAPHeaders, CAPFooters } from "./CAPPanel"
-import { DamageHeaders, DamageFooters } from "./DamageAllocationPanel"
-import { EscortHeaders, EscortFooters } from "./EscortPanel"
-import { AAAHeaders, AAAFooters } from "./AAAPanel"
+import { AirOpsHeaders, AirOpsFooters } from "./attackscreens/AirOpsDataPanels"
+import { TargetHeaders, TargetFooters } from "./attackscreens/TargetPanel"
+import { AttackTargetHeaders, AttackTargetFooters } from "./attackscreens/AttackTargetPanel"
+import { CAPHeaders, CAPFooters } from "./attackscreens/CAPPanel"
+import { DamageHeaders, DamageFooters } from "./attackscreens/DamageAllocationPanel"
+import { EscortHeaders, EscortFooters } from "./attackscreens/EscortPanel"
+import { AAAHeaders, AAAFooters } from "./attackscreens/AAAPanel"
 
 import UITester from "./UITester"
 import { getJapanEnabledAirBoxes, getUSEnabledAirBoxes } from "./AirBoxZoneHandler"
@@ -101,6 +102,8 @@ export function App() {
   const [gameStateShow, setGameStateShow] = useState(false)
   const [initiativePanelShow, setInitiativePanelShow] = useState(false)
   const [targetPanelShow, setTargetPanelShow] = useState(false)
+  const [attackTargetPanelShow, setAttackTargetPanelShow] = useState(true)
+
   const [capInterceptionPanelShow, setCapInterceptionPanelShow] = useState(false)
 
   const [damageAllocationPanelShow, setDamageAllocationPanelShow] = useState(false)
@@ -137,6 +140,9 @@ export function App() {
   const [sideWithInitiative, setSideWithInitiative] = useState(null)
 
   const [targetDetermined, setTargetDetermined] = useState(false)
+
+  const [attackTargetsSelected, setAttackTargetsSelected] = useState(false)
+
   const [targetSelected, setTargetSelected] = useState(false)
 
   const [eliminatedSteps, setEliminatedSteps] = useState(0)
@@ -150,6 +156,12 @@ export function App() {
       setTargetPanelShow(true)
       GlobalGameState.dieRolls = 0
       GlobalGameState.capHits = undefined
+    }
+  }, [GlobalGameState.gamePhase])
+
+  useEffect(() => {
+    if (GlobalGameState.gamePhase === GlobalGameState.PHASE.ATTACK_TARGET_SELECTION) {
+      setAttackTargetPanelShow(true)
     }
   }, [GlobalGameState.gamePhase])
 
@@ -185,6 +197,7 @@ export function App() {
       setAaaPanelShow(true)
     }
   }, [GlobalGameState.gamePhase])
+
 
   const onDrag = () => {
     setIsMoveable(true)
@@ -615,6 +628,19 @@ export function App() {
     </>
   )
 
+  const attackTargetHeaders = (
+    <>
+      <AttackTargetHeaders
+        controller={GlobalInit.controller} setAttackTargetsSelected={setAttackTargetsSelected}
+      ></AttackTargetHeaders>
+    </>
+  )
+
+  const attackTargetFooters = (
+    <>
+      <AttackTargetFooters show={targetDetermined}></AttackTargetFooters>
+    </>
+  )
   const capHeaders = (
     <>
       <CAPHeaders
@@ -839,12 +865,30 @@ export function App() {
         margin={300}
         diceButtonDisabled={targetSelected === targetDetermined}
         closeButtonDisabled={!targetDetermined}
-        // nextState={GlobalGameState.PHASE.CAP_INTERCEPTION}
         onHide={(e) => {
           setTargetPanelShow(false)
           nextAction(e)
         }}
         doRoll={doTargetSelectionRoll}
+        disabled={true}
+      ></DicePanel>
+      <DicePanel
+        show={!testClicked && attackTargetPanelShow}
+        headerText="Attack Target Selection"
+        numDice={0}
+        headers={attackTargetHeaders}
+        footers={attackTargetFooters}
+        width={30}
+        showDice={true}
+        margin={300}
+        closeButtonDisabled={
+          !attackTargetsSelected
+        }
+        closeButtonStr="Next..."
+        onHide={(e) => {
+          setAttackTargetPanelShow(false)
+          nextAction(e)
+        }}
         disabled={true}
       ></DicePanel>
       <LargeDicePanel
@@ -854,11 +898,7 @@ export function App() {
         headerText="CAP Interception"
         headers={capHeaders}
         footers={capFooters}
-        // width={100}
         showDice={true}
-        // nextState={
-        //   capSteps > 0 ? GlobalGameState.PHASE.CAP_DAMAGE_ALLOCATION : GlobalGameState.PHASE.ANTI_AIRCRAFT_FIRE
-        // }
         margin={0}
         onHide={(e) => {
           setCapInterceptionPanelShow(false)

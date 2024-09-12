@@ -1,8 +1,8 @@
 import { React } from "react"
 import "./cap.css"
-import GlobalUnitsModel from "./model/GlobalUnitsModel"
-import GlobalGameState from "./model/GlobalGameState"
-import { doDamageAllocation } from "./DiceHandler"
+import GlobalUnitsModel from "../model/GlobalUnitsModel"
+import GlobalGameState from "../model/GlobalGameState"
+import { doDamageAllocation } from "../DiceHandler"
 
 // @TODO Move this into Util file somewhere (or to controller?)
 

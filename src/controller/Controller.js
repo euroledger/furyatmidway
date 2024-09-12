@@ -42,6 +42,7 @@ export default class Controller {
     this.boxModel = new BoxModel()
     this.cardModel = new CardModel()
     this.mapModel = new MapModel()
+    this.targetMap = new Map() // map of air unit -> target
     this.airOperationsModel = new AirOperationsModel()
     this.airUnitSetupHandler = new ViewEventAirUnitSetupHandler(this)
     this.fleetUnitSetupHandler = new ViewEventFleetUnitSetupHandler(this)
@@ -50,6 +51,28 @@ export default class Controller {
     this.stikeGroupMoveEventHandler = new ViewEventStrikeGroupMoveHandler(this)
     this.selectionEventHandler = new ViewEventSelectionHandler(this)
     this.capHandler = new ViewEventCapHandler(this)
+  }
+
+  clearTargetMap() {
+    this.targetMap = new Map()
+  }
+
+  setAirUnitTarget(airUnit, target) {
+    console.log("Set target for", airUnit.name, "to", target)
+    this.targetMap.set(airUnit, target)
+  }
+
+  getAirUnitTarget(airUnit) {
+    return this.targetMap.get(airUnit)
+  }
+
+  getTargetMapSizeForCarrier(carrier) {
+    const x = Array.from(this.targetMap.values()).filter((v) => v === carrier)
+    return x.length
+  }
+
+  getTargetMapSize() {
+    return Array.from(this.targetMap.values()).length
   }
 
   setCounters(counters) {
@@ -296,12 +319,51 @@ export default class Controller {
     return array
   }
 
-  getAttackingStrikeUnits() {
+  getAttackingStrikeUnitsTEST(carrierDiv) {
+    GlobalGameState.taskForceTarget = carrierDiv
+    GlobalGameState.sideWithInitiative = GlobalUnitsModel.Side.JAPAN
+
+    const edb1 = this.counters.get("Enterprise-SBD3-1")
+    const etb = this.counters.get("Enterprise-TBD1")
+    const hotb = this.counters.get("Hornet-TBD1")
+    const kdb = this.counters.get("Kaga-D3A-1")
+    const ktb = this.counters.get("Kaga-B5N-2")
+    const adb = this.counters.get("Akagi-D3A-1")
+    const atb = this.counters.get("Akagi-B5N-2")
+    const haf1 = this.counters.get("Hiryu-A6M-2b-1")
+    const haf2 = this.counters.get("Hiryu-A6M-2b-2")
+    const hdb = this.counters.get("Hiryu-D3A-1")
+    const htb = this.counters.get("Hiryu-B5N-2")
+    const saf1 = this.counters.get("Soryu-A6M-2b-1")
+    const saf2 = this.counters.get("Soryu-A6M-2b-2")
+    const sdb = this.counters.get("Soryu-D3A-1")
+    const stb = this.counters.get("Soryu-B5N-2")
+
+    // this.addAirUnitToBox(GlobalUnitsModel.AirBox.JP_AKAGI_FLIGHT_DECK, 0, adb)
+    // this.addAirUnitToBox(GlobalUnitsModel.AirBox.JP_AKAGI_FLIGHT_DECK, 1, atb)
+    // this.addAirUnitToBox(GlobalUnitsModel.AirBox.JP_KAGA_FLIGHT_DECK, 0, kdb)
+    // this.addAirUnitToBox(GlobalUnitsModel.AirBox.JP_KAGA_FLIGHT_DECK, 1, ktb)
+
+    this.setCarrierSternDamaged(GlobalUnitsModel.Carrier.ENTERPRISE)
+    this.setCarrierBowDamaged(GlobalUnitsModel.Carrier.HORNET)
+
+    this.addAirUnitToBox(GlobalUnitsModel.AirBox.US_ENTERPRISE_FLIGHT_DECK, 0, edb1)
+    this.addAirUnitToBox(GlobalUnitsModel.AirBox.US_HORNET_FLIGHT_DECK, 1, hotb)
+
+
+    // this.setCarrierSternDamaged(GlobalUnitsModel.Carrier.HIRYU)
+    // this.setCarrierBowDamaged(GlobalUnitsModel.Carrier.SORYU)
+
+    // this.setCarrierBowDamaged(GlobalUnitsModel.Carrier.HIRYU)
+    // this.setCarrierSternDamaged(GlobalUnitsModel.Carrier.SORYU)
+    return [kdb, ktb, adb, atb, hdb, htb, sdb, stb]
+  }
+  getAttackingStrikeUnits(excludeFighters) {
     const sideBeingAttacked =
       GlobalGameState.sideWithInitiative === GlobalUnitsModel.Side.US
         ? GlobalUnitsModel.Side.JAPAN
         : GlobalUnitsModel.Side.US
-    const fleetBeingAttacked = this.getFleetForTaskForce(GlobalGameState.airAttackTarget, sideBeingAttacked)
+    const fleetBeingAttacked = this.getFleetForTaskForce(GlobalGameState.taskForceTarget, sideBeingAttacked)
     let location
     if (fleetBeingAttacked === "MIDWAY") {
       location = Controller.MIDWAY_HEX
@@ -313,14 +375,17 @@ export default class Controller {
 
     let unitsInGroup = this.getAirUnitsInStrikeGroups(strikeGroups[0].box)
 
+    if (excludeFighters) {
+      unitsInGroup = unitsInGroup.filter((unit) => unit.aircraftUnit.attack === true)
+    }
     return unitsInGroup
   }
 
   getAttackingStrikeUnitsForTF(tf, side) {
     const sideBeingAttacked =
-    GlobalGameState.sideWithInitiative === GlobalUnitsModel.Side.US
-      ? GlobalUnitsModel.Side.JAPAN
-      : GlobalUnitsModel.Side.US
+      GlobalGameState.sideWithInitiative === GlobalUnitsModel.Side.US
+        ? GlobalUnitsModel.Side.JAPAN
+        : GlobalUnitsModel.Side.US
     const fleetBeingAttacked = this.getFleetForTaskForce(tf, side)
 
     let location
@@ -528,6 +593,50 @@ export default class Controller {
     }
   }
 
+  setCarrierBowDamaged(name) {
+    const side = GlobalUnitsModel.carrierSideMap.get(name)
+    if (side === GlobalUnitsModel.Side.JAPAN) {
+      const carrier = GlobalUnitsModel.jpFleetUnits.get(name)
+      carrier.bowDamaged = true
+    } else {
+      const carrier = GlobalUnitsModel.usFleetUnits.get(name)
+      carrier.bowDamaged = true
+    }
+  }
+
+  getCarrierBowDamaged(name) {
+    const side = GlobalUnitsModel.carrierSideMap.get(name)
+    if (side === GlobalUnitsModel.Side.JAPAN) {
+      const carrier = GlobalUnitsModel.jpFleetUnits.get(name)
+      return carrier.bowDamaged
+    } else {
+      const carrier = GlobalUnitsModel.usFleetUnits.get(name)
+      return carrier.bowDamaged
+    }
+  }
+
+  setCarrierSternDamaged(name) {
+    const side = GlobalUnitsModel.carrierSideMap.get(name)
+    if (side === GlobalUnitsModel.Side.JAPAN) {
+      const carrier = GlobalUnitsModel.jpFleetUnits.get(name)
+      carrier.sternDamaged = true
+    } else {
+      const carrier = GlobalUnitsModel.usFleetUnits.get(name)
+      carrier.sternDamaged = true
+    }
+  }
+
+  getCarrierSternDamaged(name) {
+    const side = GlobalUnitsModel.carrierSideMap.get(name)
+    if (side === GlobalUnitsModel.Side.JAPAN) {
+      const carrier = GlobalUnitsModel.jpFleetUnits.get(name)
+      return carrier.sternDamaged
+    } else {
+      const carrier = GlobalUnitsModel.usFleetUnits.get(name)
+      return carrier.sternDamaged
+    }
+  }
+
   getCarrierHits(name) {
     const side = GlobalUnitsModel.carrierSideMap.get(name)
     if (side === GlobalUnitsModel.Side.JAPAN) {
@@ -728,7 +837,7 @@ export default class Controller {
     return "MIDWAY"
   }
   determineTarget = (roll) => {
-    let actualTarget = GlobalGameState.airAttackTarget
+    let actualTarget = GlobalGameState.taskForceTarget
     const side = GlobalGameState.sideWithInitiative
     if (side === GlobalUnitsModel.Side.US) {
       if (roll < 6) {
@@ -738,8 +847,7 @@ export default class Controller {
         ? GlobalUnitsModel.TaskForce.CARRIER_DIV_2
         : GlobalUnitsModel.TaskForce.CARRIER_DIV_1
     } else {
-      if (roll < 7) {
-        // QUACK set back to 4
+      if (roll < 4) {
         return actualTarget
       }
       return actualTarget === GlobalUnitsModel.TaskForce.TASK_FORCE_16

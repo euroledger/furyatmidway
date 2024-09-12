@@ -20,6 +20,7 @@ function DicePanel(props) {
     margin,
     showDice,
     doRoll,
+    closeButtonStr,
     ...rest
   } = props
   // const numDice = props.numDice
@@ -42,6 +43,7 @@ function DicePanel(props) {
   
   //   const sizey = numDice >= 4 ? "xl" : "lg"
 
+  const closey = closeButtonStr ?? "Close"
   const diceButtonStr = numDice > 1 ? "Roll Dice" : "Roll Die"
   return (
     <Modal
@@ -86,9 +88,11 @@ function DicePanel(props) {
       </Modal.Body>
 
       <Modal.Footer style={{ background: `${bg}`, color: "black" }}>
+      {numDice > 0 && (
         <Button disabled={diceButtonDisabled} onClick={() => doRoll()}>
           {diceButtonStr}
         </Button>
+      )}
         <Button
           disabled={closeButtonDisabled}
           onClick={(e) => {
@@ -98,7 +102,7 @@ function DicePanel(props) {
             onHide(e)
           }}
         >
-          Close
+          {closey}
         </Button>
       </Modal.Footer>
     </Modal>

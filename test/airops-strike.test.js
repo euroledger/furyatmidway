@@ -44,7 +44,7 @@ describe("Strike Group tests", () => {
     stb = counters.get("Soryu-B5N-2")
   })
 
-  test.skip("We can add US Air Units to Strike Boxes", () => {
+  test("We can add US Air Units to Strike Boxes", () => {
     // TF 16
     controller.addAirUnitToBox(GlobalUnitsModel.AirBox.US_STRIKE_BOX_0, 0, ef1)
     controller.addAirUnitToBox(GlobalUnitsModel.AirBox.US_STRIKE_BOX_0, 1, edb1)
@@ -58,7 +58,7 @@ describe("Strike Group tests", () => {
     expect(units.length).toEqual(2)
   })
 
-  test.skip("US Air Units added to Strike Groups and Strike Groups can move on map", () => {
+  test("US Air Units added to Strike Groups and Strike Groups can move on map", () => {
     let counterData = counters.get(ef1.name)
 
     controller.viewEventHandler({
@@ -209,7 +209,7 @@ describe("Strike Group tests", () => {
     expect(strikeGroupsAtLocation[1].name).toEqual("US-SG3")
   })
 
-  test.skip("We can add Japan Air Units to Strike Boxes", () => {
+  test("We can add Japan Air Units to Strike Boxes", () => {
     // TF 16
     controller.addAirUnitToBox(GlobalUnitsModel.AirBox.JP_STRIKE_BOX_0, 0, haf1)
     controller.addAirUnitToBox(GlobalUnitsModel.AirBox.JP_STRIKE_BOX_0, 1, hdb)
@@ -223,7 +223,7 @@ describe("Strike Group tests", () => {
     expect(units.length).toEqual(2)
   })
 
-  test.skip("Japan Air Units added to Strike Groups and Strike Groups can move on map", () => {
+  test("Japan Air Units added to Strike Groups and Strike Groups can move on map", () => {
     let counterData = counters.get(haf1.name)
 
     controller.viewEventHandler({
@@ -358,7 +358,7 @@ describe("Strike Group tests", () => {
     expect(units.length).toEqual(0)
   })
 
-  test.skip("US Air Units in same hex as Japanese Fleet triggers Air Attack", () => {
+  test("US Air Units in same hex as Japanese Fleet triggers Air Attack", () => {
     let counterData = counters.get(ef1.name)
 
     controller.viewEventHandler({
@@ -495,7 +495,7 @@ describe("Strike Group tests", () => {
     expect(isAirAttackTriggered).toEqual(true)
   })
 
-  test.skip("US Air Units in same hex as US Fleet does NOT trigger Air Attack", () => {
+  test("US Air Units in same hex as US Fleet does NOT trigger Air Attack", () => {
     const strikeCounter = {
       name: "US-SG1",
       longName: "Strike Group 1",
@@ -544,7 +544,7 @@ describe("Strike Group tests", () => {
   })
 
   
-  test.skip("Set Japan AOPs when attacking Midway base", () => {
+  test("Set Japan AOPs when attacking Midway base", () => {
     createFleetMove(controller, 2, 3, "1AF", GlobalUnitsModel.Side.JAPAN) // B-4
 
     // if 1AF is more than 2 hexes from Midway -> AOPs = 2

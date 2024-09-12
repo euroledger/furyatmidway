@@ -23,7 +23,8 @@ export default class GlobalGameState {
     ESCORT_COUNTERATTACK: "Escort Fighter Counterattack Phase",
     ESCORT_DAMAGE_ALLOCATION: "Escort Damage Allocation Phase",
     AAA_DAMAGE_ALLOCATION: "AAA Fire Damage Allocation Phase",
-    ANTI_AIRCRAFT_FIRE: "Anti-Aircraft (AAA) Fire Phase"
+    ANTI_AIRCRAFT_FIRE: "Anti-Aircraft (AAA) Fire Phase",
+    ATTACK_TARGET_SELECTION: "Target Selection"
   }
 
   static usSetUpComplete = false
@@ -68,7 +69,8 @@ export default class GlobalGameState {
     us: 0,
   };
 
-  static airAttackTarget = ""
+  static taskForceTarget = ""
+  static carrierTarget=""
   
   static stateHandler = () => {};
 

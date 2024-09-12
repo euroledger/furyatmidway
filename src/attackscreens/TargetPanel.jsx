@@ -1,14 +1,14 @@
 import { React, useState } from "react"
 import Button from "react-bootstrap/Button"
-import GlobalUnitsModel from "./model/GlobalUnitsModel"
-import GlobalGameState from "./model/GlobalGameState"
-import Controller from "./controller/Controller"
+import GlobalUnitsModel from "../model/GlobalUnitsModel"
+import GlobalGameState from "../model/GlobalGameState"
+import Controller from "../controller/Controller"
 
 export function TargetHeaders({ controller, setTargetSelected }) {
   const [buttonsDisabled, setButtonsDisabled] = useState(false)
   const [myTarget, setMyTarget] = useState("")
   const handleClick = (target) => {
-    GlobalGameState.airAttackTarget = target
+    GlobalGameState.taskForceTarget = target
 
     controller.viewEventHandler({
       type: Controller.EventTypes.TARGET_SELECTION,
@@ -172,7 +172,7 @@ export function TargetFooters() {
               color: "white",
             }}
           >
-            {msg} &nbsp;<strong>{GlobalGameState.airAttackTarget}</strong>&nbsp;
+            {msg} &nbsp;<strong>{GlobalGameState.taskForceTarget}</strong>&nbsp;
           </p>
         </div>
       )}

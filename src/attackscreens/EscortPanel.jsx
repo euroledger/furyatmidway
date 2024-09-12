@@ -1,8 +1,8 @@
 import { React } from "react"
 import "./cap.css"
-import GlobalUnitsModel from "./model/GlobalUnitsModel"
-import GlobalGameState from "./model/GlobalGameState"
-import Controller from "./controller/Controller"
+import GlobalUnitsModel from "../model/GlobalUnitsModel"
+import GlobalGameState from "../model/GlobalGameState"
+import Controller from "../controller/Controller"
 
 export function EscortHeaders({ controller, setEscortSteps }) {
   const sideBeingAttacked =
@@ -12,7 +12,7 @@ export function EscortHeaders({ controller, setEscortSteps }) {
 
   const msg = "Target For Air Attack:"
 
-  const fleetBeingAttacked = controller.getFleetForTaskForce(GlobalGameState.airAttackTarget, sideBeingAttacked)
+  const fleetBeingAttacked = controller.getFleetForTaskForce(GlobalGameState.taskForceTarget, sideBeingAttacked)
 
   let location
   if (fleetBeingAttacked === "MIDWAY") {
@@ -80,7 +80,7 @@ export function EscortHeaders({ controller, setEscortSteps }) {
             color: "white",
           }}
         >
-          {msg} &nbsp;<strong>{GlobalGameState.airAttackTarget}</strong>&nbsp;
+          {msg} &nbsp;<strong>{GlobalGameState.taskForceTarget}</strong>&nbsp;
         </p>
       </div>
       <div

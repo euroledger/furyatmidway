@@ -1,34 +1,34 @@
 import { React } from "react"
-import GlobalUnitsModel from "./model/GlobalUnitsModel"
-import GlobalGameState from "./model/GlobalGameState"
+import GlobalUnitsModel from "../model/GlobalUnitsModel"
+import GlobalGameState from "../model/GlobalGameState"
 
 export function AAAHeaders() {
   let tfUnderAttack
-  if (GlobalGameState.airAttackTarget === GlobalUnitsModel.TaskForce.CARRIER_DIV_1) {
+  if (GlobalGameState.taskForceTarget === GlobalUnitsModel.TaskForce.CARRIER_DIV_1) {
     tfUnderAttack = {
       image: "/images/fleetcounters/cardiv1.jpg",
       name: GlobalUnitsModel.TaskForce.CARRIER_DIV_1,
       width: "200px",
     }
-  } else if (GlobalGameState.airAttackTarget === GlobalUnitsModel.TaskForce.CARRIER_DIV_2) {
+  } else if (GlobalGameState.taskForceTarget === GlobalUnitsModel.TaskForce.CARRIER_DIV_2) {
     tfUnderAttack = {
       image: "/images/fleetcounters/cardiv2.jpg",
       name: GlobalUnitsModel.TaskForce.CARRIER_DIV_2,
       width: "200px",
     }
-  } else if (GlobalGameState.airAttackTarget === GlobalUnitsModel.TaskForce.TASK_FORCE_16) {
+  } else if (GlobalGameState.taskForceTarget === GlobalUnitsModel.TaskForce.TASK_FORCE_16) {
     tfUnderAttack = {
       image: "/images/fleetcounters/TF16.jpg",
       name: GlobalUnitsModel.TaskForce.TASK_FORCE_16,
       width: "200px",
     }
-  } else if (GlobalGameState.airAttackTarget === GlobalUnitsModel.TaskForce.TASK_FORCE_17) {
+  } else if (GlobalGameState.taskForceTarget === GlobalUnitsModel.TaskForce.TASK_FORCE_17) {
     tfUnderAttack = {
       image: "/images/fleetcounters/TF17.jpg",
       name: GlobalUnitsModel.TaskForce.TASK_FORCE_17,
       width: "100px",
     }
-  } else if (GlobalGameState.airAttackTarget === GlobalUnitsModel.TaskForce.MIDWAY) {
+  } else if (GlobalGameState.taskForceTarget === GlobalUnitsModel.TaskForce.MIDWAY) {
     tfUnderAttack = {
       image: "/images/fleetcounters/midway.jpg",
       name: GlobalUnitsModel.TaskForce.MIDWAY,
@@ -51,7 +51,7 @@ export function AAAHeaders() {
             color: "white",
           }}
         >
-          {msg} &nbsp;<strong>{GlobalGameState.airAttackTarget}</strong>&nbsp;
+          {msg} &nbsp;<strong>{GlobalGameState.taskForceTarget}</strong>&nbsp;
         </p> 
         <p
           style={{

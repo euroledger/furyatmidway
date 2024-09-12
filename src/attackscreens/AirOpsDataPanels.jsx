@@ -1,4 +1,4 @@
-import GlobalGameState from "./model/GlobalGameState"
+import GlobalGameState from "../model/GlobalGameState"
 
 export function AirOpsHeaders({ show }) {
   return (

@@ -175,16 +175,9 @@ function loadUSStrikeUnits(loadedMap) {
 }
 
 function loadJapanStrikeUnits(loadedMap) {
-  console.log("loadedMap=", loadedMap)
-
   for (let key of loadedMap.keys()) {
-    console.log("KEY=", key)
-
     const sg = GlobalUnitsModel.jpStrikeGroups.get(key)
-    console.log("sg=", sg)
-
     const loadedSG = loadedMap.get(key)
-    console.log("LOADED SG=", loadedSG)
     sg.moved = loadedSG._moved
     GlobalUnitsModel.jpStrikeGroups.set(key, sg)
   }

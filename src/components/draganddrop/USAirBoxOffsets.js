@@ -2,6 +2,27 @@ import GlobalUnitsModel from "../../model/GlobalUnitsModel"
 
 const USAirBoxOffsets = [
   {
+    name: GlobalUnitsModel.AirBox.US_ATTACK_BOX_1,
+    offsets: [
+      {
+        left: 35,
+        top: 50,
+      },
+      // {
+      //   left: 17.7,
+      //   top: 68.3,
+      // },
+      // {
+      //   left: 19.9,
+      //   top: 68.3,
+      // },
+      // {
+      //   left: 22.1,
+      //   top: 68.3,
+      // },
+    ],
+  },
+  {
     name: GlobalUnitsModel.AirBox.US_TF16_CAP,
     taskForce: GlobalUnitsModel.TaskForce.TASK_FORCE_16,
     carriers: [GlobalUnitsModel.Carrier.ENTERPRISE, GlobalUnitsModel.Carrier.HORNET],

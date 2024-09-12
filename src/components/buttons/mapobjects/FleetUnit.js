@@ -5,6 +5,8 @@ export default class FleetUnit extends BaseUnit {
     this.taskForce = taskForce
     this.hits = hits
     this.side = side
+    this.bowDamaged = false
+    this.sternDamaged = false
   }
 
   get isSunk() {
@@ -17,6 +19,22 @@ export default class FleetUnit extends BaseUnit {
     this._hits = h
 
     // add function param bow or stern for flight deck damage
+  }
+
+  get bowDamaged() {
+    return this._bowDamaged
+  }
+
+  get sternDamaged() {
+    return this._sternDamaged
+  }
+
+  set bowDamaged(bd) {
+    this._bowDamaged = bd
+  }
+
+  set sternDamaged(sd) {
+    this._sternDamaged = sd
   }
 
   get hits() {

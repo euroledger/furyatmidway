@@ -72,18 +72,17 @@ export function getUSEnabledAirBoxes(initiative) {
 
 export function getJapanEnabledAirBoxes(initiative) {
   const jpZones = JapanAirBoxOffsets.flatMap((box) => {
-    // if (GlobalGameState.gamePhase === GlobalGameState.PHASE.JAPAN_SETUP) {
-    //   return getJapanSetupZones(box)
-    // }
-    // if (
-    //   GlobalGameState.gamePhase === GlobalGameState.PHASE.AIR_OPERATIONS &&
-    //   initiative === GlobalUnitsModel.Side.JAPAN
-    // ) {
-    //   if (box.name.includes("STRIKE")) {
-    //     return box.name
-    //   }
-    // }
-    return box.name
+    if (GlobalGameState.gamePhase === GlobalGameState.PHASE.JAPAN_SETUP) {
+      return getJapanSetupZones(box)
+    }
+    if (
+      GlobalGameState.gamePhase === GlobalGameState.PHASE.AIR_OPERATIONS &&
+      initiative === GlobalUnitsModel.Side.JAPAN
+    ) {
+      if (box.name.includes("STRIKE")) {
+        return box.name
+      }
+    }
   })
   return jpZones.filter((zone) => zone != undefined)
 }

@@ -108,7 +108,7 @@ describe("Anti-Aircraft Fire tests", () => {
     })
 
     // 3. set target of strike
-    GlobalGameState.airAttackTarget = GlobalUnitsModel.TaskForce.CARRIER_DIV_2
+    GlobalGameState.taskForceTarget = GlobalUnitsModel.TaskForce.CARRIER_DIV_2
   }
 
   test("Enterprise Strike Against Japanese CD2", () => {
@@ -116,7 +116,7 @@ describe("Anti-Aircraft Fire tests", () => {
     expect(units.length).toEqual(2)
 
     // determine if there are fighters in the CAP box
-    const capBox = controller.getCAPBoxForTaskForce(GlobalGameState.airAttackTarget, GlobalUnitsModel.Side.JAPAN)
+    const capBox = controller.getCAPBoxForTaskForce(GlobalGameState.taskForceTarget, GlobalUnitsModel.Side.JAPAN)
     expect(capBox).toEqual(GlobalUnitsModel.AirBox.JP_CD2_CAP)
 
     const capUnits = controller.getAllAirUnitsInBox(capBox)

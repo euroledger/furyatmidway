@@ -44,7 +44,7 @@ export function doSelectionRoll(controller, roll0) {
     actualTarget = controller.determineTarget(rolls[0])
     theRoll = [rolls[0]]
   }
-  GlobalGameState.airAttackTarget = actualTarget
+  GlobalGameState.taskForceTarget = actualTarget
 
   controller.viewEventHandler({
     type: Controller.EventTypes.TARGET_SELECTION_ROLL,
@@ -91,7 +91,7 @@ export function doAAAFireRolls(testRolls) {
 }
 
 function getFightersForStrikeGroup(controller) {
-  if (GlobalGameState.airAttackTarget === undefined) {
+  if (GlobalGameState.taskForceTarget === undefined) {
     return []
   }
 
@@ -101,7 +101,7 @@ function getFightersForStrikeGroup(controller) {
       : GlobalUnitsModel.Side.US
 
 
-  const fleetBeingAttacked = controller.getFleetForTaskForce(GlobalGameState.airAttackTarget, sideBeingAttacked)
+  const fleetBeingAttacked = controller.getFleetForTaskForce(GlobalGameState.taskForceTarget, sideBeingAttacked)
 
   let location
   if (fleetBeingAttacked==="MIDWAY") {

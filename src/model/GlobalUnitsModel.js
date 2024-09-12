@@ -74,7 +74,11 @@ export default class GlobalUnitsModel {
     US_STRIKE_BOX_6: "US STRIKE BOX 6",
 
     JP_ELIMINATED: "JAPAN ELIMINATED BOX",
-    US_ELIMINATED: "US ELIMINATED BOX"
+    US_ELIMINATED: "US ELIMINATED BOX",
+
+    US_ATTACK_BOX_1: "US ATTACK BOX 1",
+    US_ATTACK_BOX_2: "US ATTACK BOX 2",
+
   }
 
   static Side = {

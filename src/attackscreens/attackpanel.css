@@ -1,0 +1,24 @@
+.drag-drop-zone-small2 {
+    position: absolute;
+    width: 10.0%;
+    height: 30.0%;
+    text-align: center;
+    border-radius:7px;
+    z-index:0;
+  }
+  
+  .bg-japan2 {
+    background: rgba(228, 92, 92, 0.8);
+  }
+  
+  .bg-japan-strike2 {
+    background: rgba(228, 92, 92, 0.4);
+  }
+  
+  .bg-us2 {
+    background: rgba(92, 131, 228, 0.8);
+  }
+  .zone22 {
+    /* background: green;  */
+    border: 1px solid rgb(23, 1, 1)
+  }

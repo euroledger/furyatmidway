@@ -9,9 +9,6 @@ class HexCommand extends Command {
     if (this.commandType != COMMAND_TYPE.PLACE) {
       from = `${this.from.currentHex.row}-${this.from.currentHex.col}`;
     }
-    console.log("SIDE=",this.side)
-    console.log("UNIT=",this.unit)
-
     return `MOVE ${this.side} ${this.unit} from ${from} to ${this.to.currentHex.row}-${this.to.currentHex.col}`;
   }
 }
