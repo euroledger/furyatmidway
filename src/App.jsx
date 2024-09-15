@@ -25,10 +25,10 @@ import {
   doCAPEvent,
   doFighterCounterattack,
   doAAAFireRolls,
+  doAttackFireRolls,
+  doCarrierDamageRolls
 } from "./DiceHandler"
 import { determineAllUnitsDeployedForCarrier } from "./controller/AirUnitSetupHandler"
-import JapanAirBoxOffsets from "./components/draganddrop/JapanAirBoxOffsets"
-import USAirBoxOffsets from "./components/draganddrop/USAirBoxOffsets"
 
 import { usCSFStartHexes, japanAF1StartHexesNoMidway, japanAF1StartHexesMidway } from "./components/MapRegions"
 import YesNoDialog from "./components/dialogs/YesNoDialog"
@@ -37,6 +37,7 @@ import loadHandler from "./LoadHandler"
 import { allHexesWithinDistance } from "./components/HexUtils"
 import DicePanel from "./components/dialogs/DicePanel"
 import LargeDicePanel from "./components/dialogs/LargeDicePanel"
+import NewDicePanel from "./components/dialogs/NewDicePanel"
 import { AirOpsHeaders, AirOpsFooters } from "./attackscreens/AirOpsDataPanels"
 import { TargetHeaders, TargetFooters } from "./attackscreens/TargetPanel"
 import { AttackTargetHeaders, AttackTargetFooters } from "./attackscreens/AttackTargetPanel"
@@ -44,6 +45,7 @@ import { CAPHeaders, CAPFooters } from "./attackscreens/CAPPanel"
 import { DamageHeaders, DamageFooters } from "./attackscreens/DamageAllocationPanel"
 import { EscortHeaders, EscortFooters } from "./attackscreens/EscortPanel"
 import { AAAHeaders, AAAFooters } from "./attackscreens/AAAPanel"
+import { AttackResolutionHeaders, AttackResolutionFooters } from "./attackscreens/AttackResolutionPanel"
 
 import UITester from "./UITester"
 import { getJapanEnabledAirBoxes, getUSEnabledAirBoxes } from "./AirBoxZoneHandler"
@@ -102,7 +104,8 @@ export function App() {
   const [gameStateShow, setGameStateShow] = useState(false)
   const [initiativePanelShow, setInitiativePanelShow] = useState(false)
   const [targetPanelShow, setTargetPanelShow] = useState(false)
-  const [attackTargetPanelShow, setAttackTargetPanelShow] = useState(true)
+  const [attackTargetPanelShow, setAttackTargetPanelShow] = useState(false)
+  const [attackResolutionPanelShow, setAttackResolutionPanelShow] = useState(true)
 
   const [capInterceptionPanelShow, setCapInterceptionPanelShow] = useState(false)
 
@@ -143,11 +146,20 @@ export function App() {
 
   const [attackTargetsSelected, setAttackTargetsSelected] = useState(false)
 
+  const [carrierHitsDetermined, setCarrierHitsDetermined] = useState(false)
+
+  const [attackResolved, setAttackResolved] = useState(false)
+
   const [targetSelected, setTargetSelected] = useState(false)
 
   const [eliminatedSteps, setEliminatedSteps] = useState(0)
 
   const [stepsLeft, setStepsLeft] = useState(0)
+
+  const [carrierHits, setCarrierHits] = useState(-1)
+  const [numDiceToRoll, setNumDiceToRoll] = useState(16)
+
+  GlobalGameState.TESTING = true
   useEffect(() => {
     if (GlobalGameState.gamePhase === GlobalGameState.PHASE.TARGET_DETERMINATION) {
       // @TODO CHECK IF JAPANESE PLAYER HOLDS CARD 11
@@ -162,6 +174,14 @@ export function App() {
   useEffect(() => {
     if (GlobalGameState.gamePhase === GlobalGameState.PHASE.ATTACK_TARGET_SELECTION) {
       setAttackTargetPanelShow(true)
+    }
+  }, [GlobalGameState.gamePhase])
+
+  useEffect(() => {
+    if (GlobalGameState.gamePhase === GlobalGameState.PHASE.AIR_ATTACK) {
+      GlobalGameState.dieRolls = 0
+      GlobalGameState.carrierHitsDetermined=false
+      setAttackResolutionPanelShow(true)
     }
   }, [GlobalGameState.gamePhase])
 
@@ -195,6 +215,12 @@ export function App() {
     if (GlobalGameState.gamePhase === GlobalGameState.PHASE.ANTI_AIRCRAFT_FIRE) {
       GlobalGameState.dieRolls = 0
       setAaaPanelShow(true)
+    }
+  }, [GlobalGameState.gamePhase])
+
+  useEffect(() => {
+    if (GlobalGameState.gamePhase === GlobalGameState.PHASE.ATTACK_TARGET_SELECTION) {
+      setAttackTargetPanelShow(true)
     }
   }, [GlobalGameState.gamePhase])
 
@@ -631,7 +657,8 @@ export function App() {
   const attackTargetHeaders = (
     <>
       <AttackTargetHeaders
-        controller={GlobalInit.controller} setAttackTargetsSelected={setAttackTargetsSelected}
+        controller={GlobalInit.controller}
+        setAttackTargetsSelected={setAttackTargetsSelected}
       ></AttackTargetHeaders>
     </>
   )
@@ -716,6 +743,20 @@ export function App() {
       <AirOpsHeaders></AirOpsHeaders>
     </>
   )
+
+  const attackResolutionHeaders = (
+    <>
+      <AttackResolutionHeaders controller={GlobalInit.controller}></AttackResolutionHeaders>
+    </>
+  )
+
+  const attackResolutionFooters = (
+    <>
+      <AttackResolutionFooters
+        totalHits={carrierHits}
+      ></AttackResolutionFooters>
+    </>
+  )
   function doInitiativeRoll(roll0, roll1) {
     // for automated testing
     const sideWithInitiative = doIntiativeRoll(GlobalInit.controller, roll0, roll1)
@@ -743,6 +784,34 @@ export function App() {
     doAAAFireRolls()
 
     GlobalGameState.updateGlobalState()
+  }
+
+  function doDamageRolls() {
+    // 1. determine if target is carrier or Midway or Invasion Force
+
+    // 2. If carriers, roll for bow or stern
+    doCarrierDamageRolls(GlobalInit.controller)
+
+    // 3. If Midway of MIF, move hits marker accordingly
+    setAttackResolved(() => true)
+  }
+
+  function doAttackResolutionRolls() {
+    if (GlobalGameState.carrierHitsDetermined) {
+      doDamageRolls()
+      return
+    }
+    const hits = doAttackFireRolls(GlobalInit.controller)
+
+    // if (hits === 0) {
+    //   setAttackResolved(true)
+    //   return
+    // }
+
+    // setCarrierHitsDetermined(true)
+    setCarrierHits(() => hits)
+    GlobalGameState.dieRolls=[]
+    GlobalGameState.carrierHitsDetermined=true
   }
 
   function sendCapEvent() {
@@ -845,6 +914,7 @@ export function App() {
         headers={airOpsHeaders}
         footers={airOpsFooters}
         showDice={true}
+        margin={25}
         onHide={(e) => {
           setInitiativePanelShow(false)
           nextAction(e)
@@ -881,9 +951,7 @@ export function App() {
         width={30}
         showDice={true}
         margin={300}
-        closeButtonDisabled={
-          !attackTargetsSelected
-        }
+        closeButtonDisabled={!attackTargetsSelected}
         closeButtonStr="Next..."
         onHide={(e) => {
           setAttackTargetPanelShow(false)
@@ -960,6 +1028,40 @@ export function App() {
         closeButtonDisabled={GlobalGameState.dieRolls === 0}
         disabled={false}
       ></LargeDicePanel>
+
+      <NewDicePanel
+        // numDice={GlobalInit.controller.getAttackingStepsRemainingTEST()}
+        controller={GlobalInit.controller}
+        numDice={numDiceToRoll}
+        show={!testClicked && attackResolutionPanelShow}
+        headerText="Attack Resolution"
+        headers={attackResolutionHeaders}
+        footers={attackResolutionFooters}
+        showDice={true}
+        margin={0}
+        onHide={(e) => {
+          setAttackResolutionPanelShow(false)
+          nextAction(e)
+        }}
+        doRoll={doAttackResolutionRolls}
+        width={74}
+        closeButtonStr="Next..."
+        closeButtonCallback={
+          !attackResolved
+            ? () => {
+                GlobalGameState.dieRolls = []
+                setNumDiceToRoll(carrierHits)
+              }
+            : () => {
+                setAttackResolutionPanelShow(false)
+                nextAction(e)
+              }
+        }
+        diceButtonDisabled={GlobalGameState.dieRolls.length !== 0}
+        closeButtonDisabled={GlobalGameState.dieRolls.length === 0 && !attackResolved}
+        disabled={false}
+      ></NewDicePanel>
+
       <GameStatusPanel show={gameStateShow} gameState={gameState} onHide={() => setGameStateShow(false)} />
       <CardPanel show={jpHandShow} side={GlobalUnitsModel.Side.JAPAN} onHide={() => setjpHandShow(false)}></CardPanel>
       <CardPanel show={usHandShow} side={GlobalUnitsModel.Side.US} onHide={() => setusHandShow(false)}></CardPanel>

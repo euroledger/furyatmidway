@@ -588,7 +588,7 @@ const usAirUnits = [
     carrier: GlobalUnitsModel.Carrier.ENTERPRISE,
     side: GlobalUnitsModel.Side.US,
     aircraftUnit: {
-      strength: 2,
+      strength: 3,
       movement: 2,
       attack: true,
       diveBomber: true,
@@ -605,8 +605,8 @@ const usAirUnits = [
     carrier: GlobalUnitsModel.Carrier.ENTERPRISE,
     side: GlobalUnitsModel.Side.US,
     aircraftUnit: {
-      strength: 2,
-      movement: 2,
+      strength: 3,
+      movement: 3,
       attack: true,
       diveBomber: true,
       steps: 2,
@@ -674,8 +674,8 @@ const usAirUnits = [
     carrier: GlobalUnitsModel.Carrier.HORNET,
     side: GlobalUnitsModel.Side.US,
     aircraftUnit: {
-      strength: 2,
-      movement: 2,
+      strength: 3,
+      movement: 3,
       attack: true,
       diveBomber: true,
       steps: 2,
@@ -691,8 +691,8 @@ const usAirUnits = [
     carrier: GlobalUnitsModel.Carrier.HORNET,
     side: GlobalUnitsModel.Side.US,
     aircraftUnit: {
-      strength: 2,
-      movement: 2,
+      strength: 3,
+      movement: 3,
       attack: true,
       diveBomber: true,
       steps: 2,
@@ -761,8 +761,8 @@ const usAirUnits = [
     carrier: GlobalUnitsModel.Carrier.YORKTOWN,
     side: GlobalUnitsModel.Side.US,
     aircraftUnit: {
-      strength: 2,
-      movement: 2,
+      strength: 3,
+      movement: 3,
       attack: true,
       diveBomber: true,
       steps: 2,
@@ -778,8 +778,8 @@ const usAirUnits = [
     carrier: GlobalUnitsModel.Carrier.YORKTOWN,
     side: GlobalUnitsModel.Side.US,
     aircraftUnit: {
-      strength: 2,
-      movement: 2,
+      strength: 3,
+      movement: 3,
       attack: true,
       diveBomber: true,
       steps: 2,

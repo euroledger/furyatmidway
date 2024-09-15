@@ -67,14 +67,21 @@ export default class GlobalGameState {
   static airOperationPoints = {
     japan: 0,
     us: 0,
-  };
+  }
 
   static taskForceTarget = ""
-  static carrierTarget=""
+  static currentCarrierAttackTarget=""
+
+  // Can attack both carriers in a task force
+  static carrierTarget1=""
+  static carrierTarget2=""
+
   
   static stateHandler = () => {};
 
   static dieRolls = new Array()
+
+  static carrierHitsDetermined = false
   
   static midwayInvasionLevel = 5;
 
@@ -129,6 +136,8 @@ export default class GlobalGameState {
   static fighterHits = undefined
   static attackingStepsRemaining = undefined
   static antiaircraftHits = undefined
+
+  static carrierAttackHits = undefined
 
   static midwayAirOp = 1 // can be two air ops in Midway attack
 

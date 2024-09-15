@@ -1,4 +1,5 @@
-import "./dice.css"
+// import "./dice.css"
+import "./dice3.css"
 
 function Die({name}) {
   return (

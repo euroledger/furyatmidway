@@ -80,9 +80,9 @@ export default class BoxModels {
     this.usMidwayHangar = new Array(this.getNumberOfUSZones(GlobalUnitsModel.AirBox.US_MIDWAY_HANGAR))
     this.usYorktownFlightDeck = new Array(this.getNumberOfUSZones(GlobalUnitsModel.AirBox.US_YORKTOWN_FLIGHT_DECK))
     this.usMidwayFlightDeck = new Array(this.getNumberOfUSZones(GlobalUnitsModel.AirBox.US_MIDWAY_FLIGHT_DECK))
-    this.offboard = new Array()
-    this.jpEliminated = new Array()
-    this.usEliminated = new Array()
+    this.offboard = new Array(1000)
+    this.jpEliminated = new Array(1000)
+    this.usEliminated = new Array(1000)
 
     this.usCarrierMap = new Map() // key = carrier name, value = array of air units
     this.usCarrierMap.set(GlobalUnitsModel.Carrier.ENTERPRISE, new Array())
@@ -198,14 +198,13 @@ export default class BoxModels {
     if (
       boxName === GlobalUnitsModel.AirBox.OFFBOARD ||
       boxName === GlobalUnitsModel.AirBox.JP_ELIMINATED ||
-      boxName === GlobalUnitsModel.US_ELIMINATED
+      boxName === GlobalUnitsModel.AirBox.US_ELIMINATED
     ) {
       box.push(value)
     } else {
       box[index] = value
     }
-
-    // console.log(` => Air Unit ${value.name}: add to box ${boxName}`)
+    // console.log(` => Air Unit ${value.name}: add to box ${boxName} index ${index}`)
 
     this.setAirUnitLocation(value.name, boxName, index)
   }

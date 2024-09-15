@@ -40,7 +40,7 @@ function DicePanel(props) {
   if (margin) {
     myBigMargin = margin
   }
-  
+
   //   const sizey = numDice >= 4 ? "xl" : "lg"
 
   const closey = closeButtonStr ?? "Close"
@@ -63,7 +63,9 @@ function DicePanel(props) {
           color: "white",
         }}
       >
-        <p className="text-center"><h4>{headerText}</h4></p>
+        <p className="text-center">
+          <h4>{headerText}</h4>
+        </p>
       </Modal.Header>
       <Modal.Body style={{ background: `${bg}`, color: "black" }}>
         <div style={{ marginLeft: "28px" }}>
@@ -74,8 +76,12 @@ function DicePanel(props) {
               {Array.from({ length: numDice }).map((_, idx) => {
                 const dieName = "dice" + (idx + 1)
                 return (
-                  <div style={{ marginLeft: `${myBigMargin}px` }}>
-                    <Col key={idx} className="d-flex">
+                  <div>
+                    <Col
+                      style={{ marginTop: "10px", marginBottom: "20px", marginLeft: `${myBigMargin}px` }}
+                      key={idx}
+                      className="d-flex"
+                    >
                       <Die name={dieName}></Die>
                     </Col>
                   </div>
@@ -88,11 +94,11 @@ function DicePanel(props) {
       </Modal.Body>
 
       <Modal.Footer style={{ background: `${bg}`, color: "black" }}>
-      {numDice > 0 && (
-        <Button disabled={diceButtonDisabled} onClick={() => doRoll()}>
-          {diceButtonStr}
-        </Button>
-      )}
+        {numDice > 0 && (
+          <Button disabled={diceButtonDisabled} onClick={() => doRoll()}>
+            {diceButtonStr}
+          </Button>
+        )}
         <Button
           disabled={closeButtonDisabled}
           onClick={(e) => {

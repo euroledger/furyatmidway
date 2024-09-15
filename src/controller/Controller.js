@@ -58,7 +58,13 @@ export default class Controller {
   }
 
   setAirUnitTarget(airUnit, target) {
-    console.log("Set target for", airUnit.name, "to", target)
+    if (GlobalGameState.carrierTarget1 !== target && GlobalGameState.carrierTarget2 !== target) {
+      if (GlobalGameState.carrierTarget1 === "") {
+        GlobalGameState.carrierTarget1 = target
+      } else {
+        GlobalGameState.carrierTarget2 = target
+      }
+    }
     this.targetMap.set(airUnit, target)
   }
 
@@ -319,7 +325,26 @@ export default class Controller {
     return array
   }
 
-  getAttackingStrikeUnitsTEST(carrierDiv) {
+  getStrikeUnitsAttackingCarrier() {
+    if (GlobalGameState.TESTING) {
+      return this.getAttackingStrikeUnitsTEST(
+        GlobalUnitsModel.TaskForce.TASK_FORCE_16,
+        GlobalUnitsModel.Carrier.ENTERPRISE
+      )
+    }
+    // only return strike units attacking this carrier
+
+    // filter target map on this carrier
+    const x = new Map([...this.targetMap].filter(([_, v]) => v === GlobalGameState.currentCarrierAttackTarget))
+    return Array.from(x.keys())
+  }
+
+  getAttackingStepsRemainingTEST() {
+    return 16
+  }
+
+  getAttackingStrikeUnitsTEST(carrierDiv, carrier) {
+    GlobalGameState.currentCarrierAttackTarget = carrier
     GlobalGameState.taskForceTarget = carrierDiv
     GlobalGameState.sideWithInitiative = GlobalUnitsModel.Side.JAPAN
 
@@ -344,19 +369,132 @@ export default class Controller {
     // this.addAirUnitToBox(GlobalUnitsModel.AirBox.JP_KAGA_FLIGHT_DECK, 0, kdb)
     // this.addAirUnitToBox(GlobalUnitsModel.AirBox.JP_KAGA_FLIGHT_DECK, 1, ktb)
 
-    this.setCarrierSternDamaged(GlobalUnitsModel.Carrier.ENTERPRISE)
-    this.setCarrierBowDamaged(GlobalUnitsModel.Carrier.HORNET)
+    // this.setCarrierSternDamaged(GlobalUnitsModel.Carrier.ENTERPRISE)
+    // this.setCarrierBowDamaged(GlobalUnitsModel.Carrier.ENTERPRISE)
 
     this.addAirUnitToBox(GlobalUnitsModel.AirBox.US_ENTERPRISE_FLIGHT_DECK, 0, edb1)
-    this.addAirUnitToBox(GlobalUnitsModel.AirBox.US_HORNET_FLIGHT_DECK, 1, hotb)
+    this.addAirUnitToBox(GlobalUnitsModel.AirBox.US_ENTERPRISE_FLIGHT_DECK, 1, etb)
 
+    // this.addAirUnitToBox(GlobalUnitsModel.AirBox.US_HORNET_FLIGHT_DECK, 1, hotb)
 
     // this.setCarrierSternDamaged(GlobalUnitsModel.Carrier.HIRYU)
     // this.setCarrierBowDamaged(GlobalUnitsModel.Carrier.SORYU)
 
     // this.setCarrierBowDamaged(GlobalUnitsModel.Carrier.HIRYU)
     // this.setCarrierSternDamaged(GlobalUnitsModel.Carrier.SORYU)
+
+    kdb.aircraftUnit.steps = 1
+    kdb.image = "/images/aircounters/kaga-d3a-back.png"
+
+    ktb.aircraftUnit.steps = 1
+    ktb.image = "/images/aircounters/kaga-b5n-back.png"
+
+    hdb.aircraftUnit.steps = 1
+    hdb.image = "/images/aircounters/hiryu-d3a-back.png"
+
+    stb.aircraftUnit.steps = 1
+    stb.image = "/images/aircounters/soryu-b5n-back.png"
+    // return [kdb, ktb]
     return [kdb, ktb, adb, atb, hdb, htb, sdb, stb]
+
+    // return [kdb, ktb, adb, atb]
+  }
+
+  attackAircraftOnDeck() {
+    const side = GlobalUnitsModel.carrierSideMap.get(GlobalGameState.currentCarrierAttackTarget)
+    const flightDeckBox = this.airOperationsModel.getAirBoxForNamedShip(
+      side,
+      GlobalGameState.currentCarrierAttackTarget,
+      "FLIGHT"
+    )
+    let boxName = Object.values(flightDeckBox)[0]
+    const attackUnitsOnFlightDeck = this.getAttackAircraftInBox(boxName)
+    return attackUnitsOnFlightDeck.length > 0
+  }
+
+  combinedAttack() {
+    const units = this.getStrikeUnitsAttackingCarrier()
+
+    let dbFound = false
+    let torpFound = false
+    for (const unit of units) {
+      if (unit.aircraftUnit.diveBomber) {
+        dbFound = true
+      } else {
+        torpFound = true
+      }
+      if (dbFound && torpFound) {
+        return true
+      }
+    }
+    return false
+  }
+
+  getTargetForAttack() {
+    if (GlobalGameState.taskForceTarget === GlobalUnitsModel.TaskForce.TASK_FORCE_17) {
+      return GlobalUnitsModel.Carrier.YORKTOWN
+    }
+
+    if (GlobalGameState.taskForceTarget === GlobalUnitsModel.TaskForce.MIDWAY) {
+      return GlobalUnitsModel.Carrier.MIDWAY
+    }
+
+    if (GlobalGameState.taskForceTarget === GlobalUnitsModel.TaskForce.CARRIER_DIV_1) {
+      if (this.isSunk(GlobalUnitsModel.Carrier.AKAGI) && !this.isSunk(GlobalUnitsModel.Carrier.KAGA)) {
+        return GlobalUnitsModel.Carrier.KAGA
+      }
+
+      if (!this.isSunk(GlobalUnitsModel.Carrier.AKAGI) && this.isSunk(GlobalUnitsModel.Carrier.KAGA)) {
+        return GlobalUnitsModel.Carrier.AKAGI
+      }
+      return null
+    }
+
+    if (GlobalGameState.taskForceTarget === GlobalUnitsModel.TaskForce.CARRIER_DIV_2) {
+      if (this.isSunk(GlobalUnitsModel.Carrier.HIRYU) && !this.isSunk(GlobalUnitsModel.Carrier.SORYU)) {
+        return GlobalUnitsModel.Carrier.SORYU
+      }
+
+      if (!this.isSunk(GlobalUnitsModel.Carrier.HIRYU) && this.isSunk(GlobalUnitsModel.Carrier.SORYU)) {
+        return GlobalUnitsModel.Carrier.HIRYU
+      }
+      return null
+    }
+
+    if (GlobalGameState.taskForceTarget === GlobalUnitsModel.TaskForce.TASK_FORCE_16) {
+      if (this.isSunk(GlobalUnitsModel.Carrier.ENTERPRISE) && !this.isSunk(GlobalUnitsModel.Carrier.HORNET)) {
+        return GlobalUnitsModel.Carrier.HORNET
+      }
+
+      if (!this.isSunk(GlobalUnitsModel.Carrier.ENTERPRISE) && this.isSunk(GlobalUnitsModel.Carrier.HORNET)) {
+        return GlobalUnitsModel.Carrier.ENTERPRISE
+      }
+      return null
+    }
+  }
+
+  autoAssignTargets() {
+    let carrierAttackTarget = this.getTargetForAttack()
+    if (carrierAttackTarget === null) {
+      throw Error("Cannot auto assign targets, more than one available")
+    }
+    const unitsInGroup = this.getAttackingStrikeUnits(true)
+
+    for (let airUnit of unitsInGroup) {
+      this.setAirUnitTarget(airUnit, carrierAttackTarget)
+    }
+  }
+
+  getAttackingStepsRemaining() {
+    const unitsInGroup = this.getAttackingStrikeUnits(true)
+    let totalSteps = 0
+    const airCounters = unitsInGroup.map((airUnit) => {
+      if (!airUnit.aircraftUnit.attack) {
+        return
+      }
+      totalSteps += airUnit.aircraftUnit.steps
+    })
+    return totalSteps
   }
   getAttackingStrikeUnits(excludeFighters) {
     const sideBeingAttacked =
@@ -369,6 +507,14 @@ export default class Controller {
       location = Controller.MIDWAY_HEX
     } else {
       location = this.getFleetLocation(fleetBeingAttacked, sideBeingAttacked)
+      // console.log(
+      //   "fleetBeingAttacked=",
+      //   fleetBeingAttacked,
+      //   "sideBeingAttacked=",
+      //   sideBeingAttacked,
+      //   "location=",
+      //   location
+      // )
     }
 
     const strikeGroups = this.getAllStrikeGroupsInLocation(location, GlobalGameState.sideWithInitiative)
@@ -411,6 +557,11 @@ export default class Controller {
 
   getAllAirUnitsInBox = (boxName) => {
     return this.boxModel.getAllAirUnitsInBox(boxName)
+  }
+
+  getAttackAircraftInBox = (boxName) => {
+    let attackers = this.getAllAirUnitsInBox(boxName)
+    return attackers.filter((unit) => unit.aircraftUnit.attack)
   }
 
   getAllFightersInBox = (boxName) => {
@@ -524,6 +675,21 @@ export default class Controller {
     return GlobalUnitsModel.usFleetUnits.get(name)
   }
 
+  getCarrier(name) {
+    if (name === GlobalUnitsModel.Carrier.MIDWAY) {
+      return GlobalUnitsModel.Carrier.MIDWAY
+    }
+    const side = GlobalUnitsModel.carrierSideMap.get(name)
+
+    let carrier
+    if (side === GlobalUnitsModel.Side.JAPAN) {
+      carrier = GlobalUnitsModel.jpFleetUnits.get(name)
+    } else {
+      carrier = GlobalUnitsModel.usFleetUnits.get(name)
+    }
+    return carrier
+  }
+
   isSunk(name) {
     if (name === GlobalUnitsModel.Carrier.MIDWAY) {
       return false
@@ -593,6 +759,40 @@ export default class Controller {
     }
   }
 
+  addHitToCarrier(name, dieRoll) {
+    const side = GlobalUnitsModel.carrierSideMap.get(name)
+
+    let carrier
+    if (side === GlobalUnitsModel.Side.JAPAN) {
+      carrier = GlobalUnitsModel.jpFleetUnits.get(name)
+    } else {
+      carrier = GlobalUnitsModel.usFleetUnits.get(name)
+    }
+
+    if (carrier.hits === 3) {
+      return
+    }
+    if (carrier.hits === 2) {
+      carrier.hits = 3 // sunk
+      return
+    }
+    if (carrier.hits === 1) {
+      carrier.hits = 2
+      if (!carrier.bowDamaged) {
+        this.setCarrierBowDamaged(name)
+      } else {
+        this.setCarrierSternDamaged(name)
+      }
+      return
+    }
+    // no damage to this carrier, use dieRoll to determine what is hit
+    carrier.hits = 1
+    if (dieRoll < 4) {
+      this.setCarrierBowDamaged(name)
+    } else {
+      this.setCarrierSternDamaged(name)
+    }
+  }
   setCarrierBowDamaged(name) {
     const side = GlobalUnitsModel.carrierSideMap.get(name)
     if (side === GlobalUnitsModel.Side.JAPAN) {

@@ -60,20 +60,16 @@ export function DamageHeaders({ controller, eliminatedSteps, setEliminatedSteps,
 
   const handleClick = (airUnit) => {
     if (GlobalGameState.gamePhase === GlobalGameState.PHASE.CAP_DAMAGE_ALLOCATION) {
-      console.log("CHeck cap units")
       if (eliminatedSteps === GlobalGameState.capHits) {
-        console.log("NOOOOOO")
         // setEliminatedSteps(0)
         return // don't allow more steps to be eliminated than is necessary
       }
     } else if (GlobalGameState.gamePhase === GlobalGameState.PHASE.ESCORT_DAMAGE_ALLOCATION) {
       if (eliminatedSteps === GlobalGameState.fighterHits) {
-        console.log("QUACK 100")
         // setEliminatedSteps(0)
         return // don't allow more steps to be eliminated than is necessary
       }
     } else if (GlobalGameState.gamePhase === GlobalGameState.PHASE.AAA_DAMAGE_ALLOCATION) {
-      console.log("QUACK BAD")
       if (eliminatedSteps === GlobalGameState.antiaircraftHits) {
         // setEliminatedSteps(0)
         return // don't allow more steps to be eliminated than is necessary

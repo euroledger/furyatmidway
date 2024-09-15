@@ -14,12 +14,17 @@ class ViewEventAirUnitMoveHandler {
     const { boxName, boxIndex } = this.controller.getAirUnitLocation(counterData.name)
     let from = boxName === GlobalUnitsModel.AirBox.OFFBOARD ? "OFFBOARD" : boxName + " - box " + boxIndex
 
+    let idx = index
+    // console.trace()
+    if (idx === -1) {
+      idx = this.controller.getFirstAvailableZone(name)
+    }
     const to =
       name === GlobalUnitsModel.AirBox.JP_ELIMINATED || name === GlobalUnitsModel.AirBox.US_ELIMINATED
         ? name
-        : `${name} - box ${index}`
+        : `${name} - box ${idx}`
 
-    this.controller.addAirUnitToBox(name, index, counterData)
+    this.controller.addAirUnitToBox(name, idx, counterData)
     let command = new MoveCommand(COMMAND_TYPE.MOVE_AIR_UNIT, counterData.longName, from, to)
 
     if (!loading) {

@@ -5,7 +5,6 @@ import GlobalUnitsModel from "../model/GlobalUnitsModel"
 function AirAttackCounter({ controller, airUnit, index, myCarrier, myIdx, lefty, setAttackTargetsSelected }) {
   
   const onDrag = () => {
-    console.log("DRAGGING...")
   }
 
   const handleDropUS = (airUnit) => {
@@ -14,8 +13,10 @@ function AirAttackCounter({ controller, airUnit, index, myCarrier, myIdx, lefty,
     let size = controller.getTargetMapSizeForCarrier(myCarrier)
 
     let i = controller.getTargetMapSize()
-    let j = controller.getAttackingStrikeUnitsTEST(GlobalUnitsModel.TaskForce.CARRIER_DIV_1).length
+    // let j = controller.getAttackingStrikeUnitsTEST(GlobalUnitsModel.TaskForce.CARRIER_DIV_1).length
+    let j = controller.getAttackingStrikeUnits(true).length
 
+    console.log("i = ", i, "j = ", j)
     if (i == j) {
       // all units allocated a target
       setAttackTargetsSelected(() => true)
@@ -45,7 +46,8 @@ function AirAttackCounter({ controller, airUnit, index, myCarrier, myIdx, lefty,
     let size = controller.getTargetMapSizeForCarrier(myCarrier)
 
     let i = controller.getTargetMapSize()
-    let j = controller.getAttackingStrikeUnitsTEST(GlobalUnitsModel.TaskForce.TASK_FORCE_16).length
+    // let j = controller.getAttackingStrikeUnitsTEST(GlobalUnitsModel.TaskForce.TASK_FORCE_16).length
+    let j = controller.getAttackingStrikeUnits(true).length
 
     if (i == j) {
       // all units allocated a target
@@ -67,7 +69,6 @@ function AirAttackCounter({ controller, airUnit, index, myCarrier, myIdx, lefty,
       top: top,
     }))
     if (size > 1) {
-      console.log(airUnit.name, "=>",  size * 10)
       setZindex(() => (size * 10))
     }
   }

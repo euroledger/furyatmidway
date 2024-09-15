@@ -47,6 +47,7 @@ const rollDice = (rolls) => {
 
   audio.play();
   for (let i = 0; i < rolls.length; i++) {
+    console.log("LOOK FOR",".dice" + (i+1) )
     const dice = document.querySelector(".dice" + (i+1))
    
     dice.style.animation = `rolling${i+1} 1s`

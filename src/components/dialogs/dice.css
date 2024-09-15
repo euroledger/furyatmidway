@@ -13,7 +13,15 @@
 .dice5,
 .dice6,
 .dice7,
-.dice8 {
+.dice8,
+.dice9,
+.dice10,
+.dice11,
+.dice12,
+.dice13,
+.dice14,
+.dice15,
+.dice16 {
   width: 100px;
   height: 100px;
   transform-style: preserve-3d;
@@ -56,6 +64,46 @@
   }
 }
 @keyframes rolling8 {
+  50% {
+    transform: rotateX(455deg) rotateY(455deg);
+  }
+}
+@keyframes rolling9 {
+  50% {
+    transform: rotateX(455deg) rotateY(455deg);
+  }
+}
+@keyframes rolling10 {
+  50% {
+    transform: rotateX(455deg) rotateY(455deg);
+  }
+}
+@keyframes rolling11 {
+  50% {
+    transform: rotateX(455deg) rotateY(455deg);
+  }
+}
+@keyframes rolling12 {
+  50% {
+    transform: rotateX(455deg) rotateY(455deg);
+  }
+}
+@keyframes rolling13 {
+  50% {
+    transform: rotateX(455deg) rotateY(455deg);
+  }
+}
+@keyframes rolling14 {
+  50% {
+    transform: rotateX(455deg) rotateY(455deg);
+  }
+}
+@keyframes rolling15 {
+  50% {
+    transform: rotateX(455deg) rotateY(455deg);
+  }
+}
+@keyframes rolling16 {
   50% {
     transform: rotateX(455deg) rotateY(455deg);
   }
@@ -147,4 +195,3 @@
   margin: -35px 0 0 -35px;
   box-shadow: 25px 25px, 50px 50px;
 }
-

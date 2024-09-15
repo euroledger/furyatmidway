@@ -136,3 +136,6 @@ body.modal-open .modal-backdrop {
   .modal-width7 {
     max-width: 70% !important
   }
+  .modal-width100 {
+    max-width: 100% !important
+  }

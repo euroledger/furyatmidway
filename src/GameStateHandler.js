@@ -156,7 +156,7 @@ export function displayAttackTargetPanel(controller) {
       return false
     }
   }
-  
+
   if (GlobalGameState.taskForceTarget === GlobalUnitsModel.TaskForce.CARRIER_DIV_2) {
     if (controller.isSunk(GlobalUnitsModel.Carrier.HIRYU) || controller.isSunk(GlobalUnitsModel.Carrier.SORYU)) {
       return false
@@ -398,23 +398,44 @@ export default function handleAction({
       GlobalGameState.gamePhase = GlobalGameState.PHASE.AIR_OPERATIONS
     }
   } else if (GlobalGameState.gamePhase === GlobalGameState.PHASE.ANTI_AIRCRAFT_FIRE) {
+    console.log(
+      "IN AAA FIRE...GlobalGameState.attackingStepsRemaining=",
+      GlobalInit.controller.getAttackingStepsRemaining()
+    )
     if (GlobalGameState.antiaircraftHits > 0) {
       GlobalGameState.gamePhase = GlobalGameState.PHASE.AAA_DAMAGE_ALLOCATION
-    } else if (GlobalGameState.attackingStepsRemaining > 0) {
+    } else if (GlobalInit.controller.getAttackingStepsRemaining() > 0) {
       moveCAPtoReturnBox(GlobalInit.controller, capAirUnits, setAirUnitUpdate)
-      GlobalGameState.gamePhase = GlobalGameState.PHASE.AIR_ATTACK
+      let display = displayAttackTargetPanel(GlobalInit.controller)
+      if (display) {
+        GlobalGameState.gamePhase = GlobalGameState.PHASE.ATTACK_TARGET_SELECTION
+      } else {
+        // allocate all targets to single carrier/midway
+        GlobalInit.controller.autoAssignTargets()
+        GlobalGameState.gamePhase = GlobalGameState.PHASE.AIR_ATTACK
+      }
     } else {
       GlobalGameState.gamePhase = GlobalGameState.PHASE.AIR_OPERATIONS
     }
   } else if (GlobalGameState.gamePhase === GlobalGameState.PHASE.AAA_DAMAGE_ALLOCATION) {
-    console.log("SORTING OUT WHERE THE FUCK TO GO AFTER AAA FIRE...")
-    if (GlobalGameState.attackingStepsRemaining > 0) {
+    if (GlobalInit.controller.getAttackingStepsRemaining() > 0) {
       moveCAPtoReturnBox(GlobalInit.controller, capAirUnits, setAirUnitUpdate)
-      GlobalGameState.gamePhase = GlobalGameState.PHASE.AIR_ATTACK
+      let display = displayAttackTargetPanel(GlobalInit.controller)
+      if (display) {
+        GlobalGameState.gamePhase = GlobalGameState.PHASE.ATTACK_TARGET_SELECTION
+      } else {
+        // allocate all targets to single carrier/midway
+        GlobalInit.controller.autoAssignTargets()
+        GlobalGameState.gamePhase = GlobalGameState.PHASE.AIR_ATTACK
+      }
     } else {
       GlobalGameState.gamePhase = GlobalGameState.PHASE.AIR_OPERATIONS
     }
+  } else if (GlobalGameState.gamePhase === GlobalGameState.PHASE.ATTACK_TARGET_SELECTION) {
+    console.log("GO TO AIR ATTACK BUDDY!")
+    GlobalGameState.gamePhase = GlobalGameState.PHASE.AIR_ATTACK
   }
+
 
   // @TODO if all air units in a strike are eliminated maybe display a dialog saying "Air Attack Phase over, no
   // air units left or something"

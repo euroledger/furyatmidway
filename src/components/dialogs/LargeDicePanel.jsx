@@ -21,19 +21,32 @@ function LargeDicePanel(props) {
     margin,
     showDice,
     doRoll,
+    closeButtonStr,
+    closeButtonCallback,
     ...rest
   } = props
 
   const bg = "#293a4b"
-  const rowClass = `g-${numDice}`
+  const closey = closeButtonStr ?? "Close"
 
-  let myBigBollocks = "m-width" + numDice
+  let numDiceRow1 = numDice
+  let numDiceRow2 = 0
+  if (numDice > 8) {
+    // numDiceRow1 = Math.ceil(numDice / 2)
+    // numDiceRow2 = numDice - numDiceRow1
+    numDiceRow1 = 8
+    numDiceRow2 = numDice - 8
+  }
+  const rowClass1 = `g-${numDiceRow1}`
+  const rowClass2 = `g-${numDiceRow2}`
+
+  let myBigBollocks = "m-width" + numDiceRow1
   let myBigMargin = 0
 
   let showDicePanel = showDice
 
   if (width) {
-    myBigBollocks = `maxWidth: ${width}%`
+    myBigBollocks = "m-width" + width
   }
 
   if (margin) {
@@ -41,7 +54,7 @@ function LargeDicePanel(props) {
   }
 
   //   const sizey = numDice >= 4 ? "xl" : "lg"
-
+  const show = numDiceRow2 > 0
   const diceButtonStr = numDice > 1 ? "Roll Dice" : "Roll Die"
   return (
     <Modal
@@ -61,43 +74,59 @@ function LargeDicePanel(props) {
           color: "white",
         }}
       >
-        <p className="text-center"><h4>{headerText}</h4></p>
+        <p className="text-center">
+          <h4>{headerText}</h4>
+        </p>
       </Modal.Header>
       <Modal.Body style={{ background: `${bg}`, color: "black" }}>
         <div style={{ marginLeft: "28px" }}>
           {headers}
 
           {showDicePanel && (
-            <div
-              style={{
-                display: "flex",
-                justifyContent: "center",
-                alignItems: "center",
-              }}
-            >
-              <Row xs={numDice} className={rowClass}>
-                {Array.from({ length: numDice }).map((_, idx) => {
-                  const dieName = "dice" + (idx + 1)
-                  return (
-                    <Col key={idx} className="d-flex">
-                      <div style={{ marginLeft: `${myBigMargin}px` }}>
-                        <Die name={dieName}></Die>
-                      </div>
-                    </Col>
-                  )
-                })}
-              </Row>
-              {/* <Row style={{marginTop: "10px" }} xs={numDice} className={rowClass}>
-              {Array.from({ length: numDice }).map((_, idx) => {
-                const dieName = "dice" + (idx + 1)
-                return (
-                    <Col key={idx} className="d-flex">
-                      <Die name={dieName}></Die>
-                    </Col>
-                )
-              })}
-            </Row> */}
-            </div>
+            <>
+              <div
+                style={{
+                  display: "flex",
+                  justifyContent: "center",
+                  alignItems: "center",
+                }}
+              >
+                <Row xs={numDiceRow1} className={rowClass1}>
+                  {Array.from({ length: numDiceRow1 }).map((_, idx) => {
+                    const dieName = "dice" + (idx + 1)
+                    return (
+                      <Col key={idx} className="d-flex">
+                        <div style={{ marginLeft: `${myBigMargin}px` }}>
+                          <Die name={dieName}></Die>
+                        </div>
+                      </Col>
+                    )
+                  })}
+                </Row>
+             
+              </div>
+              <div
+                style={{
+                  display: "flex",
+                  justifyContent: "center",
+                  alignItems: "center",
+                  marginTop: "10px"
+                }}
+              >
+                <Row xs={numDiceRow2} className={rowClass2}>
+                  {Array.from({ length: numDiceRow2 }).map((_, idx) => {
+                    const dieName = "dice" + (idx + 9)
+                    return (
+                      <Col key={idx} className="d-flex">
+                        <div style={{ marginLeft: `${myBigMargin}px` }}>
+                          <Die name={dieName}></Die>
+                        </div>
+                      </Col>
+                    )
+                  })}
+                </Row>
+              </div>
+            </>
           )}
           {footers}
         </div>
@@ -115,10 +144,14 @@ function LargeDicePanel(props) {
             if (nextState) {
               GlobalGameState.gamePhase = nextState
             }
-            onHide(e)
+            if(closeButtonCallback) {
+              closeButtonCallback()
+            } else {
+              onHide(e)
+            }
           }}
         >
-          Close
+          {closey}
         </Button>
       </Modal.Footer>
     </Modal>
