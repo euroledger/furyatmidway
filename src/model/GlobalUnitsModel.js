@@ -106,6 +106,9 @@ export default class GlobalUnitsModel {
   static jpAirUnits = new Map()
   static usAirUnits = new Map()
 
+  static damageMarkers = new Array()
+  static sunkMarkers = new Array()
+
   static jpStrikeGroups = new Map()
   static usStrikeGroups = new Map()
 

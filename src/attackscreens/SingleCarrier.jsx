@@ -4,10 +4,6 @@ import GlobalGameState from "../model/GlobalGameState"
 import "./attackpanel.css"
 
 export function SingleCarrier({ controller }) {
-  const sideBeingAttacked =
-    GlobalGameState.sideWithInitiative === GlobalUnitsModel.Side.US
-      ? GlobalUnitsModel.Side.JAPAN
-      : GlobalUnitsModel.Side.US
 
   let jpAkagi = {
     image: "/images/fleetcounters/akagi.jpg",
@@ -50,12 +46,19 @@ export function SingleCarrier({ controller }) {
   }
 
   let carrierTarget
+  console.log("CURRENT CARRIER ATTACK TARGET=", GlobalGameState.currentCarrierAttackTarget)
   if (GlobalGameState.currentCarrierAttackTarget === GlobalUnitsModel.Carrier.AKAGI) {
     carrierTarget = jpAkagi
   } else if (GlobalGameState.currentCarrierAttackTarget === GlobalUnitsModel.Carrier.KAGA) {
     carrierTarget = jpKaga
+  } else if (GlobalGameState.currentCarrierAttackTarget === GlobalUnitsModel.Carrier.HIRYU) {
+    carrierTarget = jpHiryu
+  } else if (GlobalGameState.currentCarrierAttackTarget === GlobalUnitsModel.Carrier.SORYU) {
+    carrierTarget = jpSoryu
   } else if (GlobalGameState.currentCarrierAttackTarget === GlobalUnitsModel.Carrier.ENTERPRISE) {
     carrierTarget = usEnterprise
+  } else if (GlobalGameState.currentCarrierAttackTarget === GlobalUnitsModel.Carrier.HORNET) {
+    carrierTarget = usHornet
   }
 
   const createImage = (image, left, top) => {
@@ -66,26 +69,8 @@ export function SingleCarrier({ controller }) {
           width: "40px",
           height: "40px",
           position: "absolute",
-          top: top,
-          left: left,
-        }}
-      ></img>
-    )
-  }
-  const createImage2 = (image, left, top) => {
-    return (
-      <img
-        src={image}
-        style={{
-          width: "40px",
-          height: "40px",
-          position: "absolute",
-          //   top: top,
-          //   left: left,
-          //   top: 20px;
-          //   margin:""
           marginTop: top,
-          marginLeft: "-74px",
+          marginLeft: "-73px",
         }}
       ></img>
     )
@@ -109,20 +94,28 @@ export function SingleCarrier({ controller }) {
 
     // const top = "" + (-8 + location.boxIndex * -66) + "px"
     const top = "" + (-74 + location.boxIndex * 66) + "px"
-    return <div>{createImage2(airUnit.image, "25.9%", top)}</div>
+    return <div>{createImage(airUnit.image, "25.2%", top)}</div>
   })
 
   const carrier1SternDamaged = controller.getCarrierSternDamaged(carrierTarget.name)
   const carrier1BowDamaged = controller.getCarrierBowDamaged(carrierTarget.name)
 
+  const carrier1Sunk = controller.isSunk(carrierTarget.name)
   const damageMarker = "/images/markers/damage.png"
+  const sunkMarker = "/images/markers/sunk.png"
 
   let c1bowDamage, c1sternDamage
+
   if (carrier1BowDamaged) {
-    c1bowDamage = <div>{createImage2(damageMarker, "49.1%", "-74px")}</div>
+    c1bowDamage = <div>{createImage(damageMarker, "49.1%", "-74px")}</div>
   }
   if (carrier1SternDamaged) {
-    c1sternDamage = <div>{createImage2(damageMarker, "49.1%", "-8px")}</div>
+    c1sternDamage = <div>{createImage(damageMarker, "49.1%", "-8px")}</div>
+  }
+
+  if (carrier1Sunk) {
+    c1bowDamage = <div>{createImage(sunkMarker, "49.1%", "-74px")}</div>
+    c1sternDamage = <div>{createImage(sunkMarker, "49.1%", "-8px")}</div>
   }
 
   return (

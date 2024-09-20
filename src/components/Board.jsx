@@ -19,6 +19,7 @@ import USCarrierDropZones from "./draganddrop/USCarrierDropZones"
 import GlobalGameState from "../model/GlobalGameState"
 import StrikePanel from "./dialogs/StrikePanel"
 import GlobalUnitsModel from "../model/GlobalUnitsModel"
+import DamageSunkCounters from "./buttons/mapobjects/DamageSunkCounters"
 
 function Board({ scale, USMapRegions, japanMapRegions, japanStrikePanelEnabled, usStrikePanelEnabled }) {
   let zProps = { us: 0, japan: 0 }
@@ -232,7 +233,6 @@ function Board({ scale, USMapRegions, japanMapRegions, japanStrikePanelEnabled, 
           setCurrentMouseHex={setCurrentMouseHex}
           setCurrentUSHex={setCurrentUSHex}
           setCurrentJapanHex={setCurrentJapanHex}
-
           enabled={true}
           side={GlobalUnitsModel.Side.US}
         ></FleetCounter>
@@ -242,14 +242,18 @@ function Board({ scale, USMapRegions, japanMapRegions, japanStrikePanelEnabled, 
           setCurrentMouseHex={setCurrentMouseHex}
           setCurrentUSHex={setCurrentUSHex}
           setCurrentJapanHex={setCurrentJapanHex}
-
           id="MIF-USMAP"
           counterData={GlobalInit.counters.get("MIF-USMAP")}
           enabled={true}
           side={GlobalUnitsModel.Side.US}
         ></FleetCounter>
 
-        <AirCounters controller={GlobalInit.controller} counterData={GlobalInit.counters} getAirBox={getAirBox} setAirBox={setAirBox}></AirCounters>
+        <AirCounters
+          controller={GlobalInit.controller}
+          counterData={GlobalInit.counters}
+          getAirBox={getAirBox}
+          setAirBox={setAirBox}
+        ></AirCounters>
         <StrikeCounters
           controller={GlobalInit.controller}
           currentMouseHex={currentMouseHex}
@@ -258,6 +262,7 @@ function Board({ scale, USMapRegions, japanMapRegions, japanStrikePanelEnabled, 
           currentJapanHex={currentJapanHex}
           counterData={GlobalInit.counters}
         ></StrikeCounters>
+        <DamageSunkCounters counterData={GlobalInit.counters}></DamageSunkCounters>
 
         <JapanCarrierDropZones handleDragEnter={handleAirBoxDragEnter}></JapanCarrierDropZones>
         <USCarrierDropZones handleDragEnter={handleUSAirBoxDragEnter}></USCarrierDropZones>

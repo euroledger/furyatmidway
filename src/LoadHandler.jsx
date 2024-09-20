@@ -139,6 +139,9 @@ async function loadHandler({
     index: -1,
   })
   setLoading(false)
+  // QUACK TEMPORARY UNTIL NEW GAMES WITH THESE ARE SAVED- REMOVE
+  GlobalGameState.nextAvailableDamageMarker = 0
+  GlobalGameState.nextAvailableSunkMarker = 0
 }
 
 export default loadHandler

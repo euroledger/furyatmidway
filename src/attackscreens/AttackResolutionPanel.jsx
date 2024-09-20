@@ -14,6 +14,17 @@ export function AttackResolutionHeaders({ controller }) {
 
   const attackers = controller.getStrikeUnitsAttackingCarrier()
 
+  let dbDRM = "No Attack Planes On Deck: NO (Dive Bomber) DRM"
+  let torpDRM = "Not a combined attack: No (Torpedo Bomber) DRM"
+  const attackAircraftOnDeck = controller.attackAircraftOnDeck()
+  if (attackAircraftOnDeck) {
+    dbDRM = "Attack Planes On Deck: +1 (Dive Bomber) DRM"
+  }
+  const combinedAttack = controller.combinedAttack()
+  if (combinedAttack) {
+    torpDRM = "Combined attack: +1 (Torpedo Bomber) DRM"
+  }
+
   const airCounters = attackers.map((airUnit) => {
     return (
       <div>
@@ -80,6 +91,30 @@ export function AttackResolutionHeaders({ controller }) {
           <SingleCarrier controller={controller}></SingleCarrier>
         </div>
       </div>
+      <div>
+        <p
+          style={{
+            display: "flex",
+            justifyContent: "center",
+            alignItems: "center",
+            color: "white",
+          }}
+        >
+          {dbDRM}
+        </p>
+      </div>
+      <div>
+        <p
+          style={{
+            display: "flex",
+            justifyContent: "center",
+            alignItems: "center",
+            color: "white",
+          }}
+        >
+          {torpDRM}
+        </p>
+      </div>
     </>
   )
 }
@@ -90,9 +125,6 @@ export function AttackResolutionFooters({ totalHits }) {
   const hits = totalHits
   const msg = "Total Number of Hits:"
 
-  const msg2 = GlobalGameState.carrierHitsDetermined
-    ? "Roll to determine section damaged (1-3 is bow, 4-6 is stern)"
-    : "Roll one die for each hit to determine box damaged"
 
   return (
     <>
@@ -128,7 +160,7 @@ export function AttackResolutionFooters({ totalHits }) {
               }}
             >
               <p>
-                {msg2} (click <strong>Next...</strong> to continue)
+                (click <strong>Next...</strong> to continue)
               </p>
             </div>
           </>

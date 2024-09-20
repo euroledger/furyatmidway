@@ -145,7 +145,7 @@ function LargeDicePanel(props) {
               GlobalGameState.gamePhase = nextState
             }
             if(closeButtonCallback) {
-              closeButtonCallback()
+              closeButtonCallback(e)
             } else {
               onHide(e)
             }

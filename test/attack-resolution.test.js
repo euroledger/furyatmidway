@@ -4,7 +4,7 @@ import loadCounters from "../src/CounterLoader"
 import GlobalGameState from "../src/model/GlobalGameState"
 import { createFleetMove } from "./TestUtils"
 import HexCommand from "../src/commands/HexCommand"
-import { doAttackFireRolls, doCarrierDamageRolls, getAirUnitOnFlightDeck } from "../src/DiceHandler"
+import { doAttackFireRolls, doCarrierDamageRolls, getAirUnitOnFlightDeck, autoAllocateDamage } from "../src/DiceHandler"
 
 describe("Controller tests", () => {
   let controller
@@ -258,7 +258,6 @@ describe("Controller tests", () => {
     expect(attackers[1].aircraftUnit.hitsScored).toEqual(2)
     expect(attackers[2].aircraftUnit.hitsScored).toEqual(0)
     expect(attackers[3].aircraftUnit.hitsScored).toEqual(2)
-
   })
 
   test("Attack on Midway", () => {
@@ -289,6 +288,41 @@ describe("Controller tests", () => {
     expect(hits).toEqual(2)
   })
 
+  test("Eliminate planes on deck and in hangar if carrier sunk", () => {
+    const carrier = GlobalUnitsModel.Carrier.ENTERPRISE
+    ef1 = counters.get("Enterprise-F4F4-1")
+    ef2 = counters.get("Enterprise-F4F4-2")
+    edb1 = counters.get("Enterprise-SBD3-1")
+    edb2 = counters.get("Enterprise-SBD3-2")
+    etb = counters.get("Enterprise-TBD1")
+
+    controller.addAirUnitToBox(GlobalUnitsModel.AirBox.US_ENTERPRISE_FLIGHT_DECK, 0, edb1)
+    controller.addAirUnitToBox(GlobalUnitsModel.AirBox.US_ENTERPRISE_FLIGHT_DECK, 1, edb2)
+
+    controller.addAirUnitToBox(GlobalUnitsModel.AirBox.US_ENTERPRISE_HANGAR, 0, etb)
+    controller.addAirUnitToBox(GlobalUnitsModel.AirBox.US_ENTERPRISE_HANGAR, 1, ef1)
+    controller.addAirUnitToBox(GlobalUnitsModel.AirBox.US_ENTERPRISE_HANGAR, 2, ef2)
+
+    GlobalGameState.currentCarrierAttackTarget = carrier
+    GlobalGameState.carrierAttackHits = 3
+
+    autoAllocateDamage(controller)
+
+    const sunk = controller.isSunk(GlobalUnitsModel.Carrier.ENTERPRISE)
+    expect(sunk).toEqual(true)
+
+    const edb1Eliminated = controller.isAirUnitInBox(GlobalUnitsModel.AirBox.US_ELIMINATED, edb1.name)
+    expect(edb1Eliminated).toEqual(true)
+    const edb2Eliminated = controller.isAirUnitInBox(GlobalUnitsModel.AirBox.US_ELIMINATED, edb2.name)
+    expect(edb2Eliminated).toEqual(true)
+    const etbEliminated = controller.isAirUnitInBox(GlobalUnitsModel.AirBox.US_ELIMINATED, etb.name)
+    expect(etbEliminated).toEqual(true)
+    const ef1Eliminated = controller.isAirUnitInBox(GlobalUnitsModel.AirBox.US_ELIMINATED, ef1.name)
+    expect(ef1Eliminated).toEqual(true)
+    const ef2Eliminated = controller.isAirUnitInBox(GlobalUnitsModel.AirBox.US_ELIMINATED, ef2.name)
+    expect(ef2Eliminated).toEqual(true)
+  })
+
   test("Damage Allocation planes on deck both bow and stern", () => {
     edb1 = counters.get("Enterprise-SBD3-1")
     edb2 = counters.get("Enterprise-SBD3-2")
@@ -300,7 +334,7 @@ describe("Controller tests", () => {
 
     let unit = getAirUnitOnFlightDeck(controller, carrier, "BOW")
     expect(unit.name).toEqual(edb1.name)
-    
+
     unit = getAirUnitOnFlightDeck(controller, carrier, "STERN")
     expect(unit.name).toEqual(edb2.name)
 

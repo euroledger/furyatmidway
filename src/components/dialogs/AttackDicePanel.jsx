@@ -1,25 +1,23 @@
 import Modal from "react-bootstrap/Modal"
-import Col from "react-bootstrap/Col"
-import Row from "react-bootstrap/Row"
 import Button from "react-bootstrap/Button"
 import GlobalGameState from "../../model/GlobalGameState"
-import GlobalUnitsModel from "../../model/GlobalUnitsModel"
 import { SingleCarrier } from "../../attackscreens/SingleCarrier"
 
 import Die from "./Die"
 import "./modal.css"
 import "./largemodal.css"
 
-function getAirCounters(controller, attackers) {
-  const sideBeingAttacked =
-    GlobalGameState.sideWithInitiative === GlobalUnitsModel.Side.US
-      ? GlobalUnitsModel.Side.JAPAN
-      : GlobalUnitsModel.Side.US
-
-  const msg = "Target For Air Attack:"
-
+function getAirCounters(attackers) {
+  let index = 0
   const airCounters = attackers.map((airUnit) => {
     let hits = airUnit.aircraftUnit.hitsScored
+
+    let twoDice = airUnit.aircraftUnit.steps === 2
+
+    let dieName1 = "dice" + (index + 1)
+    let dieName2 = "dice" + (index + 2)
+    index += airUnit.aircraftUnit.steps
+
     const msg = "HITS:"
     return (
       <div>
@@ -42,8 +40,21 @@ function getAirCounters(controller, attackers) {
         >
           {airUnit.name}
         </p>
+
+        <div style={{ marginLeft: "-20px", display: "flex", justifyContent: "center", alignItems: "center" }}>
+          <div>
+            <Die name={dieName1}></Die>
+          </div>
+
+          {twoDice && (
+            <div style={{ marginLeft: "5px" }}>
+              <Die name={dieName2}></Die>
+            </div>
+          )}
+        </div>
         <p
           style={{
+            marginTop: "15px",
             marginLeft: "25px",
             color: "white",
           }}
@@ -55,7 +66,7 @@ function getAirCounters(controller, attackers) {
   })
   return airCounters
 }
-function NewDicePanel(props) {
+function AttackDicePanel(props) {
   const {
     controller,
     numDice,
@@ -87,11 +98,8 @@ function NewDicePanel(props) {
     numDiceRow1 = 8
     numDiceRow2 = numDice - 8
   }
-  const rowClass1 = `g-${numDiceRow1}`
-  const rowClass2 = `g-${numDiceRow2}`
 
   let myBigBollocks = "m-width" + numDiceRow1
-  let myBigMargin = 0
 
   let showDicePanel = showDice
 
@@ -106,12 +114,20 @@ function NewDicePanel(props) {
   const diceButtonStr = numDice > 1 ? "Roll Dice" : "Roll Die"
   const attackers = controller.getStrikeUnitsAttackingCarrier()
 
-  let idx = 0
-  let attIdx = 0
+  let dbDRM = "No Attack Planes On Deck: NO (Dive Bomber) DRM"
+  let torpDRM = "Not a combined attack: No (Torpedo Bomber) DRM"
+  if (GlobalGameState.currentCarrierAttackTarget !== undefined) {
+    const attackAircraftOnDeck = controller.attackAircraftOnDeck()
+    if (attackAircraftOnDeck) {
+      dbDRM = "Attack Planes On Deck: +1 (Dive Bomber) DRM"
+    }
+    const combinedAttack = controller.combinedAttack()
+    if (combinedAttack) {
+      torpDRM = "Combined attack: +1 (Torpedo Bomber) DRM"
+    }
+  }
 
-  let airmargins = ["-1px", "-13px", "-13px", "-19px", "-21px", "-21px", "-21px", "-21px"]
-  let airmargin1 = attackers.length === 8 ? "1px" : "3px"
-  let bigMargin = attackers.length < 3 ? "15px" : "-23px"
+ 
   return (
     <Modal
       {...rest}
@@ -155,71 +171,15 @@ function NewDicePanel(props) {
               alignItems: "center",
             }}
           >
-            {getAirCounters(controller, attackers)}
+            {getAirCounters(attackers)}
           </div>
 
           {showDicePanel && (
-            <>
-              <div
-                style={{
-                  display: "flex",
-                  justifyContent: "center",
-                  alignItems: "center",
-                  marginLeft: bigMargin,
-                }}
-              >
-                <Row xs="auto" className={rowClass1}>
-                  {Array.from({ length: attackers.length }).map((_, i) => {
-                    const steps = attackers[attIdx].aircraftUnit.steps
-                    const dieName1 = "dice" + (idx + 1)
-                    const dieName2 = "dice" + (idx + 2)
-
-                    if (steps === 2) {
-                      idx += 2
-                      attIdx += 1
-                      return (
-                        <>
-                          <Col key={idx} className="d-flex">
-                            <div style={{ minimumWidth: "100px", maximumWidth: "100px", marginLeft: `30px` }}>
-                              <Die name={dieName1}></Die>
-                            </div>
-                          </Col>
-                          <Col key={idx + 1} className="d-flex">
-                            <div style={{ minimumWidth: "100px", maximumWidth: "100px", marginLeft: `5px` }}>
-                              <Die name={dieName2}></Die>
-                            </div>
-                          </Col>
-                        </>
-                      )
-                    } else {
-                      idx += 1
-                      attIdx += 1
-                      return (
-                        <>
-                          <Col
-                            style={{
-                              minimumWidth: "600px !important",
-                            }}
-                            key={idx}
-                          >
-                            {/* <div style={{ marginLeft: `65px`, marginRight: "65px" }}> */}
-                            <div
-                              style={{
-                                display: "flex",
-                                justifyContent: "center",
-                                alignItems: "center",
-                                minimumWidth: "600px !important",
-                              }}
-                            >
-                              <Die name={dieName1}></Die>
-                            </div>
-                          </Col>
-                        </>
-                      )
-                    }
-                  })}
-                </Row>
-              </div>
+            <div
+              style={{
+                color: "white",
+              }}
+            >
               <div
                 style={{
                   display: "inline-block",
@@ -236,7 +196,31 @@ function NewDicePanel(props) {
                   <SingleCarrier controller={controller}></SingleCarrier>
                 </div>
               </div>
-            </>
+              <div>
+                <p
+                  style={{
+                    display: "flex",
+                    justifyContent: "center",
+                    alignItems: "center",
+                    color: "white",
+                  }}
+                >
+                  {dbDRM}
+                </p>
+              </div>
+              <div>
+                <p
+                  style={{
+                    display: "flex",
+                    justifyContent: "center",
+                    alignItems: "center",
+                    color: "white",
+                  }}
+                >
+                  {torpDRM}
+                </p>
+              </div>
+            </div>
           )}
           {footers}
         </div>
@@ -255,7 +239,7 @@ function NewDicePanel(props) {
               GlobalGameState.gamePhase = nextState
             }
             if (closeButtonCallback) {
-              closeButtonCallback()
+              closeButtonCallback(e)
             } else {
               onHide(e)
             }
@@ -268,4 +252,4 @@ function NewDicePanel(props) {
   )
 }
 
-export default NewDicePanel
+export default AttackDicePanel

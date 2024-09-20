@@ -277,6 +277,7 @@ export default function handleAction({
   capSteps,
   capAirUnits,
   setAirUnitUpdate,
+  setDamageMarkerUpdate
 }) {
   //   switch (
   // GlobalGameState.gamePhase
@@ -412,7 +413,7 @@ export default function handleAction({
       } else {
         // allocate all targets to single carrier/midway
         GlobalInit.controller.autoAssignTargets()
-        GlobalGameState.gamePhase = GlobalGameState.PHASE.AIR_ATTACK
+        GlobalGameState.gamePhase = GlobalGameState.PHASE.AIR_ATTACK_1
       }
     } else {
       GlobalGameState.gamePhase = GlobalGameState.PHASE.AIR_OPERATIONS
@@ -426,22 +427,31 @@ export default function handleAction({
       } else {
         // allocate all targets to single carrier/midway
         GlobalInit.controller.autoAssignTargets()
-        GlobalGameState.gamePhase = GlobalGameState.PHASE.AIR_ATTACK
+        GlobalGameState.gamePhase = GlobalGameState.PHASE.AIR_ATTACK_1
       }
     } else {
       GlobalGameState.gamePhase = GlobalGameState.PHASE.AIR_OPERATIONS
     }
   } else if (GlobalGameState.gamePhase === GlobalGameState.PHASE.ATTACK_TARGET_SELECTION) {
     console.log("GO TO AIR ATTACK BUDDY!")
-    GlobalGameState.gamePhase = GlobalGameState.PHASE.AIR_ATTACK
+    GlobalGameState.gamePhase = GlobalGameState.PHASE.AIR_ATTACK_1
+  } else if (GlobalGameState.gamePhase === GlobalGameState.PHASE.AIR_ATTACK_1) {
+    console.log("GO TO ATTACK DAMAGE CARRIERS!")
+    GlobalGameState.gamePhase = GlobalGameState.PHASE.ATTACK_DAMAGE_RESOLUTION
+  } else if (GlobalGameState.gamePhase === GlobalGameState.PHASE.AIR_ATTACK_2) {
+    GlobalGameState.gamePhase = GlobalGameState.PHASE.ATTACK_DAMAGE_RESOLUTION        
+  } else if (GlobalGameState.gamePhase === GlobalGameState.PHASE.ATTACK_DAMAGE_RESOLUTION) {
+    console.log("END OF DAMAGE BOLLOCKS carrier Target2 =",GlobalGameState.carrierTarget2)
+    if (GlobalGameState.carrierTarget2 !== "" && GlobalGameState.carrierTarget2 !== undefined)   {
+      GlobalGameState.gamePhase = GlobalGameState.PHASE.AIR_ATTACK_2
+    } else {
+      GlobalGameState.gamePhase = GlobalGameState.PHASE.AIR_OPERATIONS
+    }
   }
 
 
   // @TODO if all air units in a strike are eliminated maybe display a dialog saying "Air Attack Phase over, no
   // air units left or something"
-
-  // @TODO At end of Air Attack phase, move any defending CAP units into their respective CAP
-  //  return boxes
 
   GlobalGameState.setupPhase++
 

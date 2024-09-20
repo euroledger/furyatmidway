@@ -59,7 +59,7 @@ export default class Controller {
 
   setAirUnitTarget(airUnit, target) {
     if (GlobalGameState.carrierTarget1 !== target && GlobalGameState.carrierTarget2 !== target) {
-      if (GlobalGameState.carrierTarget1 === "") {
+      if (GlobalGameState.carrierTarget1 === "" || GlobalGameState.carrierTarget1 === undefined) {
         GlobalGameState.carrierTarget1 = target
       } else {
         GlobalGameState.carrierTarget2 = target
@@ -70,6 +70,15 @@ export default class Controller {
 
   getAirUnitTarget(airUnit) {
     return this.targetMap.get(airUnit)
+  }
+
+  getAttackTargets() {
+    const array = Array.from(this.targetMap.values())
+    
+    const set = [...new Set(array)];
+    console.log(set); // [1, 2, 3, 4, 5]
+   
+    return set
   }
 
   getTargetMapSizeForCarrier(carrier) {
@@ -107,6 +116,13 @@ export default class Controller {
     return result
   }
 
+  getNextAvailableMarker(damagedOrSunk) {
+    if (damagedOrSunk === "DAMAGED") {
+      return GlobalUnitsModel.damageMarkers[GlobalGameState.nextAvailableDamageMarker]
+    } else {
+      return GlobalUnitsModel.sunkMarkers[GlobalGameState.nextAvailableSunkMarker]
+    }
+  }
   resetAllCapDefenders() {
     const units = Array.from(this.counters.values())
     for (let unit of units) {
@@ -604,6 +620,14 @@ export default class Controller {
 
   isAirUnitInBox = (boxName, airUnitName) => {
     return this.boxModel.isAirUnitInBox(boxName, airUnitName)
+  }
+
+  setMarkerLocation = (markerName, boxName, boxIndex) => {
+    this.boxModel.setMarkerLocation(markerName, { boxName, boxIndex })
+  }
+
+  getMarkerLocation = (markerName) => {
+    return this.boxModel.getMarkerLocation(markerName)
   }
 
   getAirUnitLocation = (airUnitName) => {

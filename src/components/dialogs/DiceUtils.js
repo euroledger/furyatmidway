@@ -47,19 +47,11 @@ const rollDice = (rolls) => {
 
   audio.play();
   for (let i = 0; i < rolls.length; i++) {
-    console.log("LOOK FOR",".dice" + (i+1) )
     const dice = document.querySelector(".dice" + (i+1))
    
-    dice.style.animation = `rolling${i+1} 1s`
-    // dice.style.animation = "rolling 1s"
-    // dicey.style.animation = "rolling2 1s"
-    // dicew.style.animation = "rolling3 1s"   
+    dice.style.animation = `rolling${i+1} 1s`  
     diceElements.push(dice)
   }
-
-  // const dice = document.querySelector(".dice1")
-  // const dicey = document.querySelector(".dice2")
-  // const dicew = document.querySelector(".dice3")
 
   setTimeout(() => {
    
@@ -74,5 +66,3 @@ const rollDice = (rolls) => {
    
   }, 400)
 }
-
-// rollBtn.addEventListener("click", randomDice)

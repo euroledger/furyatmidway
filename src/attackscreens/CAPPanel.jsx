@@ -11,8 +11,8 @@ export function CAPHeaders({ controller, setCapAirUnits, capSteps, setCapSteps }
 
   const msg = "Target For Air Attack:"
 
-  const unitsInGroup = controller.getAttackingStrikeUnits(GlobalUnitsModel.TaskForce.TASK_FORCE_16)
-
+  const capBox = controller.getCAPBoxForTaskForce(GlobalGameState.taskForceTarget, sideBeingAttacked)
+  const capUnits = controller.getAllAirUnitsInBox(capBox)
 
   const handleClick = (airUnit) => {
     if (airUnit.aircraftUnit.intercepting) {

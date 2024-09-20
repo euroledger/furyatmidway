@@ -26,7 +26,10 @@ import {
   doFighterCounterattack,
   doAAAFireRolls,
   doAttackFireRolls,
-  doCarrierDamageRolls
+  doCarrierDamageRolls,
+  carrierDamageRollNeeded,
+  autoAllocateDamage,
+  sendDamageUpdates
 } from "./DiceHandler"
 import { determineAllUnitsDeployedForCarrier } from "./controller/AirUnitSetupHandler"
 
@@ -37,7 +40,8 @@ import loadHandler from "./LoadHandler"
 import { allHexesWithinDistance } from "./components/HexUtils"
 import DicePanel from "./components/dialogs/DicePanel"
 import LargeDicePanel from "./components/dialogs/LargeDicePanel"
-import NewDicePanel from "./components/dialogs/NewDicePanel"
+import AttackDicePanel from "./components/dialogs/AttackDicePanel"
+import CarrierDamageDicePanel from "./components/dialogs/CarrierDamageDicePanel"
 import { AirOpsHeaders, AirOpsFooters } from "./attackscreens/AirOpsDataPanels"
 import { TargetHeaders, TargetFooters } from "./attackscreens/TargetPanel"
 import { AttackTargetHeaders, AttackTargetFooters } from "./attackscreens/AttackTargetPanel"
@@ -105,7 +109,8 @@ export function App() {
   const [initiativePanelShow, setInitiativePanelShow] = useState(false)
   const [targetPanelShow, setTargetPanelShow] = useState(false)
   const [attackTargetPanelShow, setAttackTargetPanelShow] = useState(false)
-  const [attackResolutionPanelShow, setAttackResolutionPanelShow] = useState(true)
+  const [attackResolutionPanelShow, setAttackResolutionPanelShow] = useState(false)
+  const [carrierDamagePanelShow, setCarrierDamagePanelShow] = useState(false)
 
   const [capInterceptionPanelShow, setCapInterceptionPanelShow] = useState(false)
 
@@ -127,6 +132,13 @@ export function App() {
     index: -1,
   })
 
+  const [damageMarkerUpdate, setDamageMarkerUpdate] = useState({
+    name: "",
+    box: "",
+    index: -1,
+    side: ""
+  })
+
   const [fleetUnitUpdate, setFleetUnitUpdate] = useState({
     name: "",
     position: {},
@@ -146,8 +158,6 @@ export function App() {
 
   const [attackTargetsSelected, setAttackTargetsSelected] = useState(false)
 
-  const [carrierHitsDetermined, setCarrierHitsDetermined] = useState(false)
-
   const [attackResolved, setAttackResolved] = useState(false)
 
   const [targetSelected, setTargetSelected] = useState(false)
@@ -159,7 +169,11 @@ export function App() {
   const [carrierHits, setCarrierHits] = useState(-1)
   const [numDiceToRoll, setNumDiceToRoll] = useState(16)
 
-  GlobalGameState.TESTING = true
+  // QUACK TESTING ONLY REMOVE THESE ***********
+  // GlobalGameState.TESTING = true
+  // GlobalGameState.carrierAttackHits = 3
+  // *******************************************
+
   useEffect(() => {
     if (GlobalGameState.gamePhase === GlobalGameState.PHASE.TARGET_DETERMINATION) {
       // @TODO CHECK IF JAPANESE PLAYER HOLDS CARD 11
@@ -178,10 +192,34 @@ export function App() {
   }, [GlobalGameState.gamePhase])
 
   useEffect(() => {
-    if (GlobalGameState.gamePhase === GlobalGameState.PHASE.AIR_ATTACK) {
-      GlobalGameState.dieRolls = 0
-      GlobalGameState.carrierHitsDetermined=false
+    if (GlobalGameState.gamePhase === GlobalGameState.PHASE.AIR_ATTACK_1) {
+      console.log("ATTACK 1 ABOUT TO COMMENCE..................!!!!")
+
+      GlobalGameState.dieRolls = []
+      GlobalGameState.carrierHitsDetermined = false
+      GlobalGameState.currentCarrierAttackTarget = GlobalGameState.carrierTarget1
+      GlobalGameState.eliminatedAirUnits = new Array()
       setAttackResolutionPanelShow(true)
+    }
+  }, [GlobalGameState.gamePhase])
+
+  useEffect(() => {
+    if (GlobalGameState.gamePhase === GlobalGameState.PHASE.AIR_ATTACK_2) {
+      console.log("ATTACK 2 ABOUT TO COMMENCE..................!!!!")
+      GlobalGameState.dieRolls = []
+      GlobalGameState.carrierHitsDetermined = false
+      GlobalGameState.currentCarrierAttackTarget = GlobalGameState.carrierTarget2
+      GlobalGameState.carrierTarget2 = ""
+      GlobalGameState.eliminatedAirUnits = new Array()
+      setAttackResolutionPanelShow(true)
+    }
+  }, [GlobalGameState.gamePhase])
+
+  useEffect(() => {
+    if (GlobalGameState.gamePhase === GlobalGameState.PHASE.ATTACK_DAMAGE_RESOLUTION) {
+      GlobalGameState.dieRolls = []
+      setAttackResolutionPanelShow(false)
+      setCarrierDamagePanelShow(true)
     }
   }, [GlobalGameState.gamePhase])
 
@@ -223,7 +261,6 @@ export function App() {
       setAttackTargetPanelShow(true)
     }
   }, [GlobalGameState.gamePhase])
-
 
   const onDrag = () => {
     setIsMoveable(true)
@@ -752,9 +789,7 @@ export function App() {
 
   const attackResolutionFooters = (
     <>
-      <AttackResolutionFooters
-        totalHits={carrierHits}
-      ></AttackResolutionFooters>
+      <AttackResolutionFooters totalHits={carrierHits}></AttackResolutionFooters>
     </>
   )
   function doInitiativeRoll(roll0, roll1) {
@@ -790,17 +825,21 @@ export function App() {
     // 1. determine if target is carrier or Midway or Invasion Force
 
     // 2. If carriers, roll for bow or stern
-    doCarrierDamageRolls(GlobalInit.controller)
+    let damage
+    if (carrierDamageRollNeeded(GlobalInit.controller)) {
+      damage = doCarrierDamageRolls(GlobalInit.controller)
+    } else {
+      damage = autoAllocateDamage(GlobalInit.controller)
+    }
 
+    if (GlobalGameState.carrierAttackHits > 0) {
+      sendDamageUpdates(GlobalInit.controller, damage, setDamageMarkerUpdate)
+    } 
     // 3. If Midway of MIF, move hits marker accordingly
     setAttackResolved(() => true)
   }
 
   function doAttackResolutionRolls() {
-    if (GlobalGameState.carrierHitsDetermined) {
-      doDamageRolls()
-      return
-    }
     const hits = doAttackFireRolls(GlobalInit.controller)
 
     // if (hits === 0) {
@@ -810,8 +849,8 @@ export function App() {
 
     // setCarrierHitsDetermined(true)
     setCarrierHits(() => hits)
-    GlobalGameState.dieRolls=[]
-    GlobalGameState.carrierHitsDetermined=true
+    GlobalGameState.dieRolls = []
+    GlobalGameState.carrierHitsDetermined = true
   }
 
   function sendCapEvent() {
@@ -826,6 +865,9 @@ export function App() {
   } else if (GlobalGameState.gamePhase === GlobalGameState.PHASE.AAA_DAMAGE_ALLOCATION) {
     closeDamageButtonDisabled = eliminatedSteps !== GlobalGameState.antiaircraftHits && stepsLeft !== 0
   }
+
+  let carrieDamageDiceButtonDisabled =
+    GlobalGameState.carrierAttackHits !== 1 || (GlobalGameState.carrierAttackHits === 1 && attackResolved)
   return (
     <>
       <LoadGamePanel
@@ -932,7 +974,7 @@ export function App() {
         footers={targetFooters}
         width={30}
         showDice={targetSelected}
-        margin={300}
+        margin={315}
         diceButtonDisabled={targetSelected === targetDetermined}
         closeButtonDisabled={!targetDetermined}
         onHide={(e) => {
@@ -950,7 +992,7 @@ export function App() {
         footers={attackTargetFooters}
         width={30}
         showDice={true}
-        margin={300}
+        margin={435}
         closeButtonDisabled={!attackTargetsSelected}
         closeButtonStr="Next..."
         onHide={(e) => {
@@ -1029,7 +1071,7 @@ export function App() {
         disabled={false}
       ></LargeDicePanel>
 
-      <NewDicePanel
+      <AttackDicePanel
         // numDice={GlobalInit.controller.getAttackingStepsRemainingTEST()}
         controller={GlobalInit.controller}
         numDice={numDiceToRoll}
@@ -1048,11 +1090,12 @@ export function App() {
         closeButtonStr="Next..."
         closeButtonCallback={
           !attackResolved
-            ? () => {
+            ? (e) => {
                 GlobalGameState.dieRolls = []
                 setNumDiceToRoll(carrierHits)
+                nextAction(e)
               }
-            : () => {
+            : (e) => {
                 setAttackResolutionPanelShow(false)
                 nextAction(e)
               }
@@ -1060,8 +1103,33 @@ export function App() {
         diceButtonDisabled={GlobalGameState.dieRolls.length !== 0}
         closeButtonDisabled={GlobalGameState.dieRolls.length === 0 && !attackResolved}
         disabled={false}
-      ></NewDicePanel>
+      ></AttackDicePanel>
 
+      <CarrierDamageDicePanel
+        numDice={1}
+        controller={GlobalInit.controller}
+        show={!testClicked && carrierDamagePanelShow}
+        headerText="Carrier Damage"
+        headers={attackResolutionHeaders}
+        footers={attackResolutionFooters}
+        showDice={true}
+        margin={0}
+        onHide={(e) => {
+          setCarrierDamagePanelShow(false)
+          nextAction(e)
+        }}
+        doRoll={doDamageRolls}
+        width={30}
+        closeButtonStr="Next..."
+        closeButtonCallback={(e) => {
+          setCarrierDamagePanelShow(false)
+          nextAction(e)
+        }}
+        diceButtonDisabled={carrieDamageDiceButtonDisabled}
+        closeButtonDisabled={!carrieDamageDiceButtonDisabled}
+        setDamageMarkerUpdate={setDamageMarkerUpdate}
+        disabled={false}
+      ></CarrierDamageDicePanel>
       <GameStatusPanel show={gameStateShow} gameState={gameState} onHide={() => setGameStateShow(false)} />
       <CardPanel show={jpHandShow} side={GlobalUnitsModel.Side.JAPAN} onHide={() => setjpHandShow(false)}></CardPanel>
       <CardPanel show={usHandShow} side={GlobalUnitsModel.Side.US} onHide={() => setusHandShow(false)}></CardPanel>
@@ -1101,6 +1169,7 @@ export function App() {
                   airUnitUpdate,
                   fleetUnitUpdate,
                   strikeGroupUpdate,
+                  damageMarkerUpdate,
                   setAlertShow,
                   showZones,
                   USMapRegions,

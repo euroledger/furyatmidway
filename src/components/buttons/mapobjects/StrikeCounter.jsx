@@ -52,11 +52,11 @@ function StrikeCounter({ setStrikeGroupPopup, currentUSHex, currentJapanHex, cou
   // STRIKE GROUP UPDATE CODE
   let hex = {}
   if (strikeGroupUpdate) {
-    console.log("GOT A STRIKE UPDATE: ", strikeGroupUpdate)
-    console.log("\t=>SG name=", strikeGroupUpdate.name)
-    console.log("\t=>counter data name=", counterData.name)
-    console.log("\t=>position=", position)
-    console.log("\t=>position.currentHex=", position.currentHex)
+    // console.log("GOT A STRIKE UPDATE: ", strikeGroupUpdate)
+    // console.log("\t=>SG name=", strikeGroupUpdate.name)
+    // console.log("\t=>counter data name=", counterData.name)
+    // console.log("\t=>position=", position)
+    // console.log("\t=>position.currentHex=", position.currentHex)
 
     hex = strikeGroupUpdate.position.currentHex
     console.log("\t=>hex=", hex)
@@ -70,7 +70,7 @@ function StrikeCounter({ setStrikeGroupPopup, currentUSHex, currentJapanHex, cou
     counterData.name === strikeGroupUpdate.name &&
     (strikeGroupUpdate.position.currentHex != undefined && position.currentHex.q !== hex.q || position.currentHex.r !== hex.r)
   ) {
-    console.log("I am", strikeGroupUpdate.name, " -> STRIKE GROUP UPDATE, move to", hex.row + ",", hex.col)
+    // console.log("I am", strikeGroupUpdate.name, " -> STRIKE GROUP UPDATE, move to", hex.row + ",", hex.col)
 
     if (side === GlobalUnitsModel.Side.US) {
       setUSPosition(hex)

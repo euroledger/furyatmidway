@@ -4,6 +4,8 @@ import GlobalUnitsModel from "./model/GlobalUnitsModel"
 import AircraftUnit from "./model/AircraftUnit"
 import FleetUnit from "./components/buttons/mapobjects/FleetUnit"
 import StrikeGroupUnit from "./components/buttons/mapobjects/StrikeGroupUnit"
+import DamageSunk from "./components/buttons/mapobjects/DamageSunk"
+import GlobalGameState from "./model/GlobalGameState"
 
 function loadCounters(controller) {
   let counters = new Map()
@@ -123,6 +125,7 @@ function loadCounters(controller) {
   loadAirCounters(controller, counters)
   loadFleetUnits()
   loadStrikeGroups(controller, counters)
+  loadMarkers()
   return counters
 }
 
@@ -1113,6 +1116,20 @@ const usStrikeGroups = [
     units: new Array(), // list of air units in this strike group
   },
 ]
+
+function loadMarkers() {
+  const damageImage = "/images/markers/damage.png"
+  const sunkImage = "/images/markers/sunk.png"
+  for (let i = 0; i < 100; i++) {
+    let marker = new DamageSunk("DAMAGE" + i, damageImage, "2.1%", null)
+    GlobalUnitsModel.damageMarkers.push(marker)
+  }
+
+  for (let i = 0; i < 100; i++) {
+    let marker = new DamageSunk("SUNK" + i, sunkImage, "2.1%", null)
+    GlobalUnitsModel.sunkMarkers.push(marker)
+  }
+}
 function loadFleetUnits() {
   for (const unit of japanFleetUnits) {
     GlobalUnitsModel.jpFleetUnits.set(

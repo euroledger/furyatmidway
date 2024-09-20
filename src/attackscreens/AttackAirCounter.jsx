@@ -18,6 +18,12 @@ function AirAttackCounter({ controller, airUnit, index, myCarrier, myIdx, lefty,
 
     console.log("i = ", i, "j = ", j)
     if (i == j) {
+      const targets = controller.getAttackTargets()
+      GlobalGameState.carrierTarget1 = targets[0]
+      if (targets.length=== 2) {
+        GlobalGameState.carrierTarget2 = targets[1]
+      }
+
       // all units allocated a target
       setAttackTargetsSelected(() => true)
     }
@@ -50,6 +56,12 @@ function AirAttackCounter({ controller, airUnit, index, myCarrier, myIdx, lefty,
     let j = controller.getAttackingStrikeUnits(true).length
 
     if (i == j) {
+
+      const targets = controller.getAttackTargets()
+      GlobalGameState.carrierTarget1 = targets[0]
+      if (targets.length=== 2) {
+        GlobalGameState.carrierTarget2 = targets[1]
+      }
       // all units allocated a target
       setAttackTargetsSelected(() => true)
     }
@@ -79,7 +91,7 @@ function AirAttackCounter({ controller, airUnit, index, myCarrier, myIdx, lefty,
       handleDropJapan(airUnit)
     }
   }
-  const leftStr = 38 + index * 10
+  const leftStr = 40 + index * 10
   let l = "" + leftStr + "%"
 
   if (GlobalGameState.sideWithInitiative === GlobalUnitsModel.Side.JAPAN) {

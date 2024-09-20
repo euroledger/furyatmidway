@@ -88,20 +88,125 @@ export function getAirUnitOnFlightDeck(controller, carrier, bowOrStern) {
   return airUnits
 }
 
-export function doCarrierDamageRolls(controller, testRolls) {
+export function getAirUnitsInHangar(controller, carrier) {
+  const sideBeingAttacked =
+    GlobalGameState.sideWithInitiative === GlobalUnitsModel.Side.US
+      ? GlobalUnitsModel.Side.JAPAN
+      : GlobalUnitsModel.Side.US
+
+  const box = controller.getAirBoxForNamedShip(sideBeingAttacked, carrier, "HANGAR")
+  const airUnits = controller.getAllAirUnitsInBox(box)
+  return airUnits
+}
+
+export function carrierDamageRollNeeded(controller) {
   const hits = GlobalGameState.carrierAttackHits
   const carrier = GlobalGameState.currentCarrierAttackTarget
-  let rolls = testRolls === undefined ? randomDice(hits) : testRolls
+
+  if (hits === 0) return false
+
+  if (controller.getCarrierBowDamaged(carrier) || controller.getCarrierSternDamaged(carrier)) {
+    return false
+  }
+  return true
+}
+
+export function sendMarkerEvent(controller, sunkdamaged, side, carrier, bowstern) {
+  if (sunkdamaged === "DAMAGED") {
+    if (bowstern === "BOW") {
+      controller.viewEventHandler({
+        type: Controller.EventTypes.SET_DAMAGE_BOW_MARKER,
+        data: {
+          side,
+          carrier,
+        },
+      })
+    } else {
+      controller.viewEventHandler({
+        type: Controller.EventTypes.SET_DAMAGE_STERN_MARKER,
+        data: {
+          side,
+          carrier,
+        },
+      })
+    }
+  } else {
+    controller.viewEventHandler({
+      type: Controller.EventTypes.SET_SUNK_MARKER,
+      data: {
+        side,
+        carrier,
+      },
+    })
+  }
+}
+
+export function autoAllocateDamage(controller) {
+  const hits = GlobalGameState.carrierAttackHits
+  const carrier = GlobalGameState.currentCarrierAttackTarget
+
+  // this just holds damage allocated in this attack
+  let damage = {
+    bow: false,
+    stern: false,
+    sunk: false,
+  }
+  if (hits === 0) return null
+  if (hits >= 2) {
+    controller.setCarrierBowDamaged(carrier)
+    damage.bow = true
+    let airUnit = getAirUnitOnFlightDeck(controller, carrier, "BOW")
+    if (airUnit) {
+      moveAirUnitToEliminatedBox(controller, airUnit)
+      GlobalGameState.eliminatedAirUnits.push(airUnit)
+    }
+    controller.setCarrierSternDamaged(carrier)
+    damage.stern = true
+    airUnit = getAirUnitOnFlightDeck(controller, carrier, "STERN")
+    if (airUnit) {
+      moveAirUnitToEliminatedBox(controller, airUnit)
+      GlobalGameState.eliminatedAirUnits.push(airUnit)
+    }
+    if (hits >= 3) {
+      damage.sunk = true
+      controller.setCarrierHits(carrier, 3) // sunk
+      const airUnits = getAirUnitsInHangar(controller, carrier)
+      for (let unit of airUnits) {
+        moveAirUnitToEliminatedBox(controller, unit)
+        GlobalGameState.eliminatedAirUnits.push(unit)
+      }
+    }
+  }
+  return damage
+}
+
+export function doCarrierDamageRolls(controller, testRolls) {
+  // this just holds damage allocated in this attack
+  let damage = {
+    bow: false,
+    stern: false,
+    sunk: false,
+  }
+  const carrier = GlobalGameState.currentCarrierAttackTarget
+  let rolls = testRolls === undefined ? randomDice(1) : testRolls
 
   for (let roll of rolls) {
     if (controller.getCarrierBowDamaged(carrier)) {
       if (controller.getCarrierSternDamaged(carrier)) {
         controller.setCarrierHits(carrier, 3) // sunk
+        damage.sunk = true
+        const airUnits = getAirUnitsInHangar(controller, carrier)
+        for (let unit of airUnits) {
+          moveAirUnitToEliminatedBox(controller, unit)
+          GlobalGameState.eliminatedAirUnits.push(unit)
+        }
       } else {
         controller.setCarrierSternDamaged(carrier)
+        damage.stern = true
         const airUnit = getAirUnitOnFlightDeck(controller, carrier, "STERN")
         if (airUnit) {
           moveAirUnitToEliminatedBox(controller, airUnit)
+          GlobalGameState.eliminatedAirUnits.push(airUnit)
         }
         controller.setCarrierHits(carrier, 2)
       }
@@ -109,11 +214,19 @@ export function doCarrierDamageRolls(controller, testRolls) {
     } else if (controller.getCarrierSternDamaged(carrier)) {
       if (controller.getCarrierBowDamaged(carrier)) {
         controller.setCarrierHits(carrier, 3) // sunk
+        damage.sunk = true
+        const airUnits = getAirUnitsInHangar(controller, carrier)
+        for (let unit of airUnits) {
+          moveAirUnitToEliminatedBox(controller, unit)
+          GlobalGameState.eliminatedAirUnits.push(unit)
+        }
       } else {
         controller.setCarrierBowDamaged(carrier)
+        damage.bow = true
         const airUnit = getAirUnitOnFlightDeck(controller, carrier, "BOW")
         if (airUnit) {
           moveAirUnitToEliminatedBox(controller, airUnit)
+          GlobalGameState.eliminatedAirUnits.push(airUnit)
         }
         controller.setCarrierHits(carrier, 2)
       }
@@ -122,29 +235,125 @@ export function doCarrierDamageRolls(controller, testRolls) {
 
     // Undamaged Carrier
     if (roll < 4) {
+      damage.bow = true
+
       controller.setCarrierBowDamaged(carrier)
       const airUnit = getAirUnitOnFlightDeck(controller, carrier, "BOW")
       if (airUnit) {
         moveAirUnitToEliminatedBox(controller, airUnit)
-      }      
+        GlobalGameState.eliminatedAirUnits.push(airUnit)
+      }
       controller.setCarrierHits(carrier, 1)
     } else {
+      damage.stern = true
+
       controller.setCarrierSternDamaged(carrier)
       const airUnit = getAirUnitOnFlightDeck(controller, carrier, "STERN")
       if (airUnit) {
         moveAirUnitToEliminatedBox(controller, airUnit)
-      }      
+        GlobalGameState.eliminatedAirUnits.push(airUnit)
+      }
       controller.setCarrierHits(carrier, 1)
     }
   }
+  return damage
 }
-export function doAttackFireRolls(controller, testRolls) {
-  // For number of hits:
-  // 3. Determine if joint attack, dive and torpedoBombers (set torpedo DRM if so)
-  // 4. Calc DRM(s) from 3) and 4)
-  // 5. Iterate over attackers, determine if any hits, if so add to total
-  // 6. Return number of hits
 
+function delay(ms) {
+  return new Promise((resolve) => {
+    setTimeout(resolve, ms)
+  })
+}
+export async function sendDamageUpdates(controller, damage, setDamageMarkerUpdate) {
+  console.log("IN sendDamageUpdates()+++++++++++++++++++  ")
+  // damage has two fields, bow and stern
+
+  // if sunk
+  // send two updates: bow sunk marker, stern sunk marker
+
+  // if bow damaged
+  // send bow damage update
+
+  // if stern damaged
+  // send stern damage update
+
+  const sideBeingAttacked =
+    GlobalGameState.sideWithInitiative === GlobalUnitsModel.Side.US
+      ? GlobalUnitsModel.Side.JAPAN
+      : GlobalUnitsModel.Side.US
+  const boxName = controller.getAirBoxForNamedShip(
+    sideBeingAttacked,
+    GlobalGameState.currentCarrierAttackTarget,
+    "FLIGHT_DECK"
+  )
+
+  if (damage.sunk) {
+    const marker1 = GlobalInit.controller.getNextAvailableMarker("SUNK")
+
+    console.log("********** SUNK marker 1 = ", marker1)
+    GlobalGameState.nextAvailableSunkMarker++
+    // do update 1
+    let markerUpdate = {
+      name: marker1.name,
+      box: boxName,
+      index: 0,
+      side: sideBeingAttacked
+    }
+    setDamageMarkerUpdate(markerUpdate)
+    controller.setMarkerLocation(marker1.name, boxName, 0)
+
+    const marker2 = GlobalInit.controller.getNextAvailableMarker("SUNK")
+
+    await delay(1)
+
+    console.log("********** SUNK marker 2 = ", marker2)
+    markerUpdate = {
+      name: marker2.name,
+      box: boxName,
+      index: 1,
+      side: sideBeingAttacked
+    }
+    setDamageMarkerUpdate(markerUpdate)
+    GlobalGameState.nextAvailableSunkMarker++
+    controller.setMarkerLocation(marker2.name, boxName, 1)
+  } else {
+    if (damage.bow) {
+      let marker = GlobalInit.controller.getNextAvailableMarker("DAMAGED")
+      GlobalGameState.nextAvailableDamageMarker++
+
+      const markerUpdate = {
+        name: marker.name,
+        box: boxName,
+        index: 0,
+        side: sideBeingAttacked
+      }
+      console.log("SEND UPDATE BOW DAMAGED: ", markerUpdate)
+      setDamageMarkerUpdate(markerUpdate)
+
+      controller.setMarkerLocation(marker.name, boxName, 0)
+    }
+
+    if (damage.stern) {
+      await delay(1)
+
+      let marker = GlobalInit.controller.getNextAvailableMarker("DAMAGED")
+      GlobalGameState.nextAvailableDamageMarker++
+
+      const markerUpdate = {
+        name: marker.name,
+        box: boxName,
+        index: 1,
+        side: sideBeingAttacked
+      }
+      console.log("SEND UPDATE STERN DAMAGED: ", markerUpdate)
+
+      setDamageMarkerUpdate(markerUpdate)
+      controller.setMarkerLocation(marker.name, boxName, 1)
+    }
+  }
+}
+
+export function doAttackFireRolls(controller, testRolls) {
   let dbDRM = 0
   let torpDRM = 0
   // 1. Get the attacking aircraft from the controller
@@ -169,7 +378,11 @@ export function doAttackFireRolls(controller, testRolls) {
   for (let unit of attackers) {
     unit.aircraftUnit.hitsScored = 0
   }
-
+  // For number of hits:
+  // 3. Determine if joint attack, dive and torpedoBombers (set torpedo DRM if so)
+  // 4. Calc DRM(s) from 3) and 4)
+  // 5. Iterate over attackers, determine if any hits, if so add to total
+  // 6. Return number of hits
   let index = 0
   let hits = 0
   for (let unit of attackers) {
@@ -200,6 +413,7 @@ export function doAttackFireRolls(controller, testRolls) {
       index++
     }
   }
+
   GlobalGameState.carrierAttackHits = hits
   return hits
 }
