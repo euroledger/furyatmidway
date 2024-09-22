@@ -44,6 +44,20 @@ export function SingleCarrier({ controller }) {
     width: "100px",
     marginLeft: "3px",
   }
+  let usYorktown = {
+    image: "/images/fleetcounters/yorktown.jpg",
+    name: GlobalUnitsModel.Carrier.YORKTOWN,
+    buttonStr: "Yorktown",
+    width: "100px",
+    marginLeft: "3px",
+  }
+  let usMidway = {
+    image: "/images/fleetcounters/midway.jpg",
+    name: GlobalUnitsModel.Carrier.MIDWAY,
+    buttonStr: "Midway",
+    width: "100px",
+    marginLeft: "3px",
+  }
 
   let carrierTarget
   console.log("CURRENT CARRIER ATTACK TARGET=", GlobalGameState.currentCarrierAttackTarget)
@@ -59,7 +73,11 @@ export function SingleCarrier({ controller }) {
     carrierTarget = usEnterprise
   } else if (GlobalGameState.currentCarrierAttackTarget === GlobalUnitsModel.Carrier.HORNET) {
     carrierTarget = usHornet
-  }
+  } else if (GlobalGameState.currentCarrierAttackTarget === GlobalUnitsModel.Carrier.YORKTOWN) {
+    carrierTarget = usYorktown
+  } else if (GlobalGameState.currentCarrierAttackTarget === GlobalUnitsModel.Carrier.MIDWAY) {
+    carrierTarget = usMidway
+  } 
 
   const createImage = (image, left, top) => {
     return (
@@ -87,6 +105,10 @@ export function SingleCarrier({ controller }) {
   if (GlobalGameState.taskForceTarget === GlobalUnitsModel.TaskForce.TASK_FORCE_16) {
     airUnitsOnDeckCarrier1 = controller.getAllAirUnitsInBox(GlobalUnitsModel.AirBox.US_ENTERPRISE_FLIGHT_DECK)
     airUnitsOnDeckCarrier2 = controller.getAllAirUnitsInBox(GlobalUnitsModel.AirBox.US_HORNET_FLIGHT_DECK)
+  } else if (GlobalGameState.taskForceTarget === GlobalUnitsModel.TaskForce.TASK_FORCE_17) {
+    airUnitsOnDeckCarrier1 = controller.getAllAirUnitsInBox(GlobalUnitsModel.AirBox.US_YORKTOWN_FLIGHT_DECK)
+  } else if (GlobalGameState.taskForceTarget === GlobalUnitsModel.TaskForce.MIDWAY) {
+    airUnitsOnDeckCarrier1 = [] // no Midway Flight Deck
   }
   const airUnitsCarrier1 = airUnitsOnDeckCarrier1.map((airUnit) => {
     const location = controller.getAirUnitLocation(airUnit.name)

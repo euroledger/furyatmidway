@@ -20,10 +20,12 @@ function AirAttackCounter({ controller, airUnit, index, myCarrier, myIdx, lefty,
     if (i == j) {
       const targets = controller.getAttackTargets()
       GlobalGameState.carrierTarget1 = targets[0]
+      console.log("SET target 1 to ", targets[0])
       if (targets.length=== 2) {
         GlobalGameState.carrierTarget2 = targets[1]
-      }
+        console.log("SET target 2 to ", targets[1])
 
+      }
       // all units allocated a target
       setAttackTargetsSelected(() => true)
     }

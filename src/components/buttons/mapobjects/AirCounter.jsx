@@ -289,7 +289,7 @@ function AirCounter({ getAirBox, setAirBox, counterData, side }) {
       GlobalGameState.gamePhase === GlobalGameState.PHASE.MIDWAY_ATTACK)
   ) {
     if (side !== GlobalGameState.sideWithInitiative) {
-      // disp = "none"
+      disp = "none"
     }
   }
   return (

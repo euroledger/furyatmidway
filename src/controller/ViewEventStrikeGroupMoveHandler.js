@@ -41,6 +41,14 @@ class ViewEventStrikeGroupMoveHandler {
         } else {
           GlobalGameState.gamePhase = GlobalGameState.PHASE.TARGET_DETERMINATION
         }
+
+        // @TODO we may need a global state reset function that
+        // gets invoked before each air strike move
+        this.controller.resetTargetMap()
+        GlobalGameState.carrierTarget1=""
+        GlobalGameState.carrierTarget2=""
+        counterData.attacked = false // possible reset from previous attack
+        GlobalGameState.attackingStrikeGroup = counterData
       }
     }
 

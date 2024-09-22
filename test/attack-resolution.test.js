@@ -359,4 +359,27 @@ describe("Controller tests", () => {
     const edb2Eliminated = controller.isAirUnitInBox(GlobalUnitsModel.AirBox.US_ELIMINATED, edb2.name)
     expect(edb2Eliminated).toEqual(true)
   })
+
+  test("Inflict Damage on Carrier from Two Successive Strikes, Damage should be Cumulative", () => {
+    const carrier = GlobalUnitsModel.Carrier.ENTERPRISE
+
+    GlobalGameState.currentCarrierAttackTarget = carrier
+    GlobalGameState.carrierAttackHits = 2
+
+    autoAllocateDamage(controller)
+
+    const bowDamaged = controller.getCarrierBowDamaged(carrier)
+    expect(bowDamaged).toEqual(true)
+
+    const sternDamaged = controller.getCarrierSternDamaged(carrier)
+    expect(sternDamaged).toEqual(true)
+
+    const hits = controller.getCarrierHits(carrier)
+    expect(hits).toEqual(2)
+
+    autoAllocateDamage(controller)
+    const isSunk = controller.isSunk(carrier)
+
+    expect(isSunk).toEqual(true)
+  })
 })

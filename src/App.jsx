@@ -29,7 +29,7 @@ import {
   doCarrierDamageRolls,
   carrierDamageRollNeeded,
   autoAllocateDamage,
-  sendDamageUpdates
+  sendDamageUpdates,
 } from "./DiceHandler"
 import { determineAllUnitsDeployedForCarrier } from "./controller/AirUnitSetupHandler"
 
@@ -136,7 +136,7 @@ export function App() {
     name: "",
     box: "",
     index: -1,
-    side: ""
+    side: "",
   })
 
   const [fleetUnitUpdate, setFleetUnitUpdate] = useState({
@@ -179,6 +179,8 @@ export function App() {
       // @TODO CHECK IF JAPANESE PLAYER HOLDS CARD 11
       // ("US STRIKE LOST")
       // Will want to display an alert to ask if the player wants to play this card
+      setTargetDetermined(false)
+      setTargetSelected(false)
       setTargetPanelShow(true)
       GlobalGameState.dieRolls = 0
       GlobalGameState.capHits = undefined
@@ -187,25 +189,28 @@ export function App() {
 
   useEffect(() => {
     if (GlobalGameState.gamePhase === GlobalGameState.PHASE.ATTACK_TARGET_SELECTION) {
+      setAttackTargetsSelected(false)
       setAttackTargetPanelShow(true)
     }
   }, [GlobalGameState.gamePhase])
 
   useEffect(() => {
     if (GlobalGameState.gamePhase === GlobalGameState.PHASE.AIR_ATTACK_1) {
-      console.log("ATTACK 1 ABOUT TO COMMENCE..................!!!!")
+      console.log("ATTACK 1 ABOUT TO COMMENCE..................!!!! carrierTarget1 =", GlobalGameState.carrierTarget1)
 
       GlobalGameState.dieRolls = []
       GlobalGameState.carrierHitsDetermined = false
       GlobalGameState.currentCarrierAttackTarget = GlobalGameState.carrierTarget1
       GlobalGameState.eliminatedAirUnits = new Array()
+      GlobalGameState.dieRolls.length === 0
+      setAttackResolved(false)
       setAttackResolutionPanelShow(true)
     }
   }, [GlobalGameState.gamePhase])
 
   useEffect(() => {
     if (GlobalGameState.gamePhase === GlobalGameState.PHASE.AIR_ATTACK_2) {
-      console.log("ATTACK 2 ABOUT TO COMMENCE..................!!!!")
+      console.log("ATTACK 2 ABOUT TO COMMENCE..................!!!! carrierTarget2 =", GlobalGameState.carrierTarget2)
       GlobalGameState.dieRolls = []
       GlobalGameState.carrierHitsDetermined = false
       GlobalGameState.currentCarrierAttackTarget = GlobalGameState.carrierTarget2
@@ -220,6 +225,9 @@ export function App() {
       GlobalGameState.dieRolls = []
       setAttackResolutionPanelShow(false)
       setCarrierDamagePanelShow(true)
+      GlobalGameState.carrierAttackHits = 0 
+      setAttackResolved(false)
+
     }
   }, [GlobalGameState.gamePhase])
 
@@ -376,7 +384,9 @@ export function App() {
   }
 
   const nextAction = (e) => {
-    e.preventDefault()
+    if (e) {
+      e.preventDefault()
+    }
 
     handleAction({
       setUSMapRegions,
@@ -681,7 +691,11 @@ export function App() {
   }
   const targetHeaders = (
     <>
-      <TargetHeaders controller={GlobalInit.controller} setTargetSelected={setTargetSelected}></TargetHeaders>
+      <TargetHeaders
+        controller={GlobalInit.controller}
+        setTargetSelected={setTargetSelected}
+        setTargetDetermined={setTargetDetermined}
+      ></TargetHeaders>
     </>
   )
 
@@ -834,7 +848,7 @@ export function App() {
 
     if (GlobalGameState.carrierAttackHits > 0) {
       sendDamageUpdates(GlobalInit.controller, damage, setDamageMarkerUpdate)
-    } 
+    }
     // 3. If Midway of MIF, move hits marker accordingly
     setAttackResolved(() => true)
   }

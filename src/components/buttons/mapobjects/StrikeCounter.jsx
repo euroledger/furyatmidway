@@ -70,7 +70,7 @@ function StrikeCounter({ setStrikeGroupPopup, currentUSHex, currentJapanHex, cou
     counterData.name === strikeGroupUpdate.name &&
     (strikeGroupUpdate.position.currentHex != undefined && position.currentHex.q !== hex.q || position.currentHex.r !== hex.r)
   ) {
-    // console.log("I am", strikeGroupUpdate.name, " -> STRIKE GROUP UPDATE, move to", hex.row + ",", hex.col)
+    console.log("I am", strikeGroupUpdate.name, " -> STRIKE GROUP UPDATE, move to", hex.row + ",", hex.col)
 
     if (side === GlobalUnitsModel.Side.US) {
       setUSPosition(hex)
@@ -303,7 +303,6 @@ function StrikeCounter({ setStrikeGroupPopup, currentUSHex, currentJapanHex, cou
       setUSMapRegions([])
     }
   }
-  //   console.log("counter data=", counterData)
   return (
     <>
       <div>
@@ -330,7 +329,7 @@ function StrikeCounter({ setStrikeGroupPopup, currentUSHex, currentJapanHex, cou
           onDragEnd={handleDrop}
           onClick={(e) => handleClick(e)}
           // onContextMenu={(e) => handleRightClick(e)}
-          zIndex={side === GlobalUnitsModel.Side.JAPAN ? 91 : 11}
+          // zIndex={side === GlobalUnitsModel.Side.JAPAN ? 91 : 155}
         />
       </div>
     </>

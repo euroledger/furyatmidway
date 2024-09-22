@@ -13,19 +13,7 @@ export function AttackTargetHeaders({ controller, setAttackTargetsSelected }) {
   const display = buttonsDisabled ? "flex" : "none"
 
   const message1 = "Target Selected: "
-  const handleClick = (target) => {
-    GlobalGameState.currentCarrierAttackTarget = target
 
-    // controller.viewEventHandler({
-    //   type: Controller.EventTypes.TARGET_SELECTION,
-    //   data: {
-    //     target: target,
-    //     side: GlobalGameState.sideWithInitiative
-    //   },
-    // })
-  }
-
-  // const unitsInGroup = controller.getAttackingStrikeUnitsTEST(GlobalUnitsModel.TaskForce.TASK_FORCE_16)
   const unitsInGroup = controller.getAttackingStrikeUnits(true)
 
   let base = 10 + (8 - unitsInGroup.length) * 5

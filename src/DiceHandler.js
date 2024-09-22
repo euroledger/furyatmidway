@@ -152,6 +152,8 @@ export function autoAllocateDamage(controller) {
     sunk: false,
   }
   if (hits === 0) return null
+
+  const currentCarrierHits = controller.getCarrierHits(carrier)
   if (hits >= 2) {
     controller.setCarrierBowDamaged(carrier)
     damage.bow = true
@@ -169,13 +171,13 @@ export function autoAllocateDamage(controller) {
     }
     if (hits >= 3) {
       damage.sunk = true
-      controller.setCarrierHits(carrier, 3) // sunk
       const airUnits = getAirUnitsInHangar(controller, carrier)
       for (let unit of airUnits) {
         moveAirUnitToEliminatedBox(controller, unit)
         GlobalGameState.eliminatedAirUnits.push(unit)
       }
     }
+    controller.setCarrierHits(carrier, Math.min(3, currentCarrierHits + hits))
   }
   return damage
 }

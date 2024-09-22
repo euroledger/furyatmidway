@@ -127,7 +127,6 @@ function AttackDicePanel(props) {
     }
   }
 
- 
   return (
     <Modal
       {...rest}
@@ -227,11 +226,10 @@ function AttackDicePanel(props) {
       </Modal.Body>
 
       <Modal.Footer style={{ background: `${bg}`, color: "black" }}>
-        {numDice > 0 && (
-          <Button disabled={diceButtonDisabled} onClick={() => doRoll()}>
-            {diceButtonStr}
-          </Button>
-        )}
+        <Button disabled={diceButtonDisabled} onClick={() => doRoll()}>
+          {diceButtonStr}
+        </Button>
+
         <Button
           disabled={closeButtonDisabled}
           onClick={(e) => {

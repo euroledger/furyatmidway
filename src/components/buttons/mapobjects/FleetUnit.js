@@ -10,7 +10,7 @@ export default class FleetUnit extends BaseUnit {
   }
 
   get isSunk() {
-    return this._hits === 3
+    return this._hits >= 3
   }
 
   // @TODO add functions for bow and stern damage

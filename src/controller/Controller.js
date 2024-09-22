@@ -57,7 +57,35 @@ export default class Controller {
     this.targetMap = new Map()
   }
 
+  autoSelectTaskForceTarget(sideBeingAttacked) {
+    let autoSelectTarget = null
+    if (sideBeingAttacked == GlobalUnitsModel.Side.JAPAN) {
+      if (this.isSunk(GlobalUnitsModel.Carrier.AKAGI) && this.isSunk(GlobalUnitsModel.Carrier.KAGA)) {
+        autoSelectTarget = GlobalUnitsModel.TaskForce.CARRIER_DIV_2
+      }
+      if (this.isSunk(GlobalUnitsModel.Carrier.HIRYU) && this.isSunk(GlobalUnitsModel.Carrier.SORYU)) {
+        autoSelectTarget = GlobalUnitsModel.TaskForce.CARRIER_DIV_1
+      }
+    } else {
+      if (this.isSunk(GlobalUnitsModel.Carrier.ENTERPRISE) && this.isSunk(GlobalUnitsModel.Carrier.HORNET)) {
+        autoSelectTarget = GlobalUnitsModel.TaskForce.TASK_FORCE_17
+      }
+      if (this.isSunk(GlobalUnitsModel.Carrier.YORKTOWN)) {
+        autoSelectTarget = GlobalUnitsModel.TaskForce.TASK_FORCE_16
+      }
+      // @TODO Add Midway
+    }
+    return autoSelectTarget
+  }
   setAirUnitTarget(airUnit, target) {
+    // console.log(
+    //   "++++++++++++++++++++++++ QuaCK target1=",
+    //   GlobalGameState.carrierTarget1,
+    //   "target 2=",
+    //   GlobalGameState.carrierTarget2,
+    //   "this target=",
+    //   target
+    // )
     if (GlobalGameState.carrierTarget1 !== target && GlobalGameState.carrierTarget2 !== target) {
       if (GlobalGameState.carrierTarget1 === "" || GlobalGameState.carrierTarget1 === undefined) {
         GlobalGameState.carrierTarget1 = target
@@ -74,10 +102,10 @@ export default class Controller {
 
   getAttackTargets() {
     const array = Array.from(this.targetMap.values())
-    
-    const set = [...new Set(array)];
-    console.log(set); // [1, 2, 3, 4, 5]
-   
+
+    const set = [...new Set(array)]
+    console.log(set) // [1, 2, 3, 4, 5]
+
     return set
   }
 
@@ -86,6 +114,9 @@ export default class Controller {
     return x.length
   }
 
+  resetTargetMap() {
+    this.targetMap.clear()
+  }
   getTargetMapSize() {
     return Array.from(this.targetMap.values()).length
   }
@@ -165,6 +196,12 @@ export default class Controller {
         return airUnitsInBox && airUnitsInBox.length > 0
       })
     }
+
+    // do not return strike boxes containing a strike group which has already moved
+    strikeBoxes = strikeBoxes.filter((box) => {
+      const strikeGroup = this.getStrikeGroupForBox(side, box)
+      return !strikeGroup.moved
+    })
     if (side === GlobalUnitsModel.Side.US) {
       // get all units for each strike box, any there
       // from a different carrer should be removed
@@ -202,6 +239,7 @@ export default class Controller {
       return airUnit.carrier
     }
   }
+  C
 
   getCapBoxForNamedCarrier(carrierName, side) {
     const tf = this.getTaskForceForCarrier(carrierName, side)
@@ -448,6 +486,9 @@ export default class Controller {
 
   getTargetForAttack() {
     if (GlobalGameState.taskForceTarget === GlobalUnitsModel.TaskForce.TASK_FORCE_17) {
+      if (this.isSunk(GlobalUnitsModel.Carrier.YORKTOWN)) {
+        return null
+      }
       return GlobalUnitsModel.Carrier.YORKTOWN
     }
 
@@ -492,7 +533,8 @@ export default class Controller {
   autoAssignTargets() {
     let carrierAttackTarget = this.getTargetForAttack()
     if (carrierAttackTarget === null) {
-      throw Error("Cannot auto assign targets, more than one available")
+      console.log("Cannot auto assign targets, no target available")
+      return null
     }
     const unitsInGroup = this.getAttackingStrikeUnits(true)
 
@@ -535,7 +577,22 @@ export default class Controller {
 
     const strikeGroups = this.getAllStrikeGroupsInLocation(location, GlobalGameState.sideWithInitiative)
 
-    let unitsInGroup = this.getAirUnitsInStrikeGroups(strikeGroups[0].box)
+    if (strikeGroups.length === 0) {
+      return []
+    }
+
+    let unitsInGroup
+    let index = 0
+    for (let sg of strikeGroups) {
+      if (index === strikeGroups.length) {
+        return []
+      }
+      if (!sg.attacked) {
+        unitsInGroup = this.getAirUnitsInStrikeGroups(strikeGroups[index].box)
+        break
+      }
+      index++
+    }
 
     if (excludeFighters) {
       unitsInGroup = unitsInGroup.filter((unit) => unit.aircraftUnit.attack === true)
@@ -634,6 +691,13 @@ export default class Controller {
     return this.boxModel.getAirUnitLocation(airUnitName)
   }
 
+  getStrikeGroupForBox(side, box) {
+    if (side === GlobalUnitsModel.Side.US) {
+      return GlobalUnitsModel.usStrikeGroups.get(box)
+    } else {
+      return GlobalUnitsModel.jpStrikeGroups.get(box)
+    }
+  }
   // side is attacker so use other side for defender (ie fleets)
   checkForAirAttack = (location, side) => {
     const strikeGroups = this.getAllStrikeGroupsInLocation(location, side)

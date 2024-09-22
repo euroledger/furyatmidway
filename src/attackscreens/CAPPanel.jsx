@@ -14,6 +14,11 @@ export function CAPHeaders({ controller, setCapAirUnits, capSteps, setCapSteps }
   const capBox = controller.getCAPBoxForTaskForce(GlobalGameState.taskForceTarget, sideBeingAttacked)
   const capUnits = controller.getAllAirUnitsInBox(capBox)
 
+  const bg =
+    GlobalGameState.sideWithInitiative === GlobalUnitsModel.Side.US
+      ? "rgba(92, 131, 228, 0.8)"
+      : "rgba(228, 92, 92, 0.8)"
+
   const handleClick = (airUnit) => {
     if (airUnit.aircraftUnit.intercepting) {
       setCapSteps(() => capSteps - airUnit.aircraftUnit.steps)
@@ -22,9 +27,24 @@ export function CAPHeaders({ controller, setCapAirUnits, capSteps, setCapSteps }
     }
     airUnit.aircraftUnit.intercepting = !airUnit.aircraftUnit.intercepting
     setCapAirUnits(() => controller.getAllCAPDefenders(sideBeingAttacked))
-    GlobalGameState.updateGlobalState()    
+    GlobalGameState.updateGlobalState()
   }
-
+  const attackers = controller.getAttackingStrikeUnits(false)
+  const strikeCounters = attackers.map((airUnit) => {
+    return (
+      <div>
+        <img
+          src={airUnit.image}
+          style={{
+            width: "40px",
+            height: "40px",
+            marginRight: "10px",
+            marginTop: "-20px",
+          }}
+        ></img>
+      </div>
+    )
+  })
   const airCounters = capUnits.map((airUnit) => {
     const outline = airUnit.aircraftUnit.intercepting ? "5px solid rgb(184,29,29)" : ""
     return (
@@ -39,7 +59,7 @@ export function CAPHeaders({ controller, setCapAirUnits, capSteps, setCapSteps }
             marginLeft: "20px",
 
             marginRight: "55px",
-            outline: outline
+            outline: outline,
           }}
           id="bollocks"
         />
@@ -78,6 +98,38 @@ export function CAPHeaders({ controller, setCapAirUnits, capSteps, setCapSteps }
       >
         {airCounters}
       </div>
+      <div
+        style={{
+          display: "flex",
+          justifyContent: "center",
+          alignItems: "center",
+        }}
+      >
+        <div
+          style={{
+            zIndex: 100,
+            width: "200px",
+            height: "70px",
+            background: bg,
+            borderRadius: "3px",
+            color: "white",
+            border: "1px solid white",
+            marginBottom: "10px",
+          }}
+        >
+          <p style={{ marginLeft: "5px" }}>Incoming Strike Group</p>
+          <div
+            style={{
+              display: "flex",
+              justifyContent: "center",
+              alignItems: "center",
+              marginLeft: "7px",
+            }}
+          >
+            {strikeCounters}
+          </div>
+        </div>
+      </div>
       <div>
         <p
           style={{
@@ -108,17 +160,17 @@ export function CAPHeaders({ controller, setCapAirUnits, capSteps, setCapSteps }
   )
 }
 
-export function CAPFooters({controller, setFightersPresent}) {
-  const show =  GlobalGameState.dieRolls.length > 0
+export function CAPFooters({ controller, setFightersPresent }) {
+  const show = GlobalGameState.dieRolls.length > 0
 
-  const msg="Number of Hits:"
+  const msg = "Number of Hits:"
 
   const sideBeingAttacked =
-  GlobalGameState.sideWithInitiative === GlobalUnitsModel.Side.US
-    ? GlobalUnitsModel.Side.JAPAN
-    : GlobalUnitsModel.Side.US
+    GlobalGameState.sideWithInitiative === GlobalUnitsModel.Side.US
+      ? GlobalUnitsModel.Side.JAPAN
+      : GlobalUnitsModel.Side.US
 
-const fighters = controller.anyFightersInStrike(GlobalGameState.taskForceTarget, sideBeingAttacked)
+  const fighters = controller.anyFightersInStrike(GlobalGameState.taskForceTarget, sideBeingAttacked)
 
   let fighterMsg = ""
   if (!fighters) {
@@ -128,24 +180,24 @@ const fighters = controller.anyFightersInStrike(GlobalGameState.taskForceTarget,
 
   return (
     <>
-   
-        <div
+      <div
+        style={{
+          marginTop: "10px",
+          marginLeft: "-28px",
+        }}
+      >
+        <p
           style={{
-            marginTop: "10px",
-            marginLeft: "-28px",
+            display: "flex",
+            justifyContent: "center",
+            alignItems: "center",
+            color: "white",
           }}
         >
-          <p
-            style={{
-              display: "flex",
-              justifyContent: "center",
-              alignItems: "center",
-              color: "white",
-            }}
-          >
-            {fighterMsg}<br></br>
-          </p>
-          {show && (
+          {fighterMsg}
+          <br></br>
+        </p>
+        {show && (
           <p
             style={{
               display: "flex",
@@ -155,8 +207,9 @@ const fighters = controller.anyFightersInStrike(GlobalGameState.taskForceTarget,
             }}
           >
             {msg} &nbsp;<strong>{GlobalGameState.capHits}</strong>&nbsp;
-          </p>)}
-        </div>
+          </p>
+        )}
+      </div>
     </>
   )
 }

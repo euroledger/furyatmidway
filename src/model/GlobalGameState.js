@@ -76,6 +76,8 @@ export default class GlobalGameState {
   static taskForceTarget = ""
   static currentCarrierAttackTarget=""
 
+  static attackingStrikeGroup= undefined
+  
   // Can attack both carriers in a task force
   static carrierTarget1=""
   static carrierTarget2=""
@@ -145,9 +147,7 @@ export default class GlobalGameState {
 
   static midwayAirOp = 1 // can be two air ops in Midway attack
 
-  static nextAvailableDamageMarker = 0
-  static nextAvailableSunkMarker = 0
-  
+
   static getJapanCarrier = () => {
     return this.JAPAN_CARRIERS[this.setupPhase]
   }

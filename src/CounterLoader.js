@@ -1160,7 +1160,8 @@ function loadStrikeGroups(controller, counters) {
         left: 500,
         top: 50,
       },
-      false // moved
+      false, // moved
+      false  // attacked
     )
 
     GlobalUnitsModel.jpStrikeGroups.set(group.box, sgu)
@@ -1182,7 +1183,8 @@ function loadStrikeGroups(controller, counters) {
         left: 500,
         top: 50,
       },
-      false // moved
+      false, // moved
+      false  // attacked
     )
 
     GlobalUnitsModel.usStrikeGroups.set(group.box, sgu)

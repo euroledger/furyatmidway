@@ -1,15 +1,9 @@
 import { React } from "react"
 import "./cap.css"
-import GlobalUnitsModel from "../model/GlobalUnitsModel"
 import GlobalGameState from "../model/GlobalGameState"
 import { SingleCarrier } from "./SingleCarrier"
 
 export function AttackResolutionHeaders({ controller }) {
-  const sideBeingAttacked =
-    GlobalGameState.sideWithInitiative === GlobalUnitsModel.Side.US
-      ? GlobalUnitsModel.Side.JAPAN
-      : GlobalUnitsModel.Side.US
-
   const msg = "Target For Air Attack:"
 
   const attackers = controller.getStrikeUnitsAttackingCarrier()

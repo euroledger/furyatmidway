@@ -191,8 +191,6 @@ function airOperationsHandler({
   sideWithInitiative,
   setInitiativePanelShow,
   setSideWithInitiative,
-  capAirUnits,
-  setAirUnitUpdate,
 }) {
   GlobalGameState.phaseCompleted = false
   if (GlobalGameState.sideWithInitiative === GlobalUnitsModel.Side.JAPAN) {
@@ -250,8 +248,27 @@ function airOperationsHandler({
       GlobalGameState.phaseCompleted = false
     }
   }
-  // If at least one strike group has been created and all strike groups have moved
-  // allow next action
+  // Loop through strike groups see if there should be any attack
+
+  // I THINK THIS IS WRONG BUT LEAVE IT HERE FOR NOW
+  // IN CASE WE NEED TO MOVE STRIKE GROUPS FIRST THEN DO ALL ATTACKS
+  // let groups = this.getAllStrikeGroups(GlobalUnitsModel.Side.US)
+  // if (GlobalGameState.sideWithInitiative === GlobalUnitsModel.Side.JAPAN) {
+  //   groups = this.getAllStrikeGroups(GlobalUnitsModel.Side.JAPAN)
+  // }
+  // for (let group of groups) {
+
+  //   console.log("GET LOCATION OF GROUP ", group)
+  //   const location = GlobalInit.controller.getStrikeGroupLocation(group, GlobalGameState.sideWithInitiative)
+  //   if (GlobalInit.controller.checkForAirAttack(location, side)) {
+  //     if (GlobalGameState.gamePhase === GlobalGameState.PHASE.MIDWAY_ATTACK) {
+  //       GlobalGameState.gamePhase = GlobalGameState.PHASE.CAP_INTERCEPTION
+  //       GlobalGameState.taskForceTarget = GlobalUnitsModel.TaskForce.MIDWAY
+  //     } else {
+  //       GlobalGameState.gamePhase = GlobalGameState.PHASE.TARGET_DETERMINATION
+  //     }
+  //   }
+  // }
 
   GlobalGameState.updateGlobalState()
 }
@@ -277,7 +294,7 @@ export default function handleAction({
   capSteps,
   capAirUnits,
   setAirUnitUpdate,
-  setDamageMarkerUpdate
+  setDamageMarkerUpdate,
 }) {
   //   switch (
   // GlobalGameState.gamePhase
@@ -411,9 +428,13 @@ export default function handleAction({
       if (display) {
         GlobalGameState.gamePhase = GlobalGameState.PHASE.ATTACK_TARGET_SELECTION
       } else {
-        // allocate all targets to single carrier/midway
-        GlobalInit.controller.autoAssignTargets()
-        GlobalGameState.gamePhase = GlobalGameState.PHASE.AIR_ATTACK_1
+        const anyTargets = GlobalInit.controller.autoAssignTargets()
+        if (anyTargets === null) {
+          // no targets (all units sunk)
+          GlobalGameState.gamePhase = GlobalGameState.PHASE.AIR_OPERATIONS
+        } else {
+          GlobalGameState.gamePhase = GlobalGameState.PHASE.AIR_ATTACK_1
+        }
       }
     } else {
       GlobalGameState.gamePhase = GlobalGameState.PHASE.AIR_OPERATIONS
@@ -425,9 +446,13 @@ export default function handleAction({
       if (display) {
         GlobalGameState.gamePhase = GlobalGameState.PHASE.ATTACK_TARGET_SELECTION
       } else {
-        // allocate all targets to single carrier/midway
-        GlobalInit.controller.autoAssignTargets()
-        GlobalGameState.gamePhase = GlobalGameState.PHASE.AIR_ATTACK_1
+        const anyTargets = GlobalInit.controller.autoAssignTargets()
+        if (anyTargets === null) {
+          // no targets (all units sunk)
+          GlobalGameState.gamePhase = GlobalGameState.PHASE.AIR_OPERATIONS
+        } else {
+          GlobalGameState.gamePhase = GlobalGameState.PHASE.AIR_ATTACK_1
+        }
       }
     } else {
       GlobalGameState.gamePhase = GlobalGameState.PHASE.AIR_OPERATIONS
@@ -439,16 +464,19 @@ export default function handleAction({
     console.log("GO TO ATTACK DAMAGE CARRIERS!")
     GlobalGameState.gamePhase = GlobalGameState.PHASE.ATTACK_DAMAGE_RESOLUTION
   } else if (GlobalGameState.gamePhase === GlobalGameState.PHASE.AIR_ATTACK_2) {
-    GlobalGameState.gamePhase = GlobalGameState.PHASE.ATTACK_DAMAGE_RESOLUTION        
+    GlobalGameState.gamePhase = GlobalGameState.PHASE.ATTACK_DAMAGE_RESOLUTION
   } else if (GlobalGameState.gamePhase === GlobalGameState.PHASE.ATTACK_DAMAGE_RESOLUTION) {
-    console.log("END OF DAMAGE BOLLOCKS carrier Target2 =",GlobalGameState.carrierTarget2)
-    if (GlobalGameState.carrierTarget2 !== "" && GlobalGameState.carrierTarget2 !== undefined)   {
+    console.log("END OF DAMAGE BOLLOCKS carrier Target2 =", GlobalGameState.carrierTarget2)
+    if (GlobalGameState.carrierTarget2 !== "" && GlobalGameState.carrierTarget2 !== undefined) {
+      console.log("NOW ATTACK THE OTHER CARRIER", GlobalGameState.carrierTarget2)
       GlobalGameState.gamePhase = GlobalGameState.PHASE.AIR_ATTACK_2
     } else {
       GlobalGameState.gamePhase = GlobalGameState.PHASE.AIR_OPERATIONS
+      const attackingSG = GlobalGameState.attackingStrikeGroup
+      attackingSG.attacked = true
+      console.log("ATTACKING SG=", attackingSG)
     }
   }
-
 
   // @TODO if all air units in a strike are eliminated maybe display a dialog saying "Air Attack Phase over, no
   // air units left or something"
