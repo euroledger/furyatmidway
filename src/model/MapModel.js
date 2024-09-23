@@ -15,6 +15,9 @@ export default class CardModel {
     }
   }
   locationsEqual(locationA, locationB) {
+    // if (locationA === null || locationA=== undefined || locationB === null || locationB === undefined) {
+    //   return false
+    // }
     if (locationA.currentHex === undefined || locationB.currentHex === undefined) {
       return false
     }

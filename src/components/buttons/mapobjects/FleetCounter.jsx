@@ -20,6 +20,8 @@ function FleetCounter({
   setCurrentUSHex,
   setCurrentJapanHex
 }) {
+
+ 
   const { setIsMoveable } = useContext(BoardContext)
   const { controller, onDrag, onStop, fleetUnitUpdate } = useContext(BoardContext)
 
@@ -189,6 +191,9 @@ function FleetCounter({
     }
   }
 
+  //  if (side !== GlobalGameState.sideWithInitiative) {
+  //   return <></>
+  // }
   return (
     <div>
       {enabled && (

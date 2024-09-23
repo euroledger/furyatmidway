@@ -116,7 +116,6 @@ async function loadHandler({
   }
 
   for (const update of jpStrikeUpdates) {
-    console.log(">>>>>>> SET JP STRIKE UPDATE:", update)
     setStrikeGroupUpdate(update)
     await delay(1)
   }

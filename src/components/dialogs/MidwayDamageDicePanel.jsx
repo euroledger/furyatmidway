@@ -40,7 +40,7 @@ function getEliminatedAirCounters() {
   })
   return eliminatedAirUnits.length > 0 ? eliminatedAirUnits : "None"
 }
-function CarrierDamageDicePanel(props) {
+function MidwayDamageDicePanel(props) {
   const {
     controller,
     attackResolved,
@@ -252,4 +252,4 @@ function CarrierDamageDicePanel(props) {
   )
 }
 
-export default CarrierDamageDicePanel
+export default MidwayDamageDicePanel

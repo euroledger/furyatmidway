@@ -3,6 +3,7 @@ import "../../board.css"
 import { BoardContext } from "../../../App"
 import DamageSunkCounter from "./DamageSunkCounter"
 import GlobalUnitsModel from "../../../model/GlobalUnitsModel"
+import GlobalGameState from "../../../model/GlobalGameState"
 
 function DamageSunkCounters({ counterData }) {
   const { damageMarkerUpdate } = useContext(BoardContext)
@@ -13,6 +14,9 @@ function DamageSunkCounters({ counterData }) {
 
   markers = markers.concat(GlobalUnitsModel.sunkMarkers)
 
+  if (GlobalGameState.sideWithInitiative !== damageMarkerUpdate.side) {
+    return
+  }
   const damageSunkCounters = markers.map((marker) => {
     return <DamageSunkCounter counterData={marker} markerUpdate={damageMarkerUpdate}></DamageSunkCounter>
   })

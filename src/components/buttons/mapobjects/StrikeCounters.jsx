@@ -62,6 +62,7 @@ function StrikeCounters({
         GlobalGameState.gamePhase !== GlobalGameState.PHASE.AIR_ATTACK_1 && 
         GlobalGameState.gamePhase !== GlobalGameState.PHASE.AIR_ATTACK_2 && 
         GlobalGameState.gamePhase !== GlobalGameState.PHASE.ATTACK_DAMAGE_RESOLUTION && 
+        GlobalGameState.gamePhase !== GlobalGameState.PHASE.MIDWAY_DAMAGE_RESOLUTION && 
         GlobalGameState.gamePhase !== GlobalGameState.PHASE.CAP_DAMAGE_ALLOCATION && 
         GlobalGameState.gamePhase !== GlobalGameState.PHASE.ESCORT_COUNTERATTACK && 
         GlobalGameState.gamePhase !== GlobalGameState.PHASE.ESCORT_DAMAGE_ALLOCATION && 

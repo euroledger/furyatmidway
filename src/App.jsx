@@ -42,6 +42,7 @@ import DicePanel from "./components/dialogs/DicePanel"
 import LargeDicePanel from "./components/dialogs/LargeDicePanel"
 import AttackDicePanel from "./components/dialogs/AttackDicePanel"
 import CarrierDamageDicePanel from "./components/dialogs/CarrierDamageDicePanel"
+import MidwayDamageDicePanel from "./components/dialogs/MidwayDamageDicePanel"
 import { AirOpsHeaders, AirOpsFooters } from "./attackscreens/AirOpsDataPanels"
 import { TargetHeaders, TargetFooters } from "./attackscreens/TargetPanel"
 import { AttackTargetHeaders, AttackTargetFooters } from "./attackscreens/AttackTargetPanel"
@@ -111,6 +112,8 @@ export function App() {
   const [attackTargetPanelShow, setAttackTargetPanelShow] = useState(false)
   const [attackResolutionPanelShow, setAttackResolutionPanelShow] = useState(false)
   const [carrierDamagePanelShow, setCarrierDamagePanelShow] = useState(false)
+
+  const [midwayDamagePanelShow, setMidwayDamagePanelShow] = useState(false)
 
   const [capInterceptionPanelShow, setCapInterceptionPanelShow] = useState(false)
 
@@ -191,6 +194,7 @@ export function App() {
     if (GlobalGameState.gamePhase === GlobalGameState.PHASE.ATTACK_TARGET_SELECTION) {
       setAttackTargetsSelected(false)
       setAttackTargetPanelShow(true)
+      GlobalGameState.carrierAttackHits = 0
     }
   }, [GlobalGameState.gamePhase])
 
@@ -225,17 +229,24 @@ export function App() {
       GlobalGameState.dieRolls = []
       setAttackResolutionPanelShow(false)
       setCarrierDamagePanelShow(true)
-      GlobalGameState.carrierAttackHits = 0 
       setAttackResolved(false)
-
     }
   }, [GlobalGameState.gamePhase])
 
+  useEffect(() => {
+    if (GlobalGameState.gamePhase === GlobalGameState.PHASE.MIDWAY_DAMAGE_RESOLUTION) {
+      GlobalGameState.dieRolls = []
+      setAttackResolutionPanelShow(false)
+      setMidwayDamagePanelShow(true)
+      setAttackResolved(false)
+    }
+  }, [GlobalGameState.gamePhase])
   useEffect(() => {
     if (GlobalGameState.gamePhase === GlobalGameState.PHASE.CAP_INTERCEPTION) {
       setFightersPresent(true)
       setCapInterceptionPanelShow(true)
       GlobalGameState.dieRolls = 0
+      GlobalGameState.carrierAttackHits = 0
     }
   }, [GlobalGameState.gamePhase])
 
@@ -767,9 +778,16 @@ export function App() {
     </>
   )
 
+  const numAAADice =
+    GlobalGameState.taskForceTarget !== GlobalUnitsModel.TaskForce.MIDWAY
+      ? 2
+      : Math.ceil(GlobalGameState.midwayGarrisonLevel / 2)
+
+  console.log("Midway Garrison=", GlobalGameState.midwayGarrisonLevel, "NUM AAA DICE=", numAAADice)
+
   const aaaHeaders = (
     <>
-      <AAAHeaders></AAAHeaders>
+      <AAAHeaders numDice={numAAADice}></AAAHeaders>
     </>
   )
 
@@ -830,7 +848,7 @@ export function App() {
   }
 
   function doAntiAircraftRolls() {
-    doAAAFireRolls()
+    doAAAFireRolls(numAAADice)
 
     GlobalGameState.updateGlobalState()
   }
@@ -849,7 +867,7 @@ export function App() {
     if (GlobalGameState.carrierAttackHits > 0) {
       sendDamageUpdates(GlobalInit.controller, damage, setDamageMarkerUpdate)
     }
-    // 3. If Midway of MIF, move hits marker accordingly
+    console.log("FALLING THRU TO HERE................")
     setAttackResolved(() => true)
   }
 
@@ -881,7 +899,10 @@ export function App() {
   }
 
   let carrieDamageDiceButtonDisabled =
-    GlobalGameState.carrierAttackHits !== 1 || (GlobalGameState.carrierAttackHits === 1 && attackResolved)
+    GlobalGameState.carrierAttackHits !== 1 ||
+    (GlobalGameState.carrierAttackHits === 1 && attackResolved)
+
+  // @TODO midwayDamageDiceButtonDisabled = ... some bollocks to do with runway damage
   return (
     <>
       <LoadGamePanel
@@ -1038,7 +1059,7 @@ export function App() {
         headerText="Damage Allocation"
         headers={damageHeaders}
         footers={damageFooters}
-        // width={100}
+        width={74}
         showDice={true}
         margin={0}
         onHide={(e) => {
@@ -1068,7 +1089,7 @@ export function App() {
         disabled={false}
       ></LargeDicePanel>
       <LargeDicePanel
-        numDice={2}
+        numDice={numAAADice}
         show={!testClicked && aaaPanelShow} // also check for any attacking steps left
         headerText="Anti-Aircraft Fire"
         headers={aaaHeaders}
@@ -1126,7 +1147,7 @@ export function App() {
         headerText="Carrier Damage"
         headers={attackResolutionHeaders}
         footers={attackResolutionFooters}
-        showDice={true}
+        showDice={GlobalGameState.currentCarrierAttackTarget !== GlobalUnitsModel.Carrier.MIDWAY}
         margin={0}
         onHide={(e) => {
           setCarrierDamagePanelShow(false)
@@ -1144,6 +1165,31 @@ export function App() {
         setDamageMarkerUpdate={setDamageMarkerUpdate}
         disabled={false}
       ></CarrierDamageDicePanel>
+       <MidwayDamageDicePanel
+        numDice={1}
+        controller={GlobalInit.controller}
+        show={!testClicked && midwayDamagePanelShow}
+        headerText="Midway Base Damage"
+        headers={attackResolutionHeaders}
+        footers={attackResolutionFooters}
+        showDice={GlobalGameState.currentCarrierAttackTarget !== GlobalUnitsModel.Carrier.MIDWAY}
+        margin={0}
+        onHide={(e) => {
+          setMidwayDamagePanelShow(false)
+          nextAction(e)
+        }}
+        doRoll={doDamageRolls}
+        width={30}
+        closeButtonStr="Next..."
+        closeButtonCallback={(e) => {
+          setMidwayDamagePanelShow(false)
+          nextAction(e)
+        }}
+        diceButtonDisabled={carrieDamageDiceButtonDisabled}
+        closeButtonDisabled={!carrieDamageDiceButtonDisabled}
+        setDamageMarkerUpdate={setDamageMarkerUpdate}
+        disabled={false}
+      ></MidwayDamageDicePanel>
       <GameStatusPanel show={gameStateShow} gameState={gameState} onHide={() => setGameStateShow(false)} />
       <CardPanel show={jpHandShow} side={GlobalUnitsModel.Side.JAPAN} onHide={() => setjpHandShow(false)}></CardPanel>
       <CardPanel show={usHandShow} side={GlobalUnitsModel.Side.US} onHide={() => setusHandShow(false)}></CardPanel>

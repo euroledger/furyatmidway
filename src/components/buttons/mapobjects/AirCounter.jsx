@@ -55,6 +55,7 @@ function AirCounter({ getAirBox, setAirBox, counterData, side }) {
   // This code for the test mode air unit updates
   if (
     counterData.name === airUnitUpdate.name &&
+    airUnitUpdate.position != undefined &&
     position.left !== airUnitUpdate.position.left + "%" &&
     position.top !== airUnitUpdate.position.top + "%"
   ) {

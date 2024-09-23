@@ -41,7 +41,6 @@ const spin = (r, dice) => {
   }
 }
 const rollDice = (rolls) => {
-  console.log("ROLLS LEN=",rolls.length)
   const diceElements = new Array()
   var audio = new Audio("/sounds/dice.wav");
 

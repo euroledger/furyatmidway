@@ -10,7 +10,13 @@ import { doDamageAllocation } from "../DiceHandler"
 export function DamageHeaders({ controller, eliminatedSteps, setEliminatedSteps, setStepsLeft, capAirUnits }) {
   const msg = "Number of Hits to Allocate:"
 
-  const unitsInGroup = capAirUnits ?? controller.getAttackingStrikeUnits()
+  let unitsInGroup = capAirUnits ?? controller.getAttackingStrikeUnits()
+
+
+  if (GlobalGameState.gamePhase === GlobalGameState.PHASE.AAA_DAMAGE_ALLOCATION) {
+    // filter out fighters as AA hits must be allocated to attack aircraft
+    unitsInGroup = controller.getAttackingStrikeUnits(true)
+  }
 
   let totalSteps = 0
   const airCounters = unitsInGroup.map((airUnit) => {
@@ -28,10 +34,10 @@ export function DamageHeaders({ controller, eliminatedSteps, setEliminatedSteps,
           type="image"
           src={airUnit.image}
           style={{
-            width: "80px",
-            height: "80px",
-            marginLeft: "20px",
-            marginRight: "55px",
+            width: "60px",
+            height: "60px",
+            marginLeft: "15px",
+            marginRight: "50px",
           }}
           id="bollocks"
         />
@@ -46,7 +52,7 @@ export function DamageHeaders({ controller, eliminatedSteps, setEliminatedSteps,
         <p
           style={{
             marginTop: "-10px",
-            marginLeft: "55px",
+            marginLeft: "40px",
             color: "white",
           }}
         >
@@ -125,7 +131,7 @@ export function DamageHeaders({ controller, eliminatedSteps, setEliminatedSteps,
             marginLeft: "10px",
           }}
         >
-          Select Steps to Elimintate <br></br>
+          Select Steps to Eliminate <br></br>
         </p>
         <p
           style={{

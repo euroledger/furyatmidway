@@ -114,6 +114,7 @@ function createStrikeGroupUpdates(strikeGroupMap) {
       position: {
         currentHex: cHex,
       },
+      moved: sg._moved
     }
     updates.push(update)
   }

@@ -462,7 +462,11 @@ export default function handleAction({
     GlobalGameState.gamePhase = GlobalGameState.PHASE.AIR_ATTACK_1
   } else if (GlobalGameState.gamePhase === GlobalGameState.PHASE.AIR_ATTACK_1) {
     console.log("GO TO ATTACK DAMAGE CARRIERS!")
-    GlobalGameState.gamePhase = GlobalGameState.PHASE.ATTACK_DAMAGE_RESOLUTION
+    if (GlobalGameState.currentCarrierAttackTarget === GlobalUnitsModel.Carrier.MIDWAY) {
+      GlobalGameState.gamePhase = GlobalGameState.PHASE.MIDWAY_DAMAGE_RESOLUTION
+    } else {
+      GlobalGameState.gamePhase = GlobalGameState.PHASE.ATTACK_DAMAGE_RESOLUTION
+    }
   } else if (GlobalGameState.gamePhase === GlobalGameState.PHASE.AIR_ATTACK_2) {
     GlobalGameState.gamePhase = GlobalGameState.PHASE.ATTACK_DAMAGE_RESOLUTION
   } else if (GlobalGameState.gamePhase === GlobalGameState.PHASE.ATTACK_DAMAGE_RESOLUTION) {
@@ -476,6 +480,11 @@ export default function handleAction({
       attackingSG.attacked = true
       console.log("ATTACKING SG=", attackingSG)
     }
+  } else if (GlobalGameState.gamePhase === GlobalGameState.PHASE.MIDWAY_DAMAGE_RESOLUTION) {
+    console.log("END OF mIDWAY DAMAGE BOLLOCKS")
+    GlobalGameState.gamePhase = GlobalGameState.PHASE.AIR_OPERATIONS
+    const attackingSG = GlobalGameState.attackingStrikeGroup
+    attackingSG.attacked = true
   }
 
   // @TODO if all air units in a strike are eliminated maybe display a dialog saying "Air Attack Phase over, no

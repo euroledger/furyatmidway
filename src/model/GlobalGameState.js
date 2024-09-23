@@ -21,6 +21,7 @@ export default class GlobalGameState {
     AIR_ATTACK_1: "Attack Resolution Phase (1)",
     AIR_ATTACK_2: "Attack Resolution Phase (2)",
     ATTACK_DAMAGE_RESOLUTION: "Damage on Aircraft Carriers",
+    MIDWAY_DAMAGE_RESOLUTION: "Damage to Midway Base",
     CAP_DAMAGE_ALLOCATION: "CAP Damage Allocation Phase",
     ESCORT_COUNTERATTACK: "Escort Fighter Counterattack Phase",
     ESCORT_DAMAGE_ALLOCATION: "Escort Damage Allocation Phase",

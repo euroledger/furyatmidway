@@ -55,11 +55,12 @@ export function SingleCarrier({ controller }) {
     image: "/images/fleetcounters/midway.jpg",
     name: GlobalUnitsModel.Carrier.MIDWAY,
     buttonStr: "Midway",
-    width: "100px",
-    marginLeft: "3px",
+    width: "200px",
+    marginLeft: "-130px",
   }
 
   let carrierTarget
+  let marginL = ""
   console.log("CURRENT CARRIER ATTACK TARGET=", GlobalGameState.currentCarrierAttackTarget)
   if (GlobalGameState.currentCarrierAttackTarget === GlobalUnitsModel.Carrier.AKAGI) {
     carrierTarget = jpAkagi
@@ -77,6 +78,7 @@ export function SingleCarrier({ controller }) {
     carrierTarget = usYorktown
   } else if (GlobalGameState.currentCarrierAttackTarget === GlobalUnitsModel.Carrier.MIDWAY) {
     carrierTarget = usMidway
+    marginL = "-60px"
   } 
 
   const createImage = (image, left, top) => {
@@ -148,6 +150,7 @@ export function SingleCarrier({ controller }) {
           justifyContent: "center",
           alignItems: "center",
           marginBottom: "20px",
+          marginLeft: marginL
         }}
       >
         <div>

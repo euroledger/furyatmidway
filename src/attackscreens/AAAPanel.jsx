@@ -2,7 +2,9 @@ import { React } from "react"
 import GlobalUnitsModel from "../model/GlobalUnitsModel"
 import GlobalGameState from "../model/GlobalGameState"
 
-export function AAAHeaders() {
+export function AAAHeaders({numDice}) {
+  const diceMsg = `Roll ${numDice} dice. Each "1" rolled is a hit`
+
   let tfUnderAttack
   if (GlobalGameState.taskForceTarget === GlobalUnitsModel.TaskForce.CARRIER_DIV_1) {
     tfUnderAttack = {
@@ -33,16 +35,14 @@ export function AAAHeaders() {
       image: "/images/fleetcounters/midway.jpg",
       name: GlobalUnitsModel.TaskForce.MIDWAY,
       width: "200px",
-    }  }
-  
+    }
+  }
 
   const msg = `TF Under Attack:`
 
   return (
-    <div
-    >
-      <div
-      >
+    <div>
+      <div>
         <p
           style={{
             display: "flex",
@@ -52,7 +52,7 @@ export function AAAHeaders() {
           }}
         >
           {msg} &nbsp;<strong>{GlobalGameState.taskForceTarget}</strong>&nbsp;
-        </p> 
+        </p>
         <p
           style={{
             display: "flex",
@@ -61,14 +61,14 @@ export function AAAHeaders() {
             color: "white",
           }}
         >
-          Roll 2 dice. Each "1" rolled is a hit
-        </p> 
+          {diceMsg}
+        </p>
         <div
           style={{
-          display: "flex",
-          justifyContent: "center",
-          alignItems: "center",
-        }}
+            display: "flex",
+            justifyContent: "center",
+            alignItems: "center",
+          }}
         >
           <img
             src={tfUnderAttack.image}
@@ -77,7 +77,7 @@ export function AAAHeaders() {
               height: "200px",
               marginLeft: "40px",
               marginRight: "45px",
-              marginBottom: "20px"
+              marginBottom: "20px",
             }}
           />
         </div>
@@ -86,10 +86,10 @@ export function AAAHeaders() {
   )
 }
 
-export function AAAFooters({ controller, setFightersPresent }) {
-  const show =  GlobalGameState.dieRolls.length > 0
+export function AAAFooters() {
+  const show = GlobalGameState.dieRolls.length > 0
 
-  const msg="Number of Hits:"
+  const msg = "Number of Hits:"
   return (
     <>
       {show && (

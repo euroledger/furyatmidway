@@ -68,7 +68,7 @@ describe("Controller tests", () => {
       },
     })
   }
-  function placeStrikeGroupsOnMapJapan(box) {
+  function placeStrikeGroupsOnMapJapan(box, location) {
     const strikeCounter = {
       name: "JP-SG1",
       longName: "Strike Group 1",
@@ -79,6 +79,21 @@ describe("Controller tests", () => {
       side: GlobalUnitsModel.Side.JAPAN,
     }
 
+    let to = {
+      currentHex: {
+        col: 5,
+        q: 7,
+        r: 2,
+        row: "G",
+        side: "jp",
+        x: 120,
+        y: 200,
+      },
+    }
+
+    if (location) {
+      to = location
+    }
     //  Strike Group moves onto map - test location, moved etc.
     controller.viewEventHandler({
       type: Controller.EventTypes.STRIKE_GROUP_MOVE,
@@ -86,17 +101,7 @@ describe("Controller tests", () => {
         initial: true,
         counterData: strikeCounter,
         from: HexCommand.OFFBOARD,
-        to: {
-          currentHex: {
-            col: 5,
-            q: 7,
-            r: 2,
-            row: "G",
-            side: "jp",
-            x: 120,
-            y: 200,
-          },
-        },
+        to: to,
         side: GlobalUnitsModel.Side.JAPAN,
         loading: false,
       },
@@ -261,7 +266,39 @@ describe("Controller tests", () => {
   })
 
   test("Attack on Midway", () => {
-    // @TODO
+    setupJapanStrikeGroups()
+
+    GlobalGameState.taskForceTarget = GlobalUnitsModel.TaskForce.MIDWAY
+    GlobalGameState.sideWithInitiative = GlobalUnitsModel.Side.JAPAN
+
+    GlobalGameState.currentCarrierAttackTarget = GlobalUnitsModel.Carrier.MIDWAY
+   
+    // move JP strike group to Midway hex
+    let location2 = Controller.MIDWAY_HEX
+
+    placeStrikeGroupsOnMapJapan(GlobalUnitsModel.AirBox.JP_STRIKE_BOX_0, location2)
+    controller.setAirUnitTarget(hdb, GlobalUnitsModel.Carrier.MIDWAY)
+    controller.setAirUnitTarget(htb, GlobalUnitsModel.Carrier.MIDWAY)
+    controller.setAirUnitTarget(sdb, GlobalUnitsModel.Carrier.MIDWAY)
+    controller.setAirUnitTarget(stb, GlobalUnitsModel.Carrier.MIDWAY)
+
+    const strikeGroupsAtLocation = controller.getAllStrikeGroupsInLocation(location2, GlobalUnitsModel.Side.JAPAN)
+    expect(strikeGroupsAtLocation[0].name).toEqual("JP-SG1")
+
+    let attackers = controller.getStrikeUnitsAttackingCarrier()
+    expect(attackers.length).toEqual(4)
+
+    // Note bombers score a hit  1 or 2
+    const dieRolls = [2, 6, 4, 2, 5, 5, 1, 3]
+
+    const hits = doAttackFireRolls(controller, dieRolls)
+
+    expect(hits).toEqual(3)
+
+    expect(attackers[0].aircraftUnit.hitsScored).toEqual(1)
+    expect(attackers[1].aircraftUnit.hitsScored).toEqual(1)
+    expect(attackers[2].aircraftUnit.hitsScored).toEqual(0)
+    expect(attackers[3].aircraftUnit.hitsScored).toEqual(1)
   })
 
   test("Attack by Midway-based planes", () => {

@@ -8,7 +8,7 @@ class ViewEventStrikeGroupMoveHandler {
     this.controller = controller
   }
   handleEvent(event) {
-    const { initial, counterData, from, to, side, loading } = event.data
+    const { initial, counterData, from, to, side, loading, moved } = event.data
 
     // to = currentHex
 
@@ -50,6 +50,8 @@ class ViewEventStrikeGroupMoveHandler {
         counterData.attacked = false // possible reset from previous attack
         GlobalGameState.attackingStrikeGroup = counterData
       }
+    } else {
+      counterData.moved = moved
     }
 
     // check if all stike groups moved - can that be done here?

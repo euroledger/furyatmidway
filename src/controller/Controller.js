@@ -57,6 +57,10 @@ export default class Controller {
     this.targetMap = new Map()
   }
 
+  targetMapSize() {
+    return Array.from(this.targetMap.keys()).length
+  }
+
   autoSelectTaskForceTarget(sideBeingAttacked) {
     let autoSelectTarget = null
     if (sideBeingAttacked == GlobalUnitsModel.Side.JAPAN) {
@@ -78,14 +82,6 @@ export default class Controller {
     return autoSelectTarget
   }
   setAirUnitTarget(airUnit, target) {
-    // console.log(
-    //   "++++++++++++++++++++++++ QuaCK target1=",
-    //   GlobalGameState.carrierTarget1,
-    //   "target 2=",
-    //   GlobalGameState.carrierTarget2,
-    //   "this target=",
-    //   target
-    // )
     if (GlobalGameState.carrierTarget1 !== target && GlobalGameState.carrierTarget2 !== target) {
       if (GlobalGameState.carrierTarget1 === "" || GlobalGameState.carrierTarget1 === undefined) {
         GlobalGameState.carrierTarget1 = target
@@ -200,8 +196,9 @@ export default class Controller {
     // do not return strike boxes containing a strike group which has already moved
     strikeBoxes = strikeBoxes.filter((box) => {
       const strikeGroup = this.getStrikeGroupForBox(side, box)
-      return !strikeGroup.moved
+      return strikeGroup.moved === false
     })
+
     if (side === GlobalUnitsModel.Side.US) {
       // get all units for each strike box, any there
       // from a different carrer should be removed
@@ -226,7 +223,10 @@ export default class Controller {
         const groups = this.getAllStrikeGroups(GlobalUnitsModel.Side.JAPAN)
         if (groups.length === 1) {
           strikeBoxes = new Array()
-          strikeBoxes.push(groups[0].box)
+          const strikeGroup = this.getStrikeGroupForBox(side, groups[0].box)
+          if (!strikeGroup.moved) {
+            strikeBoxes.push(groups[0].box)
+          }
         }
       }
     }

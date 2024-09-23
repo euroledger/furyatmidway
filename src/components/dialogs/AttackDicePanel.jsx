@@ -2,6 +2,7 @@ import Modal from "react-bootstrap/Modal"
 import Button from "react-bootstrap/Button"
 import GlobalGameState from "../../model/GlobalGameState"
 import { SingleCarrier } from "../../attackscreens/SingleCarrier"
+import GlobalUnitsModel from "../../model/GlobalUnitsModel"
 
 import Die from "./Die"
 import "./modal.css"
@@ -114,9 +115,12 @@ function AttackDicePanel(props) {
   const diceButtonStr = numDice > 1 ? "Roll Dice" : "Roll Die"
   const attackers = controller.getStrikeUnitsAttackingCarrier()
 
-  let dbDRM = "No Attack Planes On Deck: NO (Dive Bomber) DRM"
+  let dbDRM = "No Attack Planes On Deck: No (Dive Bomber) DRM"
   let torpDRM = "Not a combined attack: No (Torpedo Bomber) DRM"
-  if (GlobalGameState.currentCarrierAttackTarget !== undefined) {
+  if (GlobalGameState.currentCarrierAttackTarget === GlobalUnitsModel.Carrier.MIDWAY) {
+    dbDRM = "Midway Dive Bomber DRM: -1"
+    torpDRM = "Midway Torpedo Bomber DRM: -1"
+  } else if (GlobalGameState.currentCarrierAttackTarget !== undefined) {
     const attackAircraftOnDeck = controller.attackAircraftOnDeck()
     if (attackAircraftOnDeck) {
       dbDRM = "Attack Planes On Deck: +1 (Dive Bomber) DRM"
@@ -125,7 +129,7 @@ function AttackDicePanel(props) {
     if (combinedAttack) {
       torpDRM = "Combined attack: +1 (Torpedo Bomber) DRM"
     }
-  }
+  } 
 
   return (
     <Modal

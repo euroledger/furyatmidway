@@ -108,7 +108,7 @@ export function CAPHeaders({ controller, setCapAirUnits, capSteps, setCapSteps }
         <div
           style={{
             zIndex: 100,
-            width: "200px",
+            width: "400px",
             height: "70px",
             background: bg,
             borderRadius: "3px",

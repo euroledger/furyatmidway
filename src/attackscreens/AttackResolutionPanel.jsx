@@ -1,6 +1,7 @@
 import { React } from "react"
 import "./cap.css"
 import GlobalGameState from "../model/GlobalGameState"
+import GlobalUnitsModel from "../model/GlobalUnitsModel"
 import { SingleCarrier } from "./SingleCarrier"
 
 export function AttackResolutionHeaders({ controller }) {
@@ -8,7 +9,7 @@ export function AttackResolutionHeaders({ controller }) {
 
   const attackers = controller.getStrikeUnitsAttackingCarrier()
 
-  let dbDRM = "No Attack Planes On Deck: NO (Dive Bomber) DRM"
+  let dbDRM = "No Attack Planes On Deck: No (Dive Bomber) DRM"
   let torpDRM = "Not a combined attack: No (Torpedo Bomber) DRM"
   const attackAircraftOnDeck = controller.attackAircraftOnDeck()
   if (attackAircraftOnDeck) {
@@ -17,6 +18,13 @@ export function AttackResolutionHeaders({ controller }) {
   const combinedAttack = controller.combinedAttack()
   if (combinedAttack) {
     torpDRM = "Combined attack: +1 (Torpedo Bomber) DRM"
+  }
+
+  console.log("CURRENT CARRIER TARGET=", GlobalGameState.currentCarrierAttackTarget)
+  if (GlobalGameState.currentCarrierAttackTarget === GlobalUnitsModel.Carrier.MIDWAY) {
+    console.log("SETTING YO ASS")
+    dbDRM = "Midway Dive Bomber DRM: -1"
+    torpDRM = "Midway Torpedo Bomber DRM: -1"
   }
 
   const airCounters = attackers.map((airUnit) => {

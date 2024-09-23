@@ -52,15 +52,16 @@ function StrikeCounter({ setStrikeGroupPopup, currentUSHex, currentJapanHex, cou
   // STRIKE GROUP UPDATE CODE
   let hex = {}
   if (strikeGroupUpdate) {
-    // console.log("GOT A STRIKE UPDATE: ", strikeGroupUpdate)
-    // console.log("\t=>SG name=", strikeGroupUpdate.name)
-    // console.log("\t=>counter data name=", counterData.name)
-    // console.log("\t=>position=", position)
-    // console.log("\t=>position.currentHex=", position.currentHex)
+    if (strikeGroupUpdate.position.currentHex) {
+      console.log("GOT A STRIKE UPDATE: ", strikeGroupUpdate)
+      console.log("\t=>SG name=", strikeGroupUpdate.name)
+      console.log("\t=>counter data name=", counterData.name)
+      console.log("\t=>position=", position)
+      console.log("\t=>position.currentHex=", position.currentHex)
+    }
 
     hex = strikeGroupUpdate.position.currentHex
-    console.log("\t=>hex=", hex)
-
+    // console.log("\t=>hex=", hex)
   }
 
   if (
@@ -68,9 +69,10 @@ function StrikeCounter({ setStrikeGroupPopup, currentUSHex, currentJapanHex, cou
     hex != undefined &&
     strikeGroupUpdate.name != "" &&
     counterData.name === strikeGroupUpdate.name &&
-    (strikeGroupUpdate.position.currentHex != undefined && position.currentHex.q !== hex.q || position.currentHex.r !== hex.r)
+    ((strikeGroupUpdate.position.currentHex != undefined && position.currentHex.q !== hex.q) ||
+      position.currentHex.r !== hex.r)
   ) {
-    console.log("I am", strikeGroupUpdate.name, " -> STRIKE GROUP UPDATE, move to", hex.row + ",", hex.col)
+    console.log("I am", strikeGroupUpdate.name, " -> STRIKE GROUP UPDATE, moved= ", strikeGroupUpdate.moved)
 
     if (side === GlobalUnitsModel.Side.US) {
       setUSPosition(hex)
@@ -93,6 +95,7 @@ function StrikeCounter({ setStrikeGroupPopup, currentUSHex, currentJapanHex, cou
         to,
         side,
         loading: true,
+        moved: strikeGroupUpdate.moved
       },
     })
   }
@@ -102,13 +105,14 @@ function StrikeCounter({ setStrikeGroupPopup, currentUSHex, currentJapanHex, cou
     const locationOfStrikeGroup = controller.getStrikeGroupLocation(counterData.name, side)
 
     // if (locationOfStrikeGroup === undefined) {
-      // Use 1AF
-      const locationOfCarrier = controller.getFleetLocation("1AF", GlobalUnitsModel.Side.JAPAN)
+    // Use 1AF
+    const locationOfCarrier = controller.getFleetLocation("1AF", GlobalUnitsModel.Side.JAPAN)
 
-      setCurrentHex(locationOfCarrier)
+    setCurrentHex(locationOfCarrier)
+    if (locationOfCarrier) {
       jpRegion1 = allHexesWithinDistance(locationOfCarrier.currentHex, 2, true)
       setJapanMapRegions(jpRegion1)
-    // }
+    }
 
     // If this is the first Midway AirOp and strike group is more than two hexes from Midway
     // ensure that SG moves to within two hexes of Midway
@@ -120,7 +124,7 @@ function StrikeCounter({ setStrikeGroupPopup, currentUSHex, currentJapanHex, cou
 
     // If this is the second Midway AirOp ensure SG moves to Midway
     if (GlobalGameState.gamePhase === GlobalGameState.PHASE.MIDWAY_ATTACK && GlobalGameState.midwayAirOp === 2) {
-      const midway = [ {q: 6, r: 3}]
+      const midway = [{ q: 6, r: 3 }]
       setJapanMapRegions(midway)
     }
   }
@@ -181,6 +185,12 @@ function StrikeCounter({ setStrikeGroupPopup, currentUSHex, currentJapanHex, cou
     // draw hexes around this location as drop zone
   } // end handleClick
   const handleDrop = (event) => {
+    const sg = controller.getStrikeGroupForBox(side, counterData.box)
+    if (sg.attacked) {
+      // if this strike group has attacked, disallow further movement for this air op
+      return
+    }
+
     // let from = { currentHex: position.currentHex }
     let from = HexCommand.OFFBOARD
     let to = { currentHex }
@@ -207,7 +217,6 @@ function StrikeCounter({ setStrikeGroupPopup, currentUSHex, currentJapanHex, cou
 
         // also a means to select a counter in a stack
 
-      
         if (index > 0) {
           currentUSHex.x += 6 * index
           currentUSHex.y -= 6 * index
@@ -276,11 +285,15 @@ function StrikeCounter({ setStrikeGroupPopup, currentUSHex, currentJapanHex, cou
 
   const handleMouseEnter = () => {
     setIsMoveable(true)
-    if (side === GlobalUnitsModel.Side.JAPAN) {
-      setJapanRegions()
-    } else {
-      setUSRegions()
+    const sg = controller.getStrikeGroupForBox(side, counterData.box)
+    if (!sg.attacked) {
+      if (side === GlobalUnitsModel.Side.JAPAN) {
+        setJapanRegions()
+      } else {
+        setUSRegions()
+      }
     }
+
     const location = controller.getStrikeGroupLocation(counterData.name, side)
     setStrikeGroupPopup(side, true, location)
   }

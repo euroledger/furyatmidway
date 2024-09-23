@@ -299,7 +299,7 @@ export async function sendDamageUpdates(controller, damage, setDamageMarkerUpdat
       name: marker1.name,
       box: boxName,
       index: 0,
-      side: sideBeingAttacked
+      side: sideBeingAttacked,
     }
     setDamageMarkerUpdate(markerUpdate)
     controller.setMarkerLocation(marker1.name, boxName, 0)
@@ -313,7 +313,7 @@ export async function sendDamageUpdates(controller, damage, setDamageMarkerUpdat
       name: marker2.name,
       box: boxName,
       index: 1,
-      side: sideBeingAttacked
+      side: sideBeingAttacked,
     }
     setDamageMarkerUpdate(markerUpdate)
     GlobalGameState.nextAvailableSunkMarker++
@@ -327,7 +327,7 @@ export async function sendDamageUpdates(controller, damage, setDamageMarkerUpdat
         name: marker.name,
         box: boxName,
         index: 0,
-        side: sideBeingAttacked
+        side: sideBeingAttacked,
       }
       console.log("SEND UPDATE BOW DAMAGED: ", markerUpdate)
       setDamageMarkerUpdate(markerUpdate)
@@ -345,7 +345,7 @@ export async function sendDamageUpdates(controller, damage, setDamageMarkerUpdat
         name: marker.name,
         box: boxName,
         index: 1,
-        side: sideBeingAttacked
+        side: sideBeingAttacked,
       }
       console.log("SEND UPDATE STERN DAMAGED: ", markerUpdate)
 
@@ -367,15 +367,24 @@ export function doAttackFireRolls(controller, testRolls) {
   if (rolls.length != numSteps) {
     throw Error("Wrong number of die rolls:", rolls.length, "(num steps=", numSteps, ")")
   }
-  // 2. Determine if any attack aircraft on deck (set dive bomber DRM if so)\
-  const attackAircraftOnDeck = controller.attackAircraftOnDeck()
-  if (attackAircraftOnDeck) {
-    dbDRM = 1
+  // 2. Determine if any attack aircraft on deck (set dive bomber DRM if so)
+  // For Midway all Japanese planes get a -1 DRM
+  
+  if (GlobalGameState.currentCarrierAttackTarget === GlobalUnitsModel.Carrier.MIDWAY) {
+    dbDRM = -1
+    torpDRM = -1
+  } else {
+    const attackAircraftOnDeck = controller.attackAircraftOnDeck()
+    if (attackAircraftOnDeck) {
+      dbDRM = 1
+    }
+    const combinedAttack = controller.combinedAttack()
+    if (combinedAttack) {
+      torpDRM = 1
+    }
   }
-  const combinedAttack = controller.combinedAttack()
-  if (combinedAttack) {
-    torpDRM = 1
-  }
+
+  
 
   for (let unit of attackers) {
     unit.aircraftUnit.hitsScored = 0
@@ -420,8 +429,8 @@ export function doAttackFireRolls(controller, testRolls) {
   return hits
 }
 
-export function doAAAFireRolls(testRolls) {
-  let rolls = testRolls === undefined ? randomDice(2) : testRolls
+export function doAAAFireRolls(numDice, testRolls) {
+  let rolls = testRolls === undefined ? randomDice(numDice) : testRolls
 
   let hits = 0
   for (const roll of rolls) {
@@ -431,6 +440,9 @@ export function doAAAFireRolls(testRolls) {
   }
   GlobalGameState.dieRolls = 1
   GlobalGameState.antiaircraftHits = hits
+
+  // QUACK TESTING TAKE THIS OUT
+  // GlobalGameState.antiaircraftHits = 2
 }
 
 function getFightersForStrikeGroup(controller) {
