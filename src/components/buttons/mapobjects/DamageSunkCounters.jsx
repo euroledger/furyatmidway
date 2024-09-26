@@ -14,8 +14,12 @@ function DamageSunkCounters({ counterData }) {
 
   markers = markers.concat(GlobalUnitsModel.sunkMarkers)
 
-  if (GlobalGameState.sideWithInitiative !== damageMarkerUpdate.side) {
-    return
+  // @TODO QUack PUT THIS BACK
+  // if (GlobalGameState.sideWithInitiative !== damageMarkerUpdate.side) {
+  //   return
+  // }
+  if (damageMarkerUpdate.name !== "") {
+    console.log("damage marker update =", damageMarkerUpdate)
   }
   const damageSunkCounters = markers.map((marker) => {
     return <DamageSunkCounter counterData={marker} markerUpdate={damageMarkerUpdate}></DamageSunkCounter>

@@ -2,6 +2,7 @@ import Controller from "../src/controller/Controller"
 import loadCounters from "../src/CounterLoader"
 import AirOperationsModel from "../src/model/AirOperationsModel"
 import GlobalUnitsModel from "../src/model/GlobalUnitsModel"
+import GlobalGameState from "../src/model/GlobalGameState"
 import { handleAirUnitMoves, doReturn1 } from "../src/controller/AirOperationsHandler"
 import { createFleetMove } from "./TestUtils"
 
@@ -12,6 +13,8 @@ describe("Air Operations tests with Preset air unit locations", () => {
   beforeEach(() => {
     controller = new Controller()
     counters = loadCounters(controller)
+
+    GlobalGameState.totalMidwayHits = 0
 
     // TF 16
     const ef1 = counters.get("Enterprise-F4F4-1")
@@ -188,7 +191,7 @@ describe("Air Operations tests with Preset air unit locations", () => {
 
     controller.addAirUnitToBox(GlobalUnitsModel.AirBox.US_MIDWAY_FLIGHT_DECK, 0, mf1)
     controller.addAirUnitToBox(GlobalUnitsModel.AirBox.US_MIDWAY_FLIGHT_DECK, 1, mf2)
-    controller.addAirUnitToBox(GlobalUnitsModel.AirBox.US_MIDWAY_FLIGHT_DECK, 1, mdb1)
+    controller.addAirUnitToBox(GlobalUnitsModel.AirBox.US_MIDWAY_FLIGHT_DECK, 2, mdb1)
 
     controller.addAirUnitToBox(GlobalUnitsModel.AirBox.US_MIDWAY_HANGAR, 0, mtb2)
     controller.addAirUnitToBox(GlobalUnitsModel.AirBox.US_MIDWAY_RETURN1, 1, mdb)
@@ -200,7 +203,8 @@ describe("Air Operations tests with Preset air unit locations", () => {
     expect(destinations[0]).toEqual(GlobalUnitsModel.AirBox.US_MIDWAY_HANGAR)
 
     // Assume Midway flight deck damaged (3 boxes)
-    controller.setCarrierHits(GlobalUnitsModel.Carrier.MIDWAY, 3)
+    // controller.setCarrierHits(GlobalUnitsModel.Carrier.MIDWAY, 3)
+    GlobalGameState.totalMidwayHits = 3
 
     doReturn1(controller, mdb.name, GlobalUnitsModel.Side.US)
     destinations = controller.getValidAirUnitDestinations(mdb.name)
@@ -216,6 +220,7 @@ describe("Air Operations tests with air unit locations set in tests", () => {
   beforeEach(() => {
     controller = new Controller()
     counters = loadCounters(controller)
+    GlobalGameState.totalMidwayHits = 0
   })
   test("Create Lists of Valid Destination Boxes for US Air Unit when carrier at capacity", () => {
     // Put 5 aircraft units on the flight deck and hangar of Enterprise
@@ -238,7 +243,6 @@ describe("Air Operations tests with air unit locations set in tests", () => {
     doReturn1(controller, "Enterprise-TBD1", GlobalUnitsModel.Side.US)
     const destinations = controller.getValidAirUnitDestinations("Enterprise-TBD1")
 
-    let { carrier, box } = destinations[0]
     expect(destinations.length).toEqual(1)
     expect(destinations[0]).toEqual(GlobalUnitsModel.AirBox.US_HORNET_HANGAR)
   })
@@ -254,7 +258,6 @@ describe("Air Operations tests with air unit locations set in tests", () => {
     doReturn1(controller, etb.name, GlobalUnitsModel.Side.US)
     const destinations = controller.getValidAirUnitDestinations(etb.name)
 
-    let { carrier, box } = destinations[0]
     expect(destinations.length).toEqual(1)
     expect(destinations[0]).toEqual(GlobalUnitsModel.AirBox.US_HORNET_HANGAR)
   })
@@ -352,14 +355,16 @@ describe("Air Operations tests with air unit locations set in tests", () => {
     controller.setCarrierHits(GlobalUnitsModel.Carrier.YORKTOWN, 3)
 
     //Midway damaged but still operable
-    controller.setCarrierHits(GlobalUnitsModel.Carrier.MIDWAY, 2)
+    // controller.setCarrierHits(GlobalUnitsModel.Carrier.MIDWAY, 2)
+    GlobalGameState.totalMidwayHits = 2
 
     doReturn1(controller, etb.name, GlobalUnitsModel.Side.US, true)
     let destinations = controller.getValidAirUnitDestinations(etb.name)
     expect(destinations.length).toEqual(1)
 
     //Midway damaged and not operable
-    controller.setCarrierHits(GlobalUnitsModel.Carrier.MIDWAY, 3)
+    // controller.setCarrierHits(GlobalUnitsModel.Carrier.MIDWAY, 3)
+    GlobalGameState.totalMidwayHits = 3
 
     doReturn1(controller, etb.name, GlobalUnitsModel.Side.US, true)
     destinations = controller.getValidAirUnitDestinations(etb.name)
@@ -367,7 +372,6 @@ describe("Air Operations tests with air unit locations set in tests", () => {
   })
 
   test("Empty list of Valid Destination Boxes for US Air Unit when both carriers in TF16 are damaged and carrier in TF17 sunk and Midway avaiability calculated", () => {
-    2
     createFleetMove(controller, 7, 1, "CSF", GlobalUnitsModel.Side.US) // G-4
 
     const etb = counters.get("Enterprise-TBD1")

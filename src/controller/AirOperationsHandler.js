@@ -642,6 +642,7 @@ export function setValidDestinationBoxes(controller, airUnitName, side) {
     const destinations = doReturn1(controller, airUnitName, side, useMidway)
     if (destinations.length === 0) {
       // check for possible reorganisation
+      const unit = GlobalInit.counters.get(airUnitName)
       checkAllBoxesForReorganization(controller, unit, location.boxName, side, false)
     }
   }

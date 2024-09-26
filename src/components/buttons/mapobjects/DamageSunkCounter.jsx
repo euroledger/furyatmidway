@@ -26,7 +26,7 @@ function DamageSunkCounter({ counterData, markerUpdate }) {
   const offsets = airZones.offsets[markerUpdate.index]
 
   if (counterData.name === markerUpdate.name && position.left !== offsets.left  + "%") {
-    console.log("I am ", counterData.name, " -> MARKER UPDATE = ", markerUpdate, "offsets=", offsets)
+    // console.log("I am ", counterData.name, " -> MARKER UPDATE = ", markerUpdate, "offsets=", offsets)
 
     setPosition(() => ({
       left: offsets.left + "%",

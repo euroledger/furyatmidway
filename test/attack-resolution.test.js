@@ -4,7 +4,13 @@ import loadCounters from "../src/CounterLoader"
 import GlobalGameState from "../src/model/GlobalGameState"
 import { createFleetMove } from "./TestUtils"
 import HexCommand from "../src/commands/HexCommand"
-import { doAttackFireRolls, doCarrierDamageRolls, getAirUnitOnFlightDeck, autoAllocateDamage } from "../src/DiceHandler"
+import {
+  doAttackFireRolls,
+  doCarrierDamageRolls,
+  getAirUnitOnFlightDeck,
+  autoAllocateDamage,
+  doMidwayDamage,
+} from "../src/DiceHandler"
 
 describe("Controller tests", () => {
   let controller
@@ -17,6 +23,10 @@ describe("Controller tests", () => {
   beforeEach(() => {
     controller = new Controller()
     counters = loadCounters(controller)
+    GlobalGameState.totalMidwayHits = 0
+    GlobalGameState.midwayBox0Damaged = false
+    GlobalGameState.midwayBox1Damaged = false
+    GlobalGameState.midwayBox2Damaged = false
   })
 
   function addUnitToStrikeGroup(name, box, index) {
@@ -272,7 +282,7 @@ describe("Controller tests", () => {
     GlobalGameState.sideWithInitiative = GlobalUnitsModel.Side.JAPAN
 
     GlobalGameState.currentCarrierAttackTarget = GlobalUnitsModel.Carrier.MIDWAY
-   
+
     // move JP strike group to Midway hex
     let location2 = Controller.MIDWAY_HEX
 
@@ -300,6 +310,112 @@ describe("Controller tests", () => {
     expect(attackers[2].aircraftUnit.hitsScored).toEqual(0)
     expect(attackers[3].aircraftUnit.hitsScored).toEqual(1)
   })
+  test("Midway Attack - Damage Resolution", () => {
+    setupJapanStrikeGroups()
+
+    GlobalGameState.sideWithInitiative = GlobalUnitsModel.Side.JAPAN
+    GlobalGameState.currentCarrierAttackTarget = GlobalUnitsModel.Carrier.MIDWAY
+
+    // move JP strike group to Midway hex
+    let location2 = Controller.MIDWAY_HEX
+
+    placeStrikeGroupsOnMapJapan(GlobalUnitsModel.AirBox.JP_STRIKE_BOX_0, location2)
+    controller.setAirUnitTarget(hdb, GlobalUnitsModel.Carrier.MIDWAY)
+    controller.setAirUnitTarget(htb, GlobalUnitsModel.Carrier.MIDWAY)
+    controller.setAirUnitTarget(sdb, GlobalUnitsModel.Carrier.MIDWAY)
+    controller.setAirUnitTarget(stb, GlobalUnitsModel.Carrier.MIDWAY)
+
+    let dieRolls = [6, 6, 4, 6, 5, 5, 1, 3]
+    let hits = doAttackFireRolls(controller, dieRolls)
+    expect(hits).toEqual(1)
+
+    // FIRST HIT
+    let boxDamaged = doMidwayDamage(controller, 3)
+
+    expect(boxDamaged).toEqual(1)
+    expect(GlobalGameState.midwayGarrisonLevel).toEqual(5)
+    expect(GlobalGameState.totalMidwayHits).toEqual(1)
+
+    expect(GlobalGameState.midwayBox0Damaged).toEqual(false)
+    expect(GlobalGameState.midwayBox1Damaged).toEqual(true)
+    expect(GlobalGameState.midwayBox2Damaged).toEqual(false)
+
+    // SECOND HIT
+    dieRolls = [6, 6, 4, 6, 5, 5, 1, 3]
+    hits = doAttackFireRolls(controller, dieRolls)
+    expect(hits).toEqual(1)
+
+    boxDamaged = doMidwayDamage(controller, 1)
+    expect(boxDamaged).toEqual(0)
+    expect(GlobalGameState.midwayGarrisonLevel).toEqual(4)
+    expect(GlobalGameState.totalMidwayHits).toEqual(2)
+
+    expect(GlobalGameState.midwayBox0Damaged).toEqual(true)
+    expect(GlobalGameState.midwayBox1Damaged).toEqual(true)
+    expect(GlobalGameState.midwayBox2Damaged).toEqual(false)
+
+    // THIRD HIT
+    dieRolls = [6, 6, 4, 6, 5, 5, 1, 3]
+    hits = doAttackFireRolls(controller, dieRolls)
+    expect(hits).toEqual(1)
+
+    boxDamaged = doMidwayDamage(controller) // no roll needed - auto allocate third hit to box 2
+    expect(boxDamaged).toEqual(2)
+    expect(GlobalGameState.midwayGarrisonLevel).toEqual(3)
+    expect(GlobalGameState.totalMidwayHits).toEqual(3)
+    expect(GlobalGameState.SearchValue.US_MIDWAY).toEqual(0) // base destroyed
+
+    expect(GlobalGameState.midwayBox0Damaged).toEqual(true)
+    expect(GlobalGameState.midwayBox1Damaged).toEqual(true)
+    expect(GlobalGameState.midwayBox2Damaged).toEqual(true)
+  })
+
+  test("Midway Attack - Base Destroyed", () => {
+    GlobalGameState.totalMidwayHits = 0
+    setupJapanStrikeGroups()
+
+    GlobalGameState.sideWithInitiative = GlobalUnitsModel.Side.JAPAN
+    GlobalGameState.currentCarrierAttackTarget = GlobalUnitsModel.Carrier.MIDWAY
+
+    const mf1 = counters.get("Midway-F4F3")
+    const mf2 = counters.get("Midway-F2A-3")
+    const mdb1 = counters.get("Midway-SBD-2")
+    const mtb2 = counters.get("Midway-SB2U-3")
+    const mdb = counters.get("Midway-B26-B")
+
+    controller.addAirUnitToBox(GlobalUnitsModel.AirBox.US_MIDWAY_FLIGHT_DECK, 0, mf1)
+    controller.addAirUnitToBox(GlobalUnitsModel.AirBox.US_MIDWAY_FLIGHT_DECK, 1, mf2)
+    controller.addAirUnitToBox(GlobalUnitsModel.AirBox.US_MIDWAY_FLIGHT_DECK, 2, mdb1)
+
+    controller.addAirUnitToBox(GlobalUnitsModel.AirBox.US_MIDWAY_HANGAR, 0, mtb2)
+    controller.addAirUnitToBox(GlobalUnitsModel.AirBox.US_MIDWAY_HANGAR, 1, mdb)
+
+    // move JP strike group to Midway hex
+    let location2 = Controller.MIDWAY_HEX
+
+    placeStrikeGroupsOnMapJapan(GlobalUnitsModel.AirBox.JP_STRIKE_BOX_0, location2)
+    controller.setAirUnitTarget(hdb, GlobalUnitsModel.Carrier.MIDWAY)
+    controller.setAirUnitTarget(htb, GlobalUnitsModel.Carrier.MIDWAY)
+    controller.setAirUnitTarget(sdb, GlobalUnitsModel.Carrier.MIDWAY)
+    controller.setAirUnitTarget(stb, GlobalUnitsModel.Carrier.MIDWAY)
+
+    let dieRolls = [6, 6, 4, 6, 5, 5, 1, 3]
+    let hits = doAttackFireRolls(controller, dieRolls)
+    expect(hits).toEqual(1)
+
+    // FIRST HIT
+    let boxDamaged = doMidwayDamage(controller, 3)
+    // SECOND HIT
+    dieRolls = [6, 6, 4, 6, 5, 5, 1, 3]
+    hits = doAttackFireRolls(controller, dieRolls)
+    boxDamaged = doMidwayDamage(controller, 1)
+
+    // THIRD HIT
+    dieRolls = [6, 6, 4, 6, 5, 5, 1, 3]
+    hits = doAttackFireRolls(controller, dieRolls)
+
+    boxDamaged = doMidwayDamage(controller)
+  })
 
   test("Attack by Midway-based planes", () => {
     // @TODO
@@ -325,7 +441,7 @@ describe("Controller tests", () => {
     expect(hits).toEqual(2)
   })
 
-  test("Eliminate planes on deck and in hangar if carrier sunk", () => {
+  test("Eliminate Planes on Deck and in Hangar if Carrier Sunk", () => {
     const carrier = GlobalUnitsModel.Carrier.ENTERPRISE
     ef1 = counters.get("Enterprise-F4F4-1")
     ef2 = counters.get("Enterprise-F4F4-2")
@@ -358,6 +474,75 @@ describe("Controller tests", () => {
     expect(ef1Eliminated).toEqual(true)
     const ef2Eliminated = controller.isAirUnitInBox(GlobalUnitsModel.AirBox.US_ELIMINATED, ef2.name)
     expect(ef2Eliminated).toEqual(true)
+  })
+
+  test("Eliminate Planes on Runway and in Hangar if Midway base Destroyed", () => {
+    setupJapanStrikeGroups()
+    GlobalGameState.totalMidwayHits = 0
+    GlobalGameState.sideWithInitiative = GlobalUnitsModel.Side.JAPAN
+    GlobalGameState.currentCarrierAttackTarget = GlobalUnitsModel.Carrier.MIDWAY
+
+    const mf1 = counters.get("Midway-F4F3")
+    const mf2 = counters.get("Midway-F2A-3")
+    const mdb1 = counters.get("Midway-SBD-2")
+    const mtb2 = counters.get("Midway-SB2U-3")
+    const mdb = counters.get("Midway-B26-B")
+
+    controller.addAirUnitToBox(GlobalUnitsModel.AirBox.US_MIDWAY_FLIGHT_DECK, 0, mf1)
+    controller.addAirUnitToBox(GlobalUnitsModel.AirBox.US_MIDWAY_FLIGHT_DECK, 1, mf2)
+    controller.addAirUnitToBox(GlobalUnitsModel.AirBox.US_MIDWAY_FLIGHT_DECK, 2, mdb1)
+
+    controller.addAirUnitToBox(GlobalUnitsModel.AirBox.US_MIDWAY_HANGAR, 0, mtb2)
+    controller.addAirUnitToBox(GlobalUnitsModel.AirBox.US_MIDWAY_HANGAR, 1, mdb)
+
+    // move JP strike group to Midway hex
+    let location2 = Controller.MIDWAY_HEX
+
+    placeStrikeGroupsOnMapJapan(GlobalUnitsModel.AirBox.JP_STRIKE_BOX_0, location2)
+    controller.setAirUnitTarget(hdb, GlobalUnitsModel.Carrier.MIDWAY)
+    controller.setAirUnitTarget(htb, GlobalUnitsModel.Carrier.MIDWAY)
+    controller.setAirUnitTarget(sdb, GlobalUnitsModel.Carrier.MIDWAY)
+    controller.setAirUnitTarget(stb, GlobalUnitsModel.Carrier.MIDWAY)
+
+    let dieRolls = [6, 6, 4, 6, 5, 5, 1, 3]
+    let hits = doAttackFireRolls(controller, dieRolls)
+    expect(hits).toEqual(1)
+
+    // FIRST HIT
+    let boxDamaged = doMidwayDamage(controller, 3)
+    expect(boxDamaged).toEqual(1)
+
+    const mf2Eliminated = controller.isAirUnitInBox(GlobalUnitsModel.AirBox.US_ELIMINATED, mf2.name)
+    expect(mf2Eliminated).toEqual(true)
+
+    let mf1Eliminated = controller.isAirUnitInBox(GlobalUnitsModel.AirBox.US_ELIMINATED, mf1.name)
+    expect(mf1Eliminated).toEqual(false)
+
+    // SECOND HIT
+    dieRolls = [6, 6, 4, 6, 5, 5, 1, 3]
+    hits = doAttackFireRolls(controller, dieRolls)
+    boxDamaged = doMidwayDamage(controller, 1)
+    expect(boxDamaged).toEqual(0)
+
+    mf1Eliminated = controller.isAirUnitInBox(GlobalUnitsModel.AirBox.US_ELIMINATED, mf1.name)
+    expect(mf1Eliminated).toEqual(true)
+    let mtb2Eliminated = controller.isAirUnitInBox(GlobalUnitsModel.AirBox.US_ELIMINATED, mtb2.name)
+    expect(mtb2Eliminated).toEqual(false)
+
+    // THIRD HIT
+    dieRolls = [6, 6, 4, 6, 5, 5, 1, 3]
+    hits = doAttackFireRolls(controller, dieRolls)
+    doMidwayDamage(controller, 1)
+    expect(controller.isMidwayBaseDestroyed()).toEqual(true)
+
+    const mdb1Eliminated = controller.isAirUnitInBox(GlobalUnitsModel.AirBox.US_ELIMINATED, mdb1.name)
+    expect(mdb1Eliminated).toEqual(true)
+
+    mtb2Eliminated = controller.isAirUnitInBox(GlobalUnitsModel.AirBox.US_ELIMINATED, mtb2.name)
+    expect(mtb2Eliminated).toEqual(true)
+
+    let mdbEliminated = controller.isAirUnitInBox(GlobalUnitsModel.AirBox.US_ELIMINATED, mdb.name)
+    expect(mdbEliminated).toEqual(true)
   })
 
   test("Damage Allocation planes on deck both bow and stern", () => {

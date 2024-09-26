@@ -20,7 +20,6 @@ export function AttackResolutionHeaders({ controller }) {
     torpDRM = "Combined attack: +1 (Torpedo Bomber) DRM"
   }
 
-  console.log("CURRENT CARRIER TARGET=", GlobalGameState.currentCarrierAttackTarget)
   if (GlobalGameState.currentCarrierAttackTarget === GlobalUnitsModel.Carrier.MIDWAY) {
     console.log("SETTING YO ASS")
     dbDRM = "Midway Dive Bomber DRM: -1"

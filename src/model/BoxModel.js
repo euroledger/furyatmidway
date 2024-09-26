@@ -233,7 +233,6 @@ export default class BoxModels {
     if (!box) {
       return null
     }
-    // console.log("SET BOX TO undefined: ", box)
     box[index] = undefined
   }
 

@@ -2,9 +2,10 @@ import Modal from "react-bootstrap/Modal"
 import Button from "react-bootstrap/Button"
 import GlobalGameState from "../../model/GlobalGameState"
 import { SingleCarrier } from "../../attackscreens/SingleCarrier"
+import GlobalUnitsModel from "../../model/GlobalUnitsModel"
+import { allMidwayBoxesDamaged } from "../../DiceHandler"
 
 import Die from "./Die"
-import { autoAllocateDamage, sendDamageUpdates } from "../../DiceHandler"
 import "./modal.css"
 import "./largemodal.css"
 
@@ -58,12 +59,14 @@ function MidwayDamageDicePanel(props) {
     doRoll,
     closeButtonStr,
     closeButtonCallback,
-    setDamageMarkerUpdate, 
+    setDamageMarkerUpdate,
     ...rest
   } = props
-  const hits = GlobalGameState.carrierAttackHits
+  const hits = GlobalGameState.midwayHits
 
   const bg = "#293a4b"
+  const bg2 = "rgba(92, 131, 228, 0.8)"
+
   const closey = closeButtonStr ?? "Close"
   const msg = "Target For Air Attack:"
 
@@ -71,21 +74,20 @@ function MidwayDamageDicePanel(props) {
   let myBigMargin = 0
 
   let showDicePanel = showDice
+  let showMsgPanel = false
 
-  if (GlobalGameState.carrierAttackHits > 1 && GlobalGameState.TESTING !== true) {
-    showDicePanel = false
-    const damage = autoAllocateDamage(controller)
+  if (GlobalGameState.midwayHits > 0 && GlobalGameState.midwayHits + GlobalGameState.totalMidwayHits < 3) {
+    showDicePanel = true
 
-    sendDamageUpdates(controller, damage, setDamageMarkerUpdate)
-    GlobalGameState.carrierAttackHits = 0
-  } else if (GlobalGameState.carrierAttackHits === 0) {
-    showDicePanel = false
+    // sendDamageUpdates(controller, damage, setDamageMarkerUpdate)
+  } else if (GlobalGameState.midwayHits > 0 && GlobalGameState.midwayHits + GlobalGameState.totalMidwayHits >= 3) {
+    showMsgPanel = true
+    allMidwayBoxesDamaged(controller, setDamageMarkerUpdate)
+    GlobalGameState.midwayHits = 0
   }
-  let isSunk = false
-  if (GlobalGameState.currentCarrierAttackTarget !== "" && GlobalGameState.currentCarrierAttackTarget !== undefined) {
-    isSunk = controller.isSunk(GlobalGameState.currentCarrierAttackTarget)
-  }
-  const sunkMsg = `Carrier ${GlobalGameState.currentCarrierAttackTarget} is Sunk!`
+
+  let isSunk = controller.isMidwayBaseDestroyed()
+  let sunkMsg = isSunk ? "Midway Base is Destroyed!" : ""
 
   const airCounters = getEliminatedAirCounters()
 
@@ -97,10 +99,131 @@ function MidwayDamageDicePanel(props) {
     myBigMargin = margin
   }
 
-  const msg2 = "Total Hits to Allocate:"
-
-
   const diceButtonStr = numDice > 1 ? "Roll Dice" : "Roll Die"
+  const boxName = controller.getAirBoxForNamedShip(
+    GlobalUnitsModel.Side.US,
+    GlobalUnitsModel.Carrier.MIDWAY,
+    "FLIGHT_DECK"
+  )
+
+  let runwayCounters = new Array()
+  let image
+  for (let i = 0; i < 3; i++) {
+    const damageMarker = "/images/markers/damage.png"
+
+    const boxStr = `box ${i + 1}`
+    image=""
+    const airUnit = controller.getAirUnitInBox(boxName, i)
+    // console.log("GlobalGameState.midwayBox0Damaged=",GlobalGameState.midwayBox0Damaged)
+    // console.log("GlobalGameState.midwayBox1Damaged=",GlobalGameState.midwayBox1Damaged)
+    // console.log("GlobalGameState.midwayBox2Damaged=",GlobalGameState.midwayBox2Damaged)
+
+    if (airUnit) {
+      image = airUnit.image
+    }
+    if (i === 0 && GlobalGameState.midwayBox0Damaged) {
+      image = damageMarker
+    }
+    if (i === 1 && GlobalGameState.midwayBox1Damaged) {
+      image = damageMarker
+    }
+    if (i === 2 && GlobalGameState.midwayBox2Damaged) {
+      image = damageMarker
+    }
+    runwayCounters.push(
+      <div>
+        <img
+          src={image}
+          style={{
+            width: "40px",
+            height: "40px",
+            marginRight: "10px",
+            marginTop: "-20px",
+          }}
+        ></img>
+        <div
+          style={{
+            display: "flex",
+            justifyContent: "center",
+            alignItems: "center",
+            marginLeft: "-4px",
+          }}
+        >
+          <p
+            style={{
+              fontSize: "10px",
+            }}
+          >
+            {boxStr}
+          </p>
+        </div>
+      </div>
+    )
+  }
+  // let runwayCounters = units.map((airUnit, index) => {
+  //   const damageMarker = "/images/markers/damage.png"
+
+  //   const boxStr = `box ${index + 1}`
+  //   let image = airUnit.image
+  //   if (index === 0 && GlobalGameState.midwayBox0Damaged) {
+  //     image = damageMarker
+  //   }
+  //   if (index === 1 && GlobalGameState.midwayBox1Damaged) {
+  //     image = damageMarker
+  //   }
+  //   if (index === 2 && GlobalGameState.midwayBox2Damaged) {
+  //     image = damageMarker
+  //   }
+  //   return (
+  //     <div>
+  //       <img
+  //         src={image}
+  //         style={{
+  //           width: "40px",
+  //           height: "40px",
+  //           marginRight: "10px",
+  //           marginTop: "-20px",
+  //         }}
+  //       ></img>
+  //       <div
+  //         style={{
+  //           display: "flex",
+  //           justifyContent: "center",
+  //           alignItems: "center",
+  //           marginLeft: "-4px",
+  //         }}
+  //       >
+  //         <p
+  //           style={{
+  //             fontSize: "10px",
+  //           }}
+  //         >
+  //           {boxStr}
+  //         </p>
+  //       </div>
+  //     </div>
+  //   )
+  // })
+
+  let diceMsg = "FIRST HIT: Roll of 1-2 hits box 1, 3-4 hits box 2, 5-6 hits box 3"
+  if (GlobalGameState.totalMidwayHits === 1) {
+    let box1 = 0,
+      box2 = 0
+    // determine which boxes are undamaged
+    if (GlobalGameState.midwayBox0Damaged) {
+      box1 = 2
+      box2 = 3
+    } else if (GlobalGameState.midwayBox1Damaged) {
+      box1 = 1
+      box2 = 3
+    } else {
+      box1 = 2
+      box2 = 3
+    }
+    diceMsg = `SECOND HIT: Roll of 1-3 hits box ${box1}, 4-6 hits box ${box2}`
+  } else if (GlobalGameState.totalMidwayHits >= 2) {
+    diceMsg = `THIRD HIT: Midway base is Destroyed!`
+  }
   return (
     <Modal
       {...rest}
@@ -153,6 +276,39 @@ function MidwayDamageDicePanel(props) {
               <SingleCarrier controller={controller} attackResolved={attackResolved}></SingleCarrier>
             </div>
           </div>
+          <div
+            style={{
+              display: "flex",
+              justifyContent: "center",
+              alignItems: "center",
+              marginLeft: "-10px",
+            }}
+          >
+            <div
+              style={{
+                zIndex: 100,
+                width: "250px",
+                height: "100px",
+                background: bg2,
+                borderRadius: "3px",
+                color: "white",
+                border: "1px solid white",
+                marginBottom: "10px",
+              }}
+            >
+              <p style={{ marginLeft: "5px" }}>Units in Runway Boxes:</p>
+              <div
+                style={{
+                  display: "flex",
+                  justifyContent: "center",
+                  alignItems: "center",
+                  marginLeft: "7px",
+                }}
+              >
+                {runwayCounters}
+              </div>
+            </div>
+          </div>
           {isSunk && (
             <div
               style={{
@@ -185,7 +341,20 @@ function MidwayDamageDicePanel(props) {
           >
             {airCounters}
           </div>
-
+          {showMsgPanel && (
+            <>
+              <div
+                style={{
+                  display: "flex",
+                  justifyContent: "center",
+                  alignItems: "center",
+                  color: "white",
+                }}
+              >
+                <p>Midway base is Destroyed!</p>
+              </div>
+            </>
+          )}
           {showDicePanel && (
             <>
               <div
@@ -196,19 +365,7 @@ function MidwayDamageDicePanel(props) {
                   color: "white",
                 }}
               >
-                <p> Roll One Die for First Hit (1-3 bow, 4-6 stern). Further Damage Auto Allocated</p>
-              </div>
-              <div
-                style={{
-                  display: "flex",
-                  justifyContent: "center",
-                  alignItems: "center",
-                  color: "white",
-                }}
-              >
-                <p>
-                  {msg2} &nbsp;<strong>{hits}</strong>&nbsp;
-                </p>
+                <p>{diceMsg}</p>
               </div>
               <div
                 style={{

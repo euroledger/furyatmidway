@@ -61,7 +61,6 @@ export function SingleCarrier({ controller }) {
 
   let carrierTarget
   let marginL = ""
-  console.log("CURRENT CARRIER ATTACK TARGET=", GlobalGameState.currentCarrierAttackTarget)
   if (GlobalGameState.currentCarrierAttackTarget === GlobalUnitsModel.Carrier.AKAGI) {
     carrierTarget = jpAkagi
   } else if (GlobalGameState.currentCarrierAttackTarget === GlobalUnitsModel.Carrier.KAGA) {

@@ -1,7 +1,6 @@
 import GlobalGameState from "./model/GlobalGameState"
 import { loadGameStateForId } from "./SaveLoadGame"
 
-
 function delay(ms) {
   return new Promise((resolve) => {
     setTimeout(resolve, ms)
@@ -99,7 +98,8 @@ async function loadHandler({
   setTestClicked(true)
   console.log("Load game from local storage")
   setSplash(false)
-  const { airUpdates, jpfleetUpdates, usfleetUpdates, jpStrikeUpdates, usStrikeUpdates, logItems } = loadGameStateForId(id)
+  const { airUpdates, jpfleetUpdates, usfleetUpdates, jpStrikeUpdates, usStrikeUpdates, logItems } =
+    loadGameStateForId(id)
   for (const update of airUpdates) {
     setAirUnitUpdate(update)
     await delay(1)
@@ -141,6 +141,12 @@ async function loadHandler({
   // QUACK TEMPORARY UNTIL NEW GAMES WITH THESE ARE SAVED- REMOVE
   GlobalGameState.nextAvailableDamageMarker = 0
   GlobalGameState.nextAvailableSunkMarker = 0
+  if (GlobalGameState.totalMidwayHits === undefined) {
+    GlobalGameState.totalMidwayHits = 0
+    GlobalGameState.midwayBox0Damaged = false
+    GlobalGameState.midwayBox1Damaged = false
+    GlobalGameState.midwayBox2Damaged = false
+  }
 }
 
 export default loadHandler

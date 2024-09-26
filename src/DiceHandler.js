@@ -140,6 +140,125 @@ export function sendMarkerEvent(controller, sunkdamaged, side, carrier, bowstern
     })
   }
 }
+export function doMidwayDamage(controller, testRoll) {
+  if (GlobalGameState.totalMidwayHits >= 3) {
+    return -1
+  }
+  if (GlobalGameState.totalMidwayHits < 2) {
+    return doMidwayDamageRoll(controller, testRoll)
+  } else if (GlobalGameState.totalMidwayHits === 2) {
+    return autoAllocateMidwayDamage(controller)
+  }
+}
+
+function moveMidwayAirUnitsToEliminated(controller, index, eliminateHangar) {
+  const sideBeingAttacked =
+    GlobalGameState.sideWithInitiative === GlobalUnitsModel.Side.US
+      ? GlobalUnitsModel.Side.JAPAN
+      : GlobalUnitsModel.Side.US
+  const boxName = controller.getAirBoxForNamedShip(sideBeingAttacked, GlobalUnitsModel.Carrier.MIDWAY, "FLIGHT_DECK")
+  const airUnit = controller.getAirUnitInBox(boxName, index)
+  if (airUnit) {
+    moveAirUnitToEliminatedBox(controller, airUnit)
+    GlobalGameState.eliminatedAirUnits.push(airUnit)
+  }
+  if (eliminateHangar) {
+    const airUnits = getAirUnitsInHangar(controller, GlobalUnitsModel.Carrier.MIDWAY)
+    for (let unit of airUnits) {
+      moveAirUnitToEliminatedBox(controller, unit)
+      GlobalGameState.eliminatedAirUnits.push(unit)
+    }
+  }
+}
+
+export function doMidwayDamageRoll(controller, testRoll) {
+  // if 0 or 1 hit so far on Midway base, roll to determine which box is hit next
+  let roll = testRoll === undefined ? randomDice(1) : testRoll
+  GlobalGameState.midwayGarrisonLevel--
+
+  let box = -1
+  if (GlobalGameState.totalMidwayHits === 0) {
+    // roll die: 1-2 box0, 3-4 box1, 5-6 box2
+    if (roll == 1 || roll == 2) {
+      GlobalGameState.midwayBox0Damaged = true
+      box = 0
+    }
+    if (roll == 3 || roll == 4) {
+      GlobalGameState.midwayBox1Damaged = true
+      box = 1
+    }
+    if (roll == 5 || roll == 6) {
+      GlobalGameState.midwayBox2Damaged = true
+      box = 2
+    }
+  } else if (GlobalGameState.totalMidwayHits === 1) {
+    if (GlobalGameState.midwayBox0Damaged === true) {
+      // roll die: 1-3 box1, 4-6 box2
+      if (roll <= 3) {
+        GlobalGameState.midwayBox1Damaged = true
+        box = 1
+      }
+      if (roll > 3) {
+        GlobalGameState.midwayBox2Damaged = true
+        box = 2
+      }
+    } else if (GlobalGameState.midwayBox1Damaged === true) {
+      // roll die: 1-3 box0, 4-6 box2
+      if (roll <= 3) {
+        GlobalGameState.midwayBox0Damaged = true
+        box = 0
+      }
+      if (roll > 3) {
+        GlobalGameState.midwayBox2Damaged = true
+        box = 2
+      }
+    } else if (GlobalGameState.midwayBox2Damaged === true) {
+      // roll die: 1-3 box0, 4-6 box1
+      if (roll <= 3) {
+        GlobalGameState.midwayBox0Damaged = true
+        box = 0
+      }
+      if (roll > 3) {
+        GlobalGameState.midwayBox1Damaged = true
+        box = 1
+      }
+    }
+  }
+  GlobalGameState.totalMidwayHits++
+  GlobalGameState.midwayHits--
+
+  moveMidwayAirUnitsToEliminated(controller, box)
+  return box
+}
+
+export function autoAllocateMidwayDamage(controller) {
+  // only one Midway box left undamaged - automatically damage that one
+  // Midway base now destroyed - eliminate air units in hangar
+  // and set search value of Midway to -0
+
+  // if (GlobalGameState.totalMidwayHits != 2) {
+  //   return -1
+  // }
+  GlobalGameState.midwayGarrisonLevel--
+  GlobalGameState.totalMidwayHits++
+  GlobalGameState.SearchValue.US_MIDWAY = 0 // base destroyed
+
+  let box = -1
+  if (GlobalGameState.midwayBox0Damaged === false) {
+    GlobalGameState.midwayBox0Damaged = true
+    box = 0
+  }
+  if (GlobalGameState.midwayBox1Damaged === false) {
+    GlobalGameState.midwayBox1Damaged = true
+    box = 1
+  }
+  if (GlobalGameState.midwayBox2Damaged === false) {
+    GlobalGameState.midwayBox2Damaged = true
+    box = 2
+  }
+  moveMidwayAirUnitsToEliminated(controller, box, true)
+  return box
+}
 
 export function autoAllocateDamage(controller) {
   const hits = GlobalGameState.carrierAttackHits
@@ -151,7 +270,7 @@ export function autoAllocateDamage(controller) {
     stern: false,
     sunk: false,
   }
-  if (hits === 0) return null
+  if (hits === 0) return damage
 
   const currentCarrierHits = controller.getCarrierHits(carrier)
   if (hits >= 2) {
@@ -260,14 +379,44 @@ export function doCarrierDamageRolls(controller, testRolls) {
   }
   return damage
 }
-
-function delay(ms) {
+export function delay(ms) {
   return new Promise((resolve) => {
     setTimeout(resolve, ms)
   })
 }
+
+
+export async function allMidwayBoxesDamaged(controller, setDamageMarkerUpdate) {
+  await delay(1)
+  await sendMidwayDamageUpdates(controller, 0, setDamageMarkerUpdate)
+  await delay(1)
+  await sendMidwayDamageUpdates(controller, 1, setDamageMarkerUpdate)
+  await delay(1)
+  await sendMidwayDamageUpdates(controller, 2, setDamageMarkerUpdate)
+}
+export async function sendMidwayDamageUpdates(controller, box, setDamageMarkerUpdate) {
+  const boxName = controller.getAirBoxForNamedShip(
+    GlobalUnitsModel.Side.US,
+    GlobalUnitsModel.Carrier.MIDWAY,
+    "FLIGHT_DECK"
+  )
+
+  let marker = GlobalInit.controller.getNextAvailableMarker("DAMAGED")
+  console.log("marker=", marker, "next avail=", GlobalGameState.nextAvailableDamageMarker)
+  GlobalGameState.nextAvailableDamageMarker++
+
+  const markerUpdate = {
+    name: marker.name,
+    box: boxName,
+    index: box,
+    side: GlobalUnitsModel.Side.US,
+  }
+  console.log("+++++++++++++++++++++++++++++++++++ >>>>>>>>> SEND DAMAGE MARKER UPDATE: ", markerUpdate)
+  setDamageMarkerUpdate(markerUpdate)
+  controller.setMarkerLocation(marker.name, boxName, box)
+}
+
 export async function sendDamageUpdates(controller, damage, setDamageMarkerUpdate) {
-  console.log("IN sendDamageUpdates()+++++++++++++++++++  ")
   // damage has two fields, bow and stern
 
   // if sunk
@@ -291,8 +440,6 @@ export async function sendDamageUpdates(controller, damage, setDamageMarkerUpdat
 
   if (damage.sunk) {
     const marker1 = GlobalInit.controller.getNextAvailableMarker("SUNK")
-
-    console.log("********** SUNK marker 1 = ", marker1)
     GlobalGameState.nextAvailableSunkMarker++
     // do update 1
     let markerUpdate = {
@@ -308,7 +455,6 @@ export async function sendDamageUpdates(controller, damage, setDamageMarkerUpdat
 
     await delay(1)
 
-    console.log("********** SUNK marker 2 = ", marker2)
     markerUpdate = {
       name: marker2.name,
       box: boxName,
@@ -329,9 +475,7 @@ export async function sendDamageUpdates(controller, damage, setDamageMarkerUpdat
         index: 0,
         side: sideBeingAttacked,
       }
-      console.log("SEND UPDATE BOW DAMAGED: ", markerUpdate)
       setDamageMarkerUpdate(markerUpdate)
-
       controller.setMarkerLocation(marker.name, boxName, 0)
     }
 
@@ -347,8 +491,6 @@ export async function sendDamageUpdates(controller, damage, setDamageMarkerUpdat
         index: 1,
         side: sideBeingAttacked,
       }
-      console.log("SEND UPDATE STERN DAMAGED: ", markerUpdate)
-
       setDamageMarkerUpdate(markerUpdate)
       controller.setMarkerLocation(marker.name, boxName, 1)
     }
@@ -369,7 +511,7 @@ export function doAttackFireRolls(controller, testRolls) {
   }
   // 2. Determine if any attack aircraft on deck (set dive bomber DRM if so)
   // For Midway all Japanese planes get a -1 DRM
-  
+
   if (GlobalGameState.currentCarrierAttackTarget === GlobalUnitsModel.Carrier.MIDWAY) {
     dbDRM = -1
     torpDRM = -1
@@ -383,8 +525,6 @@ export function doAttackFireRolls(controller, testRolls) {
       torpDRM = 1
     }
   }
-
-  
 
   for (let unit of attackers) {
     unit.aircraftUnit.hitsScored = 0
@@ -425,7 +565,13 @@ export function doAttackFireRolls(controller, testRolls) {
     }
   }
 
-  GlobalGameState.carrierAttackHits = hits
+  if (GlobalGameState.currentCarrierAttackTarget === GlobalUnitsModel.Carrier.MIDWAY) {
+    // GlobalGameState.midwayHits = hits
+    GlobalGameState.midwayHits = 3 // TEMP QUACK TAKE OUT
+
+  } else {
+    GlobalGameState.carrierAttackHits = hits
+  }
   return hits
 }
 

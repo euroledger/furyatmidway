@@ -1,3 +1,4 @@
+import { React, useState } from "react"
 import Modal from "react-bootstrap/Modal"
 import Button from "react-bootstrap/Button"
 import GlobalGameState from "../../model/GlobalGameState"
@@ -61,6 +62,11 @@ function CarrierDamageDicePanel(props) {
     setDamageMarkerUpdate, 
     ...rest
   } = props
+
+  const [keepDice, setKeepDice] = useState(false)
+
+  let showDicePanel = true
+
   const hits = GlobalGameState.carrierAttackHits
 
   const bg = "#293a4b"
@@ -70,10 +76,17 @@ function CarrierDamageDicePanel(props) {
   let myBigBollocks = "m-width" + numDice
   let myBigMargin = 0
 
-  let showDicePanel = showDice
 
-  if (GlobalGameState.carrierAttackHits > 1 && GlobalGameState.TESTING !== true) {
-    showDicePanel = false
+  // 1. Get the current hits for this carrier
+
+  // 2. If current hits is 0 and carrierAttackHits is 1
+  //    => Display dice panel
+
+  // 3. autoAllocateDamage
+
+  const carrierHits = controller.getCarrierHits(GlobalGameState.currentCarrierAttackTarget)
+  
+ if ((carrierHits > 0 || GlobalGameState.carrierAttackHits > 1) && GlobalGameState.TESTING !== true) {
     const damage = autoAllocateDamage(controller)
 
     sendDamageUpdates(controller, damage, setDamageMarkerUpdate)
@@ -81,6 +94,7 @@ function CarrierDamageDicePanel(props) {
   } else if (GlobalGameState.carrierAttackHits === 0) {
     showDicePanel = false
   }
+
   let isSunk = false
   if (GlobalGameState.currentCarrierAttackTarget !== "" && GlobalGameState.currentCarrierAttackTarget !== undefined) {
     isSunk = controller.isSunk(GlobalGameState.currentCarrierAttackTarget)
@@ -153,6 +167,7 @@ function CarrierDamageDicePanel(props) {
               <SingleCarrier controller={controller} attackResolved={attackResolved}></SingleCarrier>
             </div>
           </div>
+          
           {isSunk && (
             <div
               style={{

@@ -96,6 +96,12 @@ export default class GlobalGameState {
 
   static midwayAttackDeclaration = false
 
+  static totalMidwayHits = 0
+  static midwayHits = 0
+  static midwayBox0Damaged = false
+  static midwayBox1Damaged = false
+  static midwayBox2Damaged = false
+
   static turnText = [
     "June 4, 1942 Morning",
     "June 4, 1942 Afternoon",
@@ -148,6 +154,11 @@ export default class GlobalGameState {
 
   static midwayAirOp = 1 // can be two air ops in Midway attack
 
+  static SearchValue = {
+    JP_AF: 6,
+    US_CSF: 7,
+    US_MIDWAY: 8,
+  }
 
   static getJapanCarrier = () => {
     return this.JAPAN_CARRIERS[this.setupPhase]

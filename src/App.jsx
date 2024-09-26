@@ -30,6 +30,9 @@ import {
   carrierDamageRollNeeded,
   autoAllocateDamage,
   sendDamageUpdates,
+  sendMidwayDamageUpdates,
+  doMidwayDamage,
+  autoAllocateMidwayDamage
 } from "./DiceHandler"
 import { determineAllUnitsDeployedForCarrier } from "./controller/AirUnitSetupHandler"
 
@@ -783,7 +786,6 @@ export function App() {
       ? 2
       : Math.ceil(GlobalGameState.midwayGarrisonLevel / 2)
 
-  console.log("Midway Garrison=", GlobalGameState.midwayGarrisonLevel, "NUM AAA DICE=", numAAADice)
 
   const aaaHeaders = (
     <>
@@ -853,10 +855,13 @@ export function App() {
     GlobalGameState.updateGlobalState()
   }
 
-  function doDamageRolls() {
-    // 1. determine if target is carrier or Midway or Invasion Force
+  function doMidwayRoll() {
+    const box = doMidwayDamage(GlobalInit.controller)
+    sendMidwayDamageUpdates(GlobalInit.controller, box, setDamageMarkerUpdate)
+  }
 
-    // 2. If carriers, roll for bow or stern
+  function doDamageRolls() {
+    // Roll for bow or stern
     let damage
     if (carrierDamageRollNeeded(GlobalInit.controller)) {
       damage = doCarrierDamageRolls(GlobalInit.controller)
@@ -867,7 +872,6 @@ export function App() {
     if (GlobalGameState.carrierAttackHits > 0) {
       sendDamageUpdates(GlobalInit.controller, damage, setDamageMarkerUpdate)
     }
-    console.log("FALLING THRU TO HERE................")
     setAttackResolved(() => true)
   }
 
@@ -889,20 +893,38 @@ export function App() {
     doCAPEvent(GlobalInit.controller, capAirUnits)
   }
 
-  let closeDamageButtonDisabled = true
+  if (GlobalGameState.capHits === undefined) {
+    GlobalGameState.capHits = 0
+  }
+  if (GlobalGameState.fighterHits === undefined) {
+    GlobalGameState.fighterHits = 0
+  }
+  if (GlobalGameState.antiaircraftHits === undefined) {
+    GlobalGameState.antiaircraftHits = 0
+  }
+  let closeDamageButtonDisabled = false
   if (GlobalGameState.gamePhase === GlobalGameState.PHASE.CAP_DAMAGE_ALLOCATION) {
     closeDamageButtonDisabled = eliminatedSteps !== GlobalGameState.capHits && stepsLeft !== 0
   } else if (GlobalGameState.gamePhase === GlobalGameState.PHASE.ESCORT_DAMAGE_ALLOCATION) {
     closeDamageButtonDisabled = eliminatedSteps !== GlobalGameState.fighterHits && stepsLeft !== 0
   } else if (GlobalGameState.gamePhase === GlobalGameState.PHASE.AAA_DAMAGE_ALLOCATION) {
-    closeDamageButtonDisabled = eliminatedSteps !== GlobalGameState.antiaircraftHits && stepsLeft !== 0
+    closeDamageButtonDisabled = eliminatedSteps !== GlobalGameState.antiaircraftHits && stepsLeft != 0
   }
 
+  const oldCarrierHits = GlobalInit.controller.getCarrierHits(GlobalGameState.currentCarrierAttackTarget)
+
   let carrieDamageDiceButtonDisabled =
+    oldCarrierHits > 0 ||
     GlobalGameState.carrierAttackHits !== 1 ||
     (GlobalGameState.carrierAttackHits === 1 && attackResolved)
 
-  // @TODO midwayDamageDiceButtonDisabled = ... some bollocks to do with runway damage
+  const totalHits = GlobalGameState.midwayHits + GlobalGameState.totalMidwayHits
+  let midwayDamageDiceButtonEnabled = GlobalGameState.midwayHits > 0 && totalHits < 3
+
+  if (totalHits >= 3 && GlobalGameState.midwayHits > 0) {
+    autoAllocateMidwayDamage(GlobalInit.controller)
+  }
+  
   return (
     <>
       <LoadGamePanel
@@ -1145,8 +1167,6 @@ export function App() {
         controller={GlobalInit.controller}
         show={!testClicked && carrierDamagePanelShow}
         headerText="Carrier Damage"
-        headers={attackResolutionHeaders}
-        footers={attackResolutionFooters}
         showDice={GlobalGameState.currentCarrierAttackTarget !== GlobalUnitsModel.Carrier.MIDWAY}
         margin={0}
         onHide={(e) => {
@@ -1165,28 +1185,28 @@ export function App() {
         setDamageMarkerUpdate={setDamageMarkerUpdate}
         disabled={false}
       ></CarrierDamageDicePanel>
-       <MidwayDamageDicePanel
+      <MidwayDamageDicePanel
         numDice={1}
         controller={GlobalInit.controller}
         show={!testClicked && midwayDamagePanelShow}
         headerText="Midway Base Damage"
         headers={attackResolutionHeaders}
         footers={attackResolutionFooters}
-        showDice={GlobalGameState.currentCarrierAttackTarget !== GlobalUnitsModel.Carrier.MIDWAY}
+        showDice={midwayDamageDiceButtonEnabled}
         margin={0}
         onHide={(e) => {
           setMidwayDamagePanelShow(false)
           nextAction(e)
         }}
-        doRoll={doDamageRolls}
+        doRoll={doMidwayRoll}
         width={30}
         closeButtonStr="Next..."
         closeButtonCallback={(e) => {
           setMidwayDamagePanelShow(false)
           nextAction(e)
         }}
-        diceButtonDisabled={carrieDamageDiceButtonDisabled}
-        closeButtonDisabled={!carrieDamageDiceButtonDisabled}
+        diceButtonDisabled={!midwayDamageDiceButtonEnabled}
+        closeButtonDisabled={midwayDamageDiceButtonEnabled}
         setDamageMarkerUpdate={setDamageMarkerUpdate}
         disabled={false}
       ></MidwayDamageDicePanel>

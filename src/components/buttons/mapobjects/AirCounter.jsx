@@ -26,9 +26,10 @@ function AirCounter({ getAirBox, setAirBox, counterData, side }) {
   const onDrag = () => {
     setIsMoveable(true)
 
-    if (GlobalGameState.sideWithInitiative && counterData.side !== GlobalGameState.sideWithInitiative) {
-      return
-    }
+    // @TODO QUACK  PUT THIS BACK IN
+    // if (GlobalGameState.sideWithInitiative && counterData.side !== GlobalGameState.sideWithInitiative) {
+    //   return
+    // }
     // only the selected (clicked) air unit should be draggable
     setSelected(() => true)
 
@@ -289,9 +290,9 @@ function AirCounter({ getAirBox, setAirBox, counterData, side }) {
       GlobalGameState.gamePhase === GlobalGameState.PHASE.TARGET_DETERMINATION ||
       GlobalGameState.gamePhase === GlobalGameState.PHASE.MIDWAY_ATTACK)
   ) {
-    if (side !== GlobalGameState.sideWithInitiative) {
-      disp = "none"
-    }
+    // if (side !== GlobalGameState.sideWithInitiative) {
+    //   disp = "none"
+    // }
   }
   return (
     <div>

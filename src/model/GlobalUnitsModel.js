@@ -95,12 +95,6 @@ export default class GlobalUnitsModel {
     MIDWAY: "MIDWAY",
   }
 
-  static SearchValue = {
-    JP_AF: 6,
-    US_CSF: 7,
-    US_MIDWAY: 8,
-  }
-
   static jpFleetUnits = new Map()
   static usFleetUnits = new Map()
   static jpAirUnits = new Map()

@@ -778,9 +778,13 @@ export default class Controller {
     return carrier
   }
 
+  isMidwayBaseDestroyed() {
+    return GlobalGameState.totalMidwayHits >= 3
+  }
+
   isSunk(name) {
     if (name === GlobalUnitsModel.Carrier.MIDWAY) {
-      return false
+      return this.isMidwayBaseDestroyed()
     }
     const side = GlobalUnitsModel.carrierSideMap.get(name)
 
@@ -926,6 +930,9 @@ export default class Controller {
   }
 
   getCarrierHits(name) {
+    if (!name) {
+      return
+    }
     const side = GlobalUnitsModel.carrierSideMap.get(name)
     if (side === GlobalUnitsModel.Side.JAPAN) {
       const carrier = GlobalUnitsModel.jpFleetUnits.get(name)
@@ -1092,12 +1099,12 @@ export default class Controller {
   }
 
   calcSearchResults(distances) {
-    let jpVal = Math.max(1, GlobalUnitsModel.SearchValue.JP_AF - distances.jp_af)
+    let jpVal = Math.max(1, GlobalGameState.SearchValue.JP_AF - distances.jp_af)
     jpVal = Math.min(4, jpVal)
     let usVal = Math.max(
       1,
-      GlobalUnitsModel.SearchValue.US_CSF - distances.us_csf,
-      GlobalUnitsModel.SearchValue.US_MIDWAY - distances.us_midway
+      GlobalGameState.SearchValue.US_CSF - distances.us_csf,
+      GlobalGameState.SearchValue.US_MIDWAY - distances.us_midway
     )
     usVal = Math.min(4, usVal)
     return {
