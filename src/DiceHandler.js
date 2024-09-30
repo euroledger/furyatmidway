@@ -147,7 +147,7 @@ export function doMidwayDamage(controller, testRoll) {
   if (GlobalGameState.totalMidwayHits < 2) {
     return doMidwayDamageRoll(controller, testRoll)
   } else if (GlobalGameState.totalMidwayHits === 2) {
-    return autoAllocateMidwayDamage(controller)
+    autoAllocateMidwayDamage(controller)
   }
 }
 
@@ -158,13 +158,18 @@ function moveMidwayAirUnitsToEliminated(controller, index, eliminateHangar) {
       : GlobalUnitsModel.Side.US
   const boxName = controller.getAirBoxForNamedShip(sideBeingAttacked, GlobalUnitsModel.Carrier.MIDWAY, "FLIGHT_DECK")
   const airUnit = controller.getAirUnitInBox(boxName, index)
+
   if (airUnit) {
+    console.log("ELIMINATE UNIT",airUnit.name )
+
     moveAirUnitToEliminatedBox(controller, airUnit)
     GlobalGameState.eliminatedAirUnits.push(airUnit)
   }
   if (eliminateHangar) {
     const airUnits = getAirUnitsInHangar(controller, GlobalUnitsModel.Carrier.MIDWAY)
     for (let unit of airUnits) {
+      console.log("HANGAR ELIMINATE UNIT",unit.name )
+
       moveAirUnitToEliminatedBox(controller, unit)
       GlobalGameState.eliminatedAirUnits.push(unit)
     }
@@ -174,7 +179,6 @@ function moveMidwayAirUnitsToEliminated(controller, index, eliminateHangar) {
 export function doMidwayDamageRoll(controller, testRoll) {
   // if 0 or 1 hit so far on Midway base, roll to determine which box is hit next
   let roll = testRoll === undefined ? randomDice(1) : testRoll
-  GlobalGameState.midwayGarrisonLevel--
 
   let box = -1
   if (GlobalGameState.totalMidwayHits === 0) {
@@ -226,38 +230,37 @@ export function doMidwayDamageRoll(controller, testRoll) {
   }
   GlobalGameState.totalMidwayHits++
   GlobalGameState.midwayHits--
+  GlobalGameState.midwayGarrisonLevel--
 
   moveMidwayAirUnitsToEliminated(controller, box)
   return box
 }
 
 export function autoAllocateMidwayDamage(controller) {
-  // only one Midway box left undamaged - automatically damage that one
-  // Midway base now destroyed - eliminate air units in hangar
-  // and set search value of Midway to -0
-
-  // if (GlobalGameState.totalMidwayHits != 2) {
-  //   return -1
-  // }
-  GlobalGameState.midwayGarrisonLevel--
-  GlobalGameState.totalMidwayHits++
   GlobalGameState.SearchValue.US_MIDWAY = 0 // base destroyed
 
   let box = -1
   if (GlobalGameState.midwayBox0Damaged === false) {
     GlobalGameState.midwayBox0Damaged = true
     box = 0
+    moveMidwayAirUnitsToEliminated(controller, box, true)
+    GlobalGameState.midwayGarrisonLevel--
+    GlobalGameState.totalMidwayHits++
   }
   if (GlobalGameState.midwayBox1Damaged === false) {
     GlobalGameState.midwayBox1Damaged = true
     box = 1
+    moveMidwayAirUnitsToEliminated(controller, box, true)
+    GlobalGameState.midwayGarrisonLevel--
+    GlobalGameState.totalMidwayHits++
   }
   if (GlobalGameState.midwayBox2Damaged === false) {
     GlobalGameState.midwayBox2Damaged = true
     box = 2
+    moveMidwayAirUnitsToEliminated(controller, box, true)
+    GlobalGameState.midwayGarrisonLevel--
+    GlobalGameState.totalMidwayHits++
   }
-  moveMidwayAirUnitsToEliminated(controller, box, true)
-  return box
 }
 
 export function autoAllocateDamage(controller) {
@@ -402,7 +405,6 @@ export async function sendMidwayDamageUpdates(controller, box, setDamageMarkerUp
   )
 
   let marker = GlobalInit.controller.getNextAvailableMarker("DAMAGED")
-  console.log("marker=", marker, "next avail=", GlobalGameState.nextAvailableDamageMarker)
   GlobalGameState.nextAvailableDamageMarker++
 
   const markerUpdate = {
@@ -411,7 +413,6 @@ export async function sendMidwayDamageUpdates(controller, box, setDamageMarkerUp
     index: box,
     side: GlobalUnitsModel.Side.US,
   }
-  console.log("+++++++++++++++++++++++++++++++++++ >>>>>>>>> SEND DAMAGE MARKER UPDATE: ", markerUpdate)
   setDamageMarkerUpdate(markerUpdate)
   controller.setMarkerLocation(marker.name, boxName, box)
 }
@@ -566,8 +567,10 @@ export function doAttackFireRolls(controller, testRolls) {
   }
 
   if (GlobalGameState.currentCarrierAttackTarget === GlobalUnitsModel.Carrier.MIDWAY) {
-    // GlobalGameState.midwayHits = hits
-    GlobalGameState.midwayHits = 3 // TEMP QUACK TAKE OUT
+    GlobalGameState.midwayHits = hits
+
+    // QUACK REMOVE TEESTING ONLY
+    // GlobalGameState.midwayHits = 3
 
   } else {
     GlobalGameState.carrierAttackHits = hits

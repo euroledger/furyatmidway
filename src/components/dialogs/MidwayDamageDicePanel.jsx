@@ -112,11 +112,19 @@ function MidwayDamageDicePanel(props) {
     const damageMarker = "/images/markers/damage.png"
 
     const boxStr = `box ${i + 1}`
-    image=""
+    let image = undefined
+    let myElement = (
+      <div
+        style={{
+          width: "40px",
+          height: "40px",
+          marginRight: "10px",
+          marginTop: "-15px",
+          border: "1px solid white",
+        }}
+      ></div>
+    )
     const airUnit = controller.getAirUnitInBox(boxName, i)
-    // console.log("GlobalGameState.midwayBox0Damaged=",GlobalGameState.midwayBox0Damaged)
-    // console.log("GlobalGameState.midwayBox1Damaged=",GlobalGameState.midwayBox1Damaged)
-    // console.log("GlobalGameState.midwayBox2Damaged=",GlobalGameState.midwayBox2Damaged)
 
     if (airUnit) {
       image = airUnit.image
@@ -130,17 +138,23 @@ function MidwayDamageDicePanel(props) {
     if (i === 2 && GlobalGameState.midwayBox2Damaged) {
       image = damageMarker
     }
+    const myImage = (
+      <img
+        src={image}
+        style={{
+          width: "40px",
+          height: "40px",
+          marginRight: "10px",
+          marginTop: "-20px",
+        }}
+      ></img>
+    )
+    const element = image !== undefined ? myImage : myElement
     runwayCounters.push(
-      <div>
-        <img
-          src={image}
-          style={{
-            width: "40px",
-            height: "40px",
-            marginRight: "10px",
-            marginTop: "-20px",
-          }}
-        ></img>
+      <div style={{
+        marginTop: "7px"
+      }}>
+        {element}
         <div
           style={{
             display: "flex",
@@ -160,50 +174,6 @@ function MidwayDamageDicePanel(props) {
       </div>
     )
   }
-  // let runwayCounters = units.map((airUnit, index) => {
-  //   const damageMarker = "/images/markers/damage.png"
-
-  //   const boxStr = `box ${index + 1}`
-  //   let image = airUnit.image
-  //   if (index === 0 && GlobalGameState.midwayBox0Damaged) {
-  //     image = damageMarker
-  //   }
-  //   if (index === 1 && GlobalGameState.midwayBox1Damaged) {
-  //     image = damageMarker
-  //   }
-  //   if (index === 2 && GlobalGameState.midwayBox2Damaged) {
-  //     image = damageMarker
-  //   }
-  //   return (
-  //     <div>
-  //       <img
-  //         src={image}
-  //         style={{
-  //           width: "40px",
-  //           height: "40px",
-  //           marginRight: "10px",
-  //           marginTop: "-20px",
-  //         }}
-  //       ></img>
-  //       <div
-  //         style={{
-  //           display: "flex",
-  //           justifyContent: "center",
-  //           alignItems: "center",
-  //           marginLeft: "-4px",
-  //         }}
-  //       >
-  //         <p
-  //           style={{
-  //             fontSize: "10px",
-  //           }}
-  //         >
-  //           {boxStr}
-  //         </p>
-  //       </div>
-  //     </div>
-  //   )
-  // })
 
   let diceMsg = "FIRST HIT: Roll of 1-2 hits box 1, 3-4 hits box 2, 5-6 hits box 3"
   if (GlobalGameState.totalMidwayHits === 1) {

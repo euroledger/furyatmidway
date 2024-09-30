@@ -27,9 +27,7 @@ function AirCounter({ getAirBox, setAirBox, counterData, side }) {
     setIsMoveable(true)
 
     // @TODO QUACK  PUT THIS BACK IN
-    // if (GlobalGameState.sideWithInitiative && counterData.side !== GlobalGameState.sideWithInitiative) {
-    //   return
-    // }
+
     // only the selected (clicked) air unit should be draggable
     setSelected(() => true)
 
@@ -288,11 +286,12 @@ function AirCounter({ getAirBox, setAirBox, counterData, side }) {
     !loading &&
     (GlobalGameState.gamePhase === GlobalGameState.PHASE.AIR_OPERATIONS ||
       GlobalGameState.gamePhase === GlobalGameState.PHASE.TARGET_DETERMINATION ||
-      GlobalGameState.gamePhase === GlobalGameState.PHASE.MIDWAY_ATTACK)
+      GlobalGameState.gamePhase === GlobalGameState.PHASE.MIDWAY_ATTACK ||
+      GlobalGameState.gamePhase === GlobalGameState.PHASE.US_FLEET_MOVEMENT)
   ) {
-    // if (side !== GlobalGameState.sideWithInitiative) {
-    //   disp = "none"
-    // }
+    if (side !== GlobalGameState.sideWithInitiative) {
+      disp = "none"
+    }
   }
   return (
     <div>

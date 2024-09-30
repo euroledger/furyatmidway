@@ -86,6 +86,7 @@ function delay(ms) {
 // }
 
 async function loadHandler({
+  controller,
   setTestClicked,
   setSplash,
   setAirUnitUpdate,
@@ -99,7 +100,7 @@ async function loadHandler({
   console.log("Load game from local storage")
   setSplash(false)
   const { airUpdates, jpfleetUpdates, usfleetUpdates, jpStrikeUpdates, usStrikeUpdates, logItems } =
-    loadGameStateForId(id)
+    loadGameStateForId(controller, id)
   for (const update of airUpdates) {
     setAirUnitUpdate(update)
     await delay(1)
@@ -139,14 +140,15 @@ async function loadHandler({
   })
   setLoading(false)
   // QUACK TEMPORARY UNTIL NEW GAMES WITH THESE ARE SAVED- REMOVE
-  GlobalGameState.nextAvailableDamageMarker = 0
-  GlobalGameState.nextAvailableSunkMarker = 0
-  if (GlobalGameState.totalMidwayHits === undefined) {
-    GlobalGameState.totalMidwayHits = 0
-    GlobalGameState.midwayBox0Damaged = false
-    GlobalGameState.midwayBox1Damaged = false
-    GlobalGameState.midwayBox2Damaged = false
-  }
+
+  // GlobalGameState.nextAvailableDamageMarker = 0
+  // GlobalGameState.nextAvailableSunkMarker = 0
+  // if (GlobalGameState.totalMidwayHits === undefined) {
+  //   GlobalGameState.totalMidwayHits = 0
+  //   GlobalGameState.midwayBox0Damaged = false
+  //   GlobalGameState.midwayBox1Damaged = false
+  //   GlobalGameState.midwayBox2Damaged = false
+  // }
 }
 
 export default loadHandler

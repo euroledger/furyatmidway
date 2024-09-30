@@ -163,6 +163,7 @@ export default class Controller {
 
   addAirUnitToBoxUsingNextFreeSlot = (boxName, value) => {
     const index = this.getFirstAvailableZone(boxName)
+    console.log("INDEX = ", index)
     if (index != -1) {
       this.boxModel.addAirUnitToBox(boxName, index, value)
     }
@@ -897,6 +898,9 @@ export default class Controller {
   }
 
   getCarrierBowDamaged(name) {
+    if (name === GlobalUnitsModel.Carrier.MIDWAY) {
+      return false
+    }
     const side = GlobalUnitsModel.carrierSideMap.get(name)
     if (side === GlobalUnitsModel.Side.JAPAN) {
       const carrier = GlobalUnitsModel.jpFleetUnits.get(name)
@@ -908,6 +912,9 @@ export default class Controller {
   }
 
   setCarrierSternDamaged(name) {
+    if (name === GlobalUnitsModel.Carrier.MIDWAY) {
+      return false
+    }
     const side = GlobalUnitsModel.carrierSideMap.get(name)
     if (side === GlobalUnitsModel.Side.JAPAN) {
       const carrier = GlobalUnitsModel.jpFleetUnits.get(name)
@@ -1071,7 +1078,7 @@ export default class Controller {
 
     let found = false
     for (let fleet of locations.keys()) {
-      if (fleet.toUpperCase().includes("MAP")) {
+      if (fleet.toUpperCase().includes("MAP") || fleet.includes("SG")) {
         continue
       }
       found = true // will stay false if no fleets on map
@@ -1100,7 +1107,16 @@ export default class Controller {
 
   calcSearchResults(distances) {
     let jpVal = Math.max(1, GlobalGameState.SearchValue.JP_AF - distances.jp_af)
+
+    console.log("1 JPVAL = ", jpVal)
+    jpVal -= GlobalGameState.midwayAirOpsCompleted
+    console.log("2 JPVAL = ", jpVal)
+
+    jpVal = Math.max(0, jpVal)
+
     jpVal = Math.min(4, jpVal)
+    console.log("3 JPVAL = ", jpVal)
+
     let usVal = Math.max(
       1,
       GlobalGameState.SearchValue.US_CSF - distances.us_csf,

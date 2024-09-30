@@ -122,8 +122,9 @@ function createStrikeGroupUpdates(strikeGroupMap) {
 }
 
 
-function createAirUnitUpdates(airUnitMap) {
+function createAirUnitUpdates(controller, airUnitMap) {
   let airUpdates = new Array()
+  // let elimIndex = 0
   for (const unit of airUnitMap.keys()) {
     let update = {
       name: unit,
@@ -138,14 +139,20 @@ function createAirUnitUpdates(airUnitMap) {
     if (side === GlobalUnitsModel.Side.US) {
       position1 = USAirBoxOffsets.find((box) => box.name === update.boxName)
     }
+
+    if (airUnit.boxName === GlobalUnitsModel.AirBox.JP_ELIMINATED || update.boxName === GlobalUnitsModel.AirBox.US_ELIMINATED) {
+      airUnit.name = update.name
+      controller.addAirUnitToBoxUsingNextFreeSlot(airUnit.boxName, airUnit)
+      continue
+    }
     if (!position1) {
       continue
     }
     update.position = position1.offsets[update.index]
 
-    // console.log(
-    //   `Air Update: name = ${update.name}, box = ${update.boxName}, index =${update.index} position = ${update.position}`
-    // )
+    console.log(
+      `Air Update: name = ${update.name}, box = ${update.boxName}, index =${update.index} position = ${update.position}`
+    )
     airUpdates.push(update)
   }
   return airUpdates
@@ -184,7 +191,7 @@ function loadJapanStrikeUnits(loadedMap) {
   }
 }
 
-export function loadGameStateForId(gameId) {
+export function loadGameStateForId(controller, gameId) {
   const loadedJson = localStorage.getItem(gameId)
 
   const gameDetails = JSON.parse(loadedJson)
@@ -224,7 +231,7 @@ export function loadGameStateForId(gameId) {
   const jpStrikeUpdates = createStrikeGroupUpdates(jpStrikeMap)
   const usStrikeUpdates = createStrikeGroupUpdates(usStrikeMap)
 
-  const airUpdates = createAirUnitUpdates(airMap)
+  const airUpdates = createAirUnitUpdates(controller, airMap)
 
   const usCardText = gameDetails.uscards
   const jpCardText = gameDetails.jpcards
@@ -247,7 +254,7 @@ export function loadGameStateForId(gameId) {
   return { airUpdates, jpfleetUpdates, usfleetUpdates, jpStrikeUpdates, usStrikeUpdates, logItems }
 }
 
-export function loadGameState() {
+export function loadGameState(controller) {
   const globalState = localStorage.getItem("global")
   const global = new Map(JSON.parse(globalState))
 
@@ -264,7 +271,7 @@ export function loadGameState() {
   const airText = localStorage.getItem("air")
   const airMap = new Map(JSON.parse(airText))
 
-  const airUpdates = createAirUnitUpdates(airMap)
+  const airUpdates = createAirUnitUpdates(controller, airMap)
 
   const usCardText = localStorage.getItem("uscards")
   const jpCardText = localStorage.getItem("jpcards")

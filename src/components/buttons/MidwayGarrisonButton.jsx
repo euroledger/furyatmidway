@@ -1,4 +1,4 @@
-import React, { useRef, useState, useContext } from "react";
+import React, { useState, useEffect } from "react";
 import GlobalGameState from "../../model/GlobalGameState";
 import "./button.css";
 import MGTOffsets from "../draganddrop/MGTBoxOffsets";
@@ -6,31 +6,35 @@ import { BoardContext } from "../../App";
 function MidwayGarrisonButton({
   image,
   initialPosition,
-  getZone,
 }) {
-  const { onDrag, onStop } = useContext(BoardContext)
-
   const [position, setPosition] = useState(initialPosition);
 
-  const myRef = useRef();
+  // const [level, setLevel] = useState(6)
 
-  
-  const handleDrop = (event) => {
-    event.preventDefault();
-
-    GlobalGameState.midwayGarrisonLevel = getZone();
-
-    const gl = getZone() === 0 ? "X" : getZone()
-  
-    GlobalGameState.log(`Midway Garrison Track set to ${gl}`)
-
+  useEffect(() => {
     setPosition({
       ...position,
-      left: MGTOffsets[getZone()].left + 0.5,
-      top: MGTOffsets[getZone()].top + 0.6,
+      left: MGTOffsets[GlobalGameState.midwayGarrisonLevel].left + 0.5,
+      top: MGTOffsets[GlobalGameState.midwayGarrisonLevel].top + 0.6,
     });
-    GlobalGameState.stateHandler();
-  };
+  }, [GlobalGameState.midwayGarrisonLevel])
+  
+  // const handleDrop = (event) => {
+  //   event.preventDefault();
+
+  //   GlobalGameState.midwayGarrisonLevel = getZone();
+
+  //   const gl = getZone() === 0 ? "X" : getZone()
+  
+  //   GlobalGameState.log(`Midway Garrison Track set to ${gl}`)
+
+  //   setPosition({
+  //     ...position,
+  //     left: MGTOffsets[getZone()].left + 0.5,
+  //     top: MGTOffsets[getZone()].top + 0.6,
+  //   });
+  //   GlobalGameState.stateHandler();
+  // };
 
   return (
     <>
@@ -39,7 +43,7 @@ function MidwayGarrisonButton({
           type="image"
           src={image}
           name="saveForm"
-          className={"button-pos dropdown-toggle"}
+          className={"button-pos"}
           style={{
             position: "absolute",
             width: "2.5%",
@@ -47,11 +51,11 @@ function MidwayGarrisonButton({
             top: `${position.top}%`,
           }}
           id="saveForm"
-          onMouseEnter={onDrag}
-          onMouseLeave={onStop}
-          draggabble="true"
-          onDragStart={onDrag}
-          onDragEnd={handleDrop}
+          // onMouseEnter={onDrag}
+          // onMouseLeave={onStop}
+          // draggabble="true"
+          // onDragStart={onDrag}
+          // onDragEnd={handleDrop}
         />
       </div>
     </>

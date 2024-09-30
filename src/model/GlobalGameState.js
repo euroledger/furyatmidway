@@ -69,6 +69,8 @@ export default class GlobalGameState {
   
   static eliminatedAirUnits = new Array()
 
+  static midwayAirOpsCompleted = 0
+  
   static airOperationPoints = {
     japan: 0,
     us: 0,
@@ -154,6 +156,9 @@ export default class GlobalGameState {
 
   static midwayAirOp = 1 // can be two air ops in Midway attack
 
+  static nextAvailableDamageMarker = 0
+  static nextAvailableSunkMarker = 0
+  
   static SearchValue = {
     JP_AF: 6,
     US_CSF: 7,

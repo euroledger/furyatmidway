@@ -136,7 +136,7 @@ export function SingleCarrier({ controller }) {
     c1sternDamage = <div>{createImage(damageMarker, "49.1%", "-8px")}</div>
   }
 
-  if (carrier1Sunk) {
+  if (carrier1Sunk && carrierTarget.name !== GlobalUnitsModel.Carrier.MIDWAY) {
     c1bowDamage = <div>{createImage(sunkMarker, "49.1%", "-74px")}</div>
     c1sternDamage = <div>{createImage(sunkMarker, "49.1%", "-8px")}</div>
   }

@@ -102,27 +102,10 @@ function japanFleetMovementHandler({ setMidwayNoAttackAlertShow, setJapanMapRegi
   setFleetUnitUpdate(update)
 }
 
-function midwayAttackHandler() {
-  // conduct attack on Midway:
-
-  // 1. Allocate AirOps points (range 0-2 hexes -> 1 AOP, 3-5 hexess -> 2 AOP)
-
-  // 2. change game state to AIR OPERATIONS with sidewithinitiative set to JAPAN
-
-  // 3. Only allow a single strike group to be performed
-
-  // 4. This strike group can only move to within 2 hexes of Midway (3-5 range) or
-  // to Midway base (0-2 range)
-
-  // for now, this needs to be done at the end of the air operation
-  GlobalGameState.phaseCompleted = true
-  GlobalGameState.gamePhase = GlobalGameState.PHASE.US_FLEET_MOVEMENT
-  console.log("END OF Midway Attack Phase")
-}
 function calcAirOpsPoints({ setSearchValues, setSearchResults, setSearchValuesAlertShow }) {
   const sv = calculateSearchValues(GlobalInit.controller)
   const sr = calculateSearchResults(GlobalInit.controller, {
-    jp_af: sv.jp_af,
+    jp_af: Math.max(0, sv.jp_af),
     us_csf: sv.us_csf,
     us_midway: sv.us_midway,
   })
@@ -470,21 +453,25 @@ export default function handleAction({
   } else if (GlobalGameState.gamePhase === GlobalGameState.PHASE.AIR_ATTACK_2) {
     GlobalGameState.gamePhase = GlobalGameState.PHASE.ATTACK_DAMAGE_RESOLUTION
   } else if (GlobalGameState.gamePhase === GlobalGameState.PHASE.ATTACK_DAMAGE_RESOLUTION) {
-    console.log("END OF DAMAGE BOLLOCKS carrier Target2 =", GlobalGameState.carrierTarget2)
     if (GlobalGameState.carrierTarget2 !== "" && GlobalGameState.carrierTarget2 !== undefined) {
-      console.log("NOW ATTACK THE OTHER CARRIER", GlobalGameState.carrierTarget2)
       GlobalGameState.gamePhase = GlobalGameState.PHASE.AIR_ATTACK_2
     } else {
       GlobalGameState.gamePhase = GlobalGameState.PHASE.AIR_OPERATIONS
       const attackingSG = GlobalGameState.attackingStrikeGroup
       attackingSG.attacked = true
-      console.log("ATTACKING SG=", attackingSG)
     }
   } else if (GlobalGameState.gamePhase === GlobalGameState.PHASE.MIDWAY_DAMAGE_RESOLUTION) {
-    console.log("END OF mIDWAY DAMAGE BOLLOCKS")
-    GlobalGameState.gamePhase = GlobalGameState.PHASE.AIR_OPERATIONS
+    GlobalGameState.midwayAirOpsCompleted=GlobalGameState.midwayAirOp
+    GlobalGameState.airOperationPoints.japan = 0
+    GlobalGameState.phaseCompleted = true
+    GlobalGameState.gamePhase = GlobalGameState.PHASE.US_FLEET_MOVEMENT   
     const attackingSG = GlobalGameState.attackingStrikeGroup
     attackingSG.attacked = true
+    setJapanStrikePanelEnabled(false)
+    setUsFleetRegions()
+    GlobalGameState.usFleetMoved = false
+    GlobalGameState.sideWithInitiative=undefined
+    GlobalGameState.dieRolls=[]
   }
 
   // @TODO if all air units in a strike are eliminated maybe display a dialog saying "Air Attack Phase over, no

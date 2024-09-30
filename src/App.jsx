@@ -158,7 +158,7 @@ export function App() {
   const [USMapRegions, setUSMapRegions] = useState([])
   const [japanMapRegions, setJapanMapRegions] = useState([])
 
-  const [sideWithInitiative, setSideWithInitiative] = useState(null)
+  const [sideWithInitiative, setSideWithInitiative] = useState(undefined)
 
   const [targetDetermined, setTargetDetermined] = useState(false)
 
@@ -203,8 +203,6 @@ export function App() {
 
   useEffect(() => {
     if (GlobalGameState.gamePhase === GlobalGameState.PHASE.AIR_ATTACK_1) {
-      console.log("ATTACK 1 ABOUT TO COMMENCE..................!!!! carrierTarget1 =", GlobalGameState.carrierTarget1)
-
       GlobalGameState.dieRolls = []
       GlobalGameState.carrierHitsDetermined = false
       GlobalGameState.currentCarrierAttackTarget = GlobalGameState.carrierTarget1
@@ -217,7 +215,6 @@ export function App() {
 
   useEffect(() => {
     if (GlobalGameState.gamePhase === GlobalGameState.PHASE.AIR_ATTACK_2) {
-      console.log("ATTACK 2 ABOUT TO COMMENCE..................!!!! carrierTarget2 =", GlobalGameState.carrierTarget2)
       GlobalGameState.dieRolls = []
       GlobalGameState.carrierHitsDetermined = false
       GlobalGameState.currentCarrierAttackTarget = GlobalGameState.carrierTarget2
@@ -656,6 +653,7 @@ export function App() {
   function loadMyGame(id) {
     setLoading(() => true)
     loadHandler({
+      controller: GlobalInit.controller,
       setTestClicked,
       setSplash,
       setAirUnitUpdate,
@@ -675,11 +673,6 @@ export function App() {
   function splashy() {
     setSplash(false)
   }
-  // window height
-  const height = window.innerHeight
-
-  // window width
-  const width = window.innerWidth
 
   if (splash) {
     return (
@@ -700,7 +693,13 @@ export function App() {
     jpAfText = `1AF: Closest Fleet ${searchValues.jp_af} hexes away`
     usCsfText = `CSF: Closest Fleet ${searchValues.us_csf} hexes away`
     usMidwayText = `Midway: Closest Fleet ${searchValues.us_midway} hexes away`
-    jpOpsText = `Japan Air Operations Points: ${searchResults.JAPAN}`
+
+    const usedPoints = GlobalGameState.midwayAirOpsCompleted
+    let ptsStr = ""
+    if (usedPoints > 0) {
+      ptsStr = ` (${usedPoints} used in Midway Attack)`
+    }
+    jpOpsText = `Japan Air Operations Points${ptsStr}: ${searchResults.JAPAN}`
     usOpsText = `US Air Operations Points: ${searchResults.US}`
   }
   const targetHeaders = (
@@ -877,13 +876,6 @@ export function App() {
 
   function doAttackResolutionRolls() {
     const hits = doAttackFireRolls(GlobalInit.controller)
-
-    // if (hits === 0) {
-    //   setAttackResolved(true)
-    //   return
-    // }
-
-    // setCarrierHitsDetermined(true)
     setCarrierHits(() => hits)
     GlobalGameState.dieRolls = []
     GlobalGameState.carrierHitsDetermined = true
@@ -922,9 +914,12 @@ export function App() {
   let midwayDamageDiceButtonEnabled = GlobalGameState.midwayHits > 0 && totalHits < 3
 
   if (totalHits >= 3 && GlobalGameState.midwayHits > 0) {
-    autoAllocateMidwayDamage(GlobalInit.controller)
+      autoAllocateMidwayDamage(GlobalInit.controller)
   }
-  
+
+  let capInterceptionDiceButtonDisabled = capAirUnits.length === 0 || GlobalGameState.dieRolls.length > 0
+
+
   return (
     <>
       <LoadGamePanel
@@ -1020,8 +1015,8 @@ export function App() {
         }}
         doRoll={doInitiativeRoll}
         nextState={GlobalGameState.PHASE.AIR_OPERATIONS}
-        diceButtonDisabled={sideWithInitiative !== null}
-        closeButtonDisabled={sideWithInitiative === null}
+        diceButtonDisabled={GlobalGameState.sideWithInitiative !== undefined }
+        closeButtonDisabled={GlobalGameState.sideWithInitiative === undefined}
       ></DicePanel>
       <DicePanel
         numDice={1}
@@ -1060,7 +1055,8 @@ export function App() {
       ></DicePanel>
       <LargeDicePanel
         numDice={capSteps}
-        diceButtonDisabled={capAirUnits.length === 0 || GlobalGameState.capHits !== undefined}
+        diceButtonDisabled={capInterceptionDiceButtonDisabled}
+        closeButtonDisabled={!capInterceptionDiceButtonDisabled}
         show={!testClicked && capInterceptionPanelShow}
         headerText="CAP Interception"
         headers={capHeaders}

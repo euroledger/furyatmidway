@@ -96,7 +96,6 @@ const UITester = async ({ e, setTestClicked, setAirUnitUpdate, setFleetUnitUpdat
   // Set dice roll automatically -> US initiative
   doRoll(2, 3)
   
-  console.log("SIDE WITH INITIATIVE=", GlobalGameState.sideWithInitiative)
   GlobalGameState.gamePhase = GlobalGameState.PHASE.AIR_OPERATIONS 
   nextAction(e)
 

@@ -110,7 +110,7 @@ describe("Controller tests", () => {
     expect(kaf1Location).toBeUndefined()
 
     // load from local storage - check correct
-    const { airUpdates, jpfleetUpdates, usfleetUpdates, logItems } = loadGameStateForId("fam-main")
+    const { airUpdates, jpfleetUpdates, usfleetUpdates, logItems } = loadGameStateForId(controller, "fam-main")
     kaf1 = airUpdates.filter((a) => a.name === "Akagi-A6M-2b-1")[0]
     expect(kaf1.boxName).toEqual(GlobalUnitsModel.AirBox.JP_CD1_CAP)
     expect(logItems.size).toBeGreaterThan(0)
