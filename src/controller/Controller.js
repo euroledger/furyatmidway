@@ -28,6 +28,8 @@ export default class Controller {
     ESCORT_ATTACK_ROLL: "Escort Counterattack Roll",
     CAP_INTERCEPTION_ROLL: "CAP Interception Roll",
     AAA_ROLL: "Anti Aircraft Fire Roll",
+    CARRIER_TARGET_SELECTION: "Carrier Targets Selection",
+    ATTACK_RESOLUTION_ROLL: "Attack Resolution Roll",
   }
 
   static MIDWAY_HEX = {
@@ -103,7 +105,7 @@ export default class Controller {
     const array = Array.from(this.targetMap.values())
 
     const set = [...new Set(array)]
-    console.log(set) // [1, 2, 3, 4, 5]
+    // console.log(set) // [1, 2, 3, 4, 5]
 
     return set
   }
@@ -166,7 +168,6 @@ export default class Controller {
 
   addAirUnitToBoxUsingNextFreeSlot = (boxName, value) => {
     const index = this.getFirstAvailableZone(boxName)
-    console.log("INDEX = ", index)
     if (index != -1) {
       this.boxModel.addAirUnitToBox(boxName, index, value)
     }
@@ -383,6 +384,15 @@ export default class Controller {
     return array
   }
 
+  getStrikeUnitsAttackingNamedCarrier(carrierName) {
+    // only return strike units attacking this carrier
+
+    // filter target map on this carrier
+
+    const x = new Map([...this.targetMap].filter(([_, v]) => v === carrierName))
+    return Array.from(x.keys())
+  }
+
   getStrikeUnitsAttackingCarrier() {
     if (GlobalGameState.TESTING) {
       return this.getAttackingStrikeUnitsTEST(
@@ -391,7 +401,7 @@ export default class Controller {
       )
     }
     // only return strike units attacking this carrier
-
+    
     // filter target map on this carrier
     const x = new Map([...this.targetMap].filter(([_, v]) => v === GlobalGameState.currentCarrierAttackTarget))
     return Array.from(x.keys())
@@ -1111,14 +1121,9 @@ export default class Controller {
   calcSearchResults(distances) {
     let jpVal = Math.max(1, GlobalGameState.SearchValue.JP_AF - distances.jp_af)
 
-    console.log("1 JPVAL = ", jpVal)
     jpVal -= GlobalGameState.midwayAirOpsCompleted
-    console.log("2 JPVAL = ", jpVal)
-
     jpVal = Math.max(0, jpVal)
-
     jpVal = Math.min(4, jpVal)
-    console.log("3 JPVAL = ", jpVal)
 
     let usVal = Math.max(
       1,
@@ -1230,6 +1235,11 @@ export default class Controller {
         this.dieRollEventHandler.handleTargetSelectionDiceRollEvent(event)
         break
 
+      case Controller.EventTypes.ATTACK_RESOLUTION_ROLL:
+        console.log("ATTACK RESOLUTION EVENT...")
+        this.dieRollEventHandler.handleAttackResolutionDiceRollEvent(event)
+        break
+
       case Controller.EventTypes.ALLOCATE_DAMAGE:
         this.selectionEventHandler.handleDamageEvent(event)
         break
@@ -1244,6 +1254,10 @@ export default class Controller {
 
       case Controller.EventTypes.AAA_ROLL:
         this.dieRollEventHandler.handleAAADiceRollEvent(event)
+        break
+
+      case Controller.EventTypes.CARRIER_TARGET_SELECTION:
+        this.selectionEventHandler.handleSelectCarrierTargetsEvent(event)
         break
 
       case Controller.EventTypes.STRIKE_GROUP_MOVE:

@@ -53,11 +53,11 @@ function StrikeCounter({ setStrikeGroupPopup, currentUSHex, currentJapanHex, cou
   let hex = {}
   if (strikeGroupUpdate) {
     if (strikeGroupUpdate.position.currentHex) {
-      console.log("GOT A STRIKE UPDATE: ", strikeGroupUpdate)
-      console.log("\t=>SG name=", strikeGroupUpdate.name)
-      console.log("\t=>counter data name=", counterData.name)
-      console.log("\t=>position=", position)
-      console.log("\t=>position.currentHex=", position.currentHex)
+      // console.log("GOT A STRIKE UPDATE: ", strikeGroupUpdate)
+      // console.log("\t=>SG name=", strikeGroupUpdate.name)
+      // console.log("\t=>counter data name=", counterData.name)
+      // console.log("\t=>position=", position)
+      // console.log("\t=>position.currentHex=", position.currentHex)
     }
 
     hex = strikeGroupUpdate.position.currentHex

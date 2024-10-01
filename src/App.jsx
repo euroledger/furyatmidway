@@ -26,16 +26,18 @@ import {
   doDamageEvent,
   doEscortEvent,
   doAAAEvent,
+  doAttackSelectionEvent,
   doFighterCounterattack,
   doAAAFireRolls,
   doAttackFireRolls,
+  doAttackResolutionEvent,
   doCarrierDamageRolls,
   carrierDamageRollNeeded,
   autoAllocateDamage,
   sendDamageUpdates,
   sendMidwayDamageUpdates,
   doMidwayDamage,
-  autoAllocateMidwayDamage
+  autoAllocateMidwayDamage,
 } from "./DiceHandler"
 import { determineAllUnitsDeployedForCarrier } from "./controller/AirUnitSetupHandler"
 
@@ -210,7 +212,6 @@ export function App() {
       GlobalGameState.carrierHitsDetermined = false
       GlobalGameState.currentCarrierAttackTarget = GlobalGameState.carrierTarget1
       GlobalGameState.eliminatedAirUnits = new Array()
-      GlobalGameState.dieRolls.length === 0
       setAttackResolved(false)
       setAttackResolutionPanelShow(true)
     }
@@ -791,7 +792,6 @@ export function App() {
       ? 2
       : Math.ceil(GlobalGameState.midwayGarrisonLevel / 2)
 
-
   const aaaHeaders = (
     <>
       <AAAHeaders numDice={numAAADice}></AAAHeaders>
@@ -903,6 +903,14 @@ export function App() {
     doAAAEvent(GlobalInit.controller)
   }
 
+  function sendAttackSelectionEvent() {
+    doAttackSelectionEvent(GlobalInit.controller)
+  }
+
+  function sendAttackResolutionEvent() {
+    doAttackResolutionEvent(GlobalInit.controller, carrierHits)
+  }
+
   if (GlobalGameState.capHits === undefined) {
     GlobalGameState.capHits = 0
   }
@@ -932,11 +940,10 @@ export function App() {
   let midwayDamageDiceButtonEnabled = GlobalGameState.midwayHits > 0 && totalHits < 3
 
   if (totalHits >= 3 && GlobalGameState.midwayHits > 0) {
-      autoAllocateMidwayDamage(GlobalInit.controller)
+    autoAllocateMidwayDamage(GlobalInit.controller)
   }
 
   let capInterceptionDiceButtonDisabled = capAirUnits.length === 0 || GlobalGameState.dieRolls.length > 0
-
 
   return (
     <>
@@ -1033,7 +1040,7 @@ export function App() {
         }}
         doRoll={doInitiativeRoll}
         nextState={GlobalGameState.PHASE.AIR_OPERATIONS}
-        diceButtonDisabled={GlobalGameState.sideWithInitiative !== undefined }
+        diceButtonDisabled={GlobalGameState.sideWithInitiative !== undefined}
         closeButtonDisabled={GlobalGameState.sideWithInitiative === undefined}
       ></DicePanel>
       <DicePanel
@@ -1067,6 +1074,7 @@ export function App() {
         closeButtonStr="Next..."
         onHide={(e) => {
           setAttackTargetPanelShow(false)
+          sendAttackSelectionEvent()
           nextAction(e)
         }}
         disabled={true}
@@ -1159,6 +1167,7 @@ export function App() {
         margin={0}
         onHide={(e) => {
           setAttackResolutionPanelShow(false)
+          sendAttackResolutionEvent()
           nextAction(e)
         }}
         doRoll={doAttackResolutionRolls}
@@ -1167,6 +1176,7 @@ export function App() {
         closeButtonCallback={
           !attackResolved
             ? (e) => {
+                sendAttackResolutionEvent()
                 GlobalGameState.dieRolls = []
                 setNumDiceToRoll(carrierHits)
                 nextAction(e)

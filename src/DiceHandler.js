@@ -147,7 +147,7 @@ export function doMidwayDamage(controller, testRoll) {
   if (GlobalGameState.totalMidwayHits < 2) {
     return doMidwayDamageRoll(controller, testRoll)
   } else if (GlobalGameState.totalMidwayHits === 2) {
-    autoAllocateMidwayDamage(controller)
+    return autoAllocateMidwayDamage(controller)
   }
 }
 
@@ -160,16 +160,12 @@ function moveMidwayAirUnitsToEliminated(controller, index, eliminateHangar) {
   const airUnit = controller.getAirUnitInBox(boxName, index)
 
   if (airUnit) {
-    console.log("ELIMINATE UNIT",airUnit.name )
-
     moveAirUnitToEliminatedBox(controller, airUnit)
     GlobalGameState.eliminatedAirUnits.push(airUnit)
   }
   if (eliminateHangar) {
     const airUnits = getAirUnitsInHangar(controller, GlobalUnitsModel.Carrier.MIDWAY)
     for (let unit of airUnits) {
-      console.log("HANGAR ELIMINATE UNIT",unit.name )
-
       moveAirUnitToEliminatedBox(controller, unit)
       GlobalGameState.eliminatedAirUnits.push(unit)
     }
@@ -261,6 +257,7 @@ export function autoAllocateMidwayDamage(controller) {
     GlobalGameState.midwayGarrisonLevel--
     GlobalGameState.totalMidwayHits++
   }
+  return box
 }
 
 export function autoAllocateDamage(controller) {
@@ -662,6 +659,39 @@ export function doCAPEvent(controller, capAirUnits) {
     },
   })
 }
+
+export function doAttackSelectionEvent(controller) {
+  // log should be:
+
+  // SELECT CARRIER TARGETS (US) - Akagi: TBD1 (Enterprise), Kaga: US TBD1 (Hornet)
+  const carrier1Attackers = controller.getStrikeUnitsAttackingNamedCarrier(GlobalGameState.carrierTarget1)
+  const carrier2Attackers = controller.getStrikeUnitsAttackingNamedCarrier(GlobalGameState.carrierTarget2)
+
+  controller.viewEventHandler({
+    type: Controller.EventTypes.CARRIER_TARGET_SELECTION,
+    data: {
+      side: GlobalGameState.sideWithInitiative,
+      carrier1: GlobalGameState.carrierTarget1,
+      carrier1Attackers,
+      carrier2: GlobalGameState.carrierTarget2,
+      carrier2Attackers
+    },
+  })
+
+}
+
+export function doAttackResolutionEvent(controller, hits) {
+  controller.viewEventHandler({
+    type: Controller.EventTypes.ATTACK_RESOLUTION_ROLL,
+    data: {
+      target: GlobalGameState.currentCarrierAttackTarget,
+      rolls: GlobalGameState.dieRolls,
+      side: GlobalGameState.sideWithInitiative,
+      hits
+    },
+  })
+}
+
 export function doAAAEvent(controller) { 
   const sideBeingAttacked =
   GlobalGameState.sideWithInitiative === GlobalUnitsModel.Side.US

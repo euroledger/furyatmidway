@@ -19,7 +19,7 @@ export function AttackTargetHeaders({ controller, setAttackTargetsSelected }) {
   let base = 10 + (8 - unitsInGroup.length) * 5
 
   if (unitsInGroup.length === 1) {
-    base = 20
+    base = 43
   }
 
   const airCounters = unitsInGroup.map((airUnit, index) => {

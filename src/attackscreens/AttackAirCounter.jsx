@@ -13,18 +13,13 @@ function AirAttackCounter({ controller, airUnit, index, myCarrier, myIdx, lefty,
     let size = controller.getTargetMapSizeForCarrier(myCarrier)
 
     let i = controller.getTargetMapSize()
-    // let j = controller.getAttackingStrikeUnitsTEST(GlobalUnitsModel.TaskForce.CARRIER_DIV_1).length
     let j = controller.getAttackingStrikeUnits(true).length
 
-    console.log("i = ", i, "j = ", j)
     if (i == j) {
       const targets = controller.getAttackTargets()
       GlobalGameState.carrierTarget1 = targets[0]
-      console.log("SET target 1 to ", targets[0])
       if (targets.length=== 2) {
         GlobalGameState.carrierTarget2 = targets[1]
-        console.log("SET target 2 to ", targets[1])
-
       }
       // all units allocated a target
       setAttackTargetsSelected(() => true)
@@ -96,9 +91,9 @@ function AirAttackCounter({ controller, airUnit, index, myCarrier, myIdx, lefty,
   const leftStr = 40 + index * 10
   let l = "" + leftStr + "%"
 
-  if (GlobalGameState.sideWithInitiative === GlobalUnitsModel.Side.JAPAN) {
+  // if (GlobalGameState.sideWithInitiative === GlobalUnitsModel.Side.JAPAN) {
     l = "" + lefty + "%"
-  }
+  // }
   const [position, setPosition] = useState({
     left: l,
     top: "10%",

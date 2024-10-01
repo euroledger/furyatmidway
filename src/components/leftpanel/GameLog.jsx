@@ -9,7 +9,6 @@ function GameLog() {
   };
 
   useEffect(() => {
-    console.log("QUACK SCROLL YE BUGGER>")
     scrollToBottom();
   }, [GlobalGameState.logItems.length]);
 

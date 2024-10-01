@@ -21,7 +21,6 @@ export function AttackResolutionHeaders({ controller }) {
   }
 
   if (GlobalGameState.currentCarrierAttackTarget === GlobalUnitsModel.Carrier.MIDWAY) {
-    console.log("SETTING YO ASS")
     dbDRM = "Midway Dive Bomber DRM: -1"
     torpDRM = "Midway Torpedo Bomber DRM: -1"
   }

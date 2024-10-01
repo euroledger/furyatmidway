@@ -290,7 +290,6 @@ export function moveCAPtoReturnBox(controller, capAirUnits, setAirUnitUpdate) {
     const index = GlobalInit.controller.getFirstAvailableZone(destBox)
     update.position = position1.offsets[location.boxIndex]
     update.name = capUnit.name
-    console.log("SEND CAP UPDATE...")
     setAirUnitUpdate(update)
 
     // const index = controller.getFirstAvailableZone(destBox)

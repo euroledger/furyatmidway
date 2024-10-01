@@ -150,9 +150,9 @@ function createAirUnitUpdates(controller, airUnitMap) {
     }
     update.position = position1.offsets[update.index]
 
-    console.log(
-      `Air Update: name = ${update.name}, box = ${update.boxName}, index =${update.index} position = ${update.position}`
-    )
+    // console.log(
+    //   `Air Update: name = ${update.name}, box = ${update.boxName}, index =${update.index} position = ${update.position}`
+    // )
     airUpdates.push(update)
   }
   return airUpdates

@@ -67,6 +67,19 @@ class ViewDieRollEventHandler {
     let command = new DiceCommand(event.type, jpRolls, usRolls, null, side, GlobalGameState.antiaircraftHits, target)
     GlobalGameState.log(`${command.toString()}`)
   }
+
+  handleAttackResolutionDiceRollEvent(event) {
+    const { rolls, side, target, hits } = event.data
+    let jpRolls = null
+    let usRolls = null
+    if (side === GlobalUnitsModel.Side.US) {
+      usRolls = rolls
+    } else {
+      jpRolls = rolls
+    }
+    let command = new DiceCommand(event.type, jpRolls, usRolls, null, side, hits, target)
+    GlobalGameState.log(`${command.toString()}`)
+  }
   
   handleEscortCounterAttackDiceRollEvent(event) {
 
