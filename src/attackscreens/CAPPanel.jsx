@@ -3,7 +3,7 @@ import "./cap.css"
 import GlobalUnitsModel from "../model/GlobalUnitsModel"
 import GlobalGameState from "../model/GlobalGameState"
 
-export function CAPHeaders({ controller, capAirUnits, setCapAirUnits, capSteps, setCapSteps }) {
+export function CAPHeaders({ controller, setCapAirUnits, capSteps, setCapSteps }) {
   const sideBeingAttacked =
     GlobalGameState.sideWithInitiative === GlobalUnitsModel.Side.US
       ? GlobalUnitsModel.Side.JAPAN

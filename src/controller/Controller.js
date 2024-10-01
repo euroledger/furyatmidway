@@ -25,6 +25,9 @@ export default class Controller {
     TARGET_SELECTION: "Target Selection",
     SELECT_CAP_UNITS: "Select CAP Units",
     ALLOCATE_DAMAGE: "Damage Allocation",
+    ESCORT_ATTACK_ROLL: "Escort Counterattack Roll",
+    CAP_INTERCEPTION_ROLL: "CAP Interception Roll",
+    AAA_ROLL: "Anti Aircraft Fire Roll",
   }
 
   static MIDWAY_HEX = {
@@ -1225,6 +1228,22 @@ export default class Controller {
         break
       case Controller.EventTypes.TARGET_SELECTION_ROLL:
         this.dieRollEventHandler.handleTargetSelectionDiceRollEvent(event)
+        break
+
+      case Controller.EventTypes.ALLOCATE_DAMAGE:
+        this.selectionEventHandler.handleDamageEvent(event)
+        break
+
+      case Controller.EventTypes.CAP_INTERCEPTION_ROLL:
+        this.dieRollEventHandler.handleCapInterceptionDiceRollEvent(event)
+        break
+
+      case Controller.EventTypes.ESCORT_ATTACK_ROLL:
+        this.dieRollEventHandler.handleEscortCounterAttackDiceRollEvent(event)
+        break
+
+      case Controller.EventTypes.AAA_ROLL:
+        this.dieRollEventHandler.handleAAADiceRollEvent(event)
         break
 
       case Controller.EventTypes.STRIKE_GROUP_MOVE:

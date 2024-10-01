@@ -654,7 +654,63 @@ export function doCAPEvent(controller, capAirUnits) {
       capUnits: capAirUnits,
     },
   })
+  controller.viewEventHandler({
+    type: Controller.EventTypes.CAP_INTERCEPTION_ROLL,
+    data: {
+      rolls: GlobalGameState.dieRolls,
+      side: sideBeingAttacked,
+    },
+  })
 }
+export function doAAAEvent(controller) { 
+  const sideBeingAttacked =
+  GlobalGameState.sideWithInitiative === GlobalUnitsModel.Side.US
+    ? GlobalUnitsModel.Side.JAPAN
+    : GlobalUnitsModel.Side.US
+
+  controller.viewEventHandler({
+    type: Controller.EventTypes.AAA_ROLL,
+    data: {
+      target: GlobalGameState.taskForceTarget,
+      rolls: GlobalGameState.dieRolls,
+      side: sideBeingAttacked,
+    },
+  })
+}
+
+export function doDamageEvent(controller, eliminatedSteps) {
+  if (eliminatedSteps === 0) {
+    return
+  }
+  const sideBeingAttacked =
+  GlobalGameState.sideWithInitiative === GlobalUnitsModel.Side.US
+    ? GlobalUnitsModel.Side.JAPAN
+    : GlobalUnitsModel.Side.US
+
+  let side =  GlobalGameState.sideWithInitiative
+  if (GlobalGameState.gamePhase === GlobalGameState.PHASE.ESCORT_DAMAGE_ALLOCATION) {
+    side = sideBeingAttacked
+  } 
+  controller.viewEventHandler({
+    type: Controller.EventTypes.ALLOCATE_DAMAGE,
+    data: {
+      side,
+      eliminatedSteps
+    },
+  })
+}
+
+export function doEscortEvent(controller) {
+  controller.viewEventHandler({
+    type: Controller.EventTypes.ESCORT_ATTACK_ROLL,
+    data: {
+      rolls: GlobalGameState.dieRolls,
+      side: GlobalGameState.sideWithInitiative,
+    },
+  })
+}
+
+
 export function doCAP(controller, capAirUnits, fightersPresent, testRolls) {
   const sideBeingAttacked =
     GlobalGameState.sideWithInitiative === GlobalUnitsModel.Side.US
@@ -677,7 +733,7 @@ export function doCAP(controller, capAirUnits, fightersPresent, testRolls) {
       index++
     }
   }
-  GlobalGameState.dieRolls = 1
+  GlobalGameState.dieRolls = rolls
   GlobalGameState.capHits = hits
 }
 

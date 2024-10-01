@@ -9,6 +9,7 @@ function GameLog() {
   };
 
   useEffect(() => {
+    console.log("QUACK SCROLL YE BUGGER>")
     scrollToBottom();
   }, [GlobalGameState.logItems.length]);
 
@@ -40,13 +41,6 @@ function GameLog() {
             class="accordion-body"
             style={{ height: "400px", overflowY: "scroll" }}
           >
-            {/* <div class="text-left">
-              style={{
-                maxHeight: "400px"
-              }}
-              {logRows}
-              <div ref={messagesEndRef} />
-            </div> */}
           </div>
         </div>
       </div>

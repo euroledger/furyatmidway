@@ -9,11 +9,26 @@ export default class GameStatePanel extends React.Component {
     this.state = {
       gs: props.gameState,
     }
+    this.messagesEndRef = React.createRef()
+  }
+
+  componentDidMount () {
+    this.scrollToBottom()
+  }
+  componentDidUpdate () {
+    this.scrollToBottom()
+  }
+  scrollToBottom = () => {
+    this.messagesEndRef.current?.scrollIntoView({ behavior: 'smooth' })
   }
 
   render() {
     const logRows = GlobalGameState.logItems.map((logItem, index) => {
-      return <div key={index}>{logItem}</div>
+      return (
+        <div key={index}>
+          {logItem} <div ref={this.messagesEndRef}></div>
+        </div>
+      )
     })
     const mg = GlobalGameState.midwayGarrisonLevel > 0 ? GlobalGameState.midwayGarrisonLevel : "X"
     const mif = GlobalGameState.midwayInvasionLevel > 0 ? GlobalGameState.midwayInvasionLevel : "X"

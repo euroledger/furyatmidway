@@ -23,6 +23,9 @@ import {
   getNumEscortFighterSteps,
   doDamageAllocation,
   doCAPEvent,
+  doDamageEvent,
+  doEscortEvent,
+  doAAAEvent,
   doFighterCounterattack,
   doAAAFireRolls,
   doAttackFireRolls,
@@ -475,8 +478,6 @@ export function App() {
     return (
       <Navbar bg="black" data-bs-theme="dark" fixed="top" className="justify-content-between navbar-fixed-top">
         <Container>
-          {/* <Navbar.Brand href="/">Save</Navbar.Brand>
-                <Navbar.Brand href="/">Load</Navbar.Brand> */}
           <Navbar.Toggle aria-controls="responsive-navbar-nav" />
           <Navbar.Collapse id="responsive-navbar-nav">
             <Nav className="mr-auto">
@@ -673,6 +674,11 @@ export function App() {
   function splashy() {
     setSplash(false)
   }
+  // window height
+  const height = window.innerHeight
+
+  // window width
+  const width = window.innerWidth
 
   if (splash) {
     return (
@@ -885,6 +891,18 @@ export function App() {
     doCAPEvent(GlobalInit.controller, capAirUnits)
   }
 
+  function sendDamageEvent(eliminatedSteps) {
+    doDamageEvent(GlobalInit.controller, eliminatedSteps)
+  }
+
+  function sendEscortEvent() {
+    doEscortEvent(GlobalInit.controller)
+  }
+
+  function sendAAAEvent() {
+    doAAAEvent(GlobalInit.controller)
+  }
+
   if (GlobalGameState.capHits === undefined) {
     GlobalGameState.capHits = 0
   }
@@ -1065,7 +1083,9 @@ export function App() {
         margin={0}
         onHide={(e) => {
           setCapInterceptionPanelShow(false)
-          sendCapEvent()
+          if (capAirUnits.length > 0) {
+            sendCapEvent()
+          }
           nextAction(e)
         }}
         doRoll={doCAPRolls}
@@ -1082,6 +1102,7 @@ export function App() {
         margin={0}
         onHide={(e) => {
           setDamageAllocationPanelShow(false)
+          sendDamageEvent(eliminatedSteps)
           nextAction(e)
         }}
         doRoll={doDamageAllocation}
@@ -1099,6 +1120,7 @@ export function App() {
         margin={0}
         onHide={(e) => {
           setEscortPanelShow(false)
+          sendEscortEvent()
           nextAction(e)
         }}
         doRoll={doCounterattackRolls}
@@ -1116,6 +1138,7 @@ export function App() {
         margin={0}
         onHide={(e) => {
           setAaaPanelShow(false)
+          sendAAAEvent()
           nextAction(e)
         }}
         doRoll={doAntiAircraftRolls}

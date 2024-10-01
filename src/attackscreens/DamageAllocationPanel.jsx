@@ -86,16 +86,15 @@ export function DamageHeaders({ controller, eliminatedSteps, setEliminatedSteps,
     setEliminatedSteps(() => eliminatedSteps + 1)
     GlobalGameState.updateGlobalState()
   }
-  console.log("game phase = ", GlobalGameState.gamePhase)
   let hitsToAllocate = GlobalGameState.capHits !== undefined ? GlobalGameState.capHits : 0
 
   if (GlobalGameState.gamePhase === GlobalGameState.PHASE.AAA_DAMAGE_ALLOCATION) {
     hitsToAllocate = GlobalGameState.antiaircraftHits !== undefined ? GlobalGameState.antiaircraftHits : 0
   } else if (GlobalGameState.gamePhase === GlobalGameState.PHASE.ESCORT_DAMAGE_ALLOCATION) {
-    console.log("Set hits to allocate to fighterHits =", GlobalGameState.fighterHits)
+    // console.log("Set hits to allocate to fighterHits =", GlobalGameState.fighterHits)
     hitsToAllocate = GlobalGameState.fighterHits !== undefined ? GlobalGameState.fighterHits : 0
   }
-  console.log("Hits to allocate=", hitsToAllocate)
+  // console.log("Hits to allocate=", hitsToAllocate)
 
   return (
     <>

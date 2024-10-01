@@ -3,7 +3,7 @@ import COMMAND_TYPE from "./COMMAND_TYPE"
 import Command from "./Command"
 
 class DiceCommand extends Command {
-  constructor(eventType, jpRolls, usRolls, theRoll, side) {
+  constructor(eventType, jpRolls, usRolls, theRoll, side, hits, target) {
     super(COMMAND_TYPE.DIE_ROLLS, null, null, null, null)
 
     this.jpRolls = jpRolls
@@ -11,8 +11,16 @@ class DiceCommand extends Command {
     this.theRoll = theRoll
     this.side = side
     this.eventType = eventType
+    this.hits = hits
+    this.target = target
   }
 
+  set target(t) {
+    this._target = t
+  }
+  get target() {
+    return this._target
+  }
   set jpRolls(jp) {
     this._jpRolls = jp
   }
@@ -22,6 +30,14 @@ class DiceCommand extends Command {
   set theRoll(tr) {
     this._theRoll = tr
   }
+
+  set hits(h) {
+    this._hits = h
+  }
+  get hits() {
+    return this._hits
+  }
+
   get theRoll() {
     return this._theRoll
   }
@@ -40,10 +56,20 @@ class DiceCommand extends Command {
 
   execute() {}
   toString() {
+    let hitsStr = this.hits === null || this.hits === undefined ? "": `Hits: ${this.hits}`
+    let jpString = ""
+    let usString = ""
+    let targetStr = this.target === null ? "" : `Target: ${this.target}`
+    if (this.jpRolls !== null) {
+      jpString = `Japan Rolls:  ${this.jpRolls}`
+    }
+    if (this.usRolls !== null) {
+      usString = `US Rolls:  ${this.usRolls}`
+    }
     if (this.theRoll) {
-      return `${this.commandType} ${this.eventType} ${this.side} Die Roll:  ${this.theRoll}`    
+      return `${this.commandType} ${this.eventType} ${this.side} Die Roll:  ${this.theRoll} ${hitsStr}`    
     } 
-    return `${this.commandType} ${this.eventType} Japan Rolls:  ${this.jpRolls} US Rolls: ${this.usRolls}`
+    return `${this.commandType} ${this.eventType} ${targetStr} ${jpString} ${usString} ${hitsStr}`
   }
 }
 
