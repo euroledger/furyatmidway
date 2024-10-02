@@ -8,7 +8,12 @@ function AirAttackCounter({ controller, airUnit, index, myCarrier, myIdx, lefty,
   }
 
   const handleDropUS = (airUnit) => {
+    // if unit was previously assigned the other carrier - remove from map
+    controller.removeAirUnitTarget(airUnit)
     controller.setAirUnitTarget(airUnit, myCarrier)
+
+    const map = controller.getTargetMap()
+    console.log("TARGET MAP =", map)
     // how many air units have been allocated to attack this carrier
     let size = controller.getTargetMapSizeForCarrier(myCarrier)
 
@@ -44,6 +49,7 @@ function AirAttackCounter({ controller, airUnit, index, myCarrier, myIdx, lefty,
   }
 
   const handleDropJapan = (airUnit) => {
+    controller.removeAirUnitTarget(airUnit)
     controller.setAirUnitTarget(airUnit, myCarrier)
     // how many air units have been allocated to attack this carrier
     let size = controller.getTargetMapSizeForCarrier(myCarrier)

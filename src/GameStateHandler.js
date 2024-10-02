@@ -379,8 +379,10 @@ export default function handleAction({
     GlobalGameState.updateGlobalState()
     return
   } else if (GlobalGameState.gamePhase === GlobalGameState.PHASE.TARGET_DETERMINATION) {
+    console.log("STATE CHANGE TARGET => CAP")
     GlobalGameState.gamePhase = GlobalGameState.PHASE.CAP_INTERCEPTION
   } else if (GlobalGameState.gamePhase === GlobalGameState.PHASE.CAP_INTERCEPTION) {
+    console.log("STATE CHANGE CAP -> AAA FIRE")
     GlobalGameState.gamePhase =
       capSteps > 0 ? GlobalGameState.PHASE.CAP_DAMAGE_ALLOCATION : GlobalGameState.PHASE.ANTI_AIRCRAFT_FIRE
   } else if (GlobalGameState.gamePhase === GlobalGameState.PHASE.CAP_DAMAGE_ALLOCATION) {

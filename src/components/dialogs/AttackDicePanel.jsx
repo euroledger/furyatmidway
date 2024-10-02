@@ -94,8 +94,6 @@ function AttackDicePanel(props) {
   let numDiceRow1 = numDice
   let numDiceRow2 = 0
   if (numDice > 8) {
-    // numDiceRow1 = Math.ceil(numDice / 2)
-    // numDiceRow2 = numDice - numDiceRow1
     numDiceRow1 = 8
     numDiceRow2 = numDice - 8
   }

@@ -297,11 +297,12 @@ export function autoAllocateDamage(controller) {
       }
     }
     controller.setCarrierHits(carrier, Math.min(3, currentCarrierHits + hits))
+    GlobalGameState.damageThisAttack = damage
   }
   return damage
 }
 
-export function doCarrierDamageRolls(controller, testRolls) {
+export function doCarrierDamageRolls(controller, testRoll) {
   // this just holds damage allocated in this attack
   let damage = {
     bow: false,
@@ -309,74 +310,34 @@ export function doCarrierDamageRolls(controller, testRolls) {
     sunk: false,
   }
   const carrier = GlobalGameState.currentCarrierAttackTarget
-  let rolls = testRolls === undefined ? randomDice(1) : testRolls
+  let roll = testRoll === undefined ? randomDice(1) : testRoll
 
-  for (let roll of rolls) {
-    if (controller.getCarrierBowDamaged(carrier)) {
-      if (controller.getCarrierSternDamaged(carrier)) {
-        controller.setCarrierHits(carrier, 3) // sunk
-        damage.sunk = true
-        const airUnits = getAirUnitsInHangar(controller, carrier)
-        for (let unit of airUnits) {
-          moveAirUnitToEliminatedBox(controller, unit)
-          GlobalGameState.eliminatedAirUnits.push(unit)
-        }
-      } else {
-        controller.setCarrierSternDamaged(carrier)
-        damage.stern = true
-        const airUnit = getAirUnitOnFlightDeck(controller, carrier, "STERN")
-        if (airUnit) {
-          moveAirUnitToEliminatedBox(controller, airUnit)
-          GlobalGameState.eliminatedAirUnits.push(airUnit)
-        }
-        controller.setCarrierHits(carrier, 2)
-      }
-      continue
-    } else if (controller.getCarrierSternDamaged(carrier)) {
-      if (controller.getCarrierBowDamaged(carrier)) {
-        controller.setCarrierHits(carrier, 3) // sunk
-        damage.sunk = true
-        const airUnits = getAirUnitsInHangar(controller, carrier)
-        for (let unit of airUnits) {
-          moveAirUnitToEliminatedBox(controller, unit)
-          GlobalGameState.eliminatedAirUnits.push(unit)
-        }
-      } else {
-        controller.setCarrierBowDamaged(carrier)
-        damage.bow = true
-        const airUnit = getAirUnitOnFlightDeck(controller, carrier, "BOW")
-        if (airUnit) {
-          moveAirUnitToEliminatedBox(controller, airUnit)
-          GlobalGameState.eliminatedAirUnits.push(airUnit)
-        }
-        controller.setCarrierHits(carrier, 2)
-      }
-      continue
+  // Undamaged Carrier
+  if (roll < 4) {
+    damage.bow = true
+
+    controller.setCarrierBowDamaged(carrier)
+    const airUnit = getAirUnitOnFlightDeck(controller, carrier, "BOW")
+    if (airUnit) {
+      moveAirUnitToEliminatedBox(controller, airUnit)
+      GlobalGameState.eliminatedAirUnits.push(airUnit)
     }
+    controller.setCarrierHits(carrier, 1)
+  } else {
+    damage.stern = true
 
-    // Undamaged Carrier
-    if (roll < 4) {
-      damage.bow = true
-
-      controller.setCarrierBowDamaged(carrier)
-      const airUnit = getAirUnitOnFlightDeck(controller, carrier, "BOW")
-      if (airUnit) {
-        moveAirUnitToEliminatedBox(controller, airUnit)
-        GlobalGameState.eliminatedAirUnits.push(airUnit)
-      }
-      controller.setCarrierHits(carrier, 1)
-    } else {
-      damage.stern = true
-
-      controller.setCarrierSternDamaged(carrier)
-      const airUnit = getAirUnitOnFlightDeck(controller, carrier, "STERN")
-      if (airUnit) {
-        moveAirUnitToEliminatedBox(controller, airUnit)
-        GlobalGameState.eliminatedAirUnits.push(airUnit)
-      }
-      controller.setCarrierHits(carrier, 1)
+    controller.setCarrierSternDamaged(carrier)
+    const airUnit = getAirUnitOnFlightDeck(controller, carrier, "STERN")
+    if (airUnit) {
+      moveAirUnitToEliminatedBox(controller, airUnit)
+      GlobalGameState.eliminatedAirUnits.push(airUnit)
     }
+    controller.setCarrierHits(carrier, 1)
   }
+  GlobalGameState.carrierDamageRoll = roll
+  GlobalGameState.damageThisAttack = damage
+
+  // }
   return damage
 }
 export function delay(ms) {
@@ -384,7 +345,6 @@ export function delay(ms) {
     setTimeout(resolve, ms)
   })
 }
-
 
 export async function allMidwayBoxesDamaged(controller, setDamageMarkerUpdate) {
   await delay(1)
@@ -568,9 +528,12 @@ export function doAttackFireRolls(controller, testRolls) {
 
     // QUACK REMOVE TEESTING ONLY
     // GlobalGameState.midwayHits = 3
-
   } else {
     GlobalGameState.carrierAttackHits = hits
+    GlobalGameState.carrierAttackHitsThisAttack = hits
+
+    // QUACK REMOVE TEESTING ONLY
+    // GlobalGameState.carrierAttackHits = 1
   }
   return hits
 }
@@ -667,6 +630,9 @@ export function doAttackSelectionEvent(controller) {
   const carrier1Attackers = controller.getStrikeUnitsAttackingNamedCarrier(GlobalGameState.carrierTarget1)
   const carrier2Attackers = controller.getStrikeUnitsAttackingNamedCarrier(GlobalGameState.carrierTarget2)
 
+  console.log("carrier1 attackers =", carrier1Attackers)
+  console.log("carrier2 attackers =", carrier2Attackers)
+
   controller.viewEventHandler({
     type: Controller.EventTypes.CARRIER_TARGET_SELECTION,
     data: {
@@ -674,10 +640,9 @@ export function doAttackSelectionEvent(controller) {
       carrier1: GlobalGameState.carrierTarget1,
       carrier1Attackers,
       carrier2: GlobalGameState.carrierTarget2,
-      carrier2Attackers
+      carrier2Attackers,
     },
   })
-
 }
 
 export function doAttackResolutionEvent(controller, hits) {
@@ -687,16 +652,38 @@ export function doAttackResolutionEvent(controller, hits) {
       target: GlobalGameState.currentCarrierAttackTarget,
       rolls: GlobalGameState.dieRolls,
       side: GlobalGameState.sideWithInitiative,
-      hits
+      hits,
     },
   })
 }
 
-export function doAAAEvent(controller) { 
+export function doCarrierDamageEvent(controller) {
+  if (GlobalGameState.carrierAttackHitsThisAttack === 0) {
+    return
+  }
   const sideBeingAttacked =
-  GlobalGameState.sideWithInitiative === GlobalUnitsModel.Side.US
-    ? GlobalUnitsModel.Side.JAPAN
-    : GlobalUnitsModel.Side.US
+    GlobalGameState.sideWithInitiative === GlobalUnitsModel.Side.US
+      ? GlobalUnitsModel.Side.JAPAN
+      : GlobalUnitsModel.Side.US
+  if (GlobalGameState.currentCarrierAttackTarget === GlobalUnitsModel.Carrier.MIDWAY) {
+  } else {
+    controller.viewEventHandler({
+      type: Controller.EventTypes.CARRIER_DAMAGE,
+      data: {
+        target: GlobalGameState.currentCarrierAttackTarget,
+        side: sideBeingAttacked,
+        roll: GlobalGameState.carrierDamageRoll,
+        damage: GlobalGameState.damageThisAttack,
+      },
+    })
+  }
+}
+
+export function doAAAEvent(controller) {
+  const sideBeingAttacked =
+    GlobalGameState.sideWithInitiative === GlobalUnitsModel.Side.US
+      ? GlobalUnitsModel.Side.JAPAN
+      : GlobalUnitsModel.Side.US
 
   controller.viewEventHandler({
     type: Controller.EventTypes.AAA_ROLL,
@@ -713,19 +700,19 @@ export function doDamageEvent(controller, eliminatedSteps) {
     return
   }
   const sideBeingAttacked =
-  GlobalGameState.sideWithInitiative === GlobalUnitsModel.Side.US
-    ? GlobalUnitsModel.Side.JAPAN
-    : GlobalUnitsModel.Side.US
+    GlobalGameState.sideWithInitiative === GlobalUnitsModel.Side.US
+      ? GlobalUnitsModel.Side.JAPAN
+      : GlobalUnitsModel.Side.US
 
-  let side =  GlobalGameState.sideWithInitiative
+  let side = GlobalGameState.sideWithInitiative
   if (GlobalGameState.gamePhase === GlobalGameState.PHASE.ESCORT_DAMAGE_ALLOCATION) {
     side = sideBeingAttacked
-  } 
+  }
   controller.viewEventHandler({
     type: Controller.EventTypes.ALLOCATE_DAMAGE,
     data: {
       side,
-      eliminatedSteps
+      eliminatedSteps,
     },
   })
 }
@@ -739,7 +726,6 @@ export function doEscortEvent(controller) {
     },
   })
 }
-
 
 export function doCAP(controller, capAirUnits, fightersPresent, testRolls) {
   const sideBeingAttacked =

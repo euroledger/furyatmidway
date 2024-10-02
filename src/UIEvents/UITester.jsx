@@ -1,23 +1,25 @@
-import GlobalGameState from "./model/GlobalGameState"
-import GlobalInit from "./model/GlobalInit"
-import "./style.css"
+import GlobalGameState from "../model/GlobalGameState"
+import GlobalInit from "../model/GlobalInit"
+import "../style.css"
 import {
   calcRandomJapanTestData,
   getFleetUnitUpdateUS,
   calcTestDataUS,
   createFleetUpdate,
   calcStrikeDataUS,
-} from "./AirUnitTestData"
-import JapanAirBoxOffsets from "./components/draganddrop/JapanAirBoxOffsets"
-import USAirBoxOffsets from "./components/draganddrop/USAirBoxOffsets"
-import { airUnitDataJapan, airUnitDataUS, airUnitsToStrikeGroupsUS, createStrikeGroupUpdate } from "./AirUnitTestData"
+} from "../AirUnitTestData"
+import JapanAirBoxOffsets from "../components/draganddrop/JapanAirBoxOffsets"
+import USAirBoxOffsets from "../components/draganddrop/USAirBoxOffsets"
+import { airUnitDataJapan, airUnitDataUS, airUnitsToStrikeGroupsUS, createStrikeGroupUpdate } from "../AirUnitTestData"
+import { targetSelectionButtonClick } from "./ScreenEvents"
+import GlobalUnitsModel from "../model/GlobalUnitsModel"
 
 function delay(ms) {
   return new Promise((resolve) => {
     setTimeout(resolve, ms)
   })
 }
-const UITester = async ({ e, setTestClicked, setAirUnitUpdate, setFleetUnitUpdate, setStrikeGroupUpdate, nextAction, doRoll }) => {
+const UITester = async ({ e, setTestClicked, setAirUnitUpdate, setFleetUnitUpdate, setStrikeGroupUpdate, nextAction, doInitiativeRoll }) => {
   setTestClicked(true)
 
   let update
@@ -94,7 +96,7 @@ const UITester = async ({ e, setTestClicked, setAirUnitUpdate, setFleetUnitUpdat
   nextAction(e)
 
   // Set dice roll automatically -> US initiative
-  doRoll(2, 3)
+  doInitiativeRoll(2, 3)
   
   GlobalGameState.gamePhase = GlobalGameState.PHASE.AIR_OPERATIONS 
   nextAction(e)
@@ -125,6 +127,20 @@ const UITester = async ({ e, setTestClicked, setAirUnitUpdate, setFleetUnitUpdat
   setStrikeGroupUpdate(usStrikeGroupMove)
 
   await delay(1)
+
+  // targetSelectionButtonClick(GlobalInit.controller, GlobalUnitsModel.TaskForce.CARRIER_DIV_1)
+  GlobalGameState.testTarget = GlobalUnitsModel.TaskForce.CARRIER_DIV_2
+
+  await delay(500)
+
+  GlobalGameState.rollDice = true
+  GlobalGameState.updateGlobalState()
+
+  // GlobalGameState.rollDice = false
+
+  await (delay(2000))
+  GlobalGameState.closePanel = true
+  GlobalGameState.updateGlobalState()
 
 }
 

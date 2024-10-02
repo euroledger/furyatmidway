@@ -7,6 +7,7 @@ import GlobalGameState from "../../../model/GlobalGameState"
 import "./counter.css"
 import { allHexesWithinDistance, hexesInTwoRegions } from "../../HexUtils"
 import HexCommand from "../../../commands/HexCommand"
+import { faL } from "@fortawesome/free-solid-svg-icons"
 
 function StrikeCounter({ setStrikeGroupPopup, currentUSHex, currentJapanHex, counterData, side, index }) {
   const {
@@ -86,6 +87,7 @@ function StrikeCounter({ setStrikeGroupPopup, currentUSHex, currentJapanHex, cou
       from = { currentHex: position.currentHex }
     }
     to = { currentHex: hex }
+    const loading = strikeGroupUpdate.loading === false ? false : true
     controller.viewEventHandler({
       type: Controller.EventTypes.STRIKE_GROUP_MOVE,
       data: {
@@ -94,7 +96,7 @@ function StrikeCounter({ setStrikeGroupPopup, currentUSHex, currentJapanHex, cou
         from,
         to,
         side,
-        loading: true,
+        loading,
         moved: strikeGroupUpdate.moved
       },
     })

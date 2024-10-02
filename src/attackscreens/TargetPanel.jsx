@@ -1,22 +1,26 @@
-import { React, useState } from "react"
+import { React, useState, useRef, useEffect } from "react"
 import Button from "react-bootstrap/Button"
 import GlobalUnitsModel from "../model/GlobalUnitsModel"
 import GlobalGameState from "../model/GlobalGameState"
-import Controller from "../controller/Controller"
+import { targetSelectionButtonClick } from "../UIEvents/ScreenEvents"
 
 export function TargetHeaders({ controller, setTargetSelected, setTargetDetermined }) {
   const [buttonsDisabled, setButtonsDisabled] = useState(false)
   const [myTarget, setMyTarget] = useState(null)
-  const handleClick = (target) => {
-    GlobalGameState.taskForceTarget = target
+  const button1Ref = useRef(null)
+  const button2Ref = useRef(null)
 
-    controller.viewEventHandler({
-      type: Controller.EventTypes.TARGET_SELECTION,
-      data: {
-        target: target,
-        side: GlobalGameState.sideWithInitiative,
-      },
-    })
+  useEffect(() => {
+    if (GlobalGameState.testTarget === GlobalUnitsModel.TaskForce.CARRIER_DIV_1) {
+      button1Ref.current.click(GlobalGameState.testTarget)
+    }
+    if (GlobalGameState.testTarget === GlobalUnitsModel.TaskForce.CARRIER_DIV_2) {
+      button2Ref.current.click(GlobalGameState.testTarget)
+    }
+  }, [GlobalGameState.testTarget])
+
+  const handleClick = (target) => {
+    targetSelectionButtonClick(controller, target)
 
     setTargetSelected(true)
     setButtonsDisabled(true)
@@ -351,7 +355,6 @@ export function TargetHeaders({ controller, setTargetSelected, setTargetDetermin
     selectMsg = `Target Automatically Selected: ${autoSelectTarget}`
   }
 
-
   return (
     <div
       style={{
@@ -436,7 +439,11 @@ export function TargetHeaders({ controller, setTargetSelected, setTargetDetermin
             {markerYorktown}
             {yorktownBowDamage}
             {yorktownSternDamage}
-            <Button disabled={buttonsDisabled || autoSelectTarget !== null} onClick={() => handleClick(tf1.name)}>
+            <Button
+              ref={button1Ref}
+              disabled={buttonsDisabled || autoSelectTarget !== null}
+              onClick={() => handleClick(tf1.name)}
+            >
               {tf1.buttonStr}
             </Button>
           </p>
@@ -481,7 +488,7 @@ export function TargetHeaders({ controller, setTargetSelected, setTargetDetermin
               marginLeft: tf2.marginLeft,
             }}
           >
-            <Button disabled={buttonsDisabled || autoSelectTarget !== null} onClick={() => handleClick(tf2.name)}>
+            <Button ref={button2Ref} disabled={buttonsDisabled || autoSelectTarget !== null} onClick={() => handleClick(tf2.name)}>
               {tf2.buttonStr}
             </Button>
           </p>
@@ -512,7 +519,7 @@ export function TargetHeaders({ controller, setTargetSelected, setTargetDetermin
 }
 
 export function TargetFooters() {
-  const show = GlobalGameState.dieRolls > 0 
+  const show = GlobalGameState.dieRolls > 0
 
   const msg = "Target Determined For Air Attack:"
   return (

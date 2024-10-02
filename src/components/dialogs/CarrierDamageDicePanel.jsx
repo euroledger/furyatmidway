@@ -88,9 +88,8 @@ function CarrierDamageDicePanel(props) {
   
  if ((carrierHits > 0 || GlobalGameState.carrierAttackHits > 1) && GlobalGameState.TESTING !== true) {
     const damage = autoAllocateDamage(controller)
-
-    sendDamageUpdates(controller, damage, setDamageMarkerUpdate)
     GlobalGameState.carrierAttackHits = 0
+    sendDamageUpdates(controller, damage, setDamageMarkerUpdate)
   } else if (GlobalGameState.carrierAttackHits === 0) {
     showDicePanel = false
   }

@@ -3,6 +3,7 @@ import GlobalUnitsModel from "./model/GlobalUnitsModel"
 import GlobalInit from "./model/GlobalInit"
 import GlobalGameState from "./model/GlobalGameState"
 import { flatHexToPixel, convertCoords } from "./components/HexUtils"
+import { faL } from "@fortawesome/free-solid-svg-icons"
 
 export const airUnitDataJapan = [
   {
@@ -282,6 +283,7 @@ function convertHex(name, q, r) {
     position: {
       currentHex: cHex,
     },
+    loading: false
   }
 }
 export function createFleetUpdate(name, q, r) {

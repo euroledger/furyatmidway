@@ -12,6 +12,7 @@ import ViewDieRollEventHandler from "./ViewDieRollEventHandler"
 import ViewEventStrikeGroupMoveHandler from "./ViewEventStrikeGroupMoveHandler"
 import ViewEventSelectionHandler from "./ViewEventSelectionHandler"
 import ViewEventCapHandler from "./ViewEventCapHandler"
+import ViewEventCarrierDamageHandler from "./ViewEventDamageHandler"
 import { isMidwayHex } from "../components/HexUtils"
 
 export default class Controller {
@@ -30,6 +31,8 @@ export default class Controller {
     AAA_ROLL: "Anti Aircraft Fire Roll",
     CARRIER_TARGET_SELECTION: "Carrier Targets Selection",
     ATTACK_RESOLUTION_ROLL: "Attack Resolution Roll",
+    CARRIER_DAMAGE: "Carrier Damage Allocation",
+    MIDWAY_DAMAGE: "Midway Damage Allocation",
   }
 
   static MIDWAY_HEX = {
@@ -56,6 +59,7 @@ export default class Controller {
     this.stikeGroupMoveEventHandler = new ViewEventStrikeGroupMoveHandler(this)
     this.selectionEventHandler = new ViewEventSelectionHandler(this)
     this.capHandler = new ViewEventCapHandler(this)
+    this.damageHandler = new ViewEventCarrierDamageHandler(this)
   }
 
   clearTargetMap() {
@@ -87,16 +91,28 @@ export default class Controller {
     return autoSelectTarget
   }
   setAirUnitTarget(airUnit, target) {
-    if (GlobalGameState.carrierTarget1 !== target && GlobalGameState.carrierTarget2 !== target) {
-      if (GlobalGameState.carrierTarget1 === "" || GlobalGameState.carrierTarget1 === undefined) {
-        GlobalGameState.carrierTarget1 = target
-      } else {
-        GlobalGameState.carrierTarget2 = target
-      }
-    }
     this.targetMap.set(airUnit, target)
+
+    const targets = Array.from(this.targetMap.values())
+    let carriers = [...new Set(targets)];
+
+    GlobalGameState.carrierTarget1 = carriers[0]
+
+    if (carriers.length === 2) {
+      GlobalGameState.carrierTarget2 = carriers[1]
+    } else {
+      GlobalGameState.carrierTarget2 = undefined
+    }
   }
 
+  getTargetMap() {
+    return this.targetMap
+  }
+  removeAirUnitTarget(airUnit) {
+    this.targetMap.delete(airUnit)
+
+
+  }
   getAirUnitTarget(airUnit) {
     return this.targetMap.get(airUnit)
   }
@@ -389,6 +405,7 @@ export default class Controller {
 
     // filter target map on this carrier
 
+    console.log("TARGET MAP AT TIME OF EVENT->", this.targetMap)
     const x = new Map([...this.targetMap].filter(([_, v]) => v === carrierName))
     return Array.from(x.keys())
   }
@@ -401,7 +418,7 @@ export default class Controller {
       )
     }
     // only return strike units attacking this carrier
-    
+
     // filter target map on this carrier
     const x = new Map([...this.targetMap].filter(([_, v]) => v === GlobalGameState.currentCarrierAttackTarget))
     return Array.from(x.keys())
@@ -1236,8 +1253,11 @@ export default class Controller {
         break
 
       case Controller.EventTypes.ATTACK_RESOLUTION_ROLL:
-        console.log("ATTACK RESOLUTION EVENT...")
         this.dieRollEventHandler.handleAttackResolutionDiceRollEvent(event)
+        break
+
+      case Controller.EventTypes.CARRIER_DAMAGE:
+        this.damageHandler.handleCarrierDamageEvent(event)
         break
 
       case Controller.EventTypes.ALLOCATE_DAMAGE:

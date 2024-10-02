@@ -172,6 +172,9 @@ describe("Controller tests", () => {
 
     GlobalGameState.currentCarrierAttackTarget = GlobalUnitsModel.Carrier.KAGA
     controller.setAirUnitTarget(edb1, GlobalUnitsModel.Carrier.KAGA)
+
+    expect(GlobalGameState.carrierTarget1).toEqual(GlobalUnitsModel.Carrier.KAGA)
+
     controller.setAirUnitTarget(edb2, GlobalUnitsModel.Carrier.AKAGI)
 
     expect(GlobalGameState.carrierTarget1).toEqual(GlobalUnitsModel.Carrier.KAGA)
@@ -427,8 +430,7 @@ describe("Controller tests", () => {
     GlobalGameState.currentCarrierAttackTarget = carrier
     GlobalGameState.carrierAttackHits = 2
 
-    const dieRolls = [1, 4]
-    doCarrierDamageRolls(controller, dieRolls)
+    autoAllocateDamage(controller)
 
     const bowDamaged = controller.getCarrierBowDamaged(carrier)
     expect(bowDamaged).toEqual(true)
@@ -563,8 +565,7 @@ describe("Controller tests", () => {
     GlobalGameState.currentCarrierAttackTarget = carrier
     GlobalGameState.carrierAttackHits = 2
 
-    const dieRolls = [1, 4]
-    doCarrierDamageRolls(controller, dieRolls)
+    autoAllocateDamage(controller)
 
     const bowDamaged = controller.getCarrierBowDamaged(carrier)
     expect(bowDamaged).toEqual(true)

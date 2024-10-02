@@ -79,6 +79,7 @@ export function SingleCarrier({ controller }) {
     carrierTarget = usMidway
     marginL = "-60px"
   } 
+  console.log(">>>>>>>>>> Carrier Target =", carrierTarget)
 
   const createImage = (image, left, top) => {
     return (

@@ -153,6 +153,11 @@ export default class GlobalGameState {
   static antiaircraftHits = undefined
 
   static carrierAttackHits = undefined
+  static carrierAttackHitsThisAttack = undefined
+
+  static carrierDamageRoll = undefined
+
+  static damageThisAttack = undefined
 
   static midwayAirOp = 1 // can be two air ops in Midway attack
 
@@ -177,4 +182,10 @@ export default class GlobalGameState {
   static getSetupMessage = () => {
     return this.SETUP_MESSAGES[this.setupPhase]
   }
+
+  // TEST STATES
+  static testTarget = undefined
+  static rollDice = undefined
+  static closePanel = undefined
+
 }

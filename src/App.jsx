@@ -31,6 +31,7 @@ import {
   doAAAFireRolls,
   doAttackFireRolls,
   doAttackResolutionEvent,
+  doCarrierDamageEvent,
   doCarrierDamageRolls,
   carrierDamageRollNeeded,
   autoAllocateDamage,
@@ -60,7 +61,7 @@ import { EscortHeaders, EscortFooters } from "./attackscreens/EscortPanel"
 import { AAAHeaders, AAAFooters } from "./attackscreens/AAAPanel"
 import { AttackResolutionHeaders, AttackResolutionFooters } from "./attackscreens/AttackResolutionPanel"
 
-import UITester from "./UITester"
+import UITester from "./UIEvents/UITester"
 import { getJapanEnabledAirBoxes, getUSEnabledAirBoxes } from "./AirBoxZoneHandler"
 import handleAction, { calcAirOpsPointsMidway } from "./GameStateHandler"
 
@@ -210,6 +211,7 @@ export function App() {
     if (GlobalGameState.gamePhase === GlobalGameState.PHASE.AIR_ATTACK_1) {
       GlobalGameState.dieRolls = []
       GlobalGameState.carrierHitsDetermined = false
+      GlobalGameState.carrierAttackHitsThisAttack = 0
       GlobalGameState.currentCarrierAttackTarget = GlobalGameState.carrierTarget1
       GlobalGameState.eliminatedAirUnits = new Array()
       setAttackResolved(false)
@@ -219,6 +221,8 @@ export function App() {
 
   useEffect(() => {
     if (GlobalGameState.gamePhase === GlobalGameState.PHASE.AIR_ATTACK_2) {
+      GlobalGameState.carrierAttackHits = 0
+      GlobalGameState.carrierAttackHitsThisAttack = 0
       GlobalGameState.dieRolls = []
       GlobalGameState.carrierHitsDetermined = false
       GlobalGameState.currentCarrierAttackTarget = GlobalGameState.carrierTarget2
@@ -234,6 +238,7 @@ export function App() {
       setAttackResolutionPanelShow(false)
       setCarrierDamagePanelShow(true)
       setAttackResolved(false)
+      GlobalGameState.carrierDamageRoll=undefined
     }
   }, [GlobalGameState.gamePhase])
 
@@ -436,7 +441,7 @@ export function App() {
       setFleetUnitUpdate,
       setStrikeGroupUpdate,
       nextAction,
-      doRoll: doInitiativeRoll,
+      doInitiativeRoll,
     })
   }
 
@@ -870,12 +875,13 @@ export function App() {
     let damage
     if (carrierDamageRollNeeded(GlobalInit.controller)) {
       damage = doCarrierDamageRolls(GlobalInit.controller)
+      GlobalGameState.damageThisAttack = damage
     } else {
       damage = autoAllocateDamage(GlobalInit.controller)
     }
 
     if (GlobalGameState.carrierAttackHits > 0) {
-      sendDamageUpdates(GlobalInit.controller, damage, setDamageMarkerUpdate)
+      sendDamageUpdates(GlobalInit.controller, damage, setDamageMarkerUpdate)      
     }
     setAttackResolved(() => true)
   }
@@ -909,6 +915,10 @@ export function App() {
 
   function sendAttackResolutionEvent() {
     doAttackResolutionEvent(GlobalInit.controller, carrierHits)
+  }
+
+  function sendCarrierDamageEvent() {
+    doCarrierDamageEvent(GlobalInit.controller)
   }
 
   if (GlobalGameState.capHits === undefined) {
@@ -1045,7 +1055,7 @@ export function App() {
       ></DicePanel>
       <DicePanel
         numDice={1}
-        show={!testClicked && targetPanelShow}
+        show={targetPanelShow}
         headerText="Target Determination"
         headers={targetHeaders}
         footers={targetFooters}
@@ -1056,6 +1066,7 @@ export function App() {
         closeButtonDisabled={!targetDetermined}
         onHide={(e) => {
           setTargetPanelShow(false)
+          console.log("NEXT ACTION BOLLOCKS!")
           nextAction(e)
         }}
         doRoll={doTargetSelectionRoll}
@@ -1083,13 +1094,14 @@ export function App() {
         numDice={capSteps}
         diceButtonDisabled={capInterceptionDiceButtonDisabled}
         closeButtonDisabled={!capInterceptionDiceButtonDisabled}
-        show={!testClicked && capInterceptionPanelShow}
+        show={capInterceptionPanelShow}
         headerText="CAP Interception"
         headers={capHeaders}
         footers={capFooters}
         showDice={true}
         margin={0}
         onHide={(e) => {
+          console.log("WE ARE IN HERE SOMEHOW+++++++++++++++++++++++++++++++++++F")
           setCapInterceptionPanelShow(false)
           if (capAirUnits.length > 0) {
             sendCapEvent()
@@ -1101,7 +1113,7 @@ export function App() {
       ></LargeDicePanel>
       <LargeDicePanel
         numDice={0}
-        show={!testClicked && damageAllocationPanelShow}
+        show={damageAllocationPanelShow}
         headerText="Damage Allocation"
         headers={damageHeaders}
         footers={damageFooters}
@@ -1119,7 +1131,7 @@ export function App() {
       ></LargeDicePanel>
       <LargeDicePanel
         numDice={getNumEscortFighterSteps(GlobalInit.controller)}
-        show={!testClicked && escortPanelShow}
+        show={escortPanelShow}
         headerText="Escort Counterattack"
         headers={escortHeaders}
         footers={escortFooters}
@@ -1138,7 +1150,7 @@ export function App() {
       ></LargeDicePanel>
       <LargeDicePanel
         numDice={numAAADice}
-        show={!testClicked && aaaPanelShow} // also check for any attacking steps left
+        show={aaaPanelShow} // also check for any attacking steps left
         headerText="Anti-Aircraft Fire"
         headers={aaaHeaders}
         footers={aaaFooters}
@@ -1159,7 +1171,7 @@ export function App() {
         // numDice={GlobalInit.controller.getAttackingStepsRemainingTEST()}
         controller={GlobalInit.controller}
         numDice={numDiceToRoll}
-        show={!testClicked && attackResolutionPanelShow}
+        show={attackResolutionPanelShow}
         headerText="Attack Resolution"
         headers={attackResolutionHeaders}
         footers={attackResolutionFooters}
@@ -1194,7 +1206,7 @@ export function App() {
       <CarrierDamageDicePanel
         numDice={1}
         controller={GlobalInit.controller}
-        show={!testClicked && carrierDamagePanelShow}
+        show={carrierDamagePanelShow}
         headerText="Carrier Damage"
         showDice={GlobalGameState.currentCarrierAttackTarget !== GlobalUnitsModel.Carrier.MIDWAY}
         margin={0}
@@ -1207,6 +1219,7 @@ export function App() {
         closeButtonStr="Next..."
         closeButtonCallback={(e) => {
           setCarrierDamagePanelShow(false)
+          sendCarrierDamageEvent()
           nextAction(e)
         }}
         diceButtonDisabled={carrieDamageDiceButtonDisabled}
@@ -1217,7 +1230,7 @@ export function App() {
       <MidwayDamageDicePanel
         numDice={1}
         controller={GlobalInit.controller}
-        show={!testClicked && midwayDamagePanelShow}
+        show={midwayDamagePanelShow}
         headerText="Midway Base Damage"
         headers={attackResolutionHeaders}
         footers={attackResolutionFooters}
