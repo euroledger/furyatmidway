@@ -130,10 +130,12 @@ const UITester = async ({ e, setTestClicked, setAirUnitUpdate, setFleetUnitUpdat
 
   // targetSelectionButtonClick(GlobalInit.controller, GlobalUnitsModel.TaskForce.CARRIER_DIV_1)
   GlobalGameState.testTarget = GlobalUnitsModel.TaskForce.CARRIER_DIV_2
+  GlobalGameState.updateGlobalState()
 
   await delay(500)
 
   GlobalGameState.rollDice = true
+  await delay(10)
   GlobalGameState.updateGlobalState()
 
   // GlobalGameState.rollDice = false

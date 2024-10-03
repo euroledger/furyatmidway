@@ -30,7 +30,6 @@ function DicePanel(props) {
   const button2Ref = useRef(null)
 
   const closeHandler = (e)=> {
-    console.log(">>>>>>>>>>>>>>>>>>>>>>> WANKING IN HERE")
     if (nextState) {
       GlobalGameState.gamePhase = nextState
     }

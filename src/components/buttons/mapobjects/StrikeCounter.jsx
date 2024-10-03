@@ -73,7 +73,7 @@ function StrikeCounter({ setStrikeGroupPopup, currentUSHex, currentJapanHex, cou
     ((strikeGroupUpdate.position.currentHex != undefined && position.currentHex.q !== hex.q) ||
       position.currentHex.r !== hex.r)
   ) {
-    console.log("I am", strikeGroupUpdate.name, " -> STRIKE GROUP UPDATE, moved= ", strikeGroupUpdate.moved)
+    // console.log("I am", strikeGroupUpdate.name, " -> STRIKE GROUP UPDATE, moved= ", strikeGroupUpdate.moved)
 
     if (side === GlobalUnitsModel.Side.US) {
       setUSPosition(hex)
@@ -201,7 +201,6 @@ function StrikeCounter({ setStrikeGroupPopup, currentUSHex, currentJapanHex, cou
 
       let isThere = USMapRegions && USMapRegions.find((h) => h.q === hex.q && h.r === hex.r)
       if (!isThere) {
-        console.log("NAH, computer says no!")
         return
       } else {
         // ??

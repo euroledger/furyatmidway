@@ -100,6 +100,7 @@ export default class GlobalGameState {
 
   static totalMidwayHits = 0
   static midwayHits = 0
+  static midwayHitsThisAttack = 0
   static midwayBox0Damaged = false
   static midwayBox1Damaged = false
   static midwayBox2Damaged = false

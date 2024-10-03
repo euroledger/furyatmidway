@@ -194,6 +194,9 @@ function MidwayDamageDicePanel(props) {
   } else if (GlobalGameState.totalMidwayHits >= 2) {
     diceMsg = `THIRD HIT: Midway base is Destroyed!`
   }
+  if (diceButtonDisabled) {
+    diceMsg = ""
+  }
   return (
     <Modal
       {...rest}

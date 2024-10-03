@@ -120,8 +120,9 @@ export function AttackResolutionHeaders({ controller }) {
 }
 
 export function AttackResolutionFooters({ totalHits }) {
-  const show = GlobalGameState.dieRolls.length > 0
+  // const show = GlobalGameState.dieRolls.length > 0
 
+  const show = true
   const hits = totalHits
   const msg = "Total Number of Hits:"
 

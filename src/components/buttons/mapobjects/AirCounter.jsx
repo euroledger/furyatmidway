@@ -73,8 +73,20 @@ function AirCounter({ getAirBox, setAirBox, counterData, side }) {
 
     if (
       GlobalGameState.gamePhase === GlobalGameState.PHASE.AIR_OPERATIONS ||
-      GlobalGameState.gamePhase === GlobalGameState.PHASE.MIDWAY_ATTACK
+      GlobalGameState.gamePhase === GlobalGameState.PHASE.MIDWAY_ATTACK ||
+      GlobalGameState.gamePhase === GlobalGameState.PHASE.AAA_DAMAGE_ALLOCATION ||
+      GlobalGameState.gamePhase === GlobalGameState.PHASE.ANTI_AIRCRAFT_FIRE ||
+      GlobalGameState.gamePhase === GlobalGameState.PHASE.ESCORT_COUNTERATTACK ||
+      GlobalGameState.gamePhase === GlobalGameState.PHASE.ESCORT_DAMAGE_ALLOCATION ||
+      GlobalGameState.gamePhase === GlobalGameState.PHASE.ATTACK_TARGET_SELECTION
     ) {
+      if (
+        GlobalGameState.gamePhase === GlobalGameState.PHASE.ATTACK_TARGET_SELECTION &&
+        airUnitUpdate.boxName.includes("CAP")
+      ) {
+        // CAP moves done in air unit handler
+        return
+      }
       controller.viewEventHandler({
         type: Controller.EventTypes.AIR_UNIT_MOVE,
         data: {
@@ -202,7 +214,11 @@ function AirCounter({ getAirBox, setAirBox, counterData, side }) {
 
     if (
       GlobalGameState.gamePhase === GlobalGameState.PHASE.AIR_OPERATIONS ||
-      GlobalGameState.gamePhase === GlobalGameState.PHASE.MIDWAY_ATTACK
+      GlobalGameState.gamePhase === GlobalGameState.PHASE.MIDWAY_ATTACK ||
+      GlobalGameState.gamePhase === GlobalGameState.PHASE.AAA_DAMAGE_ALLOCATION ||
+      GlobalGameState.gamePhase === GlobalGameState.PHASE.ANTI_AIRCRAFT_FIRE ||
+      GlobalGameState.gamePhase === GlobalGameState.PHASE.ESCORT_COUNTERATTACK ||
+      GlobalGameState.gamePhase === GlobalGameState.PHASE.ESCORT_DAMAGE_ALLOCATION
     ) {
       controller.viewEventHandler({
         type: Controller.EventTypes.AIR_UNIT_MOVE,
@@ -225,7 +241,6 @@ function AirCounter({ getAirBox, setAirBox, counterData, side }) {
       setSelected(false)
       return
     }
-
     controller.viewEventHandler({
       type: Controller.EventTypes.AIR_UNIT_SETUP,
       data: {
@@ -289,9 +304,9 @@ function AirCounter({ getAirBox, setAirBox, counterData, side }) {
       GlobalGameState.gamePhase === GlobalGameState.PHASE.MIDWAY_ATTACK ||
       GlobalGameState.gamePhase === GlobalGameState.PHASE.US_FLEET_MOVEMENT)
   ) {
-    if (side !== GlobalGameState.sideWithInitiative) {
-      disp = "none"
-    }
+    // if (side !== GlobalGameState.sideWithInitiative) {
+    //   disp = "none"
+    // }
   }
   return (
     <div>

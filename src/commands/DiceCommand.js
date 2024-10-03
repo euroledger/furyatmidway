@@ -59,7 +59,7 @@ class DiceCommand extends Command {
     let hitsStr = this.hits === null || this.hits === undefined ? "": `Hits: ${this.hits}`
     let jpString = ""
     let usString = ""
-    let targetStr = this.target === null ? "" : `Target: ${this.target}`
+    let targetStr = this.target === null || this.target === undefined ? "" : `Target: ${this.target}`
     if (this.jpRolls !== null) {
       jpString = `Japan Rolls:  ${this.jpRolls}`
     }

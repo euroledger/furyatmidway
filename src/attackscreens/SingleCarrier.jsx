@@ -4,7 +4,6 @@ import GlobalGameState from "../model/GlobalGameState"
 import "./attackpanel.css"
 
 export function SingleCarrier({ controller }) {
-
   let jpAkagi = {
     image: "/images/fleetcounters/akagi.jpg",
     name: GlobalUnitsModel.Carrier.AKAGI,
@@ -78,8 +77,7 @@ export function SingleCarrier({ controller }) {
   } else if (GlobalGameState.currentCarrierAttackTarget === GlobalUnitsModel.Carrier.MIDWAY) {
     carrierTarget = usMidway
     marginL = "-60px"
-  } 
-  console.log(">>>>>>>>>> Carrier Target =", carrierTarget)
+  }
 
   const createImage = (image, left, top) => {
     return (
@@ -95,31 +93,43 @@ export function SingleCarrier({ controller }) {
       ></img>
     )
   }
-  let airUnitsOnDeckCarrier1, airUnitsOnDeckCarrier2
+  let airUnitsOnDeckCarrier
   if (GlobalGameState.taskForceTarget === GlobalUnitsModel.TaskForce.CARRIER_DIV_1) {
-    airUnitsOnDeckCarrier1 = controller.getAllAirUnitsInBox(GlobalUnitsModel.AirBox.JP_AKAGI_FLIGHT_DECK)
-    airUnitsOnDeckCarrier2 = controller.getAllAirUnitsInBox(GlobalUnitsModel.AirBox.JP_KAGA_FLIGHT_DECK)
+    if (GlobalGameState.currentCarrierAttackTarget === GlobalUnitsModel.Carrier.AKAGI) {
+      airUnitsOnDeckCarrier = controller.getAllAirUnitsInBox(GlobalUnitsModel.AirBox.JP_AKAGI_FLIGHT_DECK)
+    } else {
+      airUnitsOnDeckCarrier = controller.getAllAirUnitsInBox(GlobalUnitsModel.AirBox.JP_KAGA_FLIGHT_DECK)
+    }
   }
   if (GlobalGameState.taskForceTarget === GlobalUnitsModel.TaskForce.CARRIER_DIV_2) {
-    airUnitsOnDeckCarrier1 = controller.getAllAirUnitsInBox(GlobalUnitsModel.AirBox.JP_HIRYU_FLIGHT_DECK)
-    airUnitsOnDeckCarrier2 = controller.getAllAirUnitsInBox(GlobalUnitsModel.AirBox.JP_SORYU_FLIGHT_DECK)
+    if (GlobalGameState.currentCarrierAttackTarget === GlobalUnitsModel.Carrier.HIRYU) {
+      airUnitsOnDeckCarrier = controller.getAllAirUnitsInBox(GlobalUnitsModel.AirBox.JP_HIRYU_FLIGHT_DECK)
+    } else {
+      airUnitsOnDeckCarrier = controller.getAllAirUnitsInBox(GlobalUnitsModel.AirBox.JP_SORYU_FLIGHT_DECK)
+    }
   }
   if (GlobalGameState.taskForceTarget === GlobalUnitsModel.TaskForce.TASK_FORCE_16) {
-    airUnitsOnDeckCarrier1 = controller.getAllAirUnitsInBox(GlobalUnitsModel.AirBox.US_ENTERPRISE_FLIGHT_DECK)
-    airUnitsOnDeckCarrier2 = controller.getAllAirUnitsInBox(GlobalUnitsModel.AirBox.US_HORNET_FLIGHT_DECK)
+    if (GlobalGameState.currentCarrierAttackTarget === GlobalUnitsModel.Carrier.ENTERPRISE) {
+      airUnitsOnDeckCarrier = controller.getAllAirUnitsInBox(GlobalUnitsModel.AirBox.US_ENTERPRISE_FLIGHT_DECK)
+    } else {
+      airUnitsOnDeckCarrier = controller.getAllAirUnitsInBox(GlobalUnitsModel.AirBox.US_HORNET_FLIGHT_DECK)
+    }
   } else if (GlobalGameState.taskForceTarget === GlobalUnitsModel.TaskForce.TASK_FORCE_17) {
-    airUnitsOnDeckCarrier1 = controller.getAllAirUnitsInBox(GlobalUnitsModel.AirBox.US_YORKTOWN_FLIGHT_DECK)
+    airUnitsOnDeckCarrier = controller.getAllAirUnitsInBox(GlobalUnitsModel.AirBox.US_YORKTOWN_FLIGHT_DECK)
   } else if (GlobalGameState.taskForceTarget === GlobalUnitsModel.TaskForce.MIDWAY) {
-    airUnitsOnDeckCarrier1 = [] // no Midway Flight Deck
+    airUnitsOnDeckCarrier = [] // no Midway Flight Deck
   }
-  const airUnitsCarrier1 = airUnitsOnDeckCarrier1.map((airUnit) => {
-    const location = controller.getAirUnitLocation(airUnit.name)
-    // const top = "" + (48 + location.boxIndex * 17.5) + "%"
+  let airUnitsCarrier1
+  if (airUnitsOnDeckCarrier !== undefined && airUnitsOnDeckCarrier !== null) {
+    airUnitsCarrier1 = airUnitsOnDeckCarrier.map((airUnit) => {
+      const location = controller.getAirUnitLocation(airUnit.name)
+      // const top = "" + (48 + location.boxIndex * 17.5) + "%"
 
-    // const top = "" + (-8 + location.boxIndex * -66) + "px"
-    const top = "" + (-74 + location.boxIndex * 66) + "px"
-    return <div>{createImage(airUnit.image, "25.2%", top)}</div>
-  })
+      // const top = "" + (-8 + location.boxIndex * -66) + "px"
+      const top = "" + (-74 + location.boxIndex * 66) + "px"
+      return <div>{createImage(airUnit.image, "25.2%", top)}</div>
+    })
+  }
 
   const carrier1SternDamaged = controller.getCarrierSternDamaged(carrierTarget.name)
   const carrier1BowDamaged = controller.getCarrierBowDamaged(carrierTarget.name)
@@ -150,7 +160,7 @@ export function SingleCarrier({ controller }) {
           justifyContent: "center",
           alignItems: "center",
           marginBottom: "20px",
-          marginLeft: marginL
+          marginLeft: marginL,
         }}
       >
         <div>

@@ -21,6 +21,7 @@ export default class Controller {
     FLEET_SETUP: "FleetSetup",
     AIR_UNIT_MOVE: "StrikeGroupSetup",
     INITIATIVE_ROLL: "Initiative Roll",
+    MIDWAY_GARRISON: "Midway Garrison Change",
     STRIKE_GROUP_MOVE: "StrikeGroupMove",
     TARGET_SELECTION_ROLL: "Target Selection Roll",
     TARGET_SELECTION: "Target Selection",
@@ -94,7 +95,7 @@ export default class Controller {
     this.targetMap.set(airUnit, target)
 
     const targets = Array.from(this.targetMap.values())
-    let carriers = [...new Set(targets)];
+    let carriers = [...new Set(targets)]
 
     GlobalGameState.carrierTarget1 = carriers[0]
 
@@ -110,8 +111,6 @@ export default class Controller {
   }
   removeAirUnitTarget(airUnit) {
     this.targetMap.delete(airUnit)
-
-
   }
   getAirUnitTarget(airUnit) {
     return this.targetMap.get(airUnit)
@@ -404,8 +403,6 @@ export default class Controller {
     // only return strike units attacking this carrier
 
     // filter target map on this carrier
-
-    console.log("TARGET MAP AT TIME OF EVENT->", this.targetMap)
     const x = new Map([...this.targetMap].filter(([_, v]) => v === carrierName))
     return Array.from(x.keys())
   }
@@ -1245,6 +1242,10 @@ export default class Controller {
         this.dieRollEventHandler.handlInitiativeDiceRollEvent(event)
         break
 
+      case Controller.EventTypes.MIDWAY_GARRISON:
+        this.dieRollEventHandler.handlStatusChangeEvent(event)
+        break
+
       case Controller.EventTypes.TARGET_SELECTION:
         this.selectionEventHandler.handleSelectTargetEvent(event)
         break
@@ -1258,6 +1259,10 @@ export default class Controller {
 
       case Controller.EventTypes.CARRIER_DAMAGE:
         this.damageHandler.handleCarrierDamageEvent(event)
+        break
+
+      case Controller.EventTypes.MIDWAY_DAMAGE:
+        this.damageHandler.handleMidwayDamageEvent(event)
         break
 
       case Controller.EventTypes.ALLOCATE_DAMAGE:

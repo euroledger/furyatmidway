@@ -273,8 +273,13 @@ export function moveCAPtoReturnBox(controller, capAirUnits, setAirUnitUpdate) {
       : GlobalUnitsModel.Side.US
 
   for (const capUnit of capAirUnits) {
+    const steps = capUnit.aircraftUnit.steps
+
+    if (steps === 0) {
+      continue
+    }
     const location = GlobalInit.controller.getAirUnitLocation(capUnit.name)
-    let update={}
+    let update = {}
 
     const parentCarrier = controller.getCarrierForAirUnit(capUnit.name)
     const tf = controller.getTaskForceForCarrier(parentCarrier, sideBeingAttacked)
@@ -285,14 +290,13 @@ export function moveCAPtoReturnBox(controller, capAirUnits, setAirUnitUpdate) {
     if (GlobalGameState.sideWithInitiative === GlobalUnitsModel.Side.US) {
       position1 = JapanAirBoxOffsets.find((box) => box.name === destBox)
     }
-    update.boxName=location.boxName
+    update.boxName = location.boxName
 
     const index = GlobalInit.controller.getFirstAvailableZone(destBox)
     update.position = position1.offsets[location.boxIndex]
     update.name = capUnit.name
     setAirUnitUpdate(update)
 
-    // const index = controller.getFirstAvailableZone(destBox)
     controller.viewEventHandler({
       type: Controller.EventTypes.AIR_UNIT_MOVE,
       data: {

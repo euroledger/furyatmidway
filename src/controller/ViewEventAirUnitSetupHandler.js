@@ -19,8 +19,8 @@ class ViewEventAirUnitSetupHandler {
     this.controller.addAirUnitToBox(name, index, counterData)
     let command = new MoveCommand(COMMAND_TYPE.MOVE_AIR_UNIT, counterData.longName, from, to)
     // console.log("Next free zone -> ", this.controller.getFirstAvailableZone(name))
-
     determineAllUnitsDeployedForCarrier(this.controller, side, counterData.carrier)
+
     GlobalGameState.log(`${command.toString()}`)
   }
 }

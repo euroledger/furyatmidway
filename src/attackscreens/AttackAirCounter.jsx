@@ -13,7 +13,6 @@ function AirAttackCounter({ controller, airUnit, index, myCarrier, myIdx, lefty,
     controller.setAirUnitTarget(airUnit, myCarrier)
 
     const map = controller.getTargetMap()
-    console.log("TARGET MAP =", map)
     // how many air units have been allocated to attack this carrier
     let size = controller.getTargetMapSizeForCarrier(myCarrier)
 

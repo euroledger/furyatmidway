@@ -15,6 +15,7 @@ function DamageSunkCounter({ counterData, markerUpdate }) {
     return
   }
 
+
   const airZones =
     markerUpdate.side === GlobalUnitsModel.Side.JAPAN
       ? JapanAirBoxOffsets.find((o) => o.name === markerUpdate.box)

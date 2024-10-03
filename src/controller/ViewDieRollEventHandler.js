@@ -4,6 +4,7 @@ import COMMAND_TYPE from "../commands/COMMAND_TYPE"
 import TargetStatusChange from "../commands/TargetStatusChange"
 import InitiativeStatusChange from "../commands/InitiativeStatusChange"
 import GlobalUnitsModel from "../model/GlobalUnitsModel"
+import TrackStatusChange from "../commands/TrackStatusChange"
 
 class ViewDieRollEventHandler {
   constructor(controller) {
@@ -21,8 +22,17 @@ class ViewDieRollEventHandler {
     command = new InitiativeStatusChange(COMMAND_TYPE.INITIATIVE_STATUS_CHANGE, GlobalGameState.sideWithInitiative)
     
     GlobalGameState.log(`${command.toString()}`)
-
   }
+
+  handlStatusChangeEvent(event) {
+    // event contains type and data
+    const { track, level } = event.data
+
+    const command = new TrackStatusChange(COMMAND_TYPE.TRACK_STATUS_CHANGE, track, level)
+    
+    GlobalGameState.log(`${command.toString()}`)
+  }
+
 
   handleTargetSelectionDiceRollEvent(event) {
     // event contains type and data

@@ -386,14 +386,21 @@ export default function handleAction({
     GlobalGameState.gamePhase =
       capSteps > 0 ? GlobalGameState.PHASE.CAP_DAMAGE_ALLOCATION : GlobalGameState.PHASE.ANTI_AIRCRAFT_FIRE
   } else if (GlobalGameState.gamePhase === GlobalGameState.PHASE.CAP_DAMAGE_ALLOCATION) {
-    GlobalGameState.gamePhase = GlobalGameState.PHASE.ESCORT_COUNTERATTACK
-
+    if (GlobalGameState.attackingStepsRemaining > 0) {
+      GlobalGameState.gamePhase = GlobalGameState.PHASE.ESCORT_COUNTERATTACK
+    } else {
+    GlobalGameState.gamePhase = GlobalGameState.PHASE.AIR_OPERATIONS
+    }
   } else if (GlobalGameState.gamePhase === GlobalGameState.PHASE.ESCORT_COUNTERATTACK) {
     if (GlobalGameState.fighterHits > 0) {
       GlobalGameState.gamePhase = GlobalGameState.PHASE.ESCORT_DAMAGE_ALLOCATION
     } else {
-      GlobalGameState.gamePhase = GlobalGameState.PHASE.ANTI_AIRCRAFT_FIRE
-    }
+      if (GlobalInit.controller.getAttackingStepsRemaining() > 0) {
+        GlobalGameState.gamePhase = GlobalGameState.PHASE.ANTI_AIRCRAFT_FIRE
+      } else {
+        GlobalGameState.gamePhase = GlobalGameState.PHASE.AIR_OPERATIONS
+      }
+    } 
   } else if (GlobalGameState.gamePhase === GlobalGameState.PHASE.ESCORT_DAMAGE_ALLOCATION) {
     if (GlobalGameState.attackingStepsRemaining > 0) {
       GlobalGameState.gamePhase = GlobalGameState.PHASE.ANTI_AIRCRAFT_FIRE
@@ -445,10 +452,8 @@ export default function handleAction({
       GlobalGameState.gamePhase = GlobalGameState.PHASE.AIR_OPERATIONS
     }
   } else if (GlobalGameState.gamePhase === GlobalGameState.PHASE.ATTACK_TARGET_SELECTION) {
-    console.log("GO TO AIR ATTACK BUDDY!")
     GlobalGameState.gamePhase = GlobalGameState.PHASE.AIR_ATTACK_1
   } else if (GlobalGameState.gamePhase === GlobalGameState.PHASE.AIR_ATTACK_1) {
-    console.log("GO TO ATTACK DAMAGE CARRIERS!")
     if (GlobalGameState.currentCarrierAttackTarget === GlobalUnitsModel.Carrier.MIDWAY) {
       GlobalGameState.gamePhase = GlobalGameState.PHASE.MIDWAY_DAMAGE_RESOLUTION
     } else {
@@ -472,7 +477,7 @@ export default function handleAction({
     const attackingSG = GlobalGameState.attackingStrikeGroup
     attackingSG.attacked = true
     setJapanStrikePanelEnabled(false)
-    setUsFleetRegions()
+    setUSMapRegions([])
     GlobalGameState.usFleetMoved = false
     GlobalGameState.sideWithInitiative=undefined
     GlobalGameState.dieRolls=[]

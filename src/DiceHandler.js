@@ -145,7 +145,7 @@ export function doMidwayDamage(controller, testRoll) {
     return -1
   }
   if (GlobalGameState.totalMidwayHits < 2) {
-    return doMidwayDamageRoll(controller, testRoll)
+    return doMidwayDamageRoll(controller, testRoll) 
   } else if (GlobalGameState.totalMidwayHits === 2) {
     return autoAllocateMidwayDamage(controller)
   }
@@ -177,19 +177,30 @@ export function doMidwayDamageRoll(controller, testRoll) {
   let roll = testRoll === undefined ? randomDice(1) : testRoll
 
   let box = -1
+  let damage = {
+    box0: false,
+    box1: false, 
+    box2: false, 
+    destroyed: false 
+  }
+  GlobalGameState.carrierDamageRoll = roll
   if (GlobalGameState.totalMidwayHits === 0) {
     // roll die: 1-2 box0, 3-4 box1, 5-6 box2
     if (roll == 1 || roll == 2) {
       GlobalGameState.midwayBox0Damaged = true
       box = 0
+      damage.box0 = true
     }
     if (roll == 3 || roll == 4) {
       GlobalGameState.midwayBox1Damaged = true
       box = 1
+      damage.box1 = true
     }
     if (roll == 5 || roll == 6) {
       GlobalGameState.midwayBox2Damaged = true
       box = 2
+      damage.box2 = true
+
     }
   } else if (GlobalGameState.totalMidwayHits === 1) {
     if (GlobalGameState.midwayBox0Damaged === true) {
@@ -197,36 +208,52 @@ export function doMidwayDamageRoll(controller, testRoll) {
       if (roll <= 3) {
         GlobalGameState.midwayBox1Damaged = true
         box = 1
+        damage.box1 = true
+
       }
       if (roll > 3) {
         GlobalGameState.midwayBox2Damaged = true
         box = 2
+        damage.box2 = true
+
       }
     } else if (GlobalGameState.midwayBox1Damaged === true) {
       // roll die: 1-3 box0, 4-6 box2
       if (roll <= 3) {
         GlobalGameState.midwayBox0Damaged = true
         box = 0
+        damage.box0 = true
+
       }
       if (roll > 3) {
         GlobalGameState.midwayBox2Damaged = true
         box = 2
+        damage.box2= true
+
       }
     } else if (GlobalGameState.midwayBox2Damaged === true) {
       // roll die: 1-3 box0, 4-6 box1
       if (roll <= 3) {
         GlobalGameState.midwayBox0Damaged = true
         box = 0
+        damage.box0 = true
+
       }
       if (roll > 3) {
         GlobalGameState.midwayBox1Damaged = true
         box = 1
+        damage.box1 = true
+
       }
     }
   }
+  GlobalGameState.damageThisAttack = damage
+
   GlobalGameState.totalMidwayHits++
   GlobalGameState.midwayHits--
   GlobalGameState.midwayGarrisonLevel--
+  GlobalGameState.damageThisAttack = damage
+  doCarrierDamageEvent(GlobalInit.controller)
 
   moveMidwayAirUnitsToEliminated(controller, box)
   return box
@@ -236,9 +263,16 @@ export function autoAllocateMidwayDamage(controller) {
   GlobalGameState.SearchValue.US_MIDWAY = 0 // base destroyed
 
   let box = -1
+  let damage = {
+    box0: false,
+    box1: false, 
+    box2: false, 
+    destroyed: false 
+  }
   if (GlobalGameState.midwayBox0Damaged === false) {
     GlobalGameState.midwayBox0Damaged = true
     box = 0
+    damage.box0 = true
     moveMidwayAirUnitsToEliminated(controller, box, true)
     GlobalGameState.midwayGarrisonLevel--
     GlobalGameState.totalMidwayHits++
@@ -246,6 +280,7 @@ export function autoAllocateMidwayDamage(controller) {
   if (GlobalGameState.midwayBox1Damaged === false) {
     GlobalGameState.midwayBox1Damaged = true
     box = 1
+    damage.box1 = true
     moveMidwayAirUnitsToEliminated(controller, box, true)
     GlobalGameState.midwayGarrisonLevel--
     GlobalGameState.totalMidwayHits++
@@ -253,11 +288,23 @@ export function autoAllocateMidwayDamage(controller) {
   if (GlobalGameState.midwayBox2Damaged === false) {
     GlobalGameState.midwayBox2Damaged = true
     box = 2
+    damage.box2 = true
     moveMidwayAirUnitsToEliminated(controller, box, true)
     GlobalGameState.midwayGarrisonLevel--
     GlobalGameState.totalMidwayHits++
+  }if (GlobalGameState.totalMidwayHits >= 3) {
+    damage.destroyed = true
+    damage.box0 = false
+    damage.box1= false
+    damage.box2 = false
   }
-  return box
+  GlobalGameState.damageThisAttack = damage
+  if (GlobalGameState.midwayHits > 0) {
+    doCarrierDamageEvent(GlobalInit.controller)
+    GlobalGameState.midwayHits = 0
+  }
+
+  return damage
 }
 
 export function autoAllocateDamage(controller) {
@@ -525,9 +572,15 @@ export function doAttackFireRolls(controller, testRolls) {
 
   if (GlobalGameState.currentCarrierAttackTarget === GlobalUnitsModel.Carrier.MIDWAY) {
     GlobalGameState.midwayHits = hits
+    GlobalGameState.midwayHitsThisAttack = hits
 
     // QUACK REMOVE TEESTING ONLY
-    // GlobalGameState.midwayHits = 3
+    GlobalGameState.dieRolls = rolls
+    doAttackResolutionEvent(controller, hits)
+
+    // GlobalGameState.midwayHits = 2
+    // GlobalGameState.midwayHitsThisAttack = 2
+
   } else {
     GlobalGameState.carrierAttackHits = hits
     GlobalGameState.carrierAttackHitsThisAttack = hits
@@ -630,9 +683,6 @@ export function doAttackSelectionEvent(controller) {
   const carrier1Attackers = controller.getStrikeUnitsAttackingNamedCarrier(GlobalGameState.carrierTarget1)
   const carrier2Attackers = controller.getStrikeUnitsAttackingNamedCarrier(GlobalGameState.carrierTarget2)
 
-  console.log("carrier1 attackers =", carrier1Attackers)
-  console.log("carrier2 attackers =", carrier2Attackers)
-
   controller.viewEventHandler({
     type: Controller.EventTypes.CARRIER_TARGET_SELECTION,
     data: {
@@ -658,15 +708,37 @@ export function doAttackResolutionEvent(controller, hits) {
 }
 
 export function doCarrierDamageEvent(controller) {
-  if (GlobalGameState.carrierAttackHitsThisAttack === 0) {
-    return
-  }
+
   const sideBeingAttacked =
     GlobalGameState.sideWithInitiative === GlobalUnitsModel.Side.US
       ? GlobalUnitsModel.Side.JAPAN
       : GlobalUnitsModel.Side.US
   if (GlobalGameState.currentCarrierAttackTarget === GlobalUnitsModel.Carrier.MIDWAY) {
+
+    if (GlobalGameState.midwayHitsThisAttack === 0) {
+      return
+    }
+    controller.viewEventHandler({
+      type: Controller.EventTypes.MIDWAY_DAMAGE,
+      data: {
+        target: GlobalGameState.currentCarrierAttackTarget,
+        side: sideBeingAttacked,
+        roll: GlobalGameState.carrierDamageRoll,
+        damage: GlobalGameState.damageThisAttack,
+      },
+    })   
+
+    controller.viewEventHandler({
+      type: Controller.EventTypes.MIDWAY_GARRISON,
+      data: {
+        track: "Midway Garrison",
+        level: GlobalGameState.midwayGarrisonLevel
+      },
+    })   
   } else {
+    if (GlobalGameState.carrierAttackHitsThisAttack === 0) {
+      return
+    }
     controller.viewEventHandler({
       type: Controller.EventTypes.CARRIER_DAMAGE,
       data: {
@@ -750,6 +822,10 @@ export function doCAP(controller, capAirUnits, fightersPresent, testRolls) {
     }
   }
   GlobalGameState.dieRolls = rolls
+
+  // QUACK TESTING PUT THIS BACK
+  // GlobalGameState.capHits = 4
+
   GlobalGameState.capHits = hits
 }
 

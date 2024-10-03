@@ -334,7 +334,6 @@ describe("Controller tests", () => {
 
     // FIRST HIT
     let boxDamaged = doMidwayDamage(controller, 3)
-
     expect(boxDamaged).toEqual(1)
     expect(GlobalGameState.midwayGarrisonLevel).toEqual(5)
     expect(GlobalGameState.totalMidwayHits).toEqual(1)
@@ -362,8 +361,8 @@ describe("Controller tests", () => {
     hits = doAttackFireRolls(controller, dieRolls)
     expect(hits).toEqual(1)
 
-    boxDamaged = doMidwayDamage(controller) // no roll needed - auto allocate third hit to box 2
-    expect(boxDamaged).toEqual(2)
+    const damage = doMidwayDamage(controller) // no roll needed - auto allocate third hit to box 2
+    expect(damage.destroyed).toEqual(true)
     expect(GlobalGameState.midwayGarrisonLevel).toEqual(3)
     expect(GlobalGameState.totalMidwayHits).toEqual(3)
     expect(GlobalGameState.SearchValue.US_MIDWAY).toEqual(0) // base destroyed
