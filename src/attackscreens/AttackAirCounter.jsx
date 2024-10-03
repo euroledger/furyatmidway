@@ -2,19 +2,38 @@ import { React, useState } from "react"
 import GlobalGameState from "../model/GlobalGameState"
 import GlobalUnitsModel from "../model/GlobalUnitsModel"
 
-function AirAttackCounter({ controller, airUnit, index, myCarrier, myIdx, lefty, setAttackTargetsSelected }) {
-  
-  const onDrag = () => {
-  }
+function AirAttackCounter({
+  controller,
+  airUnit,
+  index,
+  myCarrier,
+  myIdx,
+  lefty,
+  setAttackTargetsSelected,
+  attackAirCounterUpdate,
+}) {
+  const onDrag = () => {}
 
-  const handleDropUS = (airUnit) => {
+  const leftStr = 40 + index * 10
+  let l = "" + leftStr + "%"
+
+  // if (GlobalGameState.sideWithInitiative === GlobalUnitsModel.Side.JAPAN) {
+  l = "" + lefty + "%"
+  // }
+  const [position, setPosition] = useState({
+    left: l,
+    top: "10%",
+  })
+
+  const [uuid, setUUid] = useState()
+
+  const setUSAttackAirUnit = (airUnit, carrier, index) => {
     // if unit was previously assigned the other carrier - remove from map
     controller.removeAirUnitTarget(airUnit)
-    controller.setAirUnitTarget(airUnit, myCarrier)
+    controller.setAirUnitTarget(airUnit, carrier)
 
-    const map = controller.getTargetMap()
     // how many air units have been allocated to attack this carrier
-    let size = controller.getTargetMapSizeForCarrier(myCarrier)
+    let size = controller.getTargetMapSizeForCarrier(carrier)
 
     let i = controller.getTargetMapSize()
     let j = controller.getAttackingStrikeUnits(true).length
@@ -22,17 +41,20 @@ function AirAttackCounter({ controller, airUnit, index, myCarrier, myIdx, lefty,
     if (i == j) {
       const targets = controller.getAttackTargets()
       GlobalGameState.carrierTarget1 = targets[0]
-      if (targets.length=== 2) {
+      if (targets.length === 2) {
         GlobalGameState.carrierTarget2 = targets[1]
       }
       // all units allocated a target
       setAttackTargetsSelected(() => true)
     }
 
+
+
+
     const top = size === 1 ? "57%" : "52%"
     let left
     // idx is carrier 1 or 2
-    if (myIdx === 1) {
+    if (index === 1) {
       left = size === 1 ? "10.4%" : "13.4%"
     } else {
       left = size === 1 ? "75.4%" : "78.4%"
@@ -46,35 +68,33 @@ function AirAttackCounter({ controller, airUnit, index, myCarrier, myIdx, lefty,
       setZindex(() => zIndex + 1)
     }
   }
-
-  const handleDropJapan = (airUnit) => {
+  const setJapanAttackAirUnit = (airUnit, carrier, index) => {
     controller.removeAirUnitTarget(airUnit)
-    controller.setAirUnitTarget(airUnit, myCarrier)
+    controller.setAirUnitTarget(airUnit, carrier)
     // how many air units have been allocated to attack this carrier
-    let size = controller.getTargetMapSizeForCarrier(myCarrier)
+    let size = controller.getTargetMapSizeForCarrier(carrier)
 
     let i = controller.getTargetMapSize()
     // let j = controller.getAttackingStrikeUnitsTEST(GlobalUnitsModel.TaskForce.TASK_FORCE_16).length
     let j = controller.getAttackingStrikeUnits(true).length
 
     if (i == j) {
-
       const targets = controller.getAttackTargets()
       GlobalGameState.carrierTarget1 = targets[0]
-      if (targets.length=== 2) {
+      if (targets.length === 2) {
         GlobalGameState.carrierTarget2 = targets[1]
       }
       // all units allocated a target
       setAttackTargetsSelected(() => true)
     }
-    const toppy = 64 - (size * 2)
+    const toppy = 64 - size * 2
     const top = "" + toppy + "%"
 
     let left, leftplop
-    if (myIdx === 1) {
-      leftplop = 7.4 + (1 * size)
+    if (index === 1) {
+      leftplop = 7.4 + 1 * size
     } else {
-      leftplop = 73 + (1 * size)
+      leftplop = 73 + 1 * size
     }
     left = "" + leftplop + "%"
 
@@ -83,9 +103,37 @@ function AirAttackCounter({ controller, airUnit, index, myCarrier, myIdx, lefty,
       top: top,
     }))
     if (size > 1) {
-      setZindex(() => (size * 10))
+      setZindex(() => size * 10)
     }
   }
+  if (
+    airUnit.name === attackAirCounterUpdate.unit.name &&
+    myCarrier !== attackAirCounterUpdate.carrier &&
+    myIdx !== attackAirCounterUpdate && 
+    uuid !== attackAirCounterUpdate.uuid
+  ) {
+    // console.log("I am ", airUnit.name, " -> ATTACK AIR COUNTER UPDATE = ", attackAirCounterUpdate)
+
+    if (attackAirCounterUpdate.side === GlobalUnitsModel.Side.US) {
+      setUSAttackAirUnit(attackAirCounterUpdate.unit, attackAirCounterUpdate.carrier, attackAirCounterUpdate.id)
+    } else {
+      setJapanAttackAirUnit(attackAirCounterUpdate.unit, attackAirCounterUpdate.carrier, attackAirCounterUpdate.id)
+    }
+    setUUid(attackAirCounterUpdate.uuid)
+  }
+
+
+
+  const handleDropUS = (airUnit) => {
+    setUSAttackAirUnit(airUnit, myCarrier, myIdx)
+  }
+
+
+
+  const handleDropJapan = (airUnit) => {
+    setJapanAttackAirUnit(airUnit, myCarrier, myIdx)
+  }
+
   const handleDrop = (e, airUnit) => {
     if (GlobalGameState.sideWithInitiative === GlobalUnitsModel.Side.US) {
       handleDropUS(airUnit)
@@ -93,16 +141,7 @@ function AirAttackCounter({ controller, airUnit, index, myCarrier, myIdx, lefty,
       handleDropJapan(airUnit)
     }
   }
-  const leftStr = 40 + index * 10
-  let l = "" + leftStr + "%"
-
-  // if (GlobalGameState.sideWithInitiative === GlobalUnitsModel.Side.JAPAN) {
-    l = "" + lefty + "%"
-  // }
-  const [position, setPosition] = useState({
-    left: l,
-    top: "10%",
-  })
+ 
 
   const [zIndex, setZindex] = useState(10)
   return (

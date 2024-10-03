@@ -1,18 +1,35 @@
-import { React } from "react"
+import { React, useEffect, useState, createRef} from "react"
 import "./cap.css"
 import GlobalUnitsModel from "../model/GlobalUnitsModel"
 import GlobalGameState from "../model/GlobalGameState"
 
 export function CAPHeaders({ controller, setCapAirUnits, capSteps, setCapSteps }) {
+  const [elRefs, setElRefs] = useState([])
   const sideBeingAttacked =
     GlobalGameState.sideWithInitiative === GlobalUnitsModel.Side.US
       ? GlobalUnitsModel.Side.JAPAN
       : GlobalUnitsModel.Side.US
 
-  const msg = "Target For Air Attack:"
-
   const capBox = controller.getCAPBoxForTaskForce(GlobalGameState.taskForceTarget, sideBeingAttacked)
   const capUnits = controller.getAllAirUnitsInBox(capBox)
+  const arrLength = capUnits.length
+
+  useEffect(() => {
+    // add or remove refs
+    setElRefs((elRefs) =>
+      Array(arrLength)
+        .fill()
+        .map((_, i) => elRefs[i] || createRef()),
+    );
+  }, []);
+
+  useEffect(() => {
+    const myRef = elRefs[GlobalGameState.testCapSelection]
+    if (myRef !== undefined) {
+      myRef.current.click(myRef.current)
+    }
+  }, [GlobalGameState.testCapSelection])
+  const msg = "Target For Air Attack:"
 
   const bg =
     GlobalGameState.sideWithInitiative === GlobalUnitsModel.Side.US
@@ -31,6 +48,8 @@ export function CAPHeaders({ controller, setCapAirUnits, capSteps, setCapSteps }
     GlobalGameState.updateGlobalState()
   }
   const attackers = controller.getAttackingStrikeUnits(false)
+
+
   const strikeCounters = attackers.map((airUnit) => {
     return (
       <div>
@@ -46,11 +65,13 @@ export function CAPHeaders({ controller, setCapAirUnits, capSteps, setCapSteps }
       </div>
     )
   })
-  const airCounters = capUnits.map((airUnit) => {
+  const airCounters = capUnits.map((airUnit, i) => {
     const outline = airUnit.aircraftUnit.intercepting ? "5px solid rgb(184,29,29)" : ""
+    const id = "bollocks" + i
     return (
       <div>
         <input
+          ref={elRefs[i]}
           onClick={() => handleClick(airUnit)}
           type="image"
           src={airUnit.image}
@@ -62,7 +83,7 @@ export function CAPHeaders({ controller, setCapAirUnits, capSteps, setCapSteps }
             marginRight: "55px",
             outline: outline,
           }}
-          id="bollocks"
+          id={id}
         />
         <p
           style={{

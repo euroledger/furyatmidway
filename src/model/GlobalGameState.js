@@ -188,5 +188,7 @@ export default class GlobalGameState {
   static testTarget = undefined
   static rollDice = undefined
   static closePanel = undefined
-
+  static testCapSelection = undefined
+  static testStepLossSelection = undefined
+  static testCarrierSelection = undefined
 }

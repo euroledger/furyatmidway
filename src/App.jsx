@@ -138,12 +138,23 @@ export function App() {
   const [fightersPresent, setFightersPresent] = useState(true)
 
   const [airUnitUpdate, setAirUnitUpdate] = useState({
-    name: "",
+    unit: {},
     position: {},
     boxName: "",
     index: -1,
   })
 
+  const [attackAirCounterUpdate, setAttackAirCounterUpdate] = useState({
+    unit: {
+      name: ""
+    },
+    carrier: "",
+    idx: -1,
+    side: "",
+    uuid: 0
+  })
+
+  
   const [damageMarkerUpdate, setDamageMarkerUpdate] = useState({
     name: "",
     box: "",
@@ -286,11 +297,7 @@ export function App() {
     }
   }, [GlobalGameState.gamePhase])
 
-  useEffect(() => {
-    if (GlobalGameState.gamePhase === GlobalGameState.PHASE.ATTACK_TARGET_SELECTION) {
-      setAttackTargetPanelShow(true)
-    }
-  }, [GlobalGameState.gamePhase])
+
 
   const onDrag = () => {
     setIsMoveable(true)
@@ -440,6 +447,7 @@ export function App() {
       e,
       setTestClicked,
       setAirUnitUpdate,
+      setAttackAirCounterUpdate,
       setFleetUnitUpdate,
       setStrikeGroupUpdate,
       nextAction,
@@ -468,7 +476,6 @@ export function App() {
     } else if (GlobalGameState.gamePhase === GlobalGameState.PHASE.AIR_SEARCH) {
       image = "/images/bothflags.jpg"
     }
-
     const disabled =
       !GlobalGameState.phaseCompleted ||
       (GlobalGameState.gamePhase === GlobalGameState.PHASE.JAPAN_FLEET_MOVEMENT && !GlobalGameState.jpFleetPlaced) ||
@@ -737,6 +744,7 @@ export function App() {
       <AttackTargetHeaders
         controller={GlobalInit.controller}
         setAttackTargetsSelected={setAttackTargetsSelected}
+        attackAirCounterUpdate={attackAirCounterUpdate}
       ></AttackTargetHeaders>
     </>
   )
@@ -869,6 +877,7 @@ export function App() {
 
   function doMidwayRoll() {
     const box = doMidwayDamage(GlobalInit.controller)
+
     sendMidwayDamageUpdates(GlobalInit.controller, box, setDamageMarkerUpdate)
   }
 
@@ -994,7 +1003,7 @@ export function App() {
         </p>
       </AlertPanel>
       <AlertPanel
-        show={!testClicked && searchValuesAlertShow}
+        show={searchValuesAlertShow}
         size={4}
         onHide={(e) => {
           setSearchValuesAlertShow(false)
@@ -1075,7 +1084,7 @@ export function App() {
         disabled={true}
       ></DicePanel>
       <DicePanel
-        show={!testClicked && attackTargetPanelShow}
+        show={attackTargetPanelShow}
         headerText="Attack Target Selection"
         numDice={0}
         headers={attackTargetHeaders}

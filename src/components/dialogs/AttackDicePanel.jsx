@@ -1,3 +1,4 @@
+import { useEffect, useRef } from "react"
 import Modal from "react-bootstrap/Modal"
 import Button from "react-bootstrap/Button"
 import GlobalGameState from "../../model/GlobalGameState"
@@ -87,6 +88,25 @@ function AttackDicePanel(props) {
     ...rest
   } = props
 
+  const button1Ref = useRef(null)
+  const button2Ref = useRef(null)
+
+  useEffect(() => {
+    if (button1Ref.current) {
+      if (GlobalGameState.rollDice === true) {
+        button1Ref.current.click()
+      }
+    }
+  }, [GlobalGameState.rollDice])
+
+  useEffect(() => {
+    if (button2Ref.current) {
+      if (GlobalGameState.closePanel === true) {
+        button2Ref.current.click()
+      }
+    }
+  }, [GlobalGameState.closePanel])
+
   const bg = "#293a4b"
   const closey = closeButtonStr ?? "Close"
   const msg = "Target For Air Attack:"
@@ -127,7 +147,7 @@ function AttackDicePanel(props) {
     if (combinedAttack) {
       torpDRM = "Combined attack: +1 (Torpedo Bomber) DRM"
     }
-  } 
+  }
 
   return (
     <Modal
@@ -228,11 +248,12 @@ function AttackDicePanel(props) {
       </Modal.Body>
 
       <Modal.Footer style={{ background: `${bg}`, color: "black" }}>
-        <Button disabled={diceButtonDisabled} onClick={() => doRoll()}>
+        <Button ref={button1Ref} disabled={diceButtonDisabled} onClick={() => doRoll()}>
           {diceButtonStr}
         </Button>
 
         <Button
+          ref={button2Ref}
           disabled={closeButtonDisabled}
           onClick={(e) => {
             if (nextState) {

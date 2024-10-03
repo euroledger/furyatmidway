@@ -29,16 +29,6 @@ export function EscortHeaders({ controller, setEscortSteps }) {
   if (fighters.length === 0) {
     NoFightersMsg = "No Escort Fighters. Click Close to move on to next phase"
   }
-  const handleClick = (airUnit) => {
-    // if (airUnit.aircraftUnit.intercepting) {
-    //   setCapSteps(() => capSteps - airUnit.aircraftUnit.steps)
-    // } else {
-    //   setCapSteps(() => capSteps + airUnit.aircraftUnit.steps)
-    // }
-    // airUnit.aircraftUnit.intercepting = !airUnit.aircraftUnit.intercepting
-    // setCapAirUnits(() => controller.getAllCAPDefenders(sideBeingAttacked))
-    // GlobalGameState.updateGlobalState()
-  }
 
   const airCounters = fighters.map((airUnit) => {
     const outline = airUnit.aircraftUnit.intercepting ? "5px solid rgb(184,29,29)" : ""
@@ -50,16 +40,16 @@ export function EscortHeaders({ controller, setEscortSteps }) {
           style={{
             width: "80px",
             height: "80px",
-            marginLeft: "20px",
+            marginLeft: "40px",
 
-            marginRight: "55px",
+            marginRight: "45px",
             outline: outline,
           }}
           id="bollocks"
         />
         <p
           style={{
-            marginLeft: "5px",
+            marginLeft: "15px",
             color: "white",
           }}
         >

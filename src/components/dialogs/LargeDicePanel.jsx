@@ -1,3 +1,5 @@
+import { useEffect, useRef } from "react"
+
 import Modal from "react-bootstrap/Modal"
 import Col from "react-bootstrap/Col"
 import Row from "react-bootstrap/Row"
@@ -26,6 +28,24 @@ function LargeDicePanel(props) {
     ...rest
   } = props
 
+  const button1Ref = useRef(null)
+  const button2Ref = useRef(null)
+
+  useEffect(() => {
+    if (button1Ref.current) {
+      if (GlobalGameState.rollDice === true) {
+        button1Ref.current.click()
+      }
+    }
+  }, [GlobalGameState.rollDice])
+
+  useEffect(() => {
+    if (button2Ref.current) {
+      if (GlobalGameState.closePanel === true) {
+        button2Ref.current.click()
+      }
+    }
+  }, [GlobalGameState.closePanel])
   const bg = "#293a4b"
   const closey = closeButtonStr ?? "Close"
 
@@ -134,11 +154,12 @@ function LargeDicePanel(props) {
 
       <Modal.Footer style={{ background: `${bg}`, color: "black" }}>
         {numDice > 0 && (
-          <Button disabled={diceButtonDisabled} onClick={() => doRoll()}>
+          <Button  ref={button1Ref} disabled={diceButtonDisabled} onClick={() => doRoll()}>
             {diceButtonStr}
           </Button>
         )}
         <Button
+         ref={button2Ref} 
           disabled={closeButtonDisabled}
           onClick={(e) => {
             if (nextState) {

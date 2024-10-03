@@ -1,6 +1,5 @@
-import { React } from "react"
+import { React, useEffect, useState, createRef } from "react"
 import "./cap.css"
-import GlobalUnitsModel from "../model/GlobalUnitsModel"
 import GlobalGameState from "../model/GlobalGameState"
 import { doDamageAllocation } from "../DiceHandler"
 
@@ -8,18 +7,34 @@ import { doDamageAllocation } from "../DiceHandler"
 
 // @TODO extend this component to allow damage to CAP units (in response to fighter escort counterattack)
 export function DamageHeaders({ controller, eliminatedSteps, setEliminatedSteps, setStepsLeft, capAirUnits }) {
+  const [elRefs, setElRefs] = useState([])
+
   const msg = "Number of Hits to Allocate:"
 
   let unitsInGroup = capAirUnits ?? controller.getAttackingStrikeUnits()
-
-
   if (GlobalGameState.gamePhase === GlobalGameState.PHASE.AAA_DAMAGE_ALLOCATION) {
     // filter out fighters as AA hits must be allocated to attack aircraft
     unitsInGroup = controller.getAttackingStrikeUnits(true)
   }
+  const arrLength = unitsInGroup.length
+  useEffect(() => {
+    // add or remove refs
+    setElRefs((elRefs) =>
+      Array(arrLength)
+        .fill()
+        .map((_, i) => elRefs[i] || createRef())
+    )
+  }, [])
+
+  useEffect(() => {
+    const myRef = elRefs[GlobalGameState.testStepLossSelection]
+    if (myRef !== undefined) {
+      myRef.current.click(myRef.current)
+    }
+  }, [GlobalGameState.testStepLossSelection])
 
   let totalSteps = 0
-  const airCounters = unitsInGroup.map((airUnit) => {
+  const airCounters = unitsInGroup.map((airUnit, i) => {
     if (airUnit.aircraftUnit.steps === 0) {
       setStepsLeft(0)
       if (!capAirUnits) GlobalGameState.attackingStepsRemaining = 0
@@ -30,6 +45,7 @@ export function DamageHeaders({ controller, eliminatedSteps, setEliminatedSteps,
     return (
       <div>
         <input
+          ref={elRefs[i]}
           onClick={() => handleClick(airUnit)}
           type="image"
           src={airUnit.image}

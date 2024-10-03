@@ -53,9 +53,6 @@ class ViewEventStrikeGroupMoveHandler {
     } else {
       counterData.moved = moved
     }
-
-    // check if all stike groups moved - can that be done here?
-    GlobalGameState.phaseCompleted = true
   }
 }
 export default ViewEventStrikeGroupMoveHandler

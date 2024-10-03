@@ -1,3 +1,4 @@
+import { useEffect, useRef } from "react"
 import { React, useState } from "react"
 import Modal from "react-bootstrap/Modal"
 import Button from "react-bootstrap/Button"
@@ -59,10 +60,27 @@ function CarrierDamageDicePanel(props) {
     doRoll,
     closeButtonStr,
     closeButtonCallback,
-    setDamageMarkerUpdate, 
+    setDamageMarkerUpdate,
     ...rest
   } = props
+  const button1Ref = useRef(null)
+  const button2Ref = useRef(null)
 
+  useEffect(() => {
+    if (button1Ref.current) {
+      if (GlobalGameState.rollDice === true) {
+        button1Ref.current.click()
+      }
+    }
+  }, [GlobalGameState.rollDice])
+
+  useEffect(() => {
+    if (button2Ref.current) {
+      if (GlobalGameState.closePanel === true) {
+        button2Ref.current.click()
+      }
+    }
+  }, [GlobalGameState.closePanel])
   const [keepDice, setKeepDice] = useState(false)
 
   let showDicePanel = true
@@ -76,7 +94,6 @@ function CarrierDamageDicePanel(props) {
   let myBigBollocks = "m-width" + numDice
   let myBigMargin = 0
 
-
   // 1. Get the current hits for this carrier
 
   // 2. If current hits is 0 and carrierAttackHits is 1
@@ -85,8 +102,8 @@ function CarrierDamageDicePanel(props) {
   // 3. autoAllocateDamage
 
   const carrierHits = controller.getCarrierHits(GlobalGameState.currentCarrierAttackTarget)
-  
- if ((carrierHits > 0 || GlobalGameState.carrierAttackHits > 1) && GlobalGameState.TESTING !== true) {
+
+  if ((carrierHits > 0 || GlobalGameState.carrierAttackHits > 1) && GlobalGameState.TESTING !== true) {
     const damage = autoAllocateDamage(controller)
     GlobalGameState.carrierAttackHits = 0
     sendDamageUpdates(controller, damage, setDamageMarkerUpdate)
@@ -111,7 +128,6 @@ function CarrierDamageDicePanel(props) {
   }
 
   const msg2 = "Total Hits to Allocate:"
-
 
   const diceButtonStr = numDice > 1 ? "Roll Dice" : "Roll Die"
   return (
@@ -166,7 +182,7 @@ function CarrierDamageDicePanel(props) {
               <SingleCarrier controller={controller} attackResolved={attackResolved}></SingleCarrier>
             </div>
           </div>
-          
+
           {isSunk && (
             <div
               style={{
@@ -242,11 +258,12 @@ function CarrierDamageDicePanel(props) {
 
       <Modal.Footer style={{ background: `${bg}`, color: "black" }}>
         {numDice > 0 && (
-          <Button disabled={diceButtonDisabled} onClick={() => doRoll()}>
+          <Button ref={button1Ref} disabled={diceButtonDisabled} onClick={() => doRoll()}>
             {diceButtonStr}
           </Button>
         )}
         <Button
+          ref={button2Ref}
           disabled={closeButtonDisabled}
           onClick={(e) => {
             if (nextState) {

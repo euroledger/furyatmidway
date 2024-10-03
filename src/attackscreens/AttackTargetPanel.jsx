@@ -5,7 +5,7 @@ import AirAttackCounter from "./AttackAirCounter"
 import { CarrierTarget } from "./CarrierTarget"
 import "./attackpanel.css"
 
-export function AttackTargetHeaders({ controller, setAttackTargetsSelected }) {
+export function AttackTargetHeaders({ controller, setAttackTargetsSelected, attackAirCounterUpdate }) {
   const [buttonsDisabled, setButtonsDisabled] = useState(false)
   const [myCarrier, setMyCarrier] = useState("")
   const [myIdx, setMyIdx] = useState("")
@@ -36,6 +36,7 @@ export function AttackTargetHeaders({ controller, setAttackTargetsSelected }) {
         myIdx={myIdx}
         lefty={left}
         setAttackTargetsSelected={setAttackTargetsSelected}
+        attackAirCounterUpdate={attackAirCounterUpdate}
       ></AirAttackCounter>
     )
   })

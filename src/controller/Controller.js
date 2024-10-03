@@ -120,8 +120,6 @@ export default class Controller {
     const array = Array.from(this.targetMap.values())
 
     const set = [...new Set(array)]
-    // console.log(set) // [1, 2, 3, 4, 5]
-
     return set
   }
 
