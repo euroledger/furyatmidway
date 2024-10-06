@@ -78,13 +78,19 @@ function AirCounter({ getAirBox, setAirBox, counterData, side }) {
       GlobalGameState.gamePhase === GlobalGameState.PHASE.ANTI_AIRCRAFT_FIRE ||
       GlobalGameState.gamePhase === GlobalGameState.PHASE.ESCORT_COUNTERATTACK ||
       GlobalGameState.gamePhase === GlobalGameState.PHASE.ESCORT_DAMAGE_ALLOCATION ||
-      GlobalGameState.gamePhase === GlobalGameState.PHASE.ATTACK_TARGET_SELECTION
+      GlobalGameState.gamePhase === GlobalGameState.PHASE.ATTACK_TARGET_SELECTION ||
+      GlobalGameState.gamePhase === GlobalGameState.PHASE.AIR_SEARCH
     ) {
       if (
         GlobalGameState.gamePhase === GlobalGameState.PHASE.ATTACK_TARGET_SELECTION &&
         airUnitUpdate.boxName.includes("CAP")
       ) {
         // CAP moves done in air unit handler
+        return
+      }
+
+      if (GlobalGameState.gamePhase === GlobalGameState.PHASE.AIR_SEARCH) {
+        // return moves done in air operations handler
         return
       }
       controller.viewEventHandler({

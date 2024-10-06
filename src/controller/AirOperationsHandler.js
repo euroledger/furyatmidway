@@ -195,13 +195,31 @@ export function doReturn2(controller, name, side) {
     controller.setValidAirUnitDestinations(name, boxArray)
   }
 }
-export function doStrikeBox(controller, name) {
+export function doStrikeBox(controller, name, side, box) {
   // For now
   // Once a unit has moved into the strike box
   // disallow further moves
   controller.setValidAirUnitDestinations(name, new Array())
 
-  // @TODO once strike has finished, set possible return boxes as destinations
+  // Once strike has finished, set possible return boxes as destinations
+  // some tests do not have strike groups set up, no need for this function
+  if (!GlobalGameState.attackingStrikeGroup) {
+    return
+  }
+  const strikeGroup = GlobalGameState.attackingStrikeGroup
+  const unit = controller.getAirUnitForName(name)
+  const tf = controller.getTaskForceForCarrier(unit.carrier)
+
+  if (strikeGroup.attacked && strikeGroup.turnmoved === strikeGroup.turnattacked) {
+    // GOTO RETURN 1 BOX
+    const return1Box = controller.getReturn1AirBoxForNamedTaskForce(side, tf)
+    controller.setValidAirUnitDestinations(name, return1Box)
+  } else if (strikeGroup.attacked && strikeGroup.turnmoved !== strikeGroup.turnattacked) {
+    // GOTO RETURN 2 BOX
+    const return2Box = controller.getReturn2AirBoxForNamedTaskForce(side, tf)
+    controller.setValidAirUnitDestinations(name, return2Box)
+  }
+
 }
 
 export function doFlightDeck(controller, name, side) {
@@ -212,7 +230,7 @@ export function doFlightDeck(controller, name, side) {
 
   const unit = controller.getAirUnitForName(name)
 
-  //  i) CAP Box (if fighter)
+  //  i) CAP Box (if fighter) 
   if (!unit.aircraftUnit.attack) {
     const capBox = controller.getCapBoxForNamedCarrier(carrierName, side)
     destinationsArray.push(capBox)
@@ -266,6 +284,61 @@ export function doCapReturn(controller, name, side) {
   return destinationsArray
 }
 
+export function delay(ms) {
+  return new Promise((resolve) => {
+    setTimeout(resolve, ms)
+  })
+}
+export async function moveAirUnitToReturnBox(controller, strikeGroup, unit, side, setAirUnitUpdate) {
+  const tf = controller.getTaskForceForCarrier(unit.carrier)
+
+  let toBox
+  if (strikeGroup.attacked && strikeGroup.turnmoved === strikeGroup.turnattacked) {
+    // GOTO RETURN 1 BOX
+    toBox = controller.getReturn1AirBoxForNamedTaskForce(side, tf)
+  } else {
+    // GOTO RETURN 2 BOX
+    toBox = controller.getReturn2AirBoxForNamedTaskForce(side, tf)
+  }
+
+  let update = {}
+
+  const index = controller.getFirstAvailableZone(toBox)
+  let position1 = USAirBoxOffsets.find((box) => box.name === toBox)
+
+  if (side === GlobalUnitsModel.Side.JAPAN) {
+    position1 = JapanAirBoxOffsets.find((box) => box.name === toBox)
+  }
+  update.boxName = toBox
+  update.position = position1.offsets[index]
+  update.name = unit.name
+  setAirUnitUpdate(update)
+  await delay(1)
+
+  controller.viewEventHandler({
+    type: Controller.EventTypes.AIR_UNIT_MOVE,
+    data: {
+      name: toBox,
+      counterData: unit,
+      index,
+      side: GlobalGameState.sideWithInitiative,
+      loading: false,
+    },
+  })
+}
+
+export async function moveStrikeUnitsToReturnBox(side, setAirUnitUpdate) {
+  const strikeGroups = GlobalInit.controller.getAllStrikeGroups(side)
+
+  for (const group of strikeGroups) {
+    const unitsInGroup = GlobalInit.controller.getAirUnitsInStrikeGroups(group.box)
+    for (const unit of unitsInGroup) {
+      await moveAirUnitToReturnBox(GlobalInit.controller, group, unit, side, setAirUnitUpdate)
+    }
+  }
+  GlobalInit.controller.setAllUnitsToNotMoved()
+
+}
 export function moveCAPtoReturnBox(controller, capAirUnits, setAirUnitUpdate) {
   const sideBeingAttacked =
     GlobalGameState.sideWithInitiative === GlobalUnitsModel.Side.US
@@ -296,6 +369,7 @@ export function moveCAPtoReturnBox(controller, capAirUnits, setAirUnitUpdate) {
     update.position = position1.offsets[location.boxIndex]
     update.name = capUnit.name
     setAirUnitUpdate(update)
+    
 
     controller.viewEventHandler({
       type: Controller.EventTypes.AIR_UNIT_MOVE,
@@ -680,7 +754,7 @@ export function setValidDestinationBoxes(controller, airUnitName, side) {
   }
 
   if (location.boxName.includes("STRIKE")) {
-    doStrikeBox(controller, airUnitName, side)
+    doStrikeBox(controller, airUnitName, side, location.boxName)
   }
 }
 // This function determines which Air Boxes are valid moves for a given air unit in
@@ -693,6 +767,8 @@ export function handleAirUnitMoves(controller, side) {
 
   // 3. use the following logic to work out what that unit can do
   for (let unit of airUnits) {
-    setValidDestinationBoxes(controller, unit.name, side)
+    if (!unit.moved) {
+      setValidDestinationBoxes(controller, unit.name, side)
+    }
   }
 }

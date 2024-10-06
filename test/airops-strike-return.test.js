@@ -6,11 +6,8 @@ import { createFleetMove } from "./TestUtils"
 import HexCommand from "../src/commands/HexCommand"
 import {
   doAttackFireRolls,
-  doCarrierDamageRolls,
-  getAirUnitOnFlightDeck,
-  autoAllocateDamage,
-  doMidwayDamage,
 } from "../src/DiceHandler"
+import { doStrikeBox } from "../src/controller/AirOperationsHandler"
 
 describe("Controller tests", () => {
   let controller
@@ -44,7 +41,7 @@ describe("Controller tests", () => {
     })
   }
 
-  function placeStrikeGroupsOnMapUS(box) {
+  function strikeGroupMoveUS(box, q, r) {
     const strikeCounter = {
       name: "US-SG1",
       longName: "Strike Group 1",
@@ -53,7 +50,13 @@ describe("Controller tests", () => {
       width: "2.1%",
       box: box,
       side: GlobalUnitsModel.Side.US,
+      loading: false,
+      moved: false,
+      attacked: false,
+      turnmoved: undefined,
+      turnattacked: undefined
     }
+    GlobalGameState.attackingStrikeGroup = strikeCounter
 
     //  Strike Group moves onto map - test location, moved etc.
     controller.viewEventHandler({
@@ -65,8 +68,8 @@ describe("Controller tests", () => {
         to: {
           currentHex: {
             col: 5,
-            q: 7,
-            r: 2,
+            q: q,
+            r: r,
             row: "G",
             side: "us",
             x: 120,
@@ -87,6 +90,10 @@ describe("Controller tests", () => {
       width: "2.1%",
       box: box,
       side: GlobalUnitsModel.Side.JAPAN,
+      moved: false,
+      attacked: false,
+      turnmoved: undefined,
+      turnattacked: undefined
     }
 
     let to = {
@@ -118,7 +125,9 @@ describe("Controller tests", () => {
     })
   }
 
-  function setupUSStrikeGroups() {
+  function setupUSStrikeGroups(q, r) {
+    GlobalGameState.sideWithInitiative = GlobalUnitsModel.Side.US
+
     ef1 = counters.get("Enterprise-F4F4-1")
     ef2 = counters.get("Enterprise-F4F4-2")
     edb1 = counters.get("Enterprise-SBD3-1")
@@ -130,11 +139,11 @@ describe("Controller tests", () => {
     hdb1 = counters.get("Hornet-SBD3-1")
     hdb2 = counters.get("Hornet-SBD3-2")
     htb1 = counters.get("Hornet-TBD1")
+    createFleetMove(controller, 7, 2, "1AF-USMAP", GlobalUnitsModel.Side.US) // G-5
 
     addUnitToStrikeGroup(edb1.name, GlobalUnitsModel.AirBox.US_STRIKE_BOX_0, 0)
     addUnitToStrikeGroup(etb.name, GlobalUnitsModel.AirBox.US_STRIKE_BOX_0, 1)
-    placeStrikeGroupsOnMapUS(GlobalUnitsModel.AirBox.US_STRIKE_BOX_0)
-    createFleetMove(controller, 7, 2, "1AF", GlobalUnitsModel.Side.JAPAN) // G-5
+    strikeGroupMoveUS(GlobalUnitsModel.AirBox.US_STRIKE_BOX_0, q, r)
   }
 
   function setupJapanStrikeGroups() {
@@ -162,14 +171,12 @@ describe("Controller tests", () => {
     createFleetMove(controller, 7, 2, "CSF", GlobalUnitsModel.Side.US) // G-5
   }
   test("US Strike Group Attacks, same AIR OP as moved, units move to RETURN 1", () => {
-    setupUSStrikeGroups()
+    setupUSStrikeGroups(7,2)
     let strikeGroup = GlobalUnitsModel.usStrikeGroups.get(GlobalUnitsModel.AirBox.US_STRIKE_BOX_0)
     let unitsInGroup = controller.getAirUnitsInStrikeGroups(strikeGroup.box)
     expect(unitsInGroup.length).toEqual(2)
 
     GlobalGameState.taskForceTarget = GlobalUnitsModel.TaskForce.CARRIER_DIV_1
-    GlobalGameState.sideWithInitiative = GlobalUnitsModel.Side.US
-
     GlobalGameState.currentCarrierAttackTarget = GlobalUnitsModel.Carrier.KAGA
     controller.setAirUnitTarget(edb1, GlobalUnitsModel.Carrier.KAGA)
 
@@ -187,46 +194,56 @@ describe("Controller tests", () => {
         r: 2,
       },
     }
-    let strikeGroupsAtLocation = controller.getAllStrikeGroupsInLocation(location2, GlobalUnitsModel.Side.US)
-    expect(strikeGroupsAtLocation[0].name).toEqual("US-SG1")
-
-    let attackers = controller.getStrikeUnitsAttackingCarrier()
-    expect(attackers.length).toEqual(1)
-    let attackAircraftOnDeck = controller.attackAircraftOnDeck()
-    expect(attackAircraftOnDeck).toEqual(false)
-
-    let combinedAttack = controller.combinedAttack()
-    expect(combinedAttack).toEqual(false)
-
     let dieRolls = [3, 4]
 
-    let hits = doAttackFireRolls(controller, dieRolls)
-    expect(hits).toEqual(1)
+    doAttackFireRolls(controller, dieRolls)
 
-    expect(attackers[0].aircraftUnit.hitsScored).toEqual(1)
+    for (let unit of unitsInGroup) {
+        doStrikeBox(controller, unit.name, GlobalUnitsModel.Side.US, GlobalUnitsModel.AirBox.US_STRIKE_BOX_0)
 
-    GlobalGameState.currentCarrierAttackTarget = GlobalUnitsModel.Carrier.AKAGI
-    const kdb = counters.get("Kaga-D3A-1")
-    const ktb = counters.get("Kaga-B5N-2")
-
-    controller.addAirUnitToBox(GlobalUnitsModel.AirBox.JP_AKAGI_FLIGHT_DECK, 0, kdb)
-    controller.addAirUnitToBox(GlobalUnitsModel.AirBox.JP_AKAGI_FLIGHT_DECK, 1, ktb)
-
-    attackers = controller.getStrikeUnitsAttackingCarrier()
-    expect(attackers.length).toEqual(1)
-    attackAircraftOnDeck = controller.attackAircraftOnDeck()
-    expect(attackAircraftOnDeck).toEqual(true)
-
-    combinedAttack = controller.combinedAttack()
-    expect(combinedAttack).toEqual(false)
-
-    dieRolls = [3, 4]
-
-    hits = doAttackFireRolls(controller, dieRolls)
-    expect(hits).toEqual(2)
-
-    expect(attackers[0].aircraftUnit.hitsScored).toEqual(2)
+        let destinations = controller.getValidAirUnitDestinations(unit.name)
+        expect(destinations).toEqual(GlobalUnitsModel.AirBox.US_TF16_RETURN1)
+    }
   })
 
+  test("US Strike Group Attacks, different AIR OP turn to moved, units move to RETURN 2", () => {
+    setupUSStrikeGroups(7,1)
+    GlobalGameState.gameTurn = 2
 
+    strikeGroupMoveUS(GlobalUnitsModel.AirBox.US_STRIKE_BOX_0, 7, 2)
+
+    let strikeGroup = GlobalUnitsModel.usStrikeGroups.get(GlobalUnitsModel.AirBox.US_STRIKE_BOX_0)
+    let unitsInGroup = controller.getAirUnitsInStrikeGroups(strikeGroup.box)
+    expect(unitsInGroup.length).toEqual(2)
+
+    GlobalGameState.taskForceTarget = GlobalUnitsModel.TaskForce.CARRIER_DIV_1
+    GlobalGameState.currentCarrierAttackTarget = GlobalUnitsModel.Carrier.KAGA
+    controller.setAirUnitTarget(edb1, GlobalUnitsModel.Carrier.KAGA)
+
+    expect(GlobalGameState.carrierTarget1).toEqual(GlobalUnitsModel.Carrier.KAGA)
+
+    controller.setAirUnitTarget(edb2, GlobalUnitsModel.Carrier.AKAGI)
+
+    expect(GlobalGameState.carrierTarget1).toEqual(GlobalUnitsModel.Carrier.KAGA)
+    expect(GlobalGameState.carrierTarget2).toEqual(GlobalUnitsModel.Carrier.AKAGI)
+
+    // FIRST TURN 
+    // move US strike group to hex adjacent to JAPAN 1AF
+    let location2 = {
+      currentHex: {
+        q: 7,
+        r: 1,
+      },
+    }
+    let dieRolls = [3, 4]
+
+    doAttackFireRolls(controller, dieRolls)
+
+    for (let unit of unitsInGroup) {
+        doStrikeBox(controller, unit.name, GlobalUnitsModel.Side.US, GlobalUnitsModel.AirBox.US_STRIKE_BOX_0)
+
+        let destinations = controller.getValidAirUnitDestinations(unit.name)
+        expect(destinations).toEqual(GlobalUnitsModel.AirBox.US_TF16_RETURN1)
+    }
+  })
 })

@@ -89,7 +89,6 @@ async function doCAPInterception() {
   }
 
   await delay(1000)
-  console.log(">>>>>>>>>>>>>> SET CAP CLOSE PANEL TO TRUE")
   GlobalGameState.closePanel = true
   GlobalGameState.updateGlobalState()
 
@@ -110,10 +109,8 @@ async function doCAPDamageAllocation() {
       GlobalGameState.updateGlobalState()
       await delay(10)
       let numStrikeUnits = GlobalInit.controller.getAttackingStrikeUnits()
-      console.log("NUM STRIKE UNITS = ", numStrikeUnits.length)
       const selection = Math.floor(Math.random() * numStrikeUnits.length)
 
-      console.log("SELECTION = ", selection)
       GlobalGameState.testStepLossSelection = selection
       GlobalGameState.updateGlobalState()
       await delay(500)
@@ -147,14 +144,12 @@ async function doEscortDamageAllocation() {
   if (GlobalGameState.fighterHits > 0) {
     for (let i = 0; i < GlobalGameState.fighterHits; i++) {
       await delay(1000)
-      console.log("PASS NUMBER", i)
       GlobalGameState.testStepLossSelection = -1
       GlobalGameState.updateGlobalState()
       await delay(100)
       let numCAPUnits = GlobalInit.controller.getAllCAPDefenders(GlobalUnitsModel.Side.JAPAN)
       const selection = Math.floor(Math.random() * numCAPUnits.length)
 
-      console.log("SELECTION = ", selection)
       GlobalGameState.testStepLossSelection = selection
       GlobalGameState.updateGlobalState()
       await delay(1000)
@@ -189,15 +184,12 @@ async function doAntiAircraftDamage() {
   if (GlobalGameState.antiaircraftHits > 0) {
     for (let i = 0; i < GlobalGameState.antiaircraftHits; i++) {
       await delay(1000)
-      console.log("PASS NUMBER", i)
       GlobalGameState.testStepLossSelection = -1
       GlobalGameState.updateGlobalState()
       await delay(100)
       let numStrikeUnits = GlobalInit.controller.getAttackingStrikeUnits(true)
-      console.log("NUM STRIKE UNITS = ", numStrikeUnits.length)
       const selection = Math.floor(Math.random() * numStrikeUnits.length)
 
-      console.log("SELECTION = ", selection)
       GlobalGameState.testStepLossSelection = selection
       GlobalGameState.updateGlobalState()
       await delay(1000)

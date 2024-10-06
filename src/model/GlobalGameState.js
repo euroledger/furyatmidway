@@ -15,6 +15,7 @@ export default class GlobalGameState {
     MIDWAY_ATTACK: "Midway Attack Phase",
     US_FLEET_MOVEMENT: "US Fleet Movement",
     AIR_SEARCH: "Search Phase",
+    INITIATIVE_DETERMINATION: "Initiative Determination",
     AIR_OPERATIONS: "Air Operations Phase",
     TARGET_DETERMINATION: "Target Determination Phase",
     CAP_INTERCEPTION:"CAP Interception Phase",
@@ -145,6 +146,8 @@ export default class GlobalGameState {
 
   // static setupPhase = 6; // tmp put back to 0
   static setupPhase = 0; // tmp put back to 0
+
+  static isFirstAirOp = true
 
   static airAttacksComplete = false; // set to true after all air attacks - triggers CAP return etc
 

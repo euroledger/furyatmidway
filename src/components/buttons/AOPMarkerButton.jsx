@@ -1,4 +1,4 @@
-import React, { useState, useContext } from "react"
+import React, { useState, useContext, useEffect } from "react"
 import GlobalGameState from "../../model/GlobalGameState"
 import "./button.css"
 import AOPOffsets from "../draganddrop/AopBoxOffsets"
@@ -31,7 +31,10 @@ function AOPMarkerButton({ image, side, initialPosition, getZone, zIndex, increm
       top: AOPOffsets[0].top + 0.4,
     })
   } else {
-    if (side.toUpperCase() === GlobalUnitsModel.Side.JAPAN.toUpperCase() && japanOps !== GlobalGameState.airOperationPoints[side]) {
+    if (
+      side.toUpperCase() === GlobalUnitsModel.Side.JAPAN.toUpperCase() &&
+      japanOps !== GlobalGameState.airOperationPoints[side]
+    ) {
       setJapanOps(GlobalGameState.airOperationPoints[side])
       let leftOffset = 0
       let topOffset = 0
@@ -49,8 +52,11 @@ function AOPMarkerButton({ image, side, initialPosition, getZone, zIndex, increm
         top: AOPOffsets[GlobalGameState.airOperationPoints[side]].top + 1.5 - topOffset,
       })
     }
-    if (side.toUpperCase() === GlobalUnitsModel.Side.US.toUpperCase() && usOps !== GlobalGameState.airOperationPoints[side]) {
-      setUsOps(GlobalGameState.airOperationPoints[side])
+    if (
+      side.toUpperCase() === GlobalUnitsModel.Side.US.toUpperCase() &&
+      usOps !== GlobalGameState.airOperationPoints.us
+    ) {
+      setUsOps(GlobalGameState.airOperationPoints.us)
       let leftOffset = 0
       let topOffset = 0
       if (GlobalGameState.airOperationPoints["japan"] === GlobalGameState.airOperationPoints["us"]) {
@@ -61,39 +67,12 @@ function AOPMarkerButton({ image, side, initialPosition, getZone, zIndex, increm
       } else {
         incrementZIndex(side, 0)
       }
-
       setPosition({
         ...position,
         left: AOPOffsets[GlobalGameState.airOperationPoints[side]].left + 0.9 + leftOffset,
         top: AOPOffsets[GlobalGameState.airOperationPoints[side]].top + 0.3 - topOffset,
       })
     }
-  }
-
-  const handleDrop = (event) => {
-    event.preventDefault()
-
-    GlobalGameState.airOperationPoints[side] = getZone()
-
-    const sideStr = side === "us" ? "US" : "Japan"
-    GlobalGameState.log(`${sideStr} Air Operations Points set to ${getZone()}`)
-
-    let leftOffset = 0
-    let topOffset = 0
-    if (GlobalGameState.airOperationPoints["japan"] === GlobalGameState.airOperationPoints["us"]) {
-      leftOffset = 0.5
-      topOffset = 0.5
-      incrementZIndex(side, 10)
-      zIndex += 5
-    } else {
-      incrementZIndex(side, 0)
-    }
-
-    setPosition({
-      ...position,
-      left: AOPOffsets[getZone()].left + 0.3 + leftOffset,
-      top: AOPOffsets[getZone()].top + 0.4 - topOffset,
-    })
   }
 
   const z = zIndex[side] + 5
@@ -113,11 +92,6 @@ function AOPMarkerButton({ image, side, initialPosition, getZone, zIndex, increm
             zIndex: z,
           }}
           id="saveForm"
-          onMouseEnter={onDrag}
-          onMouseLeave={onStop}
-          draggabble="true"
-          onDragStart={onDrag}
-          onDragEnd={handleDrop}
         />
       </div>
     </>

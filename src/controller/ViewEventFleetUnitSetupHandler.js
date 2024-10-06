@@ -11,7 +11,6 @@ class ViewEventFleetUnitSetupHandler {
     const { initial, id, from, to, side } = event.data
 
     // to = currentHex
-
     // add fleet unit to map holding name -> current Hex
 
     this.controller.setFleetUnitLocation(id, to, side)
@@ -23,7 +22,6 @@ class ViewEventFleetUnitSetupHandler {
     let command = new HexCommand(cmdType, id, from, to, side)
    
     GlobalGameState.phaseCompleted = true
-
     GlobalGameState.log(`${command.toString()}`)
   }
 }

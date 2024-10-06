@@ -5,7 +5,7 @@ import { createMapUpdateForFleet } from "./AirUnitTestData"
 import { usCSFStartHexes, japanAF1StartHexesNoMidway, japanAF1StartHexesMidway } from "./components/MapRegions"
 import { calculateSearchValues, calculateSearchResults } from "./model/SearchValues"
 import { getJapanEnabledAirBoxes, getUSEnabledAirBoxes } from "./AirBoxZoneHandler"
-import { moveCAPtoReturnBox } from "./controller/AirOperationsHandler"
+import { moveCAPtoReturnBox, moveStrikeUnitsToReturnBox } from "./controller/AirOperationsHandler"
 
 function japanSetUpHandler() {
   if (GlobalGameState.currentCarrier <= 2) {
@@ -110,8 +110,10 @@ function calcAirOpsPoints({ setSearchValues, setSearchResults, setSearchValuesAl
     us_midway: sv.us_midway,
   })
   setSearchValues(sv)
+  console.log("WOOOOOOOSH SET AIR OPS HERE ->")
   GlobalGameState.airOperationPoints.japan = sr.JAPAN
   GlobalGameState.airOperationPoints.us = sr.US
+  console.log("AFTER CONSULTATION =GlobalGameState.airOperationPoints.us, ", GlobalGameState.airOperationPoints.us)
   setSearchResults(sr)
   setSearchValuesAlertShow(true)
 }
@@ -161,10 +163,6 @@ function usFleetMovementHandler({ setFleetUnitUpdate, setSearchValues, setSearch
   calcAirOpsPoints({ setSearchValues, setSearchResults, setSearchValuesAlertShow })
 }
 
-function initiativeHandler({ setInitiativePanelShow }) {
-  setInitiativePanelShow(true)
-  GlobalGameState.phaseCompleted = true
-}
 
 function decrementAirOpsPoints() {
   if (GlobalGameState.sideWithInitiative === GlobalUnitsModel.Side.JAPAN) {
@@ -175,13 +173,17 @@ function decrementAirOpsPoints() {
       GlobalGameState.airOperationPoints.us > 0 ? GlobalGameState.airOperationPoints.us - 1 : 0
   }
   GlobalGameState.phaseCompleted = true
+
+  GlobalGameState.updateGlobalState()
 }
 
-function endOfAirOperation(side) {
+function endOfAirOperation(side, setAirUnitUpdate) {
   const units = GlobalInit.controller.getStrikeGroupsNotMoved(side)
 
-  // const allMandatoryAirMovesComplete = GlobalInit.controller.allMandatoryMovesDone(side)
   if (units.length === 0) {
+    moveStrikeUnitsToReturnBox(side, setAirUnitUpdate)
+    GlobalInit.controller.setAllUnitsToNotMoved()
+    GlobalGameState.updateGlobalState
     return true
   }
   return false
@@ -195,7 +197,8 @@ function airOperationsHandler({
   setSearchResults,
   setSearchValues,
   setSideWithInitiative,
-  setSearchValuesAlertShow
+  setSearchValuesAlertShow,
+  setAirUnitUpdate,
 }) {
   GlobalGameState.phaseCompleted = false
   if (GlobalGameState.sideWithInitiative === GlobalUnitsModel.Side.JAPAN) {
@@ -206,9 +209,9 @@ function airOperationsHandler({
     setUsStrikePanelEnabled(false)
 
     // @TODO check all manadatory air moves done, or Q: Will we do this automaticall?
-    if (endOfAirOperation(GlobalUnitsModel.Side.JAPAN)) {
-      GlobalGameState.airOperationPoints.japan =
-        GlobalGameState.airOperationPoints.japan > 0 ? GlobalGameState.airOperationPoints.japan - 1 : 0
+    if (endOfAirOperation(GlobalUnitsModel.Side.JAPAN, setAirUnitUpdate)) {
+      // GlobalGameState.airOperationPoints.japan =
+      //   GlobalGameState.airOperationPoints.japan > 0 ? GlobalGameState.airOperationPoints.japan - 1 : 0
       GlobalGameState.phaseCompleted = true
 
       GlobalInit.controller.setAllUnitsToNotMoved()
@@ -226,11 +229,9 @@ function airOperationsHandler({
 
         GlobalGameState.phaseCompleted = false
       } else {
-        setSideWithInitiative(()=>null) // ensure roll dice button is enabled
-        // initiativeHandler({ setInitiativePanelShow })
+        setSideWithInitiative(() => null) // ensure roll dice button is enabled
         GlobalGameState.sideWithInitiative = undefined
-        GlobalGameState.gamePhase = GlobalGameState.PHASE.AIR_SEARCH
-        calcAirOpsPoints({ setSearchValues, setSearchResults, setSearchValuesAlertShow })
+        GlobalGameState.gamePhase = GlobalGameState.PHASE.INITIATIVE_DETERMINATION
       }
     } else {
       GlobalGameState.phaseCompleted = false
@@ -244,18 +245,17 @@ function airOperationsHandler({
 
     setUsStrikePanelEnabled(true)
     setJapanStrikePanelEnabled(false)
-    if (endOfAirOperation(GlobalUnitsModel.Side.US)) {
-      GlobalGameState.airOperationPoints.us =
-        GlobalGameState.airOperationPoints.us > 0 ? GlobalGameState.airOperationPoints.us - 1 : 0
+    if (endOfAirOperation(GlobalUnitsModel.Side.US, setAirUnitUpdate)) {
+      // GlobalGameState.airOperationPoints.us =
+      //   GlobalGameState.airOperationPoints.us > 0 ? GlobalGameState.airOperationPoints.us - 1 : 0
 
       GlobalGameState.phaseCompleted = true
       GlobalInit.controller.setAllUnitsToNotMoved()
+      decrementAirOpsPoints()
+
       // setSideWithInitiative(null) // ensure roll dice button is enabled
-      // initiativeHandler({ setInitiativePanelShow })
-      console.log("=> ON TO INITIATIVE STUFF")
       GlobalGameState.sideWithInitiative = undefined
-      GlobalGameState.gamePhase = GlobalGameState.PHASE.AIR_SEARCH
-      calcAirOpsPoints({ setSearchValues, setSearchResults, setSearchValuesAlertShow })
+      GlobalGameState.gamePhase = GlobalGameState.PHASE.INITIATIVE_DETERMINATION
     } else {
       GlobalGameState.phaseCompleted = false
     }
@@ -378,7 +378,7 @@ export default function handleAction({
         setSearchValues,
         setSearchResults,
         setSideWithInitiative,
-        setSearchValuesAlertShow
+        setSearchValuesAlertShow,
       })
     }
     // } else if (GlobalGameState.gamePhase === GlobalGameState.PHASE.MIDWAY_ATTACK) {
@@ -391,7 +391,7 @@ export default function handleAction({
       setSearchValuesAlertShow,
     })
   } else if (GlobalGameState.gamePhase === GlobalGameState.PHASE.AIR_SEARCH) {
-    initiativeHandler({ setInitiativePanelShow })
+    GlobalGameState.gamePhase = GlobalGameState.PHASE.INITIATIVE_DETERMINATION
     return
   } else if (
     GlobalGameState.gamePhase === GlobalGameState.PHASE.AIR_OPERATIONS ||
@@ -411,7 +411,7 @@ export default function handleAction({
       setSearchValues,
       setSearchResults,
       setSideWithInitiative,
-      setSearchValuesAlertShow
+      setSearchValuesAlertShow,
     })
     GlobalGameState.updateGlobalState()
     return
@@ -442,7 +442,6 @@ export default function handleAction({
     if (GlobalGameState.attackingStepsRemaining > 0) {
       GlobalGameState.gamePhase = GlobalGameState.PHASE.ANTI_AIRCRAFT_FIRE
     } else {
-      console.log("POOOOOOOOOOOOOO 2 move to return box cap units:", capAirUnits)
       moveCAPtoReturnBox(GlobalInit.controller, capAirUnits, setAirUnitUpdate)
       GlobalGameState.gamePhase = GlobalGameState.PHASE.AIR_OPERATIONS
     }
@@ -454,7 +453,6 @@ export default function handleAction({
     if (GlobalGameState.antiaircraftHits > 0) {
       GlobalGameState.gamePhase = GlobalGameState.PHASE.AAA_DAMAGE_ALLOCATION
     } else if (GlobalInit.controller.getAttackingStepsRemaining() > 0) {
-      console.log("POOOOOOOOOOOOOO 3 move to return box cap units:", capAirUnits)
       moveCAPtoReturnBox(GlobalInit.controller, capAirUnits, setAirUnitUpdate)
       let display = displayAttackTargetPanel(GlobalInit.controller)
       if (display) {

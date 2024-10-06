@@ -33,12 +33,13 @@ export default class CardModel {
     const fleetLocations = new Map(
       [...mapMap].filter(([k, v]) => !k.includes("SG") && this.locationsEqual(v, location))
     )
+
     for (let fleetUnit of fleetLocations.keys()) {
       const counter = counters.get(fleetUnit)
       if (filterOutOtherSide === true) {
         if (counter.side !== side) {
           fleets.push(counters.get(fleetUnit))
-        }
+        } 
       } else {
         fleets.push(counters.get(fleetUnit))
       }

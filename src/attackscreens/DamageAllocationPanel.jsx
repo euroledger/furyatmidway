@@ -31,7 +31,7 @@ export function DamageHeaders({ controller, eliminatedSteps, setEliminatedSteps,
       return
     }
     const myRef = elRefs[GlobalGameState.testStepLossSelection]
-    if (myRef !== undefined && myRef.current !== undefined) {
+    if (myRef !== undefined && myRef.current !== undefined && myRef.current !== null) {
       myRef.current.click(myRef.current)
     }
   }, [GlobalGameState.testStepLossSelection])

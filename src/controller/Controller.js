@@ -168,6 +168,11 @@ export default class Controller {
       return GlobalUnitsModel.sunkMarkers[GlobalGameState.nextAvailableSunkMarker]
     }
   }
+
+  updateCounterData(name, value) {
+    this.counters.set(name, value)
+  }
+
   resetAllCapDefenders() {
     const units = Array.from(this.counters.values())
     for (let unit of units) {
@@ -175,6 +180,7 @@ export default class Controller {
       airUnit.aircraftUnit.intercepting = false
     }
   }
+
   addAirUnitToBox = (boxName, index, value) => {
     this.boxModel.addAirUnitToBox(boxName, index, value)
   }
@@ -282,6 +288,10 @@ export default class Controller {
     return Object.values(this.airOperationsModel.getReturn1AirBoxForNamedTaskForce(side, tf))[0]
   }
 
+  getReturn2AirBoxForNamedTaskForce(side, tf) {
+    return Object.values(this.airOperationsModel.getReturn2AirBoxForNamedTaskForce(side, tf))[0]
+  }
+
   getCAPBoxForTaskForce(tf, side) {
     if (side === GlobalUnitsModel.Side.JAPAN) {
       if (tf === GlobalUnitsModel.TaskForce.CARRIER_DIV_1) {
@@ -383,6 +393,27 @@ export default class Controller {
       this.counters.set(unit.name, unit)
     }
   }
+
+  allMandatoryMovesDone(side) {
+    // 1. CHECK ANY UNITS IN CAP RETURN BOXES
+
+    // 2. CHECK IF ANY STRIKE UNITS HABVE ATTACKED THIS AIR OP
+
+    // 3. ANY UNITS IN RETURN BOXES YET TO MOVE
+
+    // moves will be:-
+    // 1. CAP RETURN TO HANGAR OR FLIGHT DECK
+
+    // 2. STRIKE AIR UNITS TO EITHER RETURN 1 or RETURN 2
+
+    // 3. SET STRIKE COUNTERS TO OFF-BOARD
+
+    // 4. MOVE RETURN 2 -> RETURN 1
+
+    // 5. MOVE RETURN 1 -> CARRIER
+  }
+
+
   getStrikeGroupsNotMoved(side) {
     const strikeGroups = this.getAllStrikeGroups(side)
     return strikeGroups.length > 0 && strikeGroups.filter((sg) => sg.moved === false || sg.moved === undefined)

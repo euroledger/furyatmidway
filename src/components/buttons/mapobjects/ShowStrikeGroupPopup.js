@@ -11,7 +11,6 @@ export default function setStrikeGroupPopup(side, show, hex) {
 
     const fleets = controller.getAllFleetsInLocation(hexy, side)
     setFleetsAtLocation(() => fleets)
-    console.log("FLEETS =", fleets)
 
     if (groups.length > 0 || fleets.length > 0) {
       setShowPopup(true)

@@ -211,6 +211,12 @@ export function App() {
   }, [GlobalGameState.gamePhase])
 
   useEffect(() => {
+    if (GlobalGameState.gamePhase === GlobalGameState.PHASE.INITIATIVE_DETERMINATION) {
+      setInitiativePanelShow(true)
+    }
+  }, [GlobalGameState.gamePhase])
+  
+  useEffect(() => {
     if (GlobalGameState.gamePhase === GlobalGameState.PHASE.ATTACK_TARGET_SELECTION) {
       setAttackTargetsSelected(false)
       setAttackTargetPanelShow(true)
@@ -219,8 +225,9 @@ export function App() {
   }, [GlobalGameState.gamePhase])
 
   useEffect(() => {
-    if (GlobalGameState.gamePhase === GlobalGameState.PHASE.AIR_SEARCH) {
+    if (GlobalGameState.gamePhase === GlobalGameState.PHASE.AIR_SEARCH && GlobalGameState.isFirstAirOp) {
       setSearchValuesAlertShow(true)
+      GlobalGameState.isFirstAirOp = false
     }
   }, [GlobalGameState.gamePhase])
 
@@ -895,15 +902,12 @@ export function App() {
 
   function doDamageRolls() {
 
-    console.log("QUACKY DAMAGE ROLL.....???")
     // Roll for bow or stern
     let damage
     if (carrierDamageRollNeeded(GlobalInit.controller)) {
-      console.log("\t=>DAMAGE ROLL NEEDED...")
       damage = doCarrierDamageRolls(GlobalInit.controller)
       GlobalGameState.damageThisAttack = damage
     } else {
-      console.log("\t=>AUTO BOLLOCKS")
       damage = autoAllocateDamage(GlobalInit.controller)
     }
 

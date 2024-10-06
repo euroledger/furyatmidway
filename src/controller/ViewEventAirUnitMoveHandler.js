@@ -13,6 +13,9 @@ class ViewEventAirUnitMoveHandler {
     const { counterData, name, index, side, loading } = event.data
 
     const { boxName, boxIndex } = this.controller.getAirUnitLocation(counterData.name)
+   
+    // console.log("BOLLOCKS MATE: name=", name, "boxName=", boxName, "boxIndex=", boxIndex )
+
     let from = boxName === GlobalUnitsModel.AirBox.OFFBOARD ? "OFFBOARD" : boxName + " - box " + boxIndex
 
     const to =
@@ -20,9 +23,9 @@ class ViewEventAirUnitMoveHandler {
         ? name
         : `${name} - box ${index}`
 
+    // console.log("\t FUCK!!!!!!!!!!!! to=",to)    
     this.controller.addAirUnitToBox(name, index, counterData)
     let command = new MoveCommand(COMMAND_TYPE.MOVE_AIR_UNIT, counterData.longName, from, to)
-
     if (!loading) {
       counterData.aircraftUnit.moved = true
     }

@@ -34,7 +34,9 @@ class ViewEventStrikeGroupMoveHandler {
     GlobalGameState.log(`${command.toString()}`)
     if (!loading) {
       counterData.moved = true
+      counterData.turnmoved = GlobalGameState.gameTurn
       if (this.controller.checkForAirAttack(to, side)) {
+        counterData.turnattacked = GlobalGameState.gameTurn
         if (GlobalGameState.gamePhase === GlobalGameState.PHASE.MIDWAY_ATTACK) {
           GlobalGameState.gamePhase = GlobalGameState.PHASE.CAP_INTERCEPTION
           GlobalGameState.taskForceTarget = GlobalUnitsModel.TaskForce.MIDWAY
@@ -51,6 +53,7 @@ class ViewEventStrikeGroupMoveHandler {
         if (GlobalGameState.attackingStrikeGroup) {
           const attackingSG = GlobalGameState.attackingStrikeGroup
           attackingSG.attacked = true // set previous strike group to done
+          attackingSG.turnattacked = GlobalGameState.gameTurn // set previous strike group to done
         }
         GlobalGameState.attackingStrikeGroup = counterData
       }

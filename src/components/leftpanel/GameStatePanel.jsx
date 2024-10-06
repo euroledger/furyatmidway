@@ -43,8 +43,8 @@ export default class GameStatePanel extends React.Component {
               <p className="text-left">
                 Turn: {GlobalGameState.gameTurn} - {GlobalGameState.turnText[GlobalGameState.gameTurn - 1]}
               </p>
-              <p className="text-left">Japan Air Ops: {GlobalGameState.airOperationPoints["japan"]}</p>
-              <p className="text-left">US Air Ops: {GlobalGameState.airOperationPoints["us"]}</p>
+              <p className="text-left">Japan Air Ops: {GlobalGameState.airOperationPoints.japan}</p>
+              <p className="text-left">US Air Ops: {GlobalGameState.airOperationPoints.us}</p>
               <p className="text-left">Midway Invasion Force: {mif}</p>
               <p className="text-left">Midway Garrison: {mg}</p>
               <p className="text-left">Midway Attack Declaration: {mad}</p>
