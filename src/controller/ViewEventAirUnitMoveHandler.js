@@ -9,6 +9,7 @@ class ViewEventAirUnitMoveHandler {
   }
   handleEvent(event) {
     // event contains type and data
+    
     const { counterData, name, index, side, loading } = event.data
 
     const { boxName, boxIndex } = this.controller.getAirUnitLocation(counterData.name)

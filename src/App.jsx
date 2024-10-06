@@ -219,6 +219,12 @@ export function App() {
   }, [GlobalGameState.gamePhase])
 
   useEffect(() => {
+    if (GlobalGameState.gamePhase === GlobalGameState.PHASE.AIR_SEARCH) {
+      setSearchValuesAlertShow(true)
+    }
+  }, [GlobalGameState.gamePhase])
+
+  useEffect(() => {
     if (GlobalGameState.gamePhase === GlobalGameState.PHASE.AIR_ATTACK_1) {
       GlobalGameState.dieRolls = []
       GlobalGameState.carrierHitsDetermined = false
@@ -267,6 +273,9 @@ export function App() {
     if (GlobalGameState.gamePhase === GlobalGameState.PHASE.CAP_INTERCEPTION) {
       setFightersPresent(true)
       setCapInterceptionPanelShow(true)
+      setCapSteps(0)
+      setCapAirUnits([])
+      GlobalInit.controller.setAllDefendersToNotIntercepting()
       GlobalGameState.dieRolls = 0
       GlobalGameState.carrierAttackHits = 0
     }
@@ -476,13 +485,16 @@ export function App() {
     } else if (GlobalGameState.gamePhase === GlobalGameState.PHASE.AIR_SEARCH) {
       image = "/images/bothflags.jpg"
     }
-    const disabled =
+
+    // console.log(">>>>>>>>>>> phaseCompleted=",GlobalGameState.phaseCompleted )
+    const nextActionButtonDisabled =
       !GlobalGameState.phaseCompleted ||
       (GlobalGameState.gamePhase === GlobalGameState.PHASE.JAPAN_FLEET_MOVEMENT && !GlobalGameState.jpFleetPlaced) ||
       (GlobalGameState.gamePhase === GlobalGameState.PHASE.US_SETUP_FLEET && !GlobalGameState.usFleetPlaced)
 
     let midwayMsg = ""
 
+    // console.log(">>> INITIATIVE PANEL SHOW=", initiativePanelShow)
     if (GlobalGameState.gamePhase === GlobalGameState.PHASE.MIDWAY_ATTACK) {
       if (GlobalGameState.midwayAirOp === 1) {
         midwayMsg = "(First Air Op)"
@@ -586,7 +598,7 @@ export function App() {
                 className="me-1"
                 variant="secondary"
                 onClick={(e) => nextAction(e)}
-                disabled={disabled}
+                disabled={nextActionButtonDisabled}
                 style={{ background: "#9e1527" }}
               >
                 Next Action
@@ -882,18 +894,23 @@ export function App() {
   }
 
   function doDamageRolls() {
+
+    console.log("QUACKY DAMAGE ROLL.....???")
     // Roll for bow or stern
     let damage
     if (carrierDamageRollNeeded(GlobalInit.controller)) {
+      console.log("\t=>DAMAGE ROLL NEEDED...")
       damage = doCarrierDamageRolls(GlobalInit.controller)
       GlobalGameState.damageThisAttack = damage
     } else {
+      console.log("\t=>AUTO BOLLOCKS")
       damage = autoAllocateDamage(GlobalInit.controller)
     }
 
     if (GlobalGameState.carrierAttackHits > 0) {
       sendDamageUpdates(GlobalInit.controller, damage, setDamageMarkerUpdate)
     }
+    GlobalGameState.carrierAttackHits=0
     setAttackResolved(() => true)
   }
 
@@ -1003,7 +1020,7 @@ export function App() {
         </p>
       </AlertPanel>
       <AlertPanel
-        show={searchValuesAlertShow}
+        show={!testClicked && searchValuesAlertShow}
         size={4}
         onHide={(e) => {
           setSearchValuesAlertShow(false)

@@ -226,8 +226,9 @@ function airOperationsHandler({
 
         GlobalGameState.phaseCompleted = false
       } else {
-        setSideWithInitiative(null) // ensure roll dice button is enabled
+        setSideWithInitiative(()=>null) // ensure roll dice button is enabled
         // initiativeHandler({ setInitiativePanelShow })
+        GlobalGameState.sideWithInitiative = undefined
         GlobalGameState.gamePhase = GlobalGameState.PHASE.AIR_SEARCH
         calcAirOpsPoints({ setSearchValues, setSearchResults, setSearchValuesAlertShow })
       }
@@ -252,6 +253,7 @@ function airOperationsHandler({
       // setSideWithInitiative(null) // ensure roll dice button is enabled
       // initiativeHandler({ setInitiativePanelShow })
       console.log("=> ON TO INITIATIVE STUFF")
+      GlobalGameState.sideWithInitiative = undefined
       GlobalGameState.gamePhase = GlobalGameState.PHASE.AIR_SEARCH
       calcAirOpsPoints({ setSearchValues, setSearchResults, setSearchValuesAlertShow })
     } else {
@@ -440,6 +442,7 @@ export default function handleAction({
     if (GlobalGameState.attackingStepsRemaining > 0) {
       GlobalGameState.gamePhase = GlobalGameState.PHASE.ANTI_AIRCRAFT_FIRE
     } else {
+      console.log("POOOOOOOOOOOOOO 2 move to return box cap units:", capAirUnits)
       moveCAPtoReturnBox(GlobalInit.controller, capAirUnits, setAirUnitUpdate)
       GlobalGameState.gamePhase = GlobalGameState.PHASE.AIR_OPERATIONS
     }
@@ -451,6 +454,7 @@ export default function handleAction({
     if (GlobalGameState.antiaircraftHits > 0) {
       GlobalGameState.gamePhase = GlobalGameState.PHASE.AAA_DAMAGE_ALLOCATION
     } else if (GlobalInit.controller.getAttackingStepsRemaining() > 0) {
+      console.log("POOOOOOOOOOOOOO 3 move to return box cap units:", capAirUnits)
       moveCAPtoReturnBox(GlobalInit.controller, capAirUnits, setAirUnitUpdate)
       let display = displayAttackTargetPanel(GlobalInit.controller)
       if (display) {

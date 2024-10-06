@@ -48,6 +48,10 @@ class ViewEventStrikeGroupMoveHandler {
         GlobalGameState.carrierTarget1=""
         GlobalGameState.carrierTarget2=""
         counterData.attacked = false // possible reset from previous attack
+        if (GlobalGameState.attackingStrikeGroup) {
+          const attackingSG = GlobalGameState.attackingStrikeGroup
+          attackingSG.attacked = true // set previous strike group to done
+        }
         GlobalGameState.attackingStrikeGroup = counterData
       }
     } else {

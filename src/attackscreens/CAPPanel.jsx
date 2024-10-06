@@ -11,6 +11,7 @@ export function CAPHeaders({ controller, setCapAirUnits, capSteps, setCapSteps }
       : GlobalUnitsModel.Side.US
 
   const capBox = controller.getCAPBoxForTaskForce(GlobalGameState.taskForceTarget, sideBeingAttacked)
+
   const capUnits = controller.getAllAirUnitsInBox(capBox)
   const arrLength = capUnits.length
 
@@ -21,14 +22,11 @@ export function CAPHeaders({ controller, setCapAirUnits, capSteps, setCapSteps }
         .fill()
         .map((_, i) => elRefs[i] || createRef()),
     );
-  }, []);
-
-  useEffect(() => {
     const myRef = elRefs[GlobalGameState.testCapSelection]
     if (myRef !== undefined) {
       myRef.current.click(myRef.current)
-    }
-  }, [GlobalGameState.testCapSelection])
+    } 
+  }, [arrLength, GlobalGameState.testCapSelection])
   const msg = "Target For Air Attack:"
 
   const bg =
@@ -79,7 +77,6 @@ export function CAPHeaders({ controller, setCapAirUnits, capSteps, setCapSteps }
             width: "80px",
             height: "80px",
             marginLeft: "20px",
-
             marginRight: "55px",
             outline: outline,
           }}

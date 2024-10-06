@@ -23,7 +23,8 @@ export function EscortHeaders({ controller, setEscortSteps }) {
 
   const strikeGroups = controller.getAllStrikeGroupsInLocation(location, GlobalGameState.sideWithInitiative)
 
-  let fighters = controller.getAllFightersInBox(strikeGroups[0].box)
+  const sgs = strikeGroups.filter((group => !group.attacked))
+  let fighters = controller.getAllFightersInBox(sgs[0].box)
 
   let NoFightersMsg = "Roll 1 Die for each Fighter Step"
   if (fighters.length === 0) {

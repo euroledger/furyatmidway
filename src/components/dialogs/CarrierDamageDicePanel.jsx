@@ -101,9 +101,9 @@ function CarrierDamageDicePanel(props) {
 
   // 3. autoAllocateDamage
 
-  const carrierHits = controller.getCarrierHits(GlobalGameState.currentCarrierAttackTarget)
+  const currentCarrierHits = controller.getCarrierHits(GlobalGameState.currentCarrierAttackTarget)
 
-  if ((carrierHits > 0 || GlobalGameState.carrierAttackHits > 1) && GlobalGameState.TESTING !== true) {
+  if ((currentCarrierHits > 0 || GlobalGameState.carrierAttackHits > 1) && GlobalGameState.TESTING !== true) {  
     const damage = autoAllocateDamage(controller)
     GlobalGameState.carrierAttackHits = 0
     sendDamageUpdates(controller, damage, setDamageMarkerUpdate)
@@ -111,6 +111,9 @@ function CarrierDamageDicePanel(props) {
     showDicePanel = false
   }
 
+  if (GlobalGameState.carrierAttackHits === 0) {
+    showDicePanel = false
+  }
   let isSunk = false
   if (GlobalGameState.currentCarrierAttackTarget !== "" && GlobalGameState.currentCarrierAttackTarget !== undefined) {
     isSunk = controller.isSunk(GlobalGameState.currentCarrierAttackTarget)

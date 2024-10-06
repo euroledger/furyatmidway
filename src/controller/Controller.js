@@ -360,6 +360,14 @@ export default class Controller {
     }
   }
 
+  setAllDefendersToNotIntercepting() {
+    const airunits = this.counters.values().filter((unit) => unit.constructor.name === "AirUnit")
+
+    for (const unit of airunits) {
+      unit.aircraftUnit.intercepting = false
+      this.counters.set(unit.name, unit)
+    } 
+  }
   setAllUnitsToNotMoved() {
     const airunits = this.counters.values().filter((unit) => unit.constructor.name === "AirUnit")
 

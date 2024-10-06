@@ -320,7 +320,38 @@ export function autoAllocateDamage(controller) {
   if (hits === 0) return damage
 
   const currentCarrierHits = controller.getCarrierHits(carrier)
+
+  if (hits == 1) {
+    if (!controller.getCarrierBowDamaged(carrier)) {
+      controller.setCarrierBowDamaged(carrier)
+      damage.bow = true
+      let airUnit = getAirUnitOnFlightDeck(controller, carrier, "BOW")
+      if (airUnit) {
+        moveAirUnitToEliminatedBox(controller, airUnit)
+        GlobalGameState.eliminatedAirUnits.push(airUnit)
+      }
+    }
+    else if (!controller.getCarrierSternDamaged(carrier)) {
+      controller.setCarrierSternDamaged(carrier)
+      damage.stern = true
+      let airUnit = getAirUnitOnFlightDeck(controller, carrier, "STERN")
+      if (airUnit) {
+        moveAirUnitToEliminatedBox(controller, airUnit)
+        GlobalGameState.eliminatedAirUnits.push(airUnit)
+      }
+    }
+    controller.setCarrierHits(carrier, Math.min(3, currentCarrierHits + hits))
+    if (controller.getCarrierHits(carrier) >=3) {
+      damage.sunk = true
+      const airUnits = getAirUnitsInHangar(controller, carrier)
+      for (let unit of airUnits) {
+        moveAirUnitToEliminatedBox(controller, unit)
+        GlobalGameState.eliminatedAirUnits.push(unit)
+      }
+    }
+  }
   if (hits >= 2) {
+    console.log("SET BOTH BOW AND STERN TO BE DAMAGED carrier:", carrier)
     controller.setCarrierBowDamaged(carrier)
     damage.bow = true
     let airUnit = getAirUnitOnFlightDeck(controller, carrier, "BOW")
@@ -344,8 +375,9 @@ export function autoAllocateDamage(controller) {
       }
     }
     controller.setCarrierHits(carrier, Math.min(3, currentCarrierHits + hits))
-    GlobalGameState.damageThisAttack = damage
   }
+  GlobalGameState.damageThisAttack = damage
+
   return damage
 }
 
@@ -587,6 +619,8 @@ export function doAttackFireRolls(controller, testRolls) {
 
     // QUACK REMOVE TEESTING ONLY
     // GlobalGameState.carrierAttackHits = 1
+    // GlobalGameState.carrierAttackHitsThisAttack = 1
+
   }
   return hits
 }
@@ -824,7 +858,7 @@ export function doCAP(controller, capAirUnits, fightersPresent, testRolls) {
   GlobalGameState.dieRolls = rolls
 
   // QUACK TESTING PUT THIS BACK
-  // GlobalGameState.capHits = 4
+  // GlobalGameState.capHits = 2
 
   GlobalGameState.capHits = hits
 }
@@ -854,7 +888,6 @@ export function doDamageAllocation(controller, airUnit) {
   } else if (airUnit.aircraftUnit.steps === 1) {
     // air unit is eliminated
     airUnit.aircraftUnit.steps = 0
-
     moveAirUnitToEliminatedBox(controller, airUnit)
   }
 }

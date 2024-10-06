@@ -1,4 +1,4 @@
-import { useState, useEffect, useRef } from "react"
+import { useEffect, useRef } from "react"
 
 import Modal from "react-bootstrap/Modal"
 import Col from "react-bootstrap/Col"

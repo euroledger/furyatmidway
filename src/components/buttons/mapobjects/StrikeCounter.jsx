@@ -73,7 +73,7 @@ function StrikeCounter({ setStrikeGroupPopup, currentUSHex, currentJapanHex, cou
     ((strikeGroupUpdate.position.currentHex != undefined && position.currentHex.q !== hex.q) ||
       position.currentHex.r !== hex.r)
   ) {
-    // console.log("I am", strikeGroupUpdate.name, " -> STRIKE GROUP UPDATE, moved= ", strikeGroupUpdate.moved)
+    console.log("I am", strikeGroupUpdate.name, " -> STRIKE GROUP UPDATE, moved= ", strikeGroupUpdate.moved)
 
     if (side === GlobalUnitsModel.Side.US) {
       setUSPosition(hex)
@@ -157,6 +157,10 @@ function StrikeCounter({ setStrikeGroupPopup, currentUSHex, currentJapanHex, cou
     // @TODO set US Regions when strike counter is on the map
   }
   const handleClick = (e) => {
+    const sg = controller.getStrikeGroupForBox(side, counterData.box)
+    if (sg.attacked) {
+      return
+    }
     if (side === GlobalUnitsModel.Side.US) {
       setUSRegions()
     } else {
@@ -271,9 +275,9 @@ function StrikeCounter({ setStrikeGroupPopup, currentUSHex, currentJapanHex, cou
 
     const unitsInThisSG = controller.getAirUnitsInStrikeGroups(counterData.box)
 
-    for (const unit of unitsInThisSG) {
-      unit.aircraftUnit.moved = false
-    }
+    // for (const unit of unitsInThisSG) {
+    //   unit.aircraftUnit.moved = false
+    // }
 
     const units = controller.getStrikeGroupsNotMoved(side)
     if (units.length === 0) {
@@ -301,6 +305,10 @@ function StrikeCounter({ setStrikeGroupPopup, currentUSHex, currentJapanHex, cou
 
   const onDrag = () => {
     setIsMoveable(true)
+    const sg = controller.getStrikeGroupForBox(side, counterData.box)
+    if (sg.attacked) {
+      return
+    }
     if (side === GlobalUnitsModel.Side.JAPAN) {
       setJapanRegions()
     } else {
