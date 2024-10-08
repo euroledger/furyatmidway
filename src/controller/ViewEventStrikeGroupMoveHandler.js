@@ -35,6 +35,7 @@ class ViewEventStrikeGroupMoveHandler {
     if (!loading) {
       counterData.moved = true
       counterData.turnmoved = GlobalGameState.gameTurn
+
       if (this.controller.checkForAirAttack(to, side)) {
         counterData.turnattacked = GlobalGameState.gameTurn
         if (GlobalGameState.gamePhase === GlobalGameState.PHASE.MIDWAY_ATTACK) {

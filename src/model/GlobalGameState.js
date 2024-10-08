@@ -31,6 +31,7 @@ export default class GlobalGameState {
     ATTACK_TARGET_SELECTION: "Target Selection"
   }
 
+  static nextActionButtonDisabled=false
   static usSetUpComplete = false
 
   static SETUP_MESSAGES = [

@@ -312,9 +312,10 @@ export async function moveAirUnitToReturnBox(controller, strikeGroup, unit, side
   update.boxName = toBox
   update.position = position1.offsets[index]
   update.name = unit.name
-  setAirUnitUpdate(update)
-  await delay(1)
+  update.log = false // hack to prevent logging
 
+  setAirUnitUpdate(update)
+  await delay(5)
   controller.viewEventHandler({
     type: Controller.EventTypes.AIR_UNIT_MOVE,
     data: {
@@ -331,27 +332,33 @@ export async function moveStrikeUnitsToReturnBox(side, setAirUnitUpdate) {
   const strikeGroups = GlobalInit.controller.getAllStrikeGroups(side)
 
   for (const group of strikeGroups) {
+    if (!group.attacked) {
+      continue
+    }
     const unitsInGroup = GlobalInit.controller.getAirUnitsInStrikeGroups(group.box)
     for (const unit of unitsInGroup) {
+      await delay(5)
       await moveAirUnitToReturnBox(GlobalInit.controller, group, unit, side, setAirUnitUpdate)
     }
   }
   GlobalInit.controller.setAllUnitsToNotMoved()
 
 }
-export function moveCAPtoReturnBox(controller, capAirUnits, setAirUnitUpdate) {
+export async function moveCAPtoReturnBox(controller, capAirUnits, setAirUnitUpdate) {
   const sideBeingAttacked =
     GlobalGameState.sideWithInitiative === GlobalUnitsModel.Side.US
       ? GlobalUnitsModel.Side.JAPAN
       : GlobalUnitsModel.Side.US
 
   for (const capUnit of capAirUnits) {
+    await delay(1)
+
     const steps = capUnit.aircraftUnit.steps
 
     if (steps === 0) {
       continue
     }
-    const location = GlobalInit.controller.getAirUnitLocation(capUnit.name)
+    const location = controller.getAirUnitLocation(capUnit.name)
     let update = {}
 
     const parentCarrier = controller.getCarrierForAirUnit(capUnit.name)
@@ -368,9 +375,11 @@ export function moveCAPtoReturnBox(controller, capAirUnits, setAirUnitUpdate) {
     const index = GlobalInit.controller.getFirstAvailableZone(destBox)
     update.position = position1.offsets[location.boxIndex]
     update.name = capUnit.name
+    update.log = false
+    console.log(">>>>>>>>>>>>SPAZ AIR UNIT UPDATE -> ", capUnit.name, "TO BOX", update.boxName)
+
     setAirUnitUpdate(update)
     
-
     controller.viewEventHandler({
       type: Controller.EventTypes.AIR_UNIT_MOVE,
       data: {
@@ -382,6 +391,14 @@ export function moveCAPtoReturnBox(controller, capAirUnits, setAirUnitUpdate) {
       },
     })
   }
+  await delay(10)
+
+  setAirUnitUpdate({
+    unit: {},
+    position: {},
+    boxName: "",
+    index: -1,
+  })
 }
 
 // CAP -> CAP RETURN occurs after CAP has intercepted a Strike Group

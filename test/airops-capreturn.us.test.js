@@ -1,7 +1,7 @@
 import Controller from "../src/controller/Controller"
 import loadCounters from "../src/CounterLoader"
 import GlobalUnitsModel from "../src/model/GlobalUnitsModel"
-import { handleAirUnitMoves, doReturn1, getValidUSDestinationsCAP } from "../src/controller/AirOperationsHandler"
+import { handleAirUnitMoves, getValidUSDestinationsCAP } from "../src/controller/AirOperationsHandler"
 import { createFleetMove } from "./TestUtils"
 
 describe("Air Operations tests with Preset air unit locations", () => {

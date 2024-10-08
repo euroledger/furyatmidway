@@ -64,6 +64,7 @@ import { AttackResolutionHeaders, AttackResolutionFooters } from "./attackscreen
 import UITester from "./UIEvents/UITester"
 import { getJapanEnabledAirBoxes, getUSEnabledAirBoxes } from "./AirBoxZoneHandler"
 import handleAction, { calcAirOpsPointsMidway } from "./GameStateHandler"
+import { moveStrikeUnitsToReturnBox, moveCAPtoReturnBox } from "./controller/AirOperationsHandler"
 
 export default App
 
@@ -146,15 +147,14 @@ export function App() {
 
   const [attackAirCounterUpdate, setAttackAirCounterUpdate] = useState({
     unit: {
-      name: ""
+      name: "",
     },
     carrier: "",
     idx: -1,
     side: "",
-    uuid: 0
+    uuid: 0,
   })
 
-  
   const [damageMarkerUpdate, setDamageMarkerUpdate] = useState({
     name: "",
     box: "",
@@ -215,7 +215,7 @@ export function App() {
       setInitiativePanelShow(true)
     }
   }, [GlobalGameState.gamePhase])
-  
+
   useEffect(() => {
     if (GlobalGameState.gamePhase === GlobalGameState.PHASE.ATTACK_TARGET_SELECTION) {
       setAttackTargetsSelected(false)
@@ -312,8 +312,6 @@ export function App() {
       setAaaPanelShow(true)
     }
   }, [GlobalGameState.gamePhase])
-
-
 
   const onDrag = () => {
     setIsMoveable(true)
@@ -476,6 +474,38 @@ export function App() {
   if (v === "test") {
     test = true
   }
+  function endOfMyAirOperation(side) {
+    // 1. MOVE STRIKE UNITS TO CORRECT RETURN BOX
+    const units = GlobalInit.controller.getStrikeGroupsNotMoved2(side)
+    if (units.length > 0 && units.length !== undefined) {
+      return false
+    }
+    if (units.length === 0) {
+      GlobalInit.controller.setAllUnitsToNotMoved()
+    }
+
+    const sideBeingAttacked =
+      GlobalGameState.sideWithInitiative === GlobalUnitsModel.Side.US
+        ? GlobalUnitsModel.Side.JAPAN
+        : GlobalUnitsModel.Side.US
+    // 2. CHECK ALL INTERCEPTING CAP UNITS HAVE RETURNED TO CARRIERS
+    const capUnitsReturning = GlobalInit.controller.getAllCAPDefendersInCAPReturnBoxes(sideBeingAttacked)
+    if (capUnitsReturning.length === 0) {
+      return true
+    }
+    return false
+  }
+  const checkAirOps = () => {
+    const endOfAirOps = endOfMyAirOperation(GlobalGameState.sideWithInitiative, setAirUnitUpdate)
+    GlobalGameState.nextActionButtonDisabled =
+      !GlobalGameState.phaseCompleted ||
+      (GlobalGameState.gamePhase === GlobalGameState.PHASE.JAPAN_FLEET_MOVEMENT && !GlobalGameState.jpFleetPlaced) ||
+      (GlobalGameState.gamePhase === GlobalGameState.PHASE.US_SETUP_FLEET && !GlobalGameState.usFleetPlaced)
+
+    if (endOfAirOps) {
+      GlobalGameState.nextActionButtonDisabled = false
+    }
+  }
   const Controls = () => {
     const { zoomIn, zoomOut, resetTransform } = useControls()
     let image = "/images/usaflag.jpg"
@@ -492,15 +522,8 @@ export function App() {
     } else if (GlobalGameState.gamePhase === GlobalGameState.PHASE.AIR_SEARCH) {
       image = "/images/bothflags.jpg"
     }
-
-    // console.log(">>>>>>>>>>> phaseCompleted=",GlobalGameState.phaseCompleted )
-    const nextActionButtonDisabled =
-      !GlobalGameState.phaseCompleted ||
-      (GlobalGameState.gamePhase === GlobalGameState.PHASE.JAPAN_FLEET_MOVEMENT && !GlobalGameState.jpFleetPlaced) ||
-      (GlobalGameState.gamePhase === GlobalGameState.PHASE.US_SETUP_FLEET && !GlobalGameState.usFleetPlaced)
-
     let midwayMsg = ""
-
+    checkAirOps()
     // console.log(">>> INITIATIVE PANEL SHOW=", initiativePanelShow)
     if (GlobalGameState.gamePhase === GlobalGameState.PHASE.MIDWAY_ATTACK) {
       if (GlobalGameState.midwayAirOp === 1) {
@@ -605,7 +628,7 @@ export function App() {
                 className="me-1"
                 variant="secondary"
                 onClick={(e) => nextAction(e)}
-                disabled={nextActionButtonDisabled}
+                disabled={GlobalGameState.nextActionButtonDisabled}
                 style={{ background: "#9e1527" }}
               >
                 Next Action
@@ -901,7 +924,6 @@ export function App() {
   }
 
   function doDamageRolls() {
-
     // Roll for bow or stern
     let damage
     if (carrierDamageRollNeeded(GlobalInit.controller)) {
@@ -914,7 +936,7 @@ export function App() {
     if (GlobalGameState.carrierAttackHits > 0) {
       sendDamageUpdates(GlobalInit.controller, damage, setDamageMarkerUpdate)
     }
-    GlobalGameState.carrierAttackHits=0
+    GlobalGameState.carrierAttackHits = 0
     setAttackResolved(() => true)
   }
 
@@ -987,7 +1009,8 @@ export function App() {
 
   let capInterceptionDiceButtonDisabled = capAirUnits.length === 0 || GlobalGameState.dieRolls.length > 0
 
-  let airOpsDiceButtonDisabled = GlobalGameState.sideWithInitiative !== undefined && GlobalGameState.sideWithInitiative !== ""
+  let airOpsDiceButtonDisabled =
+    GlobalGameState.sideWithInitiative !== undefined && GlobalGameState.sideWithInitiative !== ""
   return (
     <>
       <LoadGamePanel

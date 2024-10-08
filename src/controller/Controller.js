@@ -145,6 +145,19 @@ export default class Controller {
     return airCounters
   }
 
+  getAllCAPDefendersInCAPReturnBoxes(side) {
+    const airUnits = Array.from(this.counters.values())
+    const defenders = airUnits.filter((unit) => unit.constructor.name === "AirUnit" && unit.side === side)
+    let units = new Array()
+    for (const unit of defenders) {
+      const location = this.getAirUnitLocation(unit.name)
+      if (location.boxName.includes("CAP RETURNING")) {
+        units.push(unit)
+      }
+    }
+    return units
+  }
+
   getAllCAPDefenders(side) {
     const units = Array.from(this.counters.values())
     const defenders = units.filter(
@@ -263,7 +276,6 @@ export default class Controller {
       return airUnit.carrier
     }
   }
-  C
 
   getCapBoxForNamedCarrier(carrierName, side) {
     const tf = this.getTaskForceForCarrier(carrierName, side)
@@ -376,7 +388,7 @@ export default class Controller {
     for (const unit of airunits) {
       unit.aircraftUnit.intercepting = false
       this.counters.set(unit.name, unit)
-    } 
+    }
   }
   setAllUnitsToNotMoved() {
     const airunits = this.counters.values().filter((unit) => unit.constructor.name === "AirUnit")
@@ -396,27 +408,28 @@ export default class Controller {
 
   allMandatoryMovesDone(side) {
     // 1. CHECK ANY UNITS IN CAP RETURN BOXES
-
     // 2. CHECK IF ANY STRIKE UNITS HABVE ATTACKED THIS AIR OP
-
     // 3. ANY UNITS IN RETURN BOXES YET TO MOVE
-
     // moves will be:-
     // 1. CAP RETURN TO HANGAR OR FLIGHT DECK
-
     // 2. STRIKE AIR UNITS TO EITHER RETURN 1 or RETURN 2
-
     // 3. SET STRIKE COUNTERS TO OFF-BOARD
-
     // 4. MOVE RETURN 2 -> RETURN 1
-
     // 5. MOVE RETURN 1 -> CARRIER
   }
 
-
+  getStrikeGroupsNotMoved2(side) {
+    const strikeGroups = this.getAllStrikeGroups(side)
+    if (strikeGroups.length === 0) {
+      return []
+    }
+    const sgs = strikeGroups.filter((sg) => sg.turnmoved === undefined)
+    return sgs
+  }
   getStrikeGroupsNotMoved(side) {
     const strikeGroups = this.getAllStrikeGroups(side)
-    return strikeGroups.length > 0 && strikeGroups.filter((sg) => sg.moved === false || sg.moved === undefined)
+    const ret = strikeGroups.length > 0 && strikeGroups.filter((sg) => sg.moved === false || sg.moved === undefined)
+    return ret
   }
 
   getAllStrikeGroups(side) {
@@ -652,6 +665,7 @@ export default class Controller {
       if (index === strikeGroups.length) {
         return []
       }
+      // console.log("SG: ", sg.name, "ATTACKED=", sg.attacked)
       if (!sg.attacked) {
         unitsInGroup = this.getAirUnitsInStrikeGroups(strikeGroups[index].box)
         break
@@ -873,7 +887,11 @@ export default class Controller {
     }
     // return false if both slots either damaged or occupied by an air unit
     const flightDeckBox = this.airOperationsModel.getAirBoxForNamedShip(side, carrierName, "FLIGHT")
+
     let boxName = Object.values(flightDeckBox)[0]
+
+    // console.log("FUUUUUUUUUUUUUUCK CARRIER", carrierName, "boxName=", boxName)
+
     const units = this.getAllAirUnitsInBox(boxName)
 
     // for carriers if hits + units length >= 2 unavailable, for Midway 3
@@ -881,6 +899,7 @@ export default class Controller {
 
     const totalUnavailableSlots = hits + units.length
 
+    // console.log("FUUUUUUUUUUUUUUUCK CARRIER", carrierName, "totalUnavailableSlots=", totalUnavailableSlots)
     const retVal = totalUnavailableSlots < capacity
     return retVal
   }

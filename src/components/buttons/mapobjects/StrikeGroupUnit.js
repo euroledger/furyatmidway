@@ -51,12 +51,12 @@ export default class StrikeGroupUnit extends BaseUnit {
     return this._attacked
   }
 
-  set turrnmoved(tm) {
-    this._turrnmoved = tm
+  set turnmoved(tm) {
+    this._turnmoved = tm
   }
 
-  get turrnmoved() {
-    return this._turrnmoved
+  get turnmoved() {
+    return this._turnmoved
   }
   
   set turnattacked(ta) {

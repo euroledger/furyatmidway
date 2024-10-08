@@ -1,4 +1,4 @@
-import React, { useState, useEffect, useContext } from "react"
+import React, { useState } from "react"
 import TurnMarkerButton from "./buttons/TurnMarkerButton"
 import AOPMarkerButton from "./buttons/AOPMarkerButton"
 import MidwayInvasionButton from "./buttons/MidwayInvasionButton"

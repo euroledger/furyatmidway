@@ -222,4 +222,30 @@ describe("Air Operations tests with Preset air unit locations", () => {
 
     expect(destinations).toBeNull
   })
+
+  test("Compute List of All Units Still in CAP Return Boxes", () => {
+    aaf1.aircraftUnit.intercepting = true
+    kaf1.aircraftUnit.intercepting = true
+    saf1.aircraftUnit.intercepting = true
+    saf2.aircraftUnit.intercepting = true
+
+    controller.addAirUnitToBox(GlobalUnitsModel.AirBox.JP_CD1_CAP_RETURN, 0, aaf1)
+    controller.addAirUnitToBox(GlobalUnitsModel.AirBox.JP_CD1_CAP_RETURN, 1, kaf1)
+    controller.addAirUnitToBox(GlobalUnitsModel.AirBox.JP_CD2_CAP_RETURN, 0, saf1)
+    controller.addAirUnitToBox(GlobalUnitsModel.AirBox.JP_CD2_CAP_RETURN, 1, saf2)
+
+    const defenders = controller.getAllCAPDefenders(GlobalUnitsModel.Side.JAPAN)
+    expect(defenders.length).toEqual(4)
+
+    let capReturningUnits = controller.getAllCAPDefendersInCAPReturnBoxes(GlobalUnitsModel.Side.JAPAN)
+    expect(capReturningUnits.length).toEqual(4)
+
+    controller.addAirUnitToBox(GlobalUnitsModel.AirBox.JP_AKAGI_HANGAR, 0, aaf1)
+    controller.addAirUnitToBox(GlobalUnitsModel.AirBox.JP_KAGA_HANGAR, 1, kaf1)
+    controller.addAirUnitToBox(GlobalUnitsModel.AirBox.JP_SORYU_HANGAR, 0, saf1)
+    controller.addAirUnitToBox(GlobalUnitsModel.AirBox.JP_SORYU_HANGAR, 1, saf2)
+
+    capReturningUnits = controller.getAllCAPDefendersInCAPReturnBoxes(GlobalUnitsModel.Side.JAPAN)
+    expect(capReturningUnits.length).toEqual(0)
+  })
 })

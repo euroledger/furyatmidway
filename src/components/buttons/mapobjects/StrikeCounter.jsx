@@ -273,18 +273,13 @@ function StrikeCounter({ setStrikeGroupPopup, currentUSHex, currentJapanHex, cou
     // Since air units cannot move again after being added to a strike group,
     // once that strike group has moved, we should rotate the air counters back to normal position
 
-    const unitsInThisSG = controller.getAirUnitsInStrikeGroups(counterData.box)
 
-    // for (const unit of unitsInThisSG) {
-    //   unit.aircraftUnit.moved = false
+    // const units = controller.getStrikeGroupsNotMoved(side)
+    // if (units.length === 0) {
+    //   GlobalGameState.phaseCompleted = true
+    // } else {
+    //   GlobalGameState.phaseCompleted = false
     // }
-
-    const units = controller.getStrikeGroupsNotMoved(side)
-    if (units.length === 0) {
-      GlobalGameState.phaseCompleted = true
-    } else {
-      GlobalGameState.phaseCompleted = false
-    }
   }
   const zx = side === GlobalUnitsModel.Side.JAPAN ? 93 : 11
 

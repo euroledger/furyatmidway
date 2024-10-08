@@ -31,6 +31,11 @@ function AirCounter({ getAirBox, setAirBox, counterData, side }) {
     // only the selected (clicked) air unit should be draggable
     setSelected(() => true)
 
+    // Only CAP Units can be moved during the other side's air operation (at the end
+    // of all airstrikes to return to carrier)
+    if (GlobalGameState.sideWithInitiative !== counterData.side && !counterData.aircraftUnit.intercepting) {
+      return
+    }
     if (
       counterData.aircraftUnit.moved ||
       GlobalGameState.gamePhase === GlobalGameState.PHASE.JAPAN_SETUP ||
@@ -89,34 +94,40 @@ function AirCounter({ getAirBox, setAirBox, counterData, side }) {
         return
       }
 
-      if (GlobalGameState.gamePhase === GlobalGameState.PHASE.AIR_SEARCH) {
+      if (GlobalGameState.gamePhase === GlobalGameState.PHASE.INITIATIVE_DETERMINATION) {
         // return moves done in air operations handler
         return
       }
-      controller.viewEventHandler({
-        type: Controller.EventTypes.AIR_UNIT_MOVE,
-        data: {
-          name: airUnitUpdate.boxName,
-          counterData,
-          index: airUnitUpdate.index,
-          side: theSide,
-          loading: loading,
-        },
-      })
+      if (airUnitUpdate.log !== false) {
+        controller.viewEventHandler({
+          type: Controller.EventTypes.AIR_UNIT_MOVE,
+          data: {
+            name: airUnitUpdate.boxName,
+            counterData,
+            index: airUnitUpdate.index,
+            side: theSide,
+            loading: loading,
+          },
+        })
+      }
+ 
     } else {
-      controller.viewEventHandler({
-        type: Controller.EventTypes.AIR_UNIT_SETUP,
-        data: {
-          name: airUnitUpdate.boxName,
-          counterData,
-          index: airUnitUpdate.index,
-          side: theSide,
-        },
-      })
+      if (GlobalGameState.gamePhase === GlobalGameState.PHASE.JAPAN_SETUP || GlobalGameState.gamePhase === GlobalGameState.PHASE.US_SETUP_AIR) {
+        controller.viewEventHandler({
+          type: Controller.EventTypes.AIR_UNIT_SETUP,
+          data: {
+            name: airUnitUpdate.boxName,
+            counterData,
+            index: airUnitUpdate.index,
+            side: theSide,
+          },
+        })
+      }
     }
   }
 
   const japanDrop = (counterData) => {
+    console.log("********* GOT A JAPAN DROP **********")
     if (
       counterData.carrier != GlobalGameState.getJapanCarrier() &&
       GlobalGameState.gamePhase === GlobalGameState.PHASE.JAPAN_SETUP &&
@@ -124,6 +135,7 @@ function AirCounter({ getAirBox, setAirBox, counterData, side }) {
     ) {
       // cannot move units from carrier other than the current one being set up
 
+      console.log("COMPUTER Say no 10")
       return false
     }
     const { name, offsets } = getAirBox()
@@ -156,16 +168,22 @@ function AirCounter({ getAirBox, setAirBox, counterData, side }) {
       GlobalGameState.gamePhase !== GlobalGameState.PHASE.AIR_OPERATIONS
     ) {
       // cannot move units from carrier other than the current one being set up
+      console.log("100 COMPUTER SAY NO")
+
       return false
     }
     const { name, offsets } = getAirBox()
     if (!offsets) {
+      console.log("400 COMPUTER SAY NO")
+
       return false
     }
 
     // attack is true if the air unit is torpedo or dive bomber, i.e., not a fighter
     const airUnit = controller.getUSAirUnit(counterData.name)
     if (!airUnit) {
+      console.log("500 COMPUTER SAY NO")
+
       // error
       return false
     }
@@ -191,16 +209,23 @@ function AirCounter({ getAirBox, setAirBox, counterData, side }) {
     if (side != theSide) {
       return
     }
+    console.log("GOT A DROP FOR", counterData.name)
+
     if (counterData.aircraftUnit.moved) {
+      console.log("1 COMPUTER SAY NO")
       return
     }
 
     const unit = controller.getAirUnitInBox(name, index)
     if (unit) {
       // already a unit in that box
+      console.log("2 COMPUTER SAY NO")
+
       return
     }
     if (!selected) {
+      console.log("23 COMPUTER SAY NO")
+
       return
     }
     if (theSide === GlobalUnitsModel.Side.JAPAN) {
@@ -213,6 +238,7 @@ function AirCounter({ getAirBox, setAirBox, counterData, side }) {
       }
     }
 
+    console.log("................. set position to ", offsets.left + "%", offsets.top - 0.2 + "%")
     setPosition({
       left: offsets.left + "%",
       top: offsets.top - 0.2 + "%",
