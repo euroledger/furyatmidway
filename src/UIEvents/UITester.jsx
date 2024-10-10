@@ -22,9 +22,10 @@ function delay(ms) {
   })
 }
 
-async function moveCAPUnitsFromReturnBoxToCarrier(setAirUnitUpdate) {
+async function moveCAPUnitsFromReturnBoxToCarrier(setTestUpdate) {
   const capUnitsReturning = GlobalInit.controller.getAllCAPDefendersInCAPReturnBoxes(GlobalUnitsModel.Side.JAPAN)
 
+  console.log("BACK IN UI TESTER capUnitsReturning length=", capUnitsReturning.length)
   for (const unit of capUnitsReturning) {
     const parentCarrier = GlobalInit.controller.getCarrierForAirUnit(unit.name)
 
@@ -45,9 +46,13 @@ async function moveCAPUnitsFromReturnBoxToCarrier(setAirUnitUpdate) {
     update.index = GlobalInit.controller.getFirstAvailableZone(update.boxName)
     let position1 = JapanAirBoxOffsets.find((box) => box.name === update.boxName)
     console.log("position1 = ", position1, "box name=", update.boxName)
+    if (position1 === undefined) {
+      // orphaned CAP Unit, ignore
+      continue
+    }
     update.position = position1.offsets[update.index]
 
-    setAirUnitUpdate(update)
+    setTestUpdate(update)
     await delay(5)
   }
 }
@@ -329,7 +334,7 @@ async function doAirStrike(setAttackAirCounterUpdate) {
 const UITester = async ({
   e,
   setTestClicked,
-  setAirUnitUpdate,
+  setTestUpdate,
   setFleetUnitUpdate,
   setStrikeGroupUpdate,
   nextAction,
@@ -348,7 +353,7 @@ const UITester = async ({
     let position1 = JapanAirBoxOffsets.find((box) => box.name === update.boxName)
     update.position = position1.offsets[update.index]
 
-    setAirUnitUpdate(update)
+    setTestUpdate(update)
     await delay(DELAY)
     if (update.nextAction) {
       nextAction(e)
@@ -372,7 +377,7 @@ const UITester = async ({
 
     update.position = position1.offsets[update.index]
 
-    setAirUnitUpdate(update)
+    setTestUpdate(update)
 
     await delay(DELAY)
     if (update.nextAction) {
@@ -426,7 +431,7 @@ const UITester = async ({
 
     update.position = position1.offsets[update.index]
     // console.log("Send Air Unit update:", update)
-    setAirUnitUpdate(update)
+    setTestUpdate(update)
 
     await delay(DELAY)
     if (update.nextAction) {
@@ -450,10 +455,7 @@ const UITester = async ({
   await delay(1000)
   nextAction(e)
 
-  console.log("QUACK GO HOME JAPS!")
-
-  // @TODO  MOVE INTERCEPTING JAPANESE CAP UNITS BACK TO CARRIERS
-  moveCAPUnitsFromReturnBoxToCarrier(setAirUnitUpdate)
+  moveCAPUnitsFromReturnBoxToCarrier(setTestUpdate)
 
   // doInitiativeRoll(3, 2)
   // // await delay(1000)

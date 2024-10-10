@@ -50,13 +50,19 @@ class ViewEventStrikeGroupMoveHandler {
         this.controller.resetTargetMap()
         GlobalGameState.carrierTarget1=""
         GlobalGameState.carrierTarget2=""
-        counterData.attacked = false // possible reset from previous attack
-        if (GlobalGameState.attackingStrikeGroup) {
-          const attackingSG = GlobalGameState.attackingStrikeGroup
-          attackingSG.attacked = true // set previous strike group to done
-          attackingSG.turnattacked = GlobalGameState.gameTurn // set previous strike group to done
-        }
+        // counterData.attacked = false // possible reset from previous attack
+        // if (GlobalGameState.attackingStrikeGroup) {
+        //   const attackingSG = GlobalGameState.attackingStrikeGroup
+        //   attackingSG.attacked = true // set previous strike group to done
+        //   attackingSG.turnattacked = GlobalGameState.gameTurn // set previous strike group to done
+        // }
+        counterData.attacked = true
+        counterData.turnattacked = GlobalGameState.gameTurn
+
         GlobalGameState.attackingStrikeGroup = counterData
+        GlobalGameState.attacked = true
+        GlobalGameState.turnattacked = GlobalGameState.gameTurn
+        
       }
     } else {
       counterData.moved = moved

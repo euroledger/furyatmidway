@@ -46,6 +46,7 @@ function LargeDicePanel(props) {
       }
     }
   }, [GlobalGameState.closePanel])
+
   const bg = "#293a4b"
   const closey = closeButtonStr ?? "Close"
 

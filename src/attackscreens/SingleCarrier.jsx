@@ -77,6 +77,11 @@ export function SingleCarrier({ controller }) {
   } else if (GlobalGameState.currentCarrierAttackTarget === GlobalUnitsModel.Carrier.MIDWAY) {
     carrierTarget = usMidway
     marginL = "-60px"
+  } else {
+    console.log(
+      "ERROR: NO CARRIER TARGET, GlobalGameState.currentCarrierAttackTarget=",
+      GlobalGameState.currentCarrierAttackTarget
+    )
   }
 
   const createImage = (image, left, top) => {

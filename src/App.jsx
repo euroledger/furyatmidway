@@ -52,6 +52,7 @@ import LargeDicePanel from "./components/dialogs/LargeDicePanel"
 import AttackDicePanel from "./components/dialogs/AttackDicePanel"
 import CarrierDamageDicePanel from "./components/dialogs/CarrierDamageDicePanel"
 import MidwayDamageDicePanel from "./components/dialogs/MidwayDamageDicePanel"
+import EliminatedReturningUnits from "./components/dialogs/EliminatedReturningUnitsPanel"
 import { AirOpsHeaders, AirOpsFooters } from "./attackscreens/AirOpsDataPanels"
 import { TargetHeaders, TargetFooters } from "./attackscreens/TargetPanel"
 import { AttackTargetHeaders, AttackTargetFooters } from "./attackscreens/AttackTargetPanel"
@@ -64,7 +65,6 @@ import { AttackResolutionHeaders, AttackResolutionFooters } from "./attackscreen
 import UITester from "./UIEvents/UITester"
 import { getJapanEnabledAirBoxes, getUSEnabledAirBoxes } from "./AirBoxZoneHandler"
 import handleAction, { calcAirOpsPointsMidway } from "./GameStateHandler"
-import { moveStrikeUnitsToReturnBox, moveCAPtoReturnBox } from "./controller/AirOperationsHandler"
 
 export default App
 
@@ -122,6 +122,7 @@ export function App() {
   const [attackTargetPanelShow, setAttackTargetPanelShow] = useState(false)
   const [attackResolutionPanelShow, setAttackResolutionPanelShow] = useState(false)
   const [carrierDamagePanelShow, setCarrierDamagePanelShow] = useState(false)
+  const [eliminatedUnitsPanelShow, setEliminatedUnitsPanelShow] = useState(false)
 
   const [midwayDamagePanelShow, setMidwayDamagePanelShow] = useState(false)
 
@@ -139,6 +140,13 @@ export function App() {
   const [fightersPresent, setFightersPresent] = useState(true)
 
   const [airUnitUpdate, setAirUnitUpdate] = useState({
+    unit: {},
+    position: {},
+    boxName: "",
+    index: -1,
+  })
+
+  const [testUpdate, setTestUpdate] = useState({
     unit: {},
     position: {},
     boxName: "",
@@ -291,7 +299,6 @@ export function App() {
   useEffect(() => {
     if (
       GlobalGameState.gamePhase === GlobalGameState.PHASE.CAP_DAMAGE_ALLOCATION ||
-      GlobalGameState.gamePhase === GlobalGameState.PHASE.ESCORT_DAMAGE_ALLOCATION ||
       GlobalGameState.gamePhase === GlobalGameState.PHASE.AAA_DAMAGE_ALLOCATION
     ) {
       setEliminatedSteps(0)
@@ -300,8 +307,18 @@ export function App() {
   }, [GlobalGameState.gamePhase])
 
   useEffect(() => {
+    if (
+      GlobalGameState.gamePhase === GlobalGameState.PHASE.ESCORT_DAMAGE_ALLOCATION
+    ) {
+      console.log("SHOW THE FUCKING SCREEN")
+      setEliminatedSteps(0)
+      setDamageAllocationPanelShow(true)
+    }
+  }, [GlobalGameState.gamePhase])
+  useEffect(() => {
     if (GlobalGameState.gamePhase === GlobalGameState.PHASE.ESCORT_COUNTERATTACK) {
       GlobalGameState.dieRolls = 0
+      GlobalGameState.dieRolls = []
       setEscortPanelShow(true)
     }
   }, [GlobalGameState.gamePhase])
@@ -453,6 +470,7 @@ export function App() {
       capSteps,
       capAirUnits,
       setAirUnitUpdate,
+      setEliminatedUnitsPanelShow
     })
   }
 
@@ -460,7 +478,7 @@ export function App() {
     await UITester({
       e,
       setTestClicked,
-      setAirUnitUpdate,
+      setTestUpdate,
       setAttackAirCounterUpdate,
       setFleetUnitUpdate,
       setStrikeGroupUpdate,
@@ -476,12 +494,9 @@ export function App() {
   }
   function endOfMyAirOperation(side) {
     // 1. MOVE STRIKE UNITS TO CORRECT RETURN BOX
-    const units = GlobalInit.controller.getStrikeGroupsNotMoved2(side)
-    if (units.length > 0 && units.length !== undefined) {
+    const anyUnitsNotMoved = GlobalInit.controller.getStrikeGroupsNotMoved2(side)
+    if (anyUnitsNotMoved) {
       return false
-    }
-    if (units.length === 0) {
-      GlobalInit.controller.setAllUnitsToNotMoved()
     }
 
     const sideBeingAttacked =
@@ -490,6 +505,7 @@ export function App() {
         : GlobalUnitsModel.Side.US
     // 2. CHECK ALL INTERCEPTING CAP UNITS HAVE RETURNED TO CARRIERS
     const capUnitsReturning = GlobalInit.controller.getAllCAPDefendersInCAPReturnBoxes(sideBeingAttacked)
+  
     if (capUnitsReturning.length === 0) {
       return true
     }
@@ -501,8 +517,7 @@ export function App() {
       !GlobalGameState.phaseCompleted ||
       (GlobalGameState.gamePhase === GlobalGameState.PHASE.JAPAN_FLEET_MOVEMENT && !GlobalGameState.jpFleetPlaced) ||
       (GlobalGameState.gamePhase === GlobalGameState.PHASE.US_SETUP_FLEET && !GlobalGameState.usFleetPlaced)
-
-    if (endOfAirOps) {
+      if (endOfAirOps) {
       GlobalGameState.nextActionButtonDisabled = false
     }
   }
@@ -524,7 +539,9 @@ export function App() {
     }
     let midwayMsg = ""
     checkAirOps()
-    // console.log(">>> INITIATIVE PANEL SHOW=", initiativePanelShow)
+    if (GlobalGameState.gamePhase === GlobalGameState.PHASE.END_OF_AIR_OPERATION) {
+      GlobalGameState.nextActionButtonDisabled = false
+    }
     if (GlobalGameState.gamePhase === GlobalGameState.PHASE.MIDWAY_ATTACK) {
       if (GlobalGameState.midwayAirOp === 1) {
         midwayMsg = "(First Air Op)"
@@ -986,8 +1003,12 @@ export function App() {
   }
   let closeDamageButtonDisabled = false
   if (GlobalGameState.gamePhase === GlobalGameState.PHASE.CAP_DAMAGE_ALLOCATION) {
+    console.log("eliminated steps=", eliminatedSteps, "stepsLeft=", stepsLeft, "cap hits=",GlobalGameState.capHits )
+
     closeDamageButtonDisabled = eliminatedSteps !== GlobalGameState.capHits && stepsLeft !== 0
   } else if (GlobalGameState.gamePhase === GlobalGameState.PHASE.ESCORT_DAMAGE_ALLOCATION) {
+    console.log("eliminated steps=", eliminatedSteps, "stepsLeft=", stepsLeft, "fighterHits hits=",GlobalGameState.fighterHits )
+
     closeDamageButtonDisabled = eliminatedSteps !== GlobalGameState.fighterHits && stepsLeft !== 0
   } else if (GlobalGameState.gamePhase === GlobalGameState.PHASE.AAA_DAMAGE_ALLOCATION) {
     closeDamageButtonDisabled = eliminatedSteps !== GlobalGameState.antiaircraftHits && stepsLeft != 0
@@ -1011,6 +1032,7 @@ export function App() {
 
   let airOpsDiceButtonDisabled =
     GlobalGameState.sideWithInitiative !== undefined && GlobalGameState.sideWithInitiative !== ""
+  
   return (
     <>
       <LoadGamePanel
@@ -1105,7 +1127,6 @@ export function App() {
           nextAction(e)
         }}
         doRoll={doInitiativeRoll}
-        nextState={GlobalGameState.PHASE.AIR_OPERATIONS}
         diceButtonDisabled={airOpsDiceButtonDisabled}
         closeButtonDisabled={!airOpsDiceButtonDisabled}
       ></DicePanel>
@@ -1198,8 +1219,8 @@ export function App() {
           nextAction(e)
         }}
         doRoll={doCounterattackRolls}
-        diceButtonDisabled={GlobalGameState.dieRolls !== 0}
-        closeButtonDisabled={GlobalGameState.dieRolls === 0 && getNumEscortFighterSteps(GlobalInit.controller) !== 0}
+        diceButtonDisabled={GlobalGameState.dieRolls.length !== 0}
+        closeButtonDisabled={GlobalGameState.dieRolls.length === 0 && getNumEscortFighterSteps(GlobalInit.controller) !== 0}
         disabled={false}
       ></LargeDicePanel>
       <LargeDicePanel
@@ -1307,7 +1328,21 @@ export function App() {
         closeButtonDisabled={midwayDamageDiceButtonEnabled}
         setDamageMarkerUpdate={setDamageMarkerUpdate}
         disabled={false}
-      ></MidwayDamageDicePanel>
+      ></MidwayDamageDicePanel>      
+      <EliminatedReturningUnits
+        controller={GlobalInit.controller}
+        show={eliminatedUnitsPanelShow}
+        headerText="Eliminated Air Units"
+        margin={0}
+        onHide={(e) => {
+          setEliminatedUnitsPanelShow(false)
+          nextAction(e)
+        }}
+        width={30}
+        closeButtonStr="Next..."
+        closeButtonDisabled={false}
+        disabled={false}
+      ></EliminatedReturningUnits>
       <GameStatusPanel show={gameStateShow} gameState={gameState} onHide={() => setGameStateShow(false)} />
       <CardPanel show={jpHandShow} side={GlobalUnitsModel.Side.JAPAN} onHide={() => setjpHandShow(false)}></CardPanel>
       <CardPanel show={usHandShow} side={GlobalUnitsModel.Side.US} onHide={() => setusHandShow(false)}></CardPanel>
@@ -1345,6 +1380,7 @@ export function App() {
                   onStop,
                   scale,
                   airUnitUpdate,
+                  testUpdate,
                   fleetUnitUpdate,
                   strikeGroupUpdate,
                   damageMarkerUpdate,

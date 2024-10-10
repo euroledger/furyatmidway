@@ -74,6 +74,8 @@ export function doFighterCounterattack(controller, testRolls) {
   }
   GlobalGameState.dieRolls = 1
   GlobalGameState.fighterHits = hits
+    // GlobalGameState.fighterHits = 1 // QUACK TESTING ONLY
+
 }
 
 export function getAirUnitOnFlightDeck(controller, carrier, bowOrStern) {
@@ -609,8 +611,8 @@ export function doAttackFireRolls(controller, testRolls) {
     GlobalGameState.carrierAttackHitsThisAttack = hits
 
     // QUACK REMOVE TEESTING ONLY
-    // GlobalGameState.carrierAttackHits = 1
-    // GlobalGameState.carrierAttackHitsThisAttack = 1
+    // GlobalGameState.carrierAttackHits = 3
+    // GlobalGameState.carrierAttackHitsThisAttack = 3
   }
   return hits
 }
@@ -652,10 +654,16 @@ function getFightersForStrikeGroup(controller) {
 
   const strikeGroups = controller.getAllStrikeGroupsInLocation(location, GlobalGameState.sideWithInitiative)
 
-  if (!strikeGroups || strikeGroups.length === 0) {
+  if (!GlobalGameState.attackingStrikeGroup) {
     return []
   }
-  let fighters = controller.getAllFightersInBox(strikeGroups[0].box)
+  // console.log("attackingStrikeGroup=", GlobalGameState.attackingStrikeGroup)
+  // if (!strikeGroups || strikeGroups.length === 0) {
+  //   return []
+  // }
+  // console.log("strikeGroups[0].box=", strikeGroups[0].box)
+  let fighters = controller.getAllFightersInBox(GlobalGameState.attackingStrikeGroup.box)
+
   return fighters
 }
 
@@ -670,7 +678,6 @@ function getNumStepsInStrikeUnits(units) {
 
 export function getNumEscortFighterSteps(controller) {
   let fighters = getFightersForStrikeGroup(controller)
-
   let steps = 0
 
   for (let unit of fighters) {
@@ -851,7 +858,7 @@ export function doCAP(controller, capAirUnits, fightersPresent, testRolls) {
   GlobalGameState.capHits = hits
 }
 
-function moveAirUnitToEliminatedBox(controller, airUnit) {
+export function moveAirUnitToEliminatedBox(controller, airUnit) {
   const toBox =
     airUnit.side === GlobalUnitsModel.Side.JAPAN
       ? GlobalUnitsModel.AirBox.JP_ELIMINATED

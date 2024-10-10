@@ -13,6 +13,7 @@ function AirCounter({ getAirBox, setAirBox, counterData, side }) {
     controller,
     onStop,
     airUnitUpdate,
+    testUpdate,
     setIsMoveable,
     setAlertShow,
     setEnabledUSBoxes,
@@ -26,14 +27,13 @@ function AirCounter({ getAirBox, setAirBox, counterData, side }) {
   const onDrag = () => {
     setIsMoveable(true)
 
-    // @TODO QUACK  PUT THIS BACK IN
-
     // only the selected (clicked) air unit should be draggable
     setSelected(() => true)
 
     // Only CAP Units can be moved during the other side's air operation (at the end
     // of all airstrikes to return to carrier)
-    if (GlobalGameState.sideWithInitiative !== counterData.side && !counterData.aircraftUnit.intercepting) {
+    const location = controller.getAirUnitLocation(counterData.name)
+    if (GlobalGameState.sideWithInitiative !== counterData.side && !location.boxName.includes("CAP RETURNING")) {
       return
     }
     if (
@@ -43,7 +43,6 @@ function AirCounter({ getAirBox, setAirBox, counterData, side }) {
     ) {
       return
     }
-
     if (
       GlobalGameState.gamePhase === GlobalGameState.PHASE.AIR_OPERATIONS ||
       GlobalGameState.gamePhase === GlobalGameState.PHASE.MIDWAY_ATTACK
@@ -56,78 +55,89 @@ function AirCounter({ getAirBox, setAirBox, counterData, side }) {
 
   const [theSide, setSide] = useState(side)
 
-  // This code for the test mode air unit updates
+  const  doUpdate = (update) => {
+    //  console.log("I am ", counterData.name, " -> AIR UNIT UPDATE = ", update)
+
+     const unit = controller.getAirUnitInBox(update.boxName, update.index)
+     if (unit) {
+       alert(`ERROR unit already there -> ${update.boxName}, index ${update.index}`)
+       return
+     }
+ 
+     setPosition(() => ({
+       left: update.position.left + "%",
+       top: update.position.top - 0.2 + "%",
+     }))
+ 
+     if (
+       GlobalGameState.gamePhase === GlobalGameState.PHASE.AIR_OPERATIONS ||
+       GlobalGameState.gamePhase === GlobalGameState.PHASE.MIDWAY_ATTACK ||
+       GlobalGameState.gamePhase === GlobalGameState.PHASE.AAA_DAMAGE_ALLOCATION ||
+       GlobalGameState.gamePhase === GlobalGameState.PHASE.ANTI_AIRCRAFT_FIRE ||
+       GlobalGameState.gamePhase === GlobalGameState.PHASE.ESCORT_COUNTERATTACK ||
+       GlobalGameState.gamePhase === GlobalGameState.PHASE.ESCORT_DAMAGE_ALLOCATION ||
+       GlobalGameState.gamePhase === GlobalGameState.PHASE.ATTACK_TARGET_SELECTION ||
+       GlobalGameState.gamePhase === GlobalGameState.PHASE.AIR_SEARCH
+     ) {
+       if (
+         GlobalGameState.gamePhase === GlobalGameState.PHASE.ATTACK_TARGET_SELECTION &&
+         update.boxName.includes("CAP")
+       ) {
+         // CAP moves done in air unit handler
+         return
+       }
+ 
+       if (GlobalGameState.gamePhase === GlobalGameState.PHASE.INITIATIVE_DETERMINATION) {
+         // return moves done in air operations handler
+         return
+       }
+       if (update.log !== false) {
+         controller.viewEventHandler({
+           type: Controller.EventTypes.AIR_UNIT_MOVE,
+           data: {
+             name: update.boxName,
+             counterData,
+             index: update.index,
+             side: theSide,
+             loading: loading,
+           },
+         })
+       }
+  
+     } else {
+       if (GlobalGameState.gamePhase === GlobalGameState.PHASE.JAPAN_SETUP || GlobalGameState.gamePhase === GlobalGameState.PHASE.US_SETUP_AIR) {
+         controller.viewEventHandler({
+           type: Controller.EventTypes.AIR_UNIT_SETUP,
+           data: {
+             name: update.boxName,
+             counterData,
+             index: update.index,
+             side: theSide,
+           },
+         })
+       }
+     }
+  }
+  // This code for air unit updates
   if (
     counterData.name === airUnitUpdate.name &&
     airUnitUpdate.position != undefined &&
     position.left !== airUnitUpdate.position.left + "%" &&
     position.top !== airUnitUpdate.position.top + "%"
   ) {
-    // console.log("I am ", counterData.name, " -> AIR UNIT UPDATE = ", airUnitUpdate)
+    doUpdate(airUnitUpdate)
+  }
 
-    const unit = controller.getAirUnitInBox(airUnitUpdate.boxName, airUnitUpdate.index)
-    if (unit) {
-      alert(`ERROR unit already there -> ${airUnitUpdate.boxName}, index ${airUnitUpdate.index}`)
-      return
-    }
-
-    setPosition(() => ({
-      left: airUnitUpdate.position.left + "%",
-      top: airUnitUpdate.position.top - 0.2 + "%",
-    }))
-
-    if (
-      GlobalGameState.gamePhase === GlobalGameState.PHASE.AIR_OPERATIONS ||
-      GlobalGameState.gamePhase === GlobalGameState.PHASE.MIDWAY_ATTACK ||
-      GlobalGameState.gamePhase === GlobalGameState.PHASE.AAA_DAMAGE_ALLOCATION ||
-      GlobalGameState.gamePhase === GlobalGameState.PHASE.ANTI_AIRCRAFT_FIRE ||
-      GlobalGameState.gamePhase === GlobalGameState.PHASE.ESCORT_COUNTERATTACK ||
-      GlobalGameState.gamePhase === GlobalGameState.PHASE.ESCORT_DAMAGE_ALLOCATION ||
-      GlobalGameState.gamePhase === GlobalGameState.PHASE.ATTACK_TARGET_SELECTION ||
-      GlobalGameState.gamePhase === GlobalGameState.PHASE.AIR_SEARCH
-    ) {
-      if (
-        GlobalGameState.gamePhase === GlobalGameState.PHASE.ATTACK_TARGET_SELECTION &&
-        airUnitUpdate.boxName.includes("CAP")
-      ) {
-        // CAP moves done in air unit handler
-        return
-      }
-
-      if (GlobalGameState.gamePhase === GlobalGameState.PHASE.INITIATIVE_DETERMINATION) {
-        // return moves done in air operations handler
-        return
-      }
-      if (airUnitUpdate.log !== false) {
-        controller.viewEventHandler({
-          type: Controller.EventTypes.AIR_UNIT_MOVE,
-          data: {
-            name: airUnitUpdate.boxName,
-            counterData,
-            index: airUnitUpdate.index,
-            side: theSide,
-            loading: loading,
-          },
-        })
-      }
- 
-    } else {
-      if (GlobalGameState.gamePhase === GlobalGameState.PHASE.JAPAN_SETUP || GlobalGameState.gamePhase === GlobalGameState.PHASE.US_SETUP_AIR) {
-        controller.viewEventHandler({
-          type: Controller.EventTypes.AIR_UNIT_SETUP,
-          data: {
-            name: airUnitUpdate.boxName,
-            counterData,
-            index: airUnitUpdate.index,
-            side: theSide,
-          },
-        })
-      }
-    }
+  if (
+    counterData.name === testUpdate.name &&
+    testUpdate.position != undefined &&
+    position.left !== testUpdate.position.left + "%" &&
+    position.top !== testUpdate.position.top + "%"
+  ) {
+    doUpdate(testUpdate)
   }
 
   const japanDrop = (counterData) => {
-    console.log("********* GOT A JAPAN DROP **********")
     if (
       counterData.carrier != GlobalGameState.getJapanCarrier() &&
       GlobalGameState.gamePhase === GlobalGameState.PHASE.JAPAN_SETUP &&
@@ -135,7 +145,6 @@ function AirCounter({ getAirBox, setAirBox, counterData, side }) {
     ) {
       // cannot move units from carrier other than the current one being set up
 
-      console.log("COMPUTER Say no 10")
       return false
     }
     const { name, offsets } = getAirBox()
@@ -168,22 +177,16 @@ function AirCounter({ getAirBox, setAirBox, counterData, side }) {
       GlobalGameState.gamePhase !== GlobalGameState.PHASE.AIR_OPERATIONS
     ) {
       // cannot move units from carrier other than the current one being set up
-      console.log("100 COMPUTER SAY NO")
-
       return false
     }
     const { name, offsets } = getAirBox()
     if (!offsets) {
-      console.log("400 COMPUTER SAY NO")
-
       return false
     }
 
     // attack is true if the air unit is torpedo or dive bomber, i.e., not a fighter
     const airUnit = controller.getUSAirUnit(counterData.name)
     if (!airUnit) {
-      console.log("500 COMPUTER SAY NO")
-
       // error
       return false
     }
@@ -209,23 +212,16 @@ function AirCounter({ getAirBox, setAirBox, counterData, side }) {
     if (side != theSide) {
       return
     }
-    console.log("GOT A DROP FOR", counterData.name)
-
     if (counterData.aircraftUnit.moved) {
-      console.log("1 COMPUTER SAY NO")
       return
     }
 
     const unit = controller.getAirUnitInBox(name, index)
     if (unit) {
       // already a unit in that box
-      console.log("2 COMPUTER SAY NO")
-
       return
     }
     if (!selected) {
-      console.log("23 COMPUTER SAY NO")
-
       return
     }
     if (theSide === GlobalUnitsModel.Side.JAPAN) {
@@ -237,8 +233,6 @@ function AirCounter({ getAirBox, setAirBox, counterData, side }) {
         return
       }
     }
-
-    console.log("................. set position to ", offsets.left + "%", offsets.top - 0.2 + "%")
     setPosition({
       left: offsets.left + "%",
       top: offsets.top - 0.2 + "%",
@@ -261,12 +255,6 @@ function AirCounter({ getAirBox, setAirBox, counterData, side }) {
           side: theSide,
         },
       })
-      const units = controller.getStrikeGroupsNotMoved(theSide)
-      if (units.length === 0) {
-        GlobalGameState.phaseCompleted = true
-      } else {
-        GlobalGameState.phaseCompleted = false
-      }
       // remove valid destinations (do not allow change move, use undo for that)
       controller.setValidAirUnitDestinations(counterData.name, new Array())
       setBoxes(counterData)
@@ -324,7 +312,7 @@ function AirCounter({ getAirBox, setAirBox, counterData, side }) {
   const zx = side === GlobalUnitsModel.Side.JAPAN ? 93 : 11
 
   // console.log(counterData.name, "->", counterData.aircraftUnit.moved)
-  const transform = counterData.aircraftUnit.moved ? "rotate(45deg)" : ""
+  const transform = counterData.aircraftUnit.moved || counterData.aircraftUnit.turnmoved !== undefined ? "rotate(45deg)" : ""
 
   // console.log(counterData.name, transform)
 

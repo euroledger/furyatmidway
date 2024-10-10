@@ -148,9 +148,17 @@ export default class Controller {
   getAllCAPDefendersInCAPReturnBoxes(side) {
     const airUnits = Array.from(this.counters.values())
     const defenders = airUnits.filter((unit) => unit.constructor.name === "AirUnit" && unit.side === side)
+
+    let quack = new Array()
+
     let units = new Array()
     for (const unit of defenders) {
       const location = this.getAirUnitLocation(unit.name)
+
+      // TEST SHIT
+      unit.location = location
+      quack.push(unit)
+
       if (location.boxName.includes("CAP RETURNING")) {
         units.push(unit)
       }
@@ -390,7 +398,7 @@ export default class Controller {
       this.counters.set(unit.name, unit)
     }
   }
-  setAllUnitsToNotMoved() {
+  async setAllUnitsToNotMoved() {
     const airunits = this.counters.values().filter((unit) => unit.constructor.name === "AirUnit")
 
     for (const unit of airunits) {
@@ -423,8 +431,16 @@ export default class Controller {
     if (strikeGroups.length === 0) {
       return []
     }
-    const sgs = strikeGroups.filter((sg) => sg.turnmoved === undefined)
-    return sgs
+
+    for (let s of strikeGroups) {
+      if (!s.moved) {
+        return true
+      }
+    }
+
+    for (let s of strikeGroups) {
+    }
+    return false
   }
   getStrikeGroupsNotMoved(side) {
     const strikeGroups = this.getAllStrikeGroups(side)
@@ -654,24 +670,15 @@ export default class Controller {
     }
 
     const strikeGroups = this.getAllStrikeGroupsInLocation(location, GlobalGameState.sideWithInitiative)
-
     if (strikeGroups.length === 0) {
       return []
     }
 
-    let unitsInGroup
-    let index = 0
-    for (let sg of strikeGroups) {
-      if (index === strikeGroups.length) {
-        return []
-      }
-      // console.log("SG: ", sg.name, "ATTACKED=", sg.attacked)
-      if (!sg.attacked) {
-        unitsInGroup = this.getAirUnitsInStrikeGroups(strikeGroups[index].box)
-        break
-      }
-      index++
-    }
+    let unitsInGroup = new Array()
+    const box = GlobalGameState.attackingStrikeGroup.box
+
+    // console.log("SG: ", sg.name, "ATTACKED=", sg.attacked)
+    unitsInGroup = this.getAirUnitsInStrikeGroups(box)
 
     if (excludeFighters) {
       unitsInGroup = unitsInGroup.filter((unit) => unit.aircraftUnit.attack === true)
@@ -692,8 +699,8 @@ export default class Controller {
     } else {
       location = this.getFleetLocation(fleetBeingAttacked, sideBeingAttacked)
     }
-    const strikeGroups = this.getAllStrikeGroupsInLocation(location, GlobalGameState.sideWithInitiative)
-    let unitsInGroup = this.getAirUnitsInStrikeGroups(strikeGroups[0].box)
+    if (!GlobalGameState.attackingStrikeGroup) return []
+    let unitsInGroup = this.getAirUnitsInStrikeGroups(GlobalGameState.attackingStrikeGroup.box)
     return unitsInGroup
   }
 

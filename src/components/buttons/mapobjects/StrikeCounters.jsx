@@ -54,6 +54,8 @@ function StrikeCounters({
   const sgCounters = strikeUnits.map((strikeGroupUnit) => {
     if (
       (GlobalGameState.gamePhase !== GlobalGameState.PHASE.AIR_OPERATIONS &&
+        GlobalGameState.gamePhase !== GlobalGameState.PHASE.END_OF_AIR_OPERATION &&
+        GlobalGameState.gamePhase !== GlobalGameState.PHASE.INITIATIVE_DETERMINATION &&
         GlobalGameState.gamePhase !== GlobalGameState.PHASE.AIR_SEARCH &&
         GlobalGameState.gamePhase !== GlobalGameState.PHASE.TARGET_DETERMINATION &&
         GlobalGameState.gamePhase !== GlobalGameState.PHASE.CAP_INTERCEPTION &&
@@ -73,11 +75,11 @@ function StrikeCounters({
       controller.getAirUnitsInStrikeGroups(strikeGroupUnit.box).length === 0
     ) {
       return
-    }
+    } 
 
-    if (strikeGroupUnit.side != GlobalGameState.sideWithInitiative) {
-      return
-    }
+    // if (strikeGroupUnit.side != GlobalGameState.sideWithInitiative) {
+    //   return
+    // }
 
     // determine how many counters already in this hex
     // if any, set index to pass in to counter -> this will be used for zIndex and offset

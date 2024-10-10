@@ -12,19 +12,8 @@ export function EscortHeaders({ controller, setEscortSteps }) {
 
   const msg = "Target For Air Attack:"
 
-  const fleetBeingAttacked = controller.getFleetForTaskForce(GlobalGameState.taskForceTarget, sideBeingAttacked)
-
-  let location
-  if (fleetBeingAttacked === "MIDWAY") {
-    location = Controller.MIDWAY_HEX
-  } else {
-    location = controller.getFleetLocation(fleetBeingAttacked, sideBeingAttacked)
-  }
-
-  const strikeGroups = controller.getAllStrikeGroupsInLocation(location, GlobalGameState.sideWithInitiative)
-
-  const sgs = strikeGroups.filter((group => !group.attacked))
-  let fighters = controller.getAllFightersInBox(sgs[0].box)
+  const box = GlobalGameState.attackingStrikeGroup.box
+  let fighters = controller.getAllFightersInBox(box)
 
   let NoFightersMsg = "Roll 1 Die for each Fighter Step"
   if (fighters.length === 0) {

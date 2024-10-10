@@ -37,13 +37,29 @@ export function DamageHeaders({ controller, eliminatedSteps, setEliminatedSteps,
   }, [GlobalGameState.testStepLossSelection])
 
   let totalSteps = 0
+  console.log("IN THE FCUKER ")
+
+  
   const airCounters = unitsInGroup.map((airUnit, i) => {
     if (airUnit.aircraftUnit.steps === 0) {
       setStepsLeft(0)
       if (!capAirUnits) GlobalGameState.attackingStepsRemaining = 0
       return <></>
     }
-    totalSteps += airUnit.aircraftUnit.steps
+
+    if (GlobalGameState.gamePhase === GlobalGameState.PHASE.ESCORT_DAMAGE_ALLOCATION) {
+      console.log("INCREASE STEPS BY",airUnit.aircraftUnit.steps)
+
+      totalSteps += airUnit.aircraftUnit.steps
+    } else {
+      if (!capAirUnits) {  
+        if (airUnit.aircraftUnit.attack || GlobalGameState.gamePhase === GlobalGameState.PHASE.ESCORT_DAMAGE_ALLOCATION) {
+          totalSteps += airUnit.aircraftUnit.steps
+        }
+      }
+    }
+    console.log("capAirUnits=", capAirUnits)
+  
     const stepStr = `(${airUnit.aircraftUnit.steps})`
     return (
       <div>

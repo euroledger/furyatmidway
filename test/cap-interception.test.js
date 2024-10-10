@@ -1,7 +1,7 @@
 import Controller from "../src/controller/Controller"
 import loadCounters from "../src/CounterLoader"
 import GlobalUnitsModel from "../src/model/GlobalUnitsModel"
-import { createFleetMove } from "./TestUtils"
+import { createFleetMove } from "./testUtils"
 import HexCommand from "../src/commands/HexCommand"
 import GlobalGameState from "../src/model/GlobalGameState"
 import { doCAP, doDamageAllocation, doFighterCounterattack } from "../src/DiceHandler"
@@ -78,6 +78,8 @@ describe("CAP Interception tests", () => {
       box: GlobalUnitsModel.AirBox.US_STRIKE_BOX_0,
       side: GlobalUnitsModel.Side.US,
     }
+
+    GlobalGameState.attackingStrikeGroup = strikeCounter
 
     //  Strike Group moves onto map - test location, moved etc.
     controller.viewEventHandler({

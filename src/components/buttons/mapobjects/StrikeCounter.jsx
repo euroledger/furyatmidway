@@ -64,7 +64,9 @@ function StrikeCounter({ setStrikeGroupPopup, currentUSHex, currentJapanHex, cou
     hex = strikeGroupUpdate.position.currentHex
     // console.log("\t=>hex=", hex)
   }
+  const locationOfStrikeGroup = controller.getStrikeGroupLocation(counterData.name, side)
 
+  // console.log("STRIKE GROUP", counterData.name, "location=", locationOfStrikeGroup )
   if (
     strikeGroupUpdate &&
     hex != undefined &&
@@ -104,9 +106,7 @@ function StrikeCounter({ setStrikeGroupPopup, currentUSHex, currentJapanHex, cou
 
   function setJapanRegions() {
     let jpRegion1
-    const locationOfStrikeGroup = controller.getStrikeGroupLocation(counterData.name, side)
 
-    // if (locationOfStrikeGroup === undefined) {
     // Use 1AF
     const locationOfCarrier = controller.getFleetLocation("1AF", GlobalUnitsModel.Side.JAPAN)
 
@@ -134,9 +134,6 @@ function StrikeCounter({ setStrikeGroupPopup, currentUSHex, currentJapanHex, cou
     // if naval strike group - use, counter CSF else use Midway
     // determine this from first air unit
     let usRegion, locationOfCarrier
-
-    const locationOfStrikeGroup = controller.getStrikeGroupLocation(counterData.name, side)
-
     // @TODO need some new flag -> counterData.comingFromOffboard
     // to allow for remove (eg if player accidentally drops onto wrong hex)
     // if (locationOfStrikeGroup === undefined) {
@@ -272,14 +269,6 @@ function StrikeCounter({ setStrikeGroupPopup, currentUSHex, currentJapanHex, cou
 
     // Since air units cannot move again after being added to a strike group,
     // once that strike group has moved, we should rotate the air counters back to normal position
-
-
-    // const units = controller.getStrikeGroupsNotMoved(side)
-    // if (units.length === 0) {
-    //   GlobalGameState.phaseCompleted = true
-    // } else {
-    //   GlobalGameState.phaseCompleted = false
-    // }
   }
   const zx = side === GlobalUnitsModel.Side.JAPAN ? 93 : 11
 

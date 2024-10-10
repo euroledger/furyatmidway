@@ -17,6 +17,7 @@ export default class GlobalGameState {
     AIR_SEARCH: "Search Phase",
     INITIATIVE_DETERMINATION: "Initiative Determination",
     AIR_OPERATIONS: "Air Operations Phase",
+    END_OF_AIR_OPERATION: "Air Operations Tidy Up",
     TARGET_DETERMINATION: "Target Determination Phase",
     CAP_INTERCEPTION:"CAP Interception Phase",
     AIR_ATTACK_1: "Attack Resolution Phase (1)",
@@ -70,6 +71,7 @@ export default class GlobalGameState {
   static currentTaskForce = 1
   
   static eliminatedAirUnits = new Array()
+  static orphanedAirUnits = new Array()
 
   static midwayAirOpsCompleted = 0
   

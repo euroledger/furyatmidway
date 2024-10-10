@@ -68,11 +68,11 @@ export const airUnitDataJapan = [
   {
     boxName: GlobalUnitsModel.AirBox.JP_SORYU_FLIGHT_DECK,
     name: "Soryu-B5N-2",
-    nextAction: true,
   },
   {
     boxName: GlobalUnitsModel.AirBox.JP_SORYU_HANGAR,
     name: "Soryu-A6M-2b-2",
+    nextAction: true,
   },
 ]
 
@@ -331,11 +331,11 @@ export function calcRandomJapanTestData(unit, controller) {
 
   // 5. Add air unit to box
   let nextAction = unit.nextAction
-  // console.log("JAPAN UPDATE = ",{
-  //   name: unit.name,
-  //   boxName: boxes[rn],
-  //   nextAction: nextAction,
-  // } )
+  console.log("JAPAN UPDATE = ",{
+    name: unit.name,
+    boxName: boxes[rn],
+    nextAction: nextAction,
+  } )
   return {
     name: unit.name,
     boxName: boxes[rn],

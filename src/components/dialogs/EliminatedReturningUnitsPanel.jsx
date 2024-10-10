@@ -5,12 +5,13 @@ import Button from "react-bootstrap/Button"
 import GlobalGameState from "../../model/GlobalGameState"
 import "./modal.css"
 import "./largemodal.css"
+import GlobalInit from "../../model/GlobalInit"
 
 function getEliminatedAirCounters() {
-  if (GlobalGameState.eliminatedAirUnits.length === 0) {
+  if (GlobalGameState.orphanedAirUnits.length === 0) {
     return
   }
-  const eliminatedAirUnits = GlobalGameState.eliminatedAirUnits.map((airUnit) => {
+  const orphanedAirUnits = GlobalGameState.orphanedAirUnits.map((airUnit) => {
     return (
       <div>
         <input
@@ -19,7 +20,7 @@ function getEliminatedAirCounters() {
           style={{
             width: "40px",
             height: "40px",
-            marginLeft: "40px",
+            marginLeft: "30px",
             marginRight: "35px",
           }}
           id="bollocks"
@@ -36,29 +37,11 @@ function getEliminatedAirCounters() {
       </div>
     )
   })
-  return eliminatedAirUnits.length > 0 ? eliminatedAirUnits : "None"
+  return orphanedAirUnits.length > 0 ? orphanedAirUnits : "None"
 }
 function EliminatedReturningUnits(props) {
-  const {
-    controller,
-    attackResolved,
-    numDice,
-    headerText,
-    headers,
-    footers,
-    diceButtonDisabled,
-    nextState,
-    closeButtonDisabled,
-    onHide,
-    width,
-    margin,
-    showDice,
-    doRoll,
-    closeButtonStr,
-    closeButtonCallback,
-    setDamageMarkerUpdate,
-    ...rest
-  } = props
+  const { controller, headerText, nextState, closeButtonDisabled, onHide, width, margin, closeButtonStr, ...rest } =
+    props
   const buttonRef = useRef(null)
 
   useEffect(() => {
@@ -71,7 +54,7 @@ function EliminatedReturningUnits(props) {
 
   const bg = "#293a4b"
 
-  let myBigBollocks = "m-width" + numDice
+  let myBigBollocks = "m-width" + GlobalGameState.orphanedAirUnits.length
   let myBigMargin = 0
 
   const airCounters = getEliminatedAirCounters()
@@ -116,7 +99,7 @@ function EliminatedReturningUnits(props) {
               color: "white",
             }}
           >
-            <p>Eliminated Air Units (No Available Carrier to Return to):</p>
+            <p>Eliminated CAP Air Units (No Available Carrier to Return to):</p>
           </div>
           <div
             style={{
@@ -138,11 +121,7 @@ function EliminatedReturningUnits(props) {
             if (nextState) {
               GlobalGameState.gamePhase = nextState
             }
-            if (closeButtonCallback) {
-              closeButtonCallback(e)
-            } else {
-              onHide(e)
-            }
+            onHide(e)
           }}
         >
           Close

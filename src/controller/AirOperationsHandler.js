@@ -6,6 +6,7 @@ import GlobalUnitsModel from "../model/GlobalUnitsModel"
 import Controller from "./Controller"
 import USAirBoxOffsets from "../components/draganddrop/USAirBoxOffsets"
 import JapanAirBoxOffsets from "../components/draganddrop/JapanAirBoxOffsets"
+import { moveAirUnitToEliminatedBox } from "../DiceHandler"
 
 function getValidUSDestinationsRETURN1(controller, parentCarrier, side, useMidway) {
   // For returning strikers, always return to carrier in same TF if possible, or other TF if not
@@ -88,13 +89,10 @@ export function getValidJapanDestinationsCAP(controller, parentCarrier, side) {
   const destAvailable = controller.isFlightDeckAvailable(parentCarrier, side)
 
   if (!controller.isSunk(parentCarrier) && destAvailable) {
-    // console.log(parentCarrier, " => Flight Deck avaiable")
     destinationsArray.push(boxName)
   }
 
   if (controller.getCarrierHits(parentCarrier) < 2 && controller.isHangarAvailable(parentCarrier)) {
-    // console.log(parentCarrier, " => Hangar available")
-
     const capHangar = controller.getAirBoxForNamedShip(side, parentCarrier, "HANGAR")
     destinationsArray.push(capHangar)
     return destinationsArray
@@ -154,6 +152,11 @@ function tryOtherCarrierCAP(controller, parentCarrier, side) {
   if (!otherCarrier) {
     return destinationsArray // empty list, eg TF 17 has no other carrier
   }
+
+  if (controller.isSunk(otherCarrier.name)) {
+    return destinationsArray
+  }
+
   const destAvailable = controller.isFlightDeckAvailable(otherCarrier.name, side)
   if (destAvailable) {
     const box = controller.getAirBoxForNamedShip(side, otherCarrier.name, "FLIGHT_DECK")
@@ -219,7 +222,6 @@ export function doStrikeBox(controller, name, side, box) {
     const return2Box = controller.getReturn2AirBoxForNamedTaskForce(side, tf)
     controller.setValidAirUnitDestinations(name, return2Box)
   }
-
 }
 
 export function doFlightDeck(controller, name, side) {
@@ -230,7 +232,7 @@ export function doFlightDeck(controller, name, side) {
 
   const unit = controller.getAirUnitForName(name)
 
-  //  i) CAP Box (if fighter) 
+  //  i) CAP Box (if fighter)
   if (!unit.aircraftUnit.attack) {
     const capBox = controller.getCapBoxForNamedCarrier(carrierName, side)
     destinationsArray.push(capBox)
@@ -314,8 +316,8 @@ export async function moveAirUnitToReturnBox(controller, strikeGroup, unit, side
   update.name = unit.name
   update.log = false // hack to prevent logging
 
+  console.log("STRIKE UNIT MOVE, update=", update)
   setAirUnitUpdate(update)
-  await delay(5)
   controller.viewEventHandler({
     type: Controller.EventTypes.AIR_UNIT_MOVE,
     data: {
@@ -328,21 +330,41 @@ export async function moveAirUnitToReturnBox(controller, strikeGroup, unit, side
   })
 }
 
+export async function moveOrphanedCAPUnitsToEliminatedBox(side) {
+  const capUnitsReturning = GlobalInit.controller.getAllCAPDefendersInCAPReturnBoxes(side)
+  for (const unit of capUnitsReturning) {
+    await delay(1)
+    const parentCarrier = GlobalInit.controller.getCarrierForAirUnit(unit.name)
+
+    let destinationsArray
+    if (side === GlobalUnitsModel.Side.JAPAN) {
+      destinationsArray = getValidJapanDestinationsCAP(GlobalInit.controller, parentCarrier, side)
+    } else {
+      destinationsArray = getValidUSDestinationsCAP(GlobalInit.controller, parentCarrier, side)
+    }
+    if (destinationsArray.length === 0) {
+      GlobalGameState.orphanedAirUnits.push(unit)
+      moveAirUnitToEliminatedBox(GlobalInit.controller, unit)
+    }
+  }
+}
+
 export async function moveStrikeUnitsToReturnBox(side, setAirUnitUpdate) {
   const strikeGroups = GlobalInit.controller.getAllStrikeGroups(side)
-
+  console.log("STRIKE GROUPS=", strikeGroups)
   for (const group of strikeGroups) {
     if (!group.attacked) {
+      console.log("AINT MOVIN ", group.name)
       continue
     }
+    console.log("....MOVE SG", group.name)
     const unitsInGroup = GlobalInit.controller.getAirUnitsInStrikeGroups(group.box)
     for (const unit of unitsInGroup) {
-      await delay(5)
+      await delay(1)
       await moveAirUnitToReturnBox(GlobalInit.controller, group, unit, side, setAirUnitUpdate)
     }
   }
   GlobalInit.controller.setAllUnitsToNotMoved()
-
 }
 export async function moveCAPtoReturnBox(controller, capAirUnits, setAirUnitUpdate) {
   const sideBeingAttacked =
@@ -379,7 +401,7 @@ export async function moveCAPtoReturnBox(controller, capAirUnits, setAirUnitUpda
     console.log(">>>>>>>>>>>>SPAZ AIR UNIT UPDATE -> ", capUnit.name, "TO BOX", update.boxName)
 
     setAirUnitUpdate(update)
-    
+
     controller.viewEventHandler({
       type: Controller.EventTypes.AIR_UNIT_MOVE,
       data: {
@@ -722,7 +744,6 @@ export function checkAllBoxesForReorganization(controller, unit, fromBox, side, 
 export function setValidDestinationBoxes(controller, airUnitName, side) {
   const location = controller.getAirUnitLocation(airUnitName)
 
-  // console.log(airUnitName, "location -> ", location.boxName)
   if (location.boxName.includes("RETURNING (1)")) {
     // see if US CSF within two hexes of Midway
     let hexesBetweenMidwayAndCSF = controller.numHexesBetweenFleets(
@@ -752,6 +773,8 @@ export function setValidDestinationBoxes(controller, airUnitName, side) {
     const destinations = doCapReturn(controller, airUnitName, side, useMidway)
     if (destinations.length === 0) {
       // check for possible reorganisation
+      const unit = GlobalInit.counters.get(airUnitName)
+
       if (side === GlobalUnitsModel.Side.JAPAN) {
         checkAllJapanBoxesForReorganizationCAP(controller, unit, location.boxName, side, false)
       } else {

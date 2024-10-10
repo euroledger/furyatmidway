@@ -3,10 +3,10 @@ import GlobalUnitsModel from "../src/model/GlobalUnitsModel"
 import loadCounters from "../src/CounterLoader"
 import GlobalGameState from "../src/model/GlobalGameState"
 import { displayAttackTargetPanel } from "../src/GameStateHandler"
-import { createFleetMove } from "./TestUtils"
+import { createFleetMove } from "./testUtils"
 import HexCommand from "../src/commands/HexCommand"
 
-describe("Controller tests", () => {
+describe("Controller test.skips", () => {
   let controller
   let counters
   let saf1, saf2, sdb, stb
@@ -45,7 +45,9 @@ describe("Controller tests", () => {
       side: GlobalUnitsModel.Side.US,
     }
 
-    //  Strike Group moves onto map - test location, moved etc.
+    GlobalGameState.attackingStrikeGroup = strikeCounter
+
+    //  Strike Group moves onto map - test.skip location, moved etc.
     controller.viewEventHandler({
       type: Controller.EventTypes.STRIKE_GROUP_MOVE,
       data: {
