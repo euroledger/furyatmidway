@@ -316,7 +316,6 @@ export async function moveAirUnitToReturnBox(controller, strikeGroup, unit, side
   update.name = unit.name
   update.log = false // hack to prevent logging
 
-  console.log("STRIKE UNIT MOVE, update=", update)
   setAirUnitUpdate(update)
   controller.viewEventHandler({
     type: Controller.EventTypes.AIR_UNIT_MOVE,
@@ -331,6 +330,7 @@ export async function moveAirUnitToReturnBox(controller, strikeGroup, unit, side
 }
 
 export async function moveOrphanedCAPUnitsToEliminatedBox(side) {
+  console.log(" IN moveOrphanedCAPUnitsToEliminatedBox...")
   const capUnitsReturning = GlobalInit.controller.getAllCAPDefendersInCAPReturnBoxes(side)
   for (const unit of capUnitsReturning) {
     await delay(1)
@@ -350,20 +350,22 @@ export async function moveOrphanedCAPUnitsToEliminatedBox(side) {
 }
 
 export async function moveStrikeUnitsToReturnBox(side, setAirUnitUpdate) {
+  console.log("IN moveStrikeUnitsToReturnBox POOOOOOOOO")
   const strikeGroups = GlobalInit.controller.getAllStrikeGroups(side)
   console.log("STRIKE GROUPS=", strikeGroups)
   for (const group of strikeGroups) {
     if (!group.attacked) {
-      console.log("AINT MOVIN ", group.name)
+      console.log("SHIT NO FUCKER HAS ATTACKED")
       continue
     }
-    console.log("....MOVE SG", group.name)
     const unitsInGroup = GlobalInit.controller.getAirUnitsInStrikeGroups(group.box)
     for (const unit of unitsInGroup) {
       await delay(1)
+      console.log("DO THE MOVE!!!!!!!")
       await moveAirUnitToReturnBox(GlobalInit.controller, group, unit, side, setAirUnitUpdate)
     }
   }
+  console.log("DONE")
   GlobalInit.controller.setAllUnitsToNotMoved()
 }
 export async function moveCAPtoReturnBox(controller, capAirUnits, setAirUnitUpdate) {
@@ -398,7 +400,6 @@ export async function moveCAPtoReturnBox(controller, capAirUnits, setAirUnitUpda
     update.position = position1.offsets[location.boxIndex]
     update.name = capUnit.name
     update.log = false
-    console.log(">>>>>>>>>>>>SPAZ AIR UNIT UPDATE -> ", capUnit.name, "TO BOX", update.boxName)
 
     setAirUnitUpdate(update)
 

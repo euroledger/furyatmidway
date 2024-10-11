@@ -115,10 +115,8 @@ function calcAirOpsPoints({ setSearchValues, setSearchResults, setSearchValuesAl
     us_midway: sv.us_midway,
   })
   setSearchValues(sv)
-  console.log("WOOOOOOOSH SET AIR OPS HERE ->")
   GlobalGameState.airOperationPoints.japan = sr.JAPAN
   GlobalGameState.airOperationPoints.us = sr.US
-  console.log("AFTER CONSULTATION =GlobalGameState.airOperationPoints.us, ", GlobalGameState.airOperationPoints.us)
   setSearchResults(sr)
   setSearchValuesAlertShow(true)
 }
@@ -185,19 +183,33 @@ export async function tidyUp(setAirUnitUpdate) {
   await moveStrikeUnitsToReturnBox(GlobalGameState.sideWithInitiative, setAirUnitUpdate)
   await GlobalInit.controller.setAllUnitsToNotMoved()
   GlobalGameState.sideWithInitiative = undefined
+  decrementAirOpsPoints()
   GlobalGameState.updateGlobalState()
 }
-export async function endOfAirOperation(side, capAirUnits, setAirUnitUpdate, setEliminatedUnitsPanelShow) {
-  console.trace()
-  await moveCAPtoReturnBox(GlobalInit.controller, capAirUnits, setAirUnitUpdate)
+export async function doOrphanedCAP() {
+  console.log("DO ORPHAN THING...")
+  const sideBeingAttacked =
+    GlobalGameState.sideWithInitiative === GlobalUnitsModel.Side.US
+      ? GlobalUnitsModel.Side.JAPAN
+      : GlobalUnitsModel.Side.US
 
-  const anySGsNotMoved = GlobalInit.controller.getStrikeGroupsNotMoved2(side)
+  await moveOrphanedCAPUnitsToEliminatedBox(sideBeingAttacked)
+}
+
+export async function endOfAirOperation(side, capAirUnits, setAirUnitUpdate, setEliminatedUnitsPanelShow) {
+ 
+  console.log("************** >>>>>>>>>> IN endOfAirOperation()........-> ")
+  await moveCAPtoReturnBox(GlobalInit.controller, capAirUnits, setAirUnitUpdate)
+  const anySGsNotMoved = GlobalInit.controller.getStrikeGroupsNotMoved2(GlobalGameState.sideWithInitiative)
 
   if (!anySGsNotMoved) {
-    await moveStrikeUnitsToReturnBox(side, setAirUnitUpdate)
+    console.log("<<< moveStrikeUnitsToReturnBox >> QUACK *******************************")
+    await moveStrikeUnitsToReturnBox(GlobalGameState.sideWithInitiative, setAirUnitUpdate)
     GlobalInit.controller.setAllUnitsToNotMoved()
-    GlobalGameState.updateGlobalState
+    GlobalGameState.allStrikeUnitsReturned = true
+    GlobalGameState.updateGlobalState()
   } else {
+    console.log("COMPUTER SAYS NO")
     return false
   }
 
@@ -208,6 +220,7 @@ export async function endOfAirOperation(side, capAirUnits, setAirUnitUpdate, set
       ? GlobalUnitsModel.Side.JAPAN
       : GlobalUnitsModel.Side.US
 
+  console.log("move orphaned CAP ....")
   await moveOrphanedCAPUnitsToEliminatedBox(sideBeingAttacked)
 
   if (GlobalGameState.orphanedAirUnits.length > 0) {
@@ -291,7 +304,6 @@ async function airOperationsHandler({
     }
 
     if (await endOfAirOperation(GlobalUnitsModel.Side.US, capAirUnits, setAirUnitUpdate, setEliminatedUnitsPanelShow)) {
-
       GlobalGameState.phaseCompleted = true
       GlobalInit.controller.setAllUnitsToNotMoved()
       decrementAirOpsPoints()
@@ -306,12 +318,13 @@ async function airOperationsHandler({
 
   GlobalGameState.updateGlobalState()
 }
-export default function handleAction({
+export default async function handleAction({
   setUSMapRegions,
   setCSFAlertShow,
   setMidwayDialogShow,
   setJapanMapRegions,
   setJpAlertShow,
+  setEndOfAirOpAlertShow,
   setEnabledJapanBoxes,
   setEnabledUSBoxes,
   setInitiativePanelShow,
@@ -456,7 +469,7 @@ export default function handleAction({
     if (GlobalGameState.attackingStepsRemaining > 0 || getNumEscortFighterSteps(GlobalInit.controller) > 0) {
       GlobalGameState.gamePhase = GlobalGameState.PHASE.ESCORT_COUNTERATTACK
     } else {
-      endOfAirOperation(GlobalUnitsModel.sideWithInitiative, capAirUnits, setAirUnitUpdate, setEliminatedUnitsPanelShow)
+      await endOfAirOperation(GlobalUnitsModel.sideWithInitiative, capAirUnits, setAirUnitUpdate, setEliminatedUnitsPanelShow)
       GlobalGameState.gamePhase = GlobalGameState.PHASE.AIR_OPERATIONS
     }
   } else if (GlobalGameState.gamePhase === GlobalGameState.PHASE.ESCORT_COUNTERATTACK) {
@@ -470,7 +483,7 @@ export default function handleAction({
         console.log("GOING TO ANTI AIRCRAFT FIRE....))))))))))))))))))))))")
         GlobalGameState.gamePhase = GlobalGameState.PHASE.ANTI_AIRCRAFT_FIRE
       } else {
-        endOfAirOperation(
+        await endOfAirOperation(
           GlobalUnitsModel.sideWithInitiative,
           capAirUnits,
           setAirUnitUpdate,
@@ -484,7 +497,7 @@ export default function handleAction({
     if (GlobalGameState.attackingStepsRemaining > 0) {
       GlobalGameState.gamePhase = GlobalGameState.PHASE.ANTI_AIRCRAFT_FIRE
     } else {
-      endOfAirOperation(GlobalUnitsModel.sideWithInitiative, capAirUnits, setAirUnitUpdate, setEliminatedUnitsPanelShow)
+      await endOfAirOperation(GlobalUnitsModel.sideWithInitiative, capAirUnits, setAirUnitUpdate, setEliminatedUnitsPanelShow)
       GlobalGameState.gamePhase = GlobalGameState.PHASE.AIR_OPERATIONS
     }
   } else if (GlobalGameState.gamePhase === GlobalGameState.PHASE.ANTI_AIRCRAFT_FIRE) {
@@ -504,7 +517,7 @@ export default function handleAction({
         const anyTargets = GlobalInit.controller.autoAssignTargets()
         if (anyTargets === null) {
           // no targets (all units sunk)
-          endOfAirOperation(
+          await endOfAirOperation(
             GlobalUnitsModel.sideWithInitiative,
             capAirUnits,
             setAirUnitUpdate,
@@ -516,7 +529,7 @@ export default function handleAction({
         }
       }
     } else {
-      endOfAirOperation(GlobalUnitsModel.sideWithInitiative, capAirUnits, setAirUnitUpdate, setEliminatedUnitsPanelShow)
+      await endOfAirOperation(GlobalUnitsModel.sideWithInitiative, capAirUnits, setAirUnitUpdate, setEliminatedUnitsPanelShow)
       GlobalGameState.gamePhase = GlobalGameState.PHASE.AIR_OPERATIONS
     }
   } else if (GlobalGameState.gamePhase === GlobalGameState.PHASE.AAA_DAMAGE_ALLOCATION) {
@@ -529,7 +542,7 @@ export default function handleAction({
         const anyTargets = GlobalInit.controller.autoAssignTargets()
         if (anyTargets === null) {
           // no targets (all units sunk)
-          endOfAirOperation(
+          await endOfAirOperation(
             GlobalUnitsModel.sideWithInitiative,
             capAirUnits,
             setAirUnitUpdate,
@@ -541,7 +554,7 @@ export default function handleAction({
         }
       }
     } else {
-      endOfAirOperation(GlobalUnitsModel.sideWithInitiative, capAirUnits, setAirUnitUpdate, setEliminatedUnitsPanelShow)
+      await endOfAirOperation(GlobalUnitsModel.sideWithInitiative, capAirUnits, setAirUnitUpdate, setEliminatedUnitsPanelShow)
       GlobalGameState.gamePhase = GlobalGameState.PHASE.AIR_OPERATIONS
     }
   } else if (GlobalGameState.gamePhase === GlobalGameState.PHASE.ATTACK_TARGET_SELECTION) {
@@ -558,7 +571,7 @@ export default function handleAction({
     if (GlobalGameState.carrierTarget2 !== "" && GlobalGameState.carrierTarget2 !== undefined) {
       GlobalGameState.gamePhase = GlobalGameState.PHASE.AIR_ATTACK_2
     } else {
-      endOfAirOperation(GlobalUnitsModel.sideWithInitiative, capAirUnits, setAirUnitUpdate, setEliminatedUnitsPanelShow)
+      await endOfAirOperation(GlobalUnitsModel.sideWithInitiative, capAirUnits, setAirUnitUpdate, setEliminatedUnitsPanelShow)
       GlobalGameState.gamePhase = GlobalGameState.PHASE.AIR_OPERATIONS
       if (GlobalGameState.attackingStrikeGroup) {
         GlobalGameState.attackingStrikeGroup.attacked = true
@@ -584,10 +597,12 @@ export default function handleAction({
     // GlobalGameState.sideWithInitiative = undefined
     GlobalGameState.dieRolls = []
   } else if (GlobalGameState.gamePhase === GlobalGameState.PHASE.AIR_OPERATIONS) {
-    console.trace()
+    console.log("HERE I AM >>>>>>>>>>>>>>>>>>>>")
     tidyUp(setAirUnitUpdate)
     GlobalGameState.gamePhase = GlobalGameState.PHASE.END_OF_AIR_OPERATION
+    setEndOfAirOpAlertShow(true)
   } else if (GlobalGameState.gamePhase === GlobalGameState.PHASE.END_OF_AIR_OPERATION) {
+    console.log("GO TO INITIATIVE DETERMINATION...")
     GlobalGameState.gamePhase = GlobalGameState.PHASE.INITIATIVE_DETERMINATION
   }
 

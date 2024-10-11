@@ -331,11 +331,7 @@ export function calcRandomJapanTestData(unit, controller) {
 
   // 5. Add air unit to box
   let nextAction = unit.nextAction
-  console.log("JAPAN UPDATE = ",{
-    name: unit.name,
-    boxName: boxes[rn],
-    nextAction: nextAction,
-  } )
+
   return {
     name: unit.name,
     boxName: boxes[rn],

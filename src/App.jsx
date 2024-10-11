@@ -103,6 +103,8 @@ export function App() {
   const [loadPanelShow, setLoadPanelShow] = useState(false)
   const [jpAlertShow, setJpAlertShow] = useState(false)
 
+  const [endOfAirOpAlertShow, setEndOfAirOpAlertShow] = useState(false)
+
   const [saveAlertShow, setSaveAlertShow] = useState(false) // TO DO param should be an object with boolean and alert text
 
   const [midwayDialogShow, setMidwayDialogShow] = useState(false)
@@ -307,10 +309,7 @@ export function App() {
   }, [GlobalGameState.gamePhase])
 
   useEffect(() => {
-    if (
-      GlobalGameState.gamePhase === GlobalGameState.PHASE.ESCORT_DAMAGE_ALLOCATION
-    ) {
-      console.log("SHOW THE FUCKING SCREEN")
+    if (GlobalGameState.gamePhase === GlobalGameState.PHASE.ESCORT_DAMAGE_ALLOCATION) {
       setEliminatedSteps(0)
       setDamageAllocationPanelShow(true)
     }
@@ -454,6 +453,7 @@ export function App() {
       setMidwayDialogShow,
       setJapanMapRegions,
       setJpAlertShow,
+      setEndOfAirOpAlertShow,
       setEnabledJapanBoxes,
       setEnabledUSBoxes,
       setInitiativePanelShow,
@@ -470,7 +470,7 @@ export function App() {
       capSteps,
       capAirUnits,
       setAirUnitUpdate,
-      setEliminatedUnitsPanelShow
+      setEliminatedUnitsPanelShow,
     })
   }
 
@@ -492,7 +492,7 @@ export function App() {
   if (v === "test") {
     test = true
   }
-  function endOfMyAirOperation(side) {
+  async function endOfMyAirOperation(side) {
     // 1. MOVE STRIKE UNITS TO CORRECT RETURN BOX
     const anyUnitsNotMoved = GlobalInit.controller.getStrikeGroupsNotMoved2(side)
     if (anyUnitsNotMoved) {
@@ -505,19 +505,20 @@ export function App() {
         : GlobalUnitsModel.Side.US
     // 2. CHECK ALL INTERCEPTING CAP UNITS HAVE RETURNED TO CARRIERS
     const capUnitsReturning = GlobalInit.controller.getAllCAPDefendersInCAPReturnBoxes(sideBeingAttacked)
-  
+
     if (capUnitsReturning.length === 0) {
+
       return true
     }
     return false
   }
-  const checkAirOps = () => {
-    const endOfAirOps = endOfMyAirOperation(GlobalGameState.sideWithInitiative, setAirUnitUpdate)
+  const checkAirOps = async () => {
+    const endOfAirOps = await endOfMyAirOperation(GlobalGameState.sideWithInitiative, setAirUnitUpdate)
     GlobalGameState.nextActionButtonDisabled =
       !GlobalGameState.phaseCompleted ||
       (GlobalGameState.gamePhase === GlobalGameState.PHASE.JAPAN_FLEET_MOVEMENT && !GlobalGameState.jpFleetPlaced) ||
       (GlobalGameState.gamePhase === GlobalGameState.PHASE.US_SETUP_FLEET && !GlobalGameState.usFleetPlaced)
-      if (endOfAirOps) {
+    if (endOfAirOps) {
       GlobalGameState.nextActionButtonDisabled = false
     }
   }
@@ -906,8 +907,10 @@ export function App() {
     </>
   )
   function doInitiativeRoll(roll0, roll1) {
-    // for automated testing
-    const sideWithInitiative = doIntiativeRoll(GlobalInit.controller, roll0, roll1)
+    // for testing QUACK
+    const sideWithInitiative = doIntiativeRoll(GlobalInit.controller, 6, 1, true)
+
+    // const sideWithInitiative = doIntiativeRoll(GlobalInit.controller, roll0, roll1)
     setSideWithInitiative(() => sideWithInitiative)
     GlobalGameState.updateGlobalState()
   }
@@ -1003,12 +1006,8 @@ export function App() {
   }
   let closeDamageButtonDisabled = false
   if (GlobalGameState.gamePhase === GlobalGameState.PHASE.CAP_DAMAGE_ALLOCATION) {
-    console.log("eliminated steps=", eliminatedSteps, "stepsLeft=", stepsLeft, "cap hits=",GlobalGameState.capHits )
-
     closeDamageButtonDisabled = eliminatedSteps !== GlobalGameState.capHits && stepsLeft !== 0
   } else if (GlobalGameState.gamePhase === GlobalGameState.PHASE.ESCORT_DAMAGE_ALLOCATION) {
-    console.log("eliminated steps=", eliminatedSteps, "stepsLeft=", stepsLeft, "fighterHits hits=",GlobalGameState.fighterHits )
-
     closeDamageButtonDisabled = eliminatedSteps !== GlobalGameState.fighterHits && stepsLeft !== 0
   } else if (GlobalGameState.gamePhase === GlobalGameState.PHASE.AAA_DAMAGE_ALLOCATION) {
     closeDamageButtonDisabled = eliminatedSteps !== GlobalGameState.antiaircraftHits && stepsLeft != 0
@@ -1032,7 +1031,7 @@ export function App() {
 
   let airOpsDiceButtonDisabled =
     GlobalGameState.sideWithInitiative !== undefined && GlobalGameState.sideWithInitiative !== ""
-  
+
   return (
     <>
       <LoadGamePanel
@@ -1067,6 +1066,16 @@ export function App() {
           Drag the Fleet Unit to any hex in the shaded area of the map, or press Next Action to leave fleet in current
           location.
         </p>
+      </AlertPanel>
+      <AlertPanel
+        show={!testClicked && endOfAirOpAlertShow}
+        onHide={(e) => {
+          setEndOfAirOpAlertShow(false)
+          nextAction(e)
+        }}
+      >
+        <h4>INFO</h4>
+        <p>End of Air Operation! Click "Close" to continue...</p>
       </AlertPanel>
       <AlertPanel
         show={!testClicked && searchValuesAlertShow}
@@ -1220,7 +1229,9 @@ export function App() {
         }}
         doRoll={doCounterattackRolls}
         diceButtonDisabled={GlobalGameState.dieRolls.length !== 0}
-        closeButtonDisabled={GlobalGameState.dieRolls.length === 0 && getNumEscortFighterSteps(GlobalInit.controller) !== 0}
+        closeButtonDisabled={
+          GlobalGameState.dieRolls.length === 0 && getNumEscortFighterSteps(GlobalInit.controller) !== 0
+        }
         disabled={false}
       ></LargeDicePanel>
       <LargeDicePanel
@@ -1328,7 +1339,7 @@ export function App() {
         closeButtonDisabled={midwayDamageDiceButtonEnabled}
         setDamageMarkerUpdate={setDamageMarkerUpdate}
         disabled={false}
-      ></MidwayDamageDicePanel>      
+      ></MidwayDamageDicePanel>
       <EliminatedReturningUnits
         controller={GlobalInit.controller}
         show={eliminatedUnitsPanelShow}

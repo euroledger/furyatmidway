@@ -34,9 +34,6 @@ async function moveCAPUnitsFromReturnBoxToCarrier(setTestUpdate) {
       parentCarrier,
       GlobalUnitsModel.Side.JAPAN
     )
-    
-    // @TODO if both carriers in car div are damaged/sunk, air unit must be eliminated
-
     // go to first available destination
     let update = {
       name: unit.name,
@@ -455,11 +452,20 @@ const UITester = async ({
   await delay(1000)
   nextAction(e)
 
+  // We need to do this in the UI tester because this is a manual (not automated) operation
+  // reason being that sometimes there is a choice for the player
   moveCAPUnitsFromReturnBoxToCarrier(setTestUpdate)
 
+  console.log(">QUACK >>>>>>>>>END, game state=", GlobalGameState.gamePhase)
+
+  GlobalGameState.closePanel = false
+  await delay(100)
+  GlobalGameState.closePanel = true // in case eliminated air units are on display
+
+
   // doInitiativeRoll(3, 2)
-  // // await delay(1000)
-  // nextAction(e)
+  await delay(1000)
+  nextAction(e) // go from tidy up to initiative determination
   // console.log("GlobalGameState.sideWithInitiative=",GlobalGameState.sideWithInitiative)
   // console.log("Now allocate Japan Air Units to strike boxes")
 }

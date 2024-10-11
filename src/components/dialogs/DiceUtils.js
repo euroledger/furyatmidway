@@ -1,6 +1,10 @@
 import GlobalGameState from "../../model/GlobalGameState";
 	
-export const randomDice = (num) => {
+export const randomDice = (num, testRolls) => {
+  if (testRolls) {
+    rollDice(testRolls)
+    return testRolls
+  }
   const rolls = new Array()
   for (let i = 0; i < num; i++) {
     const random = Math.floor(Math.random() * 6) + 1

@@ -4,20 +4,26 @@ import Controller from "./controller/Controller"
 import GlobalUnitsModel from "./model/GlobalUnitsModel"
 import GlobalInit from "./model/GlobalInit"
 
-export function doIntiativeRoll(controller, roll0, roll1) {
+export function doIntiativeRoll(controller, roll0, roll1, showDice) {
   // for automated testing
   let sideWithInitiative
   let jpRolls, usRolls
-  if (roll0 && roll1) {
-    sideWithInitiative = controller.determineInitiative(roll0, roll1)
-    jpRolls = [roll0]
-    usRolls = [roll1]
+  if (showDice) {
+    const rolls = randomDice(2, [roll0, roll1])
+    sideWithInitiative = controller.determineInitiative(roll0, roll1)   
   } else {
-    const rolls = randomDice(2)
-    sideWithInitiative = controller.determineInitiative(rolls[0], rolls[1])
-    jpRolls = [rolls[0]]
-    usRolls = [rolls[1]]
+    if (roll0 && roll1) {
+      sideWithInitiative = controller.determineInitiative(roll0, roll1)
+      jpRolls = [roll0]
+      usRolls = [roll1]
+    } else {
+      const rolls = randomDice(2)
+      sideWithInitiative = controller.determineInitiative(rolls[0], rolls[1])
+      jpRolls = [rolls[0]]
+      usRolls = [rolls[1]]
+    }    
   }
+
   GlobalGameState.sideWithInitiative = sideWithInitiative
 
   controller.viewEventHandler({
@@ -853,7 +859,7 @@ export function doCAP(controller, capAirUnits, fightersPresent, testRolls) {
   GlobalGameState.dieRolls = rolls
 
   // QUACK TESTING PUT THIS BACK
-  // GlobalGameState.capHits = 2
+  // GlobalGameState.capHits = 0
 
   GlobalGameState.capHits = hits
 }

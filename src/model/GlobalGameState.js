@@ -130,6 +130,7 @@ export default class GlobalGameState {
   static phaseCompleted = false
 
   static sideWithInitiative = ""
+  static allStrikeUnitsReturned = false
 
   static updateGlobalState = () => {
     this.stateHandler();

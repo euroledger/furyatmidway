@@ -429,16 +429,19 @@ export default class Controller {
   getStrikeGroupsNotMoved2(side) {
     const strikeGroups = this.getAllStrikeGroups(side)
     if (strikeGroups.length === 0) {
+      if (GlobalGameState.allStrikeUnitsReturned) {
+        return false
+      }
       return []
     }
 
+    // for (let s of strikeGroups) {
+    //   console.log("SG", s.name, "MOVED =", s.moved)
+    // }
     for (let s of strikeGroups) {
       if (!s.moved) {
         return true
       }
-    }
-
-    for (let s of strikeGroups) {
     }
     return false
   }
@@ -450,7 +453,6 @@ export default class Controller {
 
   getAllStrikeGroups(side) {
     // return list of strike groups containing one or more units
-
     const boxes = this.airOperationsModel.getStrikeBoxesForSide(side)
     const sgMap = side === GlobalUnitsModel.Side.US ? GlobalUnitsModel.usStrikeGroups : GlobalUnitsModel.jpStrikeGroups
     let array = new Array()
@@ -897,16 +899,12 @@ export default class Controller {
 
     let boxName = Object.values(flightDeckBox)[0]
 
-    // console.log("FUUUUUUUUUUUUUUCK CARRIER", carrierName, "boxName=", boxName)
-
     const units = this.getAllAirUnitsInBox(boxName)
 
     // for carriers if hits + units length >= 2 unavailable, for Midway 3
     const capacity = carrierName.toUpperCase().includes("MIDWAY") ? 3 : 2
 
     const totalUnavailableSlots = hits + units.length
-
-    // console.log("FUUUUUUUUUUUUUUUCK CARRIER", carrierName, "totalUnavailableSlots=", totalUnavailableSlots)
     const retVal = totalUnavailableSlots < capacity
     return retVal
   }
