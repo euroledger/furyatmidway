@@ -456,8 +456,6 @@ const UITester = async ({
   // reason being that sometimes there is a choice for the player
   moveCAPUnitsFromReturnBoxToCarrier(setTestUpdate)
 
-  console.log(">QUACK >>>>>>>>>END, game state=", GlobalGameState.gamePhase)
-
   GlobalGameState.closePanel = false
   await delay(100)
   GlobalGameState.closePanel = true // in case eliminated air units are on display

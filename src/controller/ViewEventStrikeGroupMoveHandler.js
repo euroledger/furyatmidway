@@ -10,8 +10,6 @@ class ViewEventStrikeGroupMoveHandler {
   handleEvent(event) {
     const { initial, counterData, from, to, side, loading, moved } = event.data
 
-    // to = currentHex
-
     // add strike group to map holding name -> current Hex
     this.controller.setStrikeGroupLocation(counterData.name, to, side)
 
@@ -34,10 +32,14 @@ class ViewEventStrikeGroupMoveHandler {
     GlobalGameState.log(`${command.toString()}`)
     if (!loading) {
       counterData.moved = true
-      counterData.turnmoved = GlobalGameState.gameTurn
+
+      if (counterData.airOpMoved === undefined) {
+        this.controller.setAirOpMoved(counterData)
+      }
 
       if (this.controller.checkForAirAttack(to, side)) {
-        counterData.turnattacked = GlobalGameState.gameTurn
+       this.controller.setAirOpAttacked(counterData)
+        
         if (GlobalGameState.gamePhase === GlobalGameState.PHASE.MIDWAY_ATTACK) {
           GlobalGameState.gamePhase = GlobalGameState.PHASE.CAP_INTERCEPTION
           GlobalGameState.taskForceTarget = GlobalUnitsModel.TaskForce.MIDWAY
@@ -50,19 +52,8 @@ class ViewEventStrikeGroupMoveHandler {
         this.controller.resetTargetMap()
         GlobalGameState.carrierTarget1=""
         GlobalGameState.carrierTarget2=""
-        // counterData.attacked = false // possible reset from previous attack
-        // if (GlobalGameState.attackingStrikeGroup) {
-        //   const attackingSG = GlobalGameState.attackingStrikeGroup
-        //   attackingSG.attacked = true // set previous strike group to done
-        //   attackingSG.turnattacked = GlobalGameState.gameTurn // set previous strike group to done
-        // }
         counterData.attacked = true
-        counterData.turnattacked = GlobalGameState.gameTurn
-
-        GlobalGameState.attackingStrikeGroup = counterData
-        GlobalGameState.attacked = true
-        GlobalGameState.turnattacked = GlobalGameState.gameTurn
-        
+        GlobalGameState.attackingStrikeGroup = counterData 
       }
     } else {
       counterData.moved = moved

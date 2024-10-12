@@ -167,6 +167,7 @@ function usFleetMovementHandler({ setFleetUnitUpdate, setSearchValues, setSearch
 }
 
 function decrementAirOpsPoints() {
+  console.log("QUACK GlobalGameState.sideWithInitiative=", )
   if (GlobalGameState.sideWithInitiative === GlobalUnitsModel.Side.JAPAN) {
     GlobalGameState.airOperationPoints.japan =
       GlobalGameState.airOperationPoints.japan > 0 ? GlobalGameState.airOperationPoints.japan - 1 : 0
@@ -179,15 +180,26 @@ function decrementAirOpsPoints() {
   GlobalGameState.updateGlobalState()
 }
 
-export async function tidyUp(setAirUnitUpdate) {
+async function midwayTidyUp() {
+  moveCAPtoReturnBox(GlobalInit.controller, capAirUnits)
+  GlobalGameState.airOperationPoints.japan = 0
+  GlobalGameState.phaseCompleted = true
+  GlobalGameState.gamePhase = GlobalGameState.PHASE.US_FLEET_MOVEMENT
+  setJapanStrikePanelEnabled(false)
+  setUSMapRegions([])
+  GlobalGameState.usFleetMoved = false
+  GlobalGameState.dieRolls = []
+}
+
+async function tidyUp(setAirUnitUpdate) {
+  console.log("IN tidyUp...")
   await moveStrikeUnitsToReturnBox(GlobalGameState.sideWithInitiative, setAirUnitUpdate)
   await GlobalInit.controller.setAllUnitsToNotMoved()
-  GlobalGameState.sideWithInitiative = undefined
   decrementAirOpsPoints()
+  GlobalGameState.sideWithInitiative = undefined
   GlobalGameState.updateGlobalState()
 }
 export async function doOrphanedCAP() {
-  console.log("DO ORPHAN THING...")
   const sideBeingAttacked =
     GlobalGameState.sideWithInitiative === GlobalUnitsModel.Side.US
       ? GlobalUnitsModel.Side.JAPAN
@@ -197,13 +209,10 @@ export async function doOrphanedCAP() {
 }
 
 export async function endOfAirOperation(side, capAirUnits, setAirUnitUpdate, setEliminatedUnitsPanelShow) {
- 
-  console.log("************** >>>>>>>>>> IN endOfAirOperation()........-> ")
   await moveCAPtoReturnBox(GlobalInit.controller, capAirUnits, setAirUnitUpdate)
   const anySGsNotMoved = GlobalInit.controller.getStrikeGroupsNotMoved2(GlobalGameState.sideWithInitiative)
 
   if (!anySGsNotMoved) {
-    console.log("<<< moveStrikeUnitsToReturnBox >> QUACK *******************************")
     await moveStrikeUnitsToReturnBox(GlobalGameState.sideWithInitiative, setAirUnitUpdate)
     GlobalInit.controller.setAllUnitsToNotMoved()
     GlobalGameState.allStrikeUnitsReturned = true
@@ -248,6 +257,7 @@ async function airOperationsHandler({
 }) {
   GlobalGameState.phaseCompleted = false
   if (GlobalGameState.sideWithInitiative === GlobalUnitsModel.Side.JAPAN) {
+    console.log("CHECK JAPAN AIR STUFF")
     const enabledBoxes = getJapanEnabledAirBoxes(sideWithInitiative)
     setEnabledJapanBoxes(() => enabledBoxes)
     setEnabledUSBoxes()
@@ -257,7 +267,7 @@ async function airOperationsHandler({
       GlobalGameState.attackingStrikeGroup.attacked = true
       const attackingSG = GlobalGameState.attackingStrikeGroup
       attackingSG.attacked = true
-      attackingSG.turnattacked = GlobalGameState.gameTurn
+      attackingSG.airOpAttacked = GlobalGameState.airOpJapan
     }
 
     if (
@@ -271,7 +281,11 @@ async function airOperationsHandler({
         if (GlobalGameState.midwayAirOp === 1) {
           GlobalGameState.midwayAirOp = 2
           GlobalGameState.airOperationPoints.japan = 1
+        } else {
+          console.log("MIDWAY ATTACK 2")
+          midwayTidyUp()
         }
+        console.log("MIDWAY ATTACK 1")
 
         // const strikeGroups = GlobalInit.controller.getAllStrikeGroups(GlobalUnitsModel.Side.JAPAN)
         // for (let sg of strikeGroups) {
@@ -280,8 +294,6 @@ async function airOperationsHandler({
 
         GlobalGameState.phaseCompleted = false
       } else {
-        // setSideWithInitiative(() => null) // ensure roll dice button is enabled
-        // GlobalGameState.sideWithInitiative = undefined
         GlobalGameState.gamePhase = GlobalGameState.PHASE.END_OF_AIR_OPERATION
       }
     } else {
@@ -300,7 +312,7 @@ async function airOperationsHandler({
       GlobalGameState.attackingStrikeGroup.attacked = true
       const attackingSG = GlobalGameState.attackingStrikeGroup
       attackingSG.attacked = true
-      attackingSG.turnattacked = GlobalGameState.gameTurn
+      attackingSG.airOpAttacked = GlobalGameState.airOpUS
     }
 
     if (await endOfAirOperation(GlobalUnitsModel.Side.US, capAirUnits, setAirUnitUpdate, setEliminatedUnitsPanelShow)) {
@@ -308,8 +320,6 @@ async function airOperationsHandler({
       GlobalInit.controller.setAllUnitsToNotMoved()
       decrementAirOpsPoints()
 
-      // setSideWithInitiative(null) // ensure roll dice button is enabled
-      // GlobalGameState.sideWithInitiative = undefined
       GlobalGameState.gamePhase = GlobalGameState.PHASE.END_OF_AIR_OPERATION
     } else {
       GlobalGameState.phaseCompleted = false
@@ -317,6 +327,16 @@ async function airOperationsHandler({
   }
 
   GlobalGameState.updateGlobalState()
+}
+
+function midwayOrAirOps() {
+  if (GlobalGameState.taskForceTarget === GlobalUnitsModel.TaskForce.MIDWAY) {
+    GlobalGameState.midwayAirOpsCompleted = GlobalGameState.midwayAirOp
+    console.log("SET midwayAirOpsCompleted to", GlobalGameState.midwayAirOpsCompleted)
+    GlobalGameState.gamePhase = GlobalGameState.PHASE.MIDWAY_ATTACK
+  } else {
+    GlobalGameState.gamePhase = GlobalGameState.PHASE.AIR_OPERATIONS
+  }
 }
 export default async function handleAction({
   setUSMapRegions,
@@ -337,7 +357,6 @@ export default async function handleAction({
   setJapanStrikePanelEnabled,
   setUsStrikePanelEnabled,
   sideWithInitiative,
-  setSideWithInitiative,
   capSteps,
   capAirUnits,
   setAirUnitUpdate,
@@ -382,6 +401,7 @@ export default async function handleAction({
   //   }
 
   console.log("+++++++++++++++++++ GLOBAL GAME STATE phase =", GlobalGameState.gamePhase)
+  console.log("SIDE WITH INITIATIVE=", GlobalGameState.sideWithInitiative)
 
   if (GlobalGameState.gamePhase === GlobalGameState.PHASE.JAPAN_SETUP) {
     japanSetUpHandler()
@@ -408,12 +428,10 @@ export default async function handleAction({
         setUsStrikePanelEnabled,
         sideWithInitiative,
         setInitiativePanelShow,
-        setSideWithInitiative,
         capAirUnits,
         setAirUnitUpdate,
         setSearchValues,
         setSearchResults,
-        setSideWithInitiative,
         setSearchValuesAlertShow,
         setEliminatedUnitsPanelShow,
       })
@@ -446,16 +464,15 @@ export default async function handleAction({
       setUsStrikePanelEnabled,
       sideWithInitiative,
       setInitiativePanelShow,
-      setSideWithInitiative,
       capAirUnits,
       setAirUnitUpdate,
       setSearchValues,
       setSearchResults,
-      setSideWithInitiative,
       setSearchValuesAlertShow,
       setEliminatedUnitsPanelShow,
     })
     GlobalGameState.updateGlobalState()
+    midwayTidyUp()
     return
   } else if (GlobalGameState.gamePhase === GlobalGameState.PHASE.TARGET_DETERMINATION) {
     console.log("STATE CHANGE TARGET => CAP")
@@ -469,8 +486,13 @@ export default async function handleAction({
     if (GlobalGameState.attackingStepsRemaining > 0 || getNumEscortFighterSteps(GlobalInit.controller) > 0) {
       GlobalGameState.gamePhase = GlobalGameState.PHASE.ESCORT_COUNTERATTACK
     } else {
-      await endOfAirOperation(GlobalUnitsModel.sideWithInitiative, capAirUnits, setAirUnitUpdate, setEliminatedUnitsPanelShow)
-      GlobalGameState.gamePhase = GlobalGameState.PHASE.AIR_OPERATIONS
+      await endOfAirOperation(
+        GlobalGameState.sideWithInitiative,
+        capAirUnits,
+        setAirUnitUpdate,
+        setEliminatedUnitsPanelShow
+      )
+      midwayOrAirOps()
     }
   } else if (GlobalGameState.gamePhase === GlobalGameState.PHASE.ESCORT_COUNTERATTACK) {
     console.log("END OF ESCORT_COUNTERATTACK")
@@ -484,12 +506,12 @@ export default async function handleAction({
         GlobalGameState.gamePhase = GlobalGameState.PHASE.ANTI_AIRCRAFT_FIRE
       } else {
         await endOfAirOperation(
-          GlobalUnitsModel.sideWithInitiative,
+          GlobalGameState.sideWithInitiative,
           capAirUnits,
           setAirUnitUpdate,
           setEliminatedUnitsPanelShow
         )
-        GlobalGameState.gamePhase = GlobalGameState.PHASE.AIR_OPERATIONS
+        midwayOrAirOps()
       }
     }
   } else if (GlobalGameState.gamePhase === GlobalGameState.PHASE.ESCORT_DAMAGE_ALLOCATION) {
@@ -497,8 +519,13 @@ export default async function handleAction({
     if (GlobalGameState.attackingStepsRemaining > 0) {
       GlobalGameState.gamePhase = GlobalGameState.PHASE.ANTI_AIRCRAFT_FIRE
     } else {
-      await endOfAirOperation(GlobalUnitsModel.sideWithInitiative, capAirUnits, setAirUnitUpdate, setEliminatedUnitsPanelShow)
-      GlobalGameState.gamePhase = GlobalGameState.PHASE.AIR_OPERATIONS
+      await endOfAirOperation(
+        GlobalGameState.sideWithInitiative,
+        capAirUnits,
+        setAirUnitUpdate,
+        setEliminatedUnitsPanelShow
+      )
+      midwayOrAirOps()
     }
   } else if (GlobalGameState.gamePhase === GlobalGameState.PHASE.ANTI_AIRCRAFT_FIRE) {
     console.log("END OF ANTI_AIRCRAFT_FIRE")
@@ -518,19 +545,24 @@ export default async function handleAction({
         if (anyTargets === null) {
           // no targets (all units sunk)
           await endOfAirOperation(
-            GlobalUnitsModel.sideWithInitiative,
+            GlobalGameState.sideWithInitiative,
             capAirUnits,
             setAirUnitUpdate,
             setEliminatedUnitsPanelShow
           )
-          GlobalGameState.gamePhase = GlobalGameState.PHASE.AIR_OPERATIONS
+          midwayOrAirOps()
         } else {
           GlobalGameState.gamePhase = GlobalGameState.PHASE.AIR_ATTACK_1
         }
       }
     } else {
-      await endOfAirOperation(GlobalUnitsModel.sideWithInitiative, capAirUnits, setAirUnitUpdate, setEliminatedUnitsPanelShow)
-      GlobalGameState.gamePhase = GlobalGameState.PHASE.AIR_OPERATIONS
+      await endOfAirOperation(
+        GlobalGameState.sideWithInitiative,
+        capAirUnits,
+        setAirUnitUpdate,
+        setEliminatedUnitsPanelShow
+      )
+      midwayOrAirOps()
     }
   } else if (GlobalGameState.gamePhase === GlobalGameState.PHASE.AAA_DAMAGE_ALLOCATION) {
     console.log("END OF AAA_DAMAGE_ALLOCATION")
@@ -543,19 +575,24 @@ export default async function handleAction({
         if (anyTargets === null) {
           // no targets (all units sunk)
           await endOfAirOperation(
-            GlobalUnitsModel.sideWithInitiative,
+            GlobalGameState.sideWithInitiative,
             capAirUnits,
             setAirUnitUpdate,
             setEliminatedUnitsPanelShow
           )
-          GlobalGameState.gamePhase = GlobalGameState.PHASE.AIR_OPERATIONS
+          midwayOrAirOps()
         } else {
           GlobalGameState.gamePhase = GlobalGameState.PHASE.AIR_ATTACK_1
         }
       }
     } else {
-      await endOfAirOperation(GlobalUnitsModel.sideWithInitiative, capAirUnits, setAirUnitUpdate, setEliminatedUnitsPanelShow)
-      GlobalGameState.gamePhase = GlobalGameState.PHASE.AIR_OPERATIONS
+      await endOfAirOperation(
+        GlobalGameState.sideWithInitiative,
+        capAirUnits,
+        setAirUnitUpdate,
+        setEliminatedUnitsPanelShow
+      )
+      midwayOrAirOps()
     }
   } else if (GlobalGameState.gamePhase === GlobalGameState.PHASE.ATTACK_TARGET_SELECTION) {
     GlobalGameState.gamePhase = GlobalGameState.PHASE.AIR_ATTACK_1
@@ -571,33 +608,32 @@ export default async function handleAction({
     if (GlobalGameState.carrierTarget2 !== "" && GlobalGameState.carrierTarget2 !== undefined) {
       GlobalGameState.gamePhase = GlobalGameState.PHASE.AIR_ATTACK_2
     } else {
-      await endOfAirOperation(GlobalUnitsModel.sideWithInitiative, capAirUnits, setAirUnitUpdate, setEliminatedUnitsPanelShow)
+      console.log("SIDE WITH INITIATIVE=", GlobalGameState.sideWithInitiative)
+      await endOfAirOperation(
+        GlobalGameState.sideWithInitiative,
+        capAirUnits,
+        setAirUnitUpdate,
+        setEliminatedUnitsPanelShow
+      )
       GlobalGameState.gamePhase = GlobalGameState.PHASE.AIR_OPERATIONS
       if (GlobalGameState.attackingStrikeGroup) {
         GlobalGameState.attackingStrikeGroup.attacked = true
         const attackingSG = GlobalGameState.attackingStrikeGroup
         attackingSG.attacked = true
-        attackingSG.turnattacked = GlobalGameState.gameTurn
+        attackingSG.airOpAttacked = GlobalGameState.gameTurn
       }
     }
   } else if (GlobalGameState.gamePhase === GlobalGameState.PHASE.MIDWAY_DAMAGE_RESOLUTION) {
-    GlobalGameState.midwayAirOpsCompleted = GlobalGameState.midwayAirOp
-    GlobalGameState.airOperationPoints.japan = 0
-    GlobalGameState.phaseCompleted = true
-    GlobalGameState.gamePhase = GlobalGameState.PHASE.US_FLEET_MOVEMENT
-    if (GlobalGameState.attackingStrikeGroup) {
-      GlobalGameState.attackingStrikeGroup.attacked = true
-      const attackingSG = GlobalGameState.attackingStrikeGroup
-      attackingSG.attacked = true
-      attackingSG.turnattacked = GlobalGameState.gameTurn
-    }
-    setJapanStrikePanelEnabled(false)
-    setUSMapRegions([])
-    GlobalGameState.usFleetMoved = false
-    // GlobalGameState.sideWithInitiative = undefined
-    GlobalGameState.dieRolls = []
+    console.log("IN STATE MIDWAY DAMAGE")
+
+    await endOfAirOperation(
+      GlobalGameState.sideWithInitiative,
+      capAirUnits,
+      setAirUnitUpdate,
+      setEliminatedUnitsPanelShow
+    )
+    midwayOrAirOps()
   } else if (GlobalGameState.gamePhase === GlobalGameState.PHASE.AIR_OPERATIONS) {
-    console.log("HERE I AM >>>>>>>>>>>>>>>>>>>>")
     tidyUp(setAirUnitUpdate)
     GlobalGameState.gamePhase = GlobalGameState.PHASE.END_OF_AIR_OPERATION
     setEndOfAirOpAlertShow(true)

@@ -85,14 +85,10 @@ function FleetCounter({
     let from = {
       currentHex: position.currentHex,
     }
-    // console.log("************ from = ", from)
-
     let to = { currentHex: hex }
     if (position.initial) {
       from = HexCommand.OFFBOARD
     }
-    // console.log("*** To = ", to.currentHex.row, ", ", to.currentHex.col)
-
     controller.viewEventHandler({
       type: Controller.EventTypes.FLEET_SETUP,
       data: {

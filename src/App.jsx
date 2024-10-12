@@ -185,7 +185,7 @@ export function App() {
   const [USMapRegions, setUSMapRegions] = useState([])
   const [japanMapRegions, setJapanMapRegions] = useState([])
 
-  const [sideWithInitiative, setSideWithInitiative] = useState(undefined)
+  // const [sideWithInitiative, setSideWithInitiative] = useState(undefined)
 
   const [targetDetermined, setTargetDetermined] = useState(false)
 
@@ -222,6 +222,7 @@ export function App() {
 
   useEffect(() => {
     if (GlobalGameState.gamePhase === GlobalGameState.PHASE.INITIATIVE_DETERMINATION) {
+      GlobalGameState.sideWithInitiative = undefined
       setInitiativePanelShow(true)
     }
   }, [GlobalGameState.gamePhase])
@@ -399,7 +400,7 @@ export function App() {
       GlobalGameState.gamePhase === GlobalGameState.PHASE.MIDWAY_ATTACK
     ) {
       GlobalGameState.phaseCompleted = false
-      setSideWithInitiative(GlobalGameState.sideWithInitiative)
+      // setSideWithInitiative(GlobalGameState.sideWithInitiative)
       if (GlobalGameState.sideWithInitiative === GlobalUnitsModel.Side.JAPAN) {
         setJapanStrikePanelEnabled(true)
         setUsStrikePanelEnabled(false)
@@ -465,8 +466,6 @@ export function App() {
       setSearchValuesAlertShow,
       setJapanStrikePanelEnabled,
       setUsStrikePanelEnabled,
-      sideWithInitiative,
-      setSideWithInitiative,
       capSteps,
       capAirUnits,
       setAirUnitUpdate,
@@ -492,9 +491,39 @@ export function App() {
   if (v === "test") {
     test = true
   }
+  async function midwayStrikeReady() {
+    const strikeGroups = GlobalInit.controller.getAllStrikeGroups(GlobalUnitsModel.Side.JAPAN)
+    for (let sg of strikeGroups) {
+      if (sg.moved === true) {
+        return false // once strike group has moved disable button
+      }
+    }
+
+    if (strikeGroups.length > 0) {
+      return true
+    }
+
+    return false
+  }
+  async function endOfMidwayOperation() {
+    if (GlobalGameState.midwayAirOpsCompleted < 2) {
+      return false
+    }
+    const sideBeingAttacked =
+      GlobalGameState.sideWithInitiative === GlobalUnitsModel.Side.US
+        ? GlobalUnitsModel.Side.JAPAN
+        : GlobalUnitsModel.Side.US
+    // 2. CHECK ALL INTERCEPTING CAP UNITS HAVE RETURNED TO CARRIERS
+    const capUnitsReturning = GlobalInit.controller.getAllCAPDefendersInCAPReturnBoxes(sideBeingAttacked)
+    if (capUnitsReturning.length === 0) {
+      return true
+    }
+    return false
+  }
   async function endOfMyAirOperation(side) {
     // 1. MOVE STRIKE UNITS TO CORRECT RETURN BOX
     const anyUnitsNotMoved = GlobalInit.controller.getStrikeGroupsNotMoved2(side)
+
     if (anyUnitsNotMoved) {
       return false
     }
@@ -505,21 +534,55 @@ export function App() {
         : GlobalUnitsModel.Side.US
     // 2. CHECK ALL INTERCEPTING CAP UNITS HAVE RETURNED TO CARRIERS
     const capUnitsReturning = GlobalInit.controller.getAllCAPDefendersInCAPReturnBoxes(sideBeingAttacked)
-
     if (capUnitsReturning.length === 0) {
-
       return true
     }
     return false
   }
-  const checkAirOps = async () => {
-    const endOfAirOps = await endOfMyAirOperation(GlobalGameState.sideWithInitiative, setAirUnitUpdate)
+  const nextActionButtonDisabled = async () => {
+    const prevButton = GlobalGameState.nextActionButtonDisabled
+    if (GlobalGameState.gamePhase === GlobalGameState.PHASE.US_FLEET_MOVEMENT_PLANNING) {
+      GlobalGameState.nextActionButtonDisabled = false
+      return
+    }
+    if (GlobalGameState.gamePhase === GlobalGameState.PHASE.US_FLEET_MOVEMENT) {
+      GlobalGameState.nextActionButtonDisabled = false
+      return
+    }
+    if (GlobalGameState.gamePhase === GlobalGameState.PHASE.JAPAN_FLEET_MOVEMENT && GlobalGameState.jpFleetPlaced) {
+      GlobalGameState.nextActionButtonDisabled = false
+      return
+    }
+    if (GlobalGameState.phaseCompleted) {
+      GlobalGameState.nextActionButtonDisabled = false
+      return
+    }
+    let midwayStrikeGroupsReady = true
+    if (GlobalGameState.gamePhase === GlobalGameState.PHASE.MIDWAY_ATTACK) {
+      midwayStrikeGroupsReady = await midwayStrikeReady()
+    } else {
+      midwayStrikeGroupsReady = false
+    }
+    let endOfAirOps = false
+    if (GlobalGameState.gamePhase !== GlobalGameState.PHASE.MIDWAY_ATTACK) {
+      endOfAirOps = await endOfMyAirOperation(GlobalGameState.sideWithInitiative, setAirUnitUpdate)
+    } else {
+      endOfAirOps = await endOfMidwayOperation()
+    }
     GlobalGameState.nextActionButtonDisabled =
+      !midwayStrikeGroupsReady ||
       !GlobalGameState.phaseCompleted ||
       (GlobalGameState.gamePhase === GlobalGameState.PHASE.JAPAN_FLEET_MOVEMENT && !GlobalGameState.jpFleetPlaced) ||
       (GlobalGameState.gamePhase === GlobalGameState.PHASE.US_SETUP_FLEET && !GlobalGameState.usFleetPlaced)
     if (endOfAirOps) {
       GlobalGameState.nextActionButtonDisabled = false
+    }
+    if (midwayStrikeGroupsReady) {
+      GlobalGameState.nextActionButtonDisabled = false
+    }
+
+    if (prevButton !==  GlobalGameState.nextActionButtonDisabled) {
+      GlobalGameState.updateGlobalState()
     }
   }
   const Controls = () => {
@@ -539,7 +602,7 @@ export function App() {
       image = "/images/bothflags.jpg"
     }
     let midwayMsg = ""
-    checkAirOps()
+    nextActionButtonDisabled()
     if (GlobalGameState.gamePhase === GlobalGameState.PHASE.END_OF_AIR_OPERATION) {
       GlobalGameState.nextActionButtonDisabled = false
     }
@@ -908,10 +971,9 @@ export function App() {
   )
   function doInitiativeRoll(roll0, roll1) {
     // for testing QUACK
-    const sideWithInitiative = doIntiativeRoll(GlobalInit.controller, 6, 1, true)
+    doIntiativeRoll(GlobalInit.controller, 6, 1, true)
 
-    // const sideWithInitiative = doIntiativeRoll(GlobalInit.controller, roll0, roll1)
-    setSideWithInitiative(() => sideWithInitiative)
+    // doIntiativeRoll(GlobalInit.controller, roll0, roll1)
     GlobalGameState.updateGlobalState()
   }
 

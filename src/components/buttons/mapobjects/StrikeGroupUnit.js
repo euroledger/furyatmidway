@@ -7,8 +7,8 @@ export default class StrikeGroupUnit extends BaseUnit {
     this.side = side
     this.moved = moved
     this.attacked = attacked
-    this.turnmoved = undefined
-    this.turnattacked = undefined
+    this.airOpMoved = undefined
+    this.airOpAttacked = undefined
   }
 
   set box(b) {
@@ -51,19 +51,19 @@ export default class StrikeGroupUnit extends BaseUnit {
     return this._attacked
   }
 
-  set turnmoved(tm) {
-    this._turnmoved = tm
+  set airOpMoved(tm) {
+    this._airOpMoved = tm
   }
 
-  get turnmoved() {
-    return this._turnmoved
+  get airOpMoved() {
+    return this._airOpMoved
   }
   
-  set turnattacked(ta) {
-    this._turnattacked = ta
+  set airOpAttacked(ta) {
+    this._airOpAttacked = ta
   }
 
-  get turnattacked() {
-    return this._turnattacked
+  get airOpAttacked() {
+    return this._airOpAttacked
   }
 }

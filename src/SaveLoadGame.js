@@ -168,8 +168,6 @@ function loadAirUnits(airUnitMap) {
     if (airUnit.counterData._aircraftUnit._moved) {
       globalAirUnit.aircraftUnit.moved = true
     }
-
-    // TODO steps, damage to fleets etc
   }
 }
 
@@ -178,6 +176,8 @@ function loadUSStrikeUnits(loadedMap) {
       const sg = GlobalUnitsModel.usStrikeGroups.get(key)
       const loadedSG = loadedMap.get(key)
       sg.moved = loadedSG._moved
+      sg.airOpMoved = loadedSG._airOpMoved
+      sg.airOpAttacked = loadedSG._airOpAttacked
       GlobalUnitsModel.usStrikeGroups.set(key, sg)
     }
 }
@@ -187,6 +187,10 @@ function loadJapanStrikeUnits(loadedMap) {
     const sg = GlobalUnitsModel.jpStrikeGroups.get(key)
     const loadedSG = loadedMap.get(key)
     sg.moved = loadedSG._moved
+    // console.log("name: ", sg.name, ">>>>>>>>>>>>>> SET STRIKE GROUP AIR OP MOVED TO", loadedSG._airOpMoved)
+
+    sg.airOpMoved = loadedSG._airOpMoved
+    sg.airOpAttacked = loadedSG._airOpAttacked
     GlobalUnitsModel.jpStrikeGroups.set(key, sg)
   }
 }

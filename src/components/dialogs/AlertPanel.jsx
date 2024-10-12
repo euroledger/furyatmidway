@@ -20,10 +20,10 @@ function AlertPanel(props) {
     }
   }, [GlobalGameState.closePanel])
   return (
-    <Modal {...props} size={size} aria-labelledby="contained-modal-title-vcenter" centered>
+    <Modal {...props} size={size} aria-labelledby="contained-modal-title-vcenter" centered backdrop="static">
       <Modal.Body style={{ background: `${bg}`, color: "white" }}>{props.children}</Modal.Body>
       <Modal.Footer style={{ background: `${bg}`, color: "black" }}>
-        <Button  ref={buttonRef} onClick={props.onHide}>Close</Button>
+        <Button  ref={buttonRef} onClick={props.onHide} >Close</Button>
       </Modal.Footer>
     </Modal>
   )

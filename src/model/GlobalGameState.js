@@ -153,6 +153,9 @@ export default class GlobalGameState {
 
   static isFirstAirOp = true
 
+  static airOpJapan = 0 // count which air op this is
+  static airOpUS = 0
+  
   static airAttacksComplete = false; // set to true after all air attacks - triggers CAP return etc
 
   static capHits = undefined

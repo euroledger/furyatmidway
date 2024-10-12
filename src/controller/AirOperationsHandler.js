@@ -213,11 +213,11 @@ export function doStrikeBox(controller, name, side, box) {
   const unit = controller.getAirUnitForName(name)
   const tf = controller.getTaskForceForCarrier(unit.carrier)
 
-  if (strikeGroup.attacked && strikeGroup.turnmoved === strikeGroup.turnattacked) {
+  if (strikeGroup.airOpAttacked && strikeGroup.airOpMoved === strikeGroup.airOpAttacked) {
     // GOTO RETURN 1 BOX
     const return1Box = controller.getReturn1AirBoxForNamedTaskForce(side, tf)
     controller.setValidAirUnitDestinations(name, return1Box)
-  } else if (strikeGroup.attacked && strikeGroup.turnmoved !== strikeGroup.turnattacked) {
+  } else if (strikeGroup.attacked && strikeGroup.airOpMoved !== strikeGroup.airOpAttacked) {
     // GOTO RETURN 2 BOX
     const return2Box = controller.getReturn2AirBoxForNamedTaskForce(side, tf)
     controller.setValidAirUnitDestinations(name, return2Box)
@@ -292,10 +292,10 @@ export function delay(ms) {
   })
 }
 export async function moveAirUnitToReturnBox(controller, strikeGroup, unit, side, setAirUnitUpdate) {
-  const tf = controller.getTaskForceForCarrier(unit.carrier)
+  const tf = controller.getTaskForceForCarrier(unit.carrier, side)
 
   let toBox
-  if (strikeGroup.attacked && strikeGroup.turnmoved === strikeGroup.turnattacked) {
+  if (strikeGroup.airOpAttacked && strikeGroup.airOpMoved === strikeGroup.airOpAttacked) {
     // GOTO RETURN 1 BOX
     toBox = controller.getReturn1AirBoxForNamedTaskForce(side, tf)
   } else {
@@ -330,7 +330,6 @@ export async function moveAirUnitToReturnBox(controller, strikeGroup, unit, side
 }
 
 export async function moveOrphanedCAPUnitsToEliminatedBox(side) {
-  console.log(" IN moveOrphanedCAPUnitsToEliminatedBox...")
   const capUnitsReturning = GlobalInit.controller.getAllCAPDefendersInCAPReturnBoxes(side)
   for (const unit of capUnitsReturning) {
     await delay(1)
@@ -350,22 +349,18 @@ export async function moveOrphanedCAPUnitsToEliminatedBox(side) {
 }
 
 export async function moveStrikeUnitsToReturnBox(side, setAirUnitUpdate) {
-  console.log("IN moveStrikeUnitsToReturnBox POOOOOOOOO")
+  console.log("NUTS! side=", side)
   const strikeGroups = GlobalInit.controller.getAllStrikeGroups(side)
-  console.log("STRIKE GROUPS=", strikeGroups)
   for (const group of strikeGroups) {
     if (!group.attacked) {
-      console.log("SHIT NO FUCKER HAS ATTACKED")
       continue
     }
     const unitsInGroup = GlobalInit.controller.getAirUnitsInStrikeGroups(group.box)
     for (const unit of unitsInGroup) {
       await delay(1)
-      console.log("DO THE MOVE!!!!!!!")
       await moveAirUnitToReturnBox(GlobalInit.controller, group, unit, side, setAirUnitUpdate)
     }
   }
-  console.log("DONE")
   GlobalInit.controller.setAllUnitsToNotMoved()
 }
 export async function moveCAPtoReturnBox(controller, capAirUnits, setAirUnitUpdate) {

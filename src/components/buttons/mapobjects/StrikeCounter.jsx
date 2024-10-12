@@ -7,7 +7,6 @@ import GlobalGameState from "../../../model/GlobalGameState"
 import "./counter.css"
 import { allHexesWithinDistance, hexesInTwoRegions } from "../../HexUtils"
 import HexCommand from "../../../commands/HexCommand"
-import { faL } from "@fortawesome/free-solid-svg-icons"
 
 function StrikeCounter({ setStrikeGroupPopup, currentUSHex, currentJapanHex, counterData, side, index }) {
   const {
@@ -64,8 +63,6 @@ function StrikeCounter({ setStrikeGroupPopup, currentUSHex, currentJapanHex, cou
     hex = strikeGroupUpdate.position.currentHex
     // console.log("\t=>hex=", hex)
   }
-  const locationOfStrikeGroup = controller.getStrikeGroupLocation(counterData.name, side)
-
   // console.log("STRIKE GROUP", counterData.name, "location=", locationOfStrikeGroup )
   if (
     strikeGroupUpdate &&
@@ -75,7 +72,7 @@ function StrikeCounter({ setStrikeGroupPopup, currentUSHex, currentJapanHex, cou
     ((strikeGroupUpdate.position.currentHex != undefined && position.currentHex.q !== hex.q) ||
       position.currentHex.r !== hex.r)
   ) {
-    console.log("I am", strikeGroupUpdate.name, " -> STRIKE GROUP UPDATE, moved= ", strikeGroupUpdate.moved)
+    // console.log("I am", strikeGroupUpdate.name, " -> STRIKE GROUP UPDATE, moved= ", strikeGroupUpdate.moved)
 
     if (side === GlobalUnitsModel.Side.US) {
       setUSPosition(hex)
@@ -99,7 +96,7 @@ function StrikeCounter({ setStrikeGroupPopup, currentUSHex, currentJapanHex, cou
         to,
         side,
         loading,
-        moved: strikeGroupUpdate.moved
+        moved: true,
       },
     })
   }
@@ -108,12 +105,22 @@ function StrikeCounter({ setStrikeGroupPopup, currentUSHex, currentJapanHex, cou
     let jpRegion1
 
     // Use 1AF
-    const locationOfCarrier = controller.getFleetLocation("1AF", GlobalUnitsModel.Side.JAPAN)
-
-    setCurrentHex(locationOfCarrier)
-    if (locationOfCarrier) {
-      jpRegion1 = allHexesWithinDistance(locationOfCarrier.currentHex, 2, true)
-      setJapanMapRegions(jpRegion1)
+    if (counterData.airOpMoved !== undefined &&GlobalGameState.airOpJapan !== counterData.airOpMoved) {
+      // second air op for this SG, use movement allowance (3) and position of SG to determine regions
+      const locationOfStrikeGroup = controller.getStrikeGroupLocation(counterData.name, side)
+      setCurrentHex(locationOfStrikeGroup)
+      if (locationOfStrikeGroup) {
+        jpRegion1 = allHexesWithinDistance(locationOfStrikeGroup.currentHex, 3, true)
+        setJapanMapRegions(jpRegion1)
+      }
+    } else {
+      const locationOfCarrier = controller.getFleetLocation("1AF", GlobalUnitsModel.Side.JAPAN)
+      // First Air Op: Set Regions to be any hex within 2 of 1AF
+      setCurrentHex(locationOfCarrier)
+      if (locationOfCarrier) {
+        jpRegion1 = allHexesWithinDistance(locationOfCarrier.currentHex, 2, true)
+        setJapanMapRegions(jpRegion1)
+      }
     }
 
     // If this is the first Midway AirOp and strike group is more than two hexes from Midway

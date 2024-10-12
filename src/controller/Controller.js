@@ -330,6 +330,21 @@ export default class Controller {
     }
   }
 
+  setAirOpAttacked(counterData) {
+    if (GlobalGameState.sideWithInitiative === GlobalUnitsModel.Side.JAPAN) {
+      counterData.airOpAttacked = GlobalGameState.airOpJapan
+    } else {
+      counterData.airOpAttacked = GlobalGameState.airOpUS
+    }
+  }
+
+  setAirOpMoved(counterData) {
+    if (GlobalGameState.sideWithInitiative === GlobalUnitsModel.Side.JAPAN) {
+      counterData.airOpMoved = GlobalGameState.airOpJapan
+    } else {
+      counterData.airOpMoved = GlobalGameState.airOpUS
+    }
+  }
   getTaskForceForCarrier(name, side) {
     const carrier = side === GlobalUnitsModel.Side.JAPAN ? this.getJapanFleetUnit(name) : this.getUSFleetUnit(name)
     return carrier.taskForce
@@ -414,18 +429,6 @@ export default class Controller {
     }
   }
 
-  allMandatoryMovesDone(side) {
-    // 1. CHECK ANY UNITS IN CAP RETURN BOXES
-    // 2. CHECK IF ANY STRIKE UNITS HABVE ATTACKED THIS AIR OP
-    // 3. ANY UNITS IN RETURN BOXES YET TO MOVE
-    // moves will be:-
-    // 1. CAP RETURN TO HANGAR OR FLIGHT DECK
-    // 2. STRIKE AIR UNITS TO EITHER RETURN 1 or RETURN 2
-    // 3. SET STRIKE COUNTERS TO OFF-BOARD
-    // 4. MOVE RETURN 2 -> RETURN 1
-    // 5. MOVE RETURN 1 -> CARRIER
-  }
-
   getStrikeGroupsNotMoved2(side) {
     const strikeGroups = this.getAllStrikeGroups(side)
     if (strikeGroups.length === 0) {
@@ -434,10 +437,6 @@ export default class Controller {
       }
       return []
     }
-
-    // for (let s of strikeGroups) {
-    //   console.log("SG", s.name, "MOVED =", s.moved)
-    // }
     for (let s of strikeGroups) {
       if (!s.moved) {
         return true
@@ -496,7 +495,7 @@ export default class Controller {
   getAttackingStrikeUnitsTEST(carrierDiv, carrier) {
     GlobalGameState.currentCarrierAttackTarget = carrier
     GlobalGameState.taskForceTarget = carrierDiv
-    GlobalGameState.sideWithInitiative = GlobalUnitsModel.Side.JAPAN
+    getTaskForceForCarrierGlobalUnitsModel.Side.JAPAN
 
     const edb1 = this.counters.get("Enterprise-SBD3-1")
     const etb = this.counters.get("Enterprise-TBD1")
@@ -679,7 +678,6 @@ export default class Controller {
     let unitsInGroup = new Array()
     const box = GlobalGameState.attackingStrikeGroup.box
 
-    // console.log("SG: ", sg.name, "ATTACKED=", sg.attacked)
     unitsInGroup = this.getAirUnitsInStrikeGroups(box)
 
     if (excludeFighters) {

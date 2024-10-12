@@ -195,7 +195,6 @@ export default class BoxModels {
     // remove from previous location
     const prevLocation = this.getAirUnitLocation(value.name)
     if (prevLocation != undefined) {
-      // console.log(` => Air Unit ${value.name}: remove from box ${prevLocation.boxName}`)
       this.removeAirUnitFromBox(prevLocation.boxName, prevLocation.boxIndex)
     }
     if (

@@ -6,26 +6,28 @@ import GlobalInit from "./model/GlobalInit"
 
 export function doIntiativeRoll(controller, roll0, roll1, showDice) {
   // for automated testing
-  let sideWithInitiative
+  // let sideWithInitiative
   let jpRolls, usRolls
   if (showDice) {
     const rolls = randomDice(2, [roll0, roll1])
-    sideWithInitiative = controller.determineInitiative(roll0, roll1)   
+    GlobalGameState.sideWithInitiative = controller.determineInitiative(roll0, roll1)  
   } else {
     if (roll0 && roll1) {
-      sideWithInitiative = controller.determineInitiative(roll0, roll1)
+      GlobalGameState.sideWithInitiative = controller.determineInitiative(roll0, roll1)
       jpRolls = [roll0]
       usRolls = [roll1]
     } else {
       const rolls = randomDice(2)
-      sideWithInitiative = controller.determineInitiative(rolls[0], rolls[1])
+      GlobalGameState.sideWithInitiative = controller.determineInitiative(rolls[0], rolls[1])
       jpRolls = [rolls[0]]
       usRolls = [rolls[1]]
     }    
   }
-
-  GlobalGameState.sideWithInitiative = sideWithInitiative
-
+  if (GlobalGameState.sideWithInitiative === GlobalUnitsModel.Side.JAPAN) {
+    GlobalGameState.airOpJapan++
+  } else {
+    GlobalGameState.airOpUS++
+  }
   controller.viewEventHandler({
     type: Controller.EventTypes.INITIATIVE_ROLL,
     data: {
@@ -33,7 +35,6 @@ export function doIntiativeRoll(controller, roll0, roll1, showDice) {
       usRolls,
     },
   })
-  return sideWithInitiative
 }
 
 export function doSelectionRoll(controller, roll0) {
