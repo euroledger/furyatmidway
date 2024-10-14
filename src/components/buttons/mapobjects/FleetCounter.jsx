@@ -97,6 +97,7 @@ function FleetCounter({
         from,
         to,
         side,
+        loading: true
       },
     })
   }

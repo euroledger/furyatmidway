@@ -5,7 +5,7 @@ import GlobalUnitsModel from "../../../model/GlobalUnitsModel"
 import GlobalGameState from "../../../model/GlobalGameState"
 import { BoardContext } from "../../../App"
 import "./counter.css"
-import { setValidDestinationBoxes } from "../../../controller/AirOperationsHandler"
+import { setValidDestinationBoxes, moveOrphanedCAPUnitsToEliminatedBox } from "../../../controller/AirOperationsHandler"
 
 function AirCounter({ getAirBox, setAirBox, counterData, side }) {
   const {
@@ -25,6 +25,7 @@ function AirCounter({ getAirBox, setAirBox, counterData, side }) {
   })
 
   const onDrag = () => {
+    console.log("DRAGGING...")
     setIsMoveable(true)
 
     // only the selected (clicked) air unit should be draggable
@@ -41,15 +42,21 @@ function AirCounter({ getAirBox, setAirBox, counterData, side }) {
       GlobalGameState.gamePhase === GlobalGameState.PHASE.JAPAN_SETUP ||
       GlobalGameState.gamePhase === GlobalGameState.PHASE.US_SETUP_AIR
     ) {
+      if (counterData.side === GlobalUnitsModel.Side.JAPAN) {
+        setEnabledJapanBoxes(() => [])
+      } else {
+        setEnabledUSBoxes(() => [])
+      }
       return
     }
+
     if (
       GlobalGameState.gamePhase === GlobalGameState.PHASE.AIR_OPERATIONS ||
       GlobalGameState.gamePhase === GlobalGameState.PHASE.MIDWAY_ATTACK
     ) {
       setValidDestinationBoxes(controller, counterData.name, counterData.side)
     }
-    setBoxes(counterData)
+    setBoxes(counterData, location.boxName)
   }
   const [selected, setSelected] = useState(false)
 
@@ -236,6 +243,7 @@ function AirCounter({ getAirBox, setAirBox, counterData, side }) {
       left: offsets.left + "%",
       top: offsets.top - 0.2 + "%",
     })
+    moveOrphanedCAPUnitsToEliminatedBox(counterData.side)
 
     if (
       GlobalGameState.gamePhase === GlobalGameState.PHASE.AIR_OPERATIONS ||
@@ -274,8 +282,12 @@ function AirCounter({ getAirBox, setAirBox, counterData, side }) {
     setAirBox({})
   }
 
-  const setBoxes = (counterData) => {
+  const setBoxes =  (counterData, box) => {
+    if (box !== undefined && box.includes("CAP RETURNING")) {
+      moveOrphanedCAPUnitsToEliminatedBox(counterData.side)
+    }
     const destBoxes = controller.getValidAirUnitDestinations(counterData.name)
+    console.log(">>>>>>>>>>> dest Boxes for valid destinations=", destBoxes)
     if (counterData.side === GlobalUnitsModel.Side.JAPAN) {
       setEnabledJapanBoxes(() => destBoxes)
     } else {
@@ -299,7 +311,7 @@ function AirCounter({ getAirBox, setAirBox, counterData, side }) {
     ) {
       setValidDestinationBoxes(controller, counterData.name, counterData.side)
     }
-    setBoxes(counterData)
+    setBoxes(counterData, location.boxName)
 
     // only the selected (clicked) air unit should be draggable
     setSelected(true)
@@ -309,8 +321,7 @@ function AirCounter({ getAirBox, setAirBox, counterData, side }) {
     e.preventDefault()
   }
   const zx = side === GlobalUnitsModel.Side.JAPAN ? 93 : 11
-
-  // console.log(counterData.name, "->", counterData.aircraftUnit.moved)
+  
   const transform =
     counterData.aircraftUnit.moved || counterData.aircraftUnit.airOpMoved !== undefined ? "rotate(45deg)" : ""
 

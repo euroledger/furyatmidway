@@ -7,84 +7,6 @@ function delay(ms) {
   })
 }
 
-// const loadState = ({
-//   setUSMapRegions,
-//   setCSFAlertShow,
-//   setMidwayDialogShow,
-//   setUsFleetRegions,
-//   setJapanMapRegions,
-//   setUSMapRegions,
-//   setJapanFleetRegions,
-//   setJapanStrikePanelEnabled,
-//   setUsStrikePanelEnabled,
-//   setFleetUnitUpdate
-// }) => {
-//   if (GlobalGameState.gamePhase === GlobalGameState.PHASE.JAPAN_SETUP) {
-//     const carrier = GlobalGameState.getJapanCarrier()
-//     determineAllUnitsDeployedForCarrier(GlobalInit.controller, GlobalUnitsModel.Side.JAPAN, carrier)
-//   } else if (GlobalGameState.gamePhase === GlobalGameState.PHASE.US_SETUP_AIR) {
-//     const carrier = GlobalGameState.getUSCarrier()
-//     determineAllUnitsDeployedForCarrier(GlobalInit.controller, GlobalUnitsModel.Side.US, carrier)
-//   } else if (GlobalGameState.gamePhase === GlobalGameState.PHASE.US_SETUP_FLEET) {
-//     setUSMapRegions(usCSFStartHexes)
-//     if (!GlobalGameState.usFleetPlaced) {
-//       setCSFAlertShow(true)
-//     }
-//   } else if (GlobalGameState.gamePhase === GlobalGameState.PHASE.JAPAN_MIDWAY) {
-//     setMidwayDialogShow(true)
-//     GlobalGameState.phaseCompleted = false
-//   } else if (GlobalGameState.gamePhase === GlobalGameState.PHASE.US_FLEET_MOVEMENT_PLANNING) {
-//     if (!GlobalGameState.usFleetMoved) {
-//       setUsFleetRegions()
-//     } else {
-//       setUSMapRegions([])
-//       GlobalGameState.phaseCompleted = true
-//     }
-//   } else if (GlobalGameState.gamePhase === GlobalGameState.PHASE.JAPAN_FLEET_MOVEMENT) {
-//     setJapanFleetRegions()
-//     GlobalGameState.phaseCompleted = GlobalGameState.jpFleetMoved
-//   } else if (GlobalGameState.gamePhase === GlobalGameState.PHASE.MIDWAY_ATTACK) {
-//     setJapanMapRegions([])
-//     GlobalGameState.phaseCompleted = true
-//   } else if (GlobalGameState.gamePhase === GlobalGameState.PHASE.US_FLEET_MOVEMENT) {
-//     setJapanMapRegions([])
-//     GlobalGameState.phaseCompleted = true
-//   } else if (GlobalGameState.gamePhase === GlobalGameState.PHASE.AIR_SEARCH) {
-//     setJapanMapRegions([])
-//     GlobalGameState.phaseCompleted = true
-//   } else if (GlobalGameState.gamePhase === GlobalGameState.PHASE.AIR_OPERATIONS) {
-//     GlobalGameState.phaseCompleted = false
-//     if (GlobalGameState.sideWithInitiative === GlobalUnitsModel.Side.JAPAN) {
-//       setJapanStrikePanelEnabled(true)
-//       setUsStrikePanelEnabled(false)
-//       const units = GlobalInit.controller.getStrikeGroupsNotMoved(GlobalUnitsModel.Side.JAPAN)
-//       if (units.length === 0) {
-//         GlobalGameState.phaseCompleted = true
-//       } else {
-//         GlobalGameState.phaseCompleted = false
-//       }
-//     } else {
-//       setUsStrikePanelEnabled(true)
-//       setJapanStrikePanelEnabled(false)
-//       const units = GlobalInit.controller.getStrikeGroupsNotMoved(GlobalUnitsModel.Side.US)
-//       if (units.length === 0) {
-//         GlobalGameState.phaseCompleted = true
-//       } else {
-//         GlobalGameState.phaseCompleted = false
-//       }
-//     }
-//   }
-//   // If we don't do this, a drag and drop move fires a fleet update and the fleet does not move
-//   setFleetUnitUpdate(undefined)
-
-//   GlobalGameState.updateGlobalState()
-//   const enabledJapanBoxes = getJapanEnabledAirBoxes()
-//   setEnabledJapanBoxes(() => enabledJapanBoxes)
-
-//   const enabledUSBoxes = getUSEnabledAirBoxes()
-//   setEnabledUSBoxes(() => enabledUSBoxes)
-// }
-
 async function loadHandler({
   controller,
   setTestClicked,
@@ -92,6 +14,7 @@ async function loadHandler({
   setAirUnitUpdate,
   setFleetUnitUpdate,
   setStrikeGroupUpdate,
+  setDamageMarkerUpdate,
   loadState,
   id,
   setLoading,
@@ -99,8 +22,16 @@ async function loadHandler({
   setTestClicked(true)
   console.log("Load game from local storage")
   setSplash(false)
-  const { airUpdates, jpfleetUpdates, usfleetUpdates, jpStrikeUpdates, usStrikeUpdates, logItems } =
-    loadGameStateForId(controller, id)
+  const {
+    airUpdates,
+    jpfleetUpdates,
+    usfleetUpdates,
+    jpStrikeUpdates,
+    usStrikeUpdates,
+    jpDamageMarkerUpdates,
+    usDamageMarkerUpdates,
+    logItems,
+  } = loadGameStateForId(controller, id)
   for (const update of airUpdates) {
     setAirUnitUpdate(update)
     await delay(1)
@@ -125,6 +56,21 @@ async function loadHandler({
     await delay(1)
   }
 
+ 
+  for (const updateArray of jpDamageMarkerUpdates) {
+    for (let update of updateArray) {
+      if (update === null) {
+        continue
+      }
+      setDamageMarkerUpdate(update)
+      await delay(1)  
+    }
+  }
+
+  for (const update of usDamageMarkerUpdates) {
+    setDamageMarkerUpdate(update)
+    await delay(1)
+  }
   GlobalGameState.logItems = new Array()
   for (let item of logItems.values()) {
     GlobalGameState.log(item)

@@ -7,7 +7,7 @@ import HexCommand from "../src/commands/HexCommand"
 import {
   doAttackFireRolls,
 } from "../src/DiceHandler"
-import { doStrikeBox } from "../src/controller/AirOperationsHandler"
+import { doStrikeBoxUS, doStrikeBoxJapan } from "../src/controller/AirOperationsHandler"
 
 describe("Controller tests", () => {
   let controller
@@ -200,20 +200,27 @@ describe("Controller tests", () => {
     doAttackFireRolls(controller, dieRolls)
 
     for (let unit of unitsInGroup) {
-        doStrikeBox(controller, unit.name, GlobalUnitsModel.Side.US, GlobalUnitsModel.AirBox.US_STRIKE_BOX_0)
+        doStrikeBoxUS(controller, unit.name, GlobalUnitsModel.Side.US)
 
         let destinations = controller.getValidAirUnitDestinations(unit.name)
-        expect(destinations).toEqual(GlobalUnitsModel.AirBox.US_TF16_RETURN1)
+        expect(destinations[0]).toEqual(GlobalUnitsModel.AirBox.US_TF16_RETURN1)
+        expect(destinations[1]).toEqual(GlobalUnitsModel.AirBox.US_TF17_RETURN1)
+        expect(destinations[2]).toEqual(GlobalUnitsModel.AirBox.US_MIDWAY_RETURN1)
     }
   })
 
   test("US Strike Group Attacks, different AIR OP turn to moved, units move to RETURN 2", () => {
     setupUSStrikeGroups(7,1)
-    GlobalGameState.gameTurn = 2
+    GlobalGameState.airOpUS = 2
+
 
     strikeGroupMoveUS(GlobalUnitsModel.AirBox.US_STRIKE_BOX_0, 7, 2)
 
     let strikeGroup = GlobalUnitsModel.usStrikeGroups.get(GlobalUnitsModel.AirBox.US_STRIKE_BOX_0)
+
+    GlobalGameState.attackingStrikeGroup.airOpMoved = 1
+    GlobalGameState.attackingStrikeGroup.airOpAttacked = 2
+
     let unitsInGroup = controller.getAirUnitsInStrikeGroups(strikeGroup.box)
     expect(unitsInGroup.length).toEqual(2)
 
@@ -230,21 +237,17 @@ describe("Controller tests", () => {
 
     // FIRST TURN 
     // move US strike group to hex adjacent to JAPAN 1AF
-    let location2 = {
-      currentHex: {
-        q: 7,
-        r: 1,
-      },
-    }
     let dieRolls = [3, 4]
 
     doAttackFireRolls(controller, dieRolls)
 
     for (let unit of unitsInGroup) {
-        doStrikeBox(controller, unit.name, GlobalUnitsModel.Side.US, GlobalUnitsModel.AirBox.US_STRIKE_BOX_0)
+        doStrikeBoxUS(controller, unit.name, GlobalUnitsModel.Side.US)
 
         let destinations = controller.getValidAirUnitDestinations(unit.name)
-        expect(destinations).toEqual(GlobalUnitsModel.AirBox.US_TF16_RETURN1)
+        expect(destinations[0]).toEqual(GlobalUnitsModel.AirBox.US_TF16_RETURN2)
+        expect(destinations[1]).toEqual(GlobalUnitsModel.AirBox.US_TF17_RETURN2)
+        expect(destinations[2]).toEqual(GlobalUnitsModel.AirBox.US_MIDWAY_RETURN2)
     }
   })
 })

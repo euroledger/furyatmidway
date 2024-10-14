@@ -65,6 +65,7 @@ import { AttackResolutionHeaders, AttackResolutionFooters } from "./attackscreen
 import UITester from "./UIEvents/UITester"
 import { getJapanEnabledAirBoxes, getUSEnabledAirBoxes } from "./AirBoxZoneHandler"
 import handleAction, { calcAirOpsPointsMidway } from "./GameStateHandler"
+import { setStrikeGroupAirUnitsToNotMoved } from "./controller/AirOperationsHandler"
 
 export default App
 
@@ -217,6 +218,13 @@ export function App() {
       setTargetPanelShow(true)
       GlobalGameState.dieRolls = 0
       GlobalGameState.capHits = undefined
+    }
+  }, [GlobalGameState.gamePhase])
+
+  useEffect(() => {
+    if (GlobalGameState.gamePhase === GlobalGameState.PHASE.AIR_OPERATIONS) {
+      GlobalGameState.phaseCompleted = false
+      GlobalGameState.nextActionButtonDisabled = true
     }
   }, [GlobalGameState.gamePhase])
 
@@ -400,7 +408,6 @@ export function App() {
       GlobalGameState.gamePhase === GlobalGameState.PHASE.MIDWAY_ATTACK
     ) {
       GlobalGameState.phaseCompleted = false
-      // setSideWithInitiative(GlobalGameState.sideWithInitiative)
       if (GlobalGameState.sideWithInitiative === GlobalUnitsModel.Side.JAPAN) {
         setJapanStrikePanelEnabled(true)
         setUsStrikePanelEnabled(false)
@@ -424,12 +431,6 @@ export function App() {
       } else {
         setUsStrikePanelEnabled(true)
         setJapanStrikePanelEnabled(false)
-        const units = GlobalInit.controller.getStrikeGroupsNotMoved(GlobalUnitsModel.Side.US)
-        if (units.length === 0) {
-          GlobalGameState.phaseCompleted = true
-        } else {
-          GlobalGameState.phaseCompleted = false
-        }
       }
     }
     // If we don't do this, a drag and drop move fires a fleet update and the fleet does not move
@@ -520,14 +521,26 @@ export function App() {
     }
     return false
   }
+ 
+  if ( GlobalGameState.attackingStrikeGroup) {
+    console.log("NARF 88888 GlobalGameState.attackingStrikeGroup airOpattack=", 
+      GlobalGameState.attackingStrikeGroup.airOpAttacked)
+  }
   async function endOfMyAirOperation(side) {
-    // 1. MOVE STRIKE UNITS TO CORRECT RETURN BOX
     const anyUnitsNotMoved = GlobalInit.controller.getStrikeGroupsNotMoved2(side)
 
     if (anyUnitsNotMoved) {
       return false
     }
 
+    // 1. CHECK ALL STRIKE/RETURNING UNITS HAVE MOVED
+    const returningUnitsNotMoved = GlobalInit.controller.getReturningUnitsNotMoved(side)
+    if (returningUnitsNotMoved) {
+      return false
+    } else {
+      await setStrikeGroupAirUnitsToNotMoved(GlobalGameState.sideWithInitiative)
+    }
+   
     const sideBeingAttacked =
       GlobalGameState.sideWithInitiative === GlobalUnitsModel.Side.US
         ? GlobalUnitsModel.Side.JAPAN
@@ -556,6 +569,7 @@ export function App() {
     if (GlobalGameState.phaseCompleted) {
       GlobalGameState.nextActionButtonDisabled = false
       return
+    } else {
     }
     let midwayStrikeGroupsReady = true
     if (GlobalGameState.gamePhase === GlobalGameState.PHASE.MIDWAY_ATTACK) {
@@ -569,18 +583,14 @@ export function App() {
     } else {
       endOfAirOps = await endOfMidwayOperation()
     }
-    GlobalGameState.nextActionButtonDisabled =
-      !midwayStrikeGroupsReady ||
-      !GlobalGameState.phaseCompleted ||
-      (GlobalGameState.gamePhase === GlobalGameState.PHASE.JAPAN_FLEET_MOVEMENT && !GlobalGameState.jpFleetPlaced) ||
-      (GlobalGameState.gamePhase === GlobalGameState.PHASE.US_SETUP_FLEET && !GlobalGameState.usFleetPlaced)
     if (endOfAirOps) {
       GlobalGameState.nextActionButtonDisabled = false
+    } else {
+      GlobalGameState.nextActionButtonDisabled = true
     }
     if (midwayStrikeGroupsReady) {
       GlobalGameState.nextActionButtonDisabled = false
     }
-
     if (prevButton !==  GlobalGameState.nextActionButtonDisabled) {
       GlobalGameState.updateGlobalState()
     }
@@ -798,6 +808,7 @@ export function App() {
       setAirUnitUpdate,
       setFleetUnitUpdate,
       setStrikeGroupUpdate,
+      setDamageMarkerUpdate,
       loadState,
       id,
       setLoading,
@@ -971,7 +982,8 @@ export function App() {
   )
   function doInitiativeRoll(roll0, roll1) {
     // for testing QUACK
-    doIntiativeRoll(GlobalInit.controller, 6, 1, true)
+    // doIntiativeRoll(GlobalInit.controller, 6, 1, true) // JAPAN initiative
+    doIntiativeRoll(GlobalInit.controller, 1, 6, true) // US initiative
 
     // doIntiativeRoll(GlobalInit.controller, roll0, roll1)
     GlobalGameState.updateGlobalState()
@@ -1409,6 +1421,7 @@ export function App() {
         margin={0}
         onHide={(e) => {
           setEliminatedUnitsPanelShow(false)
+          GlobalGameState.orphanedAirUnits = new Array()
           nextAction(e)
         }}
         width={30}

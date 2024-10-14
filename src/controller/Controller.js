@@ -374,6 +374,21 @@ export default class Controller {
     return fleetUnits.filter((n) => n.taskForce === tf)
   }
 
+  getOtherTaskForce(tf, side) {
+    if (side === GlobalUnitsModel.Side.JAPAN) {
+      if (tf === GlobalUnitsModel.TaskForce.CARRIER_DIV_1) {
+        return GlobalUnitsModel.TaskForce.CARRIER_DIV_2
+      } else {
+        return GlobalUnitsModel.TaskForce.CARRIER_DIV_1
+      }
+    } else {
+      if (tf === GlobalUnitsModel.TaskForce.TASK_FORCE_16) {
+        return GlobalUnitsModel.TaskForce.TASK_FORCE_17
+      } else {
+        return GlobalUnitsModel.TaskForce.TASK_FORCE_16
+      }
+    }
+  }
   getOtherCarrierInTF(carrierName, side) {
     const taskForce = this.getTaskForceForCarrier(carrierName, side)
     const units = this.getAllCarriersInTaskForce(taskForce, side)
@@ -414,6 +429,7 @@ export default class Controller {
     }
   }
   async setAllUnitsToNotMoved() {
+    console.trace()
     const airunits = this.counters.values().filter((unit) => unit.constructor.name === "AirUnit")
 
     for (const unit of airunits) {
@@ -429,13 +445,38 @@ export default class Controller {
     }
   }
 
+  getReturningUnitsNotMoved(side) {
+    const airUnits = Array.from(this.counters.values())
+    const defenders = airUnits.filter((unit) => unit.constructor.name === "AirUnit" && unit.side === side)
+
+    let quack = new Array()
+    let units = new Array()
+    for (const unit of defenders) {
+      if (unit.aircraftUnit.moved) {
+        continue // only want units that have not yet moved
+      }
+      const location = this.getAirUnitLocation(unit.name)
+
+      // TEST SHIT
+      // unit.location = location
+      // quack.push(unit)
+
+      // console.log("air unit:", unit.name, "-> location=", location)
+      if (
+        location.boxName.includes("RETURNING (2)") ||
+        location.boxName.includes("RETURNING (1)") ||
+        location.boxName.includes("STRIKE BOX")
+      ) {
+        console.log("UNIT NOVE MOVED:", unit.name, "location=", location.boxName)
+        return true
+      }
+    }
+    return false
+  }
   getStrikeGroupsNotMoved2(side) {
     const strikeGroups = this.getAllStrikeGroups(side)
     if (strikeGroups.length === 0) {
-      if (GlobalGameState.allStrikeUnitsReturned) {
         return false
-      }
-      return []
     }
     for (let s of strikeGroups) {
       if (!s.moved) {
@@ -448,6 +489,16 @@ export default class Controller {
     const strikeGroups = this.getAllStrikeGroups(side)
     const ret = strikeGroups.length > 0 && strikeGroups.filter((sg) => sg.moved === false || sg.moved === undefined)
     return ret
+  }
+
+  getSlowestUnitSpeedInStrikeGroup(box) {
+    const unitsInGroup = this.getAirUnitsInStrikeGroups(box)
+    for (let unit of unitsInGroup) {
+      if (unit.aircraftUnit.movement === 2) {
+        return 2
+      }
+    }
+    return 3
   }
 
   getAllStrikeGroups(side) {
@@ -876,10 +927,10 @@ export default class Controller {
 
     if (side === GlobalUnitsModel.Side.JAPAN) {
       const carrier = GlobalUnitsModel.jpFleetUnits.get(name)
-      return carrier.isSunk
+      return carrier.hits >= 3
     } else {
       const carrier = GlobalUnitsModel.usFleetUnits.get(name)
-      return carrier.isSunk
+      return carrier.hits >= 3
     }
   }
 

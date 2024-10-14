@@ -5,7 +5,7 @@ import GlobalUnitsModel from "../../../model/GlobalUnitsModel"
 import { BoardContext } from "../../../App"
 import GlobalGameState from "../../../model/GlobalGameState"
 import "./counter.css"
-import { allHexesWithinDistance, hexesInTwoRegions } from "../../HexUtils"
+import { allHexesWithinDistance, hexesInTwoRegions, distanceBetweenHexes } from "../../HexUtils"
 import HexCommand from "../../../commands/HexCommand"
 
 function StrikeCounter({ setStrikeGroupPopup, currentUSHex, currentJapanHex, counterData, side, index }) {
@@ -72,7 +72,14 @@ function StrikeCounter({ setStrikeGroupPopup, currentUSHex, currentJapanHex, cou
     ((strikeGroupUpdate.position.currentHex != undefined && position.currentHex.q !== hex.q) ||
       position.currentHex.r !== hex.r)
   ) {
-    // console.log("I am", strikeGroupUpdate.name, " -> STRIKE GROUP UPDATE, moved= ", strikeGroupUpdate.moved)
+    console.log(
+      "I am",
+      strikeGroupUpdate.name,
+      " -> STRIKE GROUP UPDATE, moved= ",
+      strikeGroupUpdate.moved,
+      "attacked =",
+      strikeGroupUpdate.attacked
+    )
 
     if (side === GlobalUnitsModel.Side.US) {
       setUSPosition(hex)
@@ -97,6 +104,7 @@ function StrikeCounter({ setStrikeGroupPopup, currentUSHex, currentJapanHex, cou
         side,
         loading,
         moved: true,
+        attacked: strikeGroupUpdate.attacked,
       },
     })
   }
@@ -104,8 +112,14 @@ function StrikeCounter({ setStrikeGroupPopup, currentUSHex, currentJapanHex, cou
   function setJapanRegions() {
     let jpRegion1
 
+    console.log(
+      "GlobalGameState.airOpJapan",
+      GlobalGameState.airOpJapan,
+      "counterData.airOpMoved=",
+      counterData.airOpMoved
+    )
     // Use 1AF
-    if (counterData.airOpMoved !== undefined &&GlobalGameState.airOpJapan !== counterData.airOpMoved) {
+    if (counterData.airOpMoved !== undefined && GlobalGameState.airOpJapan !== counterData.airOpMoved) {
       // second air op for this SG, use movement allowance (3) and position of SG to determine regions
       const locationOfStrikeGroup = controller.getStrikeGroupLocation(counterData.name, side)
       setCurrentHex(locationOfStrikeGroup)
@@ -144,20 +158,51 @@ function StrikeCounter({ setStrikeGroupPopup, currentUSHex, currentJapanHex, cou
     // @TODO need some new flag -> counterData.comingFromOffboard
     // to allow for remove (eg if player accidentally drops onto wrong hex)
     // if (locationOfStrikeGroup === undefined) {
-    const unitsInGroup = controller.getAirUnitsInStrikeGroups(counterData.box)
-    if (unitsInGroup[0].carrier === GlobalUnitsModel.Carrier.MIDWAY) {
-      locationOfCarrier = Controller.MIDWAY_HEX
-    } else {
-      locationOfCarrier = controller.getFleetLocation("CSF", GlobalUnitsModel.Side.US)
-    }
-    if (!locationOfCarrier) {
-      return
-    }
-    setCurrentHex(locationOfCarrier)
-    usRegion = allHexesWithinDistance(locationOfCarrier.currentHex, 2, true)
-    setUSMapRegions(usRegion)
+
     // }
 
+    console.log(
+      "GlobalGameState.airOpUS=",
+      GlobalGameState.airOpUS,
+      "counter data name:",
+      counterData.name,
+      "counterData.airOpMoved=",
+      counterData.airOpMoved
+    )
+
+    if (counterData.airOpMoved !== undefined && GlobalGameState.airOpUS !== counterData.airOpMoved) {
+      // second air op for this SG, use movement allowance (3) and position of SG to determine regions
+      const locationOfStrikeGroup = controller.getStrikeGroupLocation(counterData.name, side)
+      const speed = controller.getSlowestUnitSpeedInStrikeGroup(counterData.box)
+
+      setCurrentHex(locationOfStrikeGroup)
+      const locationOfEnemyCarrier = controller.getFleetLocation("1AF", GlobalUnitsModel.Side.JAPAN)
+
+      // if enemy fleet within range of (speed hexes calculated above)
+      // SG must move to enemy
+      if (locationOfStrikeGroup !== undefined && locationOfEnemyCarrier !== undefined) {
+        if (distanceBetweenHexes(locationOfStrikeGroup.currentHex, locationOfEnemyCarrier.currentHex) <= speed) {
+          // strike group can move to attack enemy carrier fleet
+          usRegion=[locationOfEnemyCarrier.currentHex]
+          setUSMapRegions(usRegion)
+        } else {
+          // strike group must return to "RETURN 2" space
+        }
+      }
+    } else {
+      const unitsInGroup = controller.getAirUnitsInStrikeGroups(counterData.box)
+      if (unitsInGroup[0].carrier === GlobalUnitsModel.Carrier.MIDWAY) {
+        locationOfCarrier = Controller.MIDWAY_HEX
+      } else {
+        locationOfCarrier = controller.getFleetLocation("CSF", GlobalUnitsModel.Side.US)
+      }
+      if (!locationOfCarrier) {
+        return
+      }
+      setCurrentHex(locationOfCarrier)
+      usRegion = allHexesWithinDistance(locationOfCarrier.currentHex, 2, true)
+      setUSMapRegions(usRegion)
+    }
     // @TODO set US Regions when strike counter is on the map
   }
   const handleClick = (e) => {

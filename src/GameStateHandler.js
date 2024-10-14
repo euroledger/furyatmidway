@@ -7,7 +7,7 @@ import { calculateSearchValues, calculateSearchResults } from "./model/SearchVal
 import { getJapanEnabledAirBoxes, getUSEnabledAirBoxes } from "./AirBoxZoneHandler"
 import {
   moveCAPtoReturnBox,
-  moveStrikeUnitsToReturnBox,
+  setStrikeGroupAirUnitsToNotMoved,
   moveOrphanedCAPUnitsToEliminatedBox,
 } from "./controller/AirOperationsHandler"
 import { getNumEscortFighterSteps } from "./DiceHandler"
@@ -167,7 +167,6 @@ function usFleetMovementHandler({ setFleetUnitUpdate, setSearchValues, setSearch
 }
 
 function decrementAirOpsPoints() {
-  console.log("QUACK GlobalGameState.sideWithInitiative=", )
   if (GlobalGameState.sideWithInitiative === GlobalUnitsModel.Side.JAPAN) {
     GlobalGameState.airOperationPoints.japan =
       GlobalGameState.airOperationPoints.japan > 0 ? GlobalGameState.airOperationPoints.japan - 1 : 0
@@ -192,33 +191,24 @@ async function midwayTidyUp() {
 }
 
 async function tidyUp(setAirUnitUpdate) {
-  console.log("IN tidyUp...")
-  await moveStrikeUnitsToReturnBox(GlobalGameState.sideWithInitiative, setAirUnitUpdate)
+  await setStrikeGroupAirUnitsToNotMoved(GlobalGameState.sideWithInitiative, setAirUnitUpdate)
   await GlobalInit.controller.setAllUnitsToNotMoved()
   decrementAirOpsPoints()
   GlobalGameState.sideWithInitiative = undefined
   GlobalGameState.updateGlobalState()
-}
-export async function doOrphanedCAP() {
-  const sideBeingAttacked =
-    GlobalGameState.sideWithInitiative === GlobalUnitsModel.Side.US
-      ? GlobalUnitsModel.Side.JAPAN
-      : GlobalUnitsModel.Side.US
 
-  await moveOrphanedCAPUnitsToEliminatedBox(sideBeingAttacked)
 }
 
 export async function endOfAirOperation(side, capAirUnits, setAirUnitUpdate, setEliminatedUnitsPanelShow) {
   await moveCAPtoReturnBox(GlobalInit.controller, capAirUnits, setAirUnitUpdate)
   const anySGsNotMoved = GlobalInit.controller.getStrikeGroupsNotMoved2(GlobalGameState.sideWithInitiative)
 
+  console.log("QUACK endOfAirOperation anySGsNotMoved=", anySGsNotMoved)
   if (!anySGsNotMoved) {
-    await moveStrikeUnitsToReturnBox(GlobalGameState.sideWithInitiative, setAirUnitUpdate)
-    GlobalInit.controller.setAllUnitsToNotMoved()
-    GlobalGameState.allStrikeUnitsReturned = true
-    GlobalGameState.updateGlobalState()
+    await setStrikeGroupAirUnitsToNotMoved(GlobalGameState.sideWithInitiative, setAirUnitUpdate)
+    // GlobalGameState.allStrikeUnitsReturned = true
+    // GlobalGameState.updateGlobalState()
   } else {
-    console.log("COMPUTER SAYS NO")
     return false
   }
 
@@ -229,7 +219,6 @@ export async function endOfAirOperation(side, capAirUnits, setAirUnitUpdate, set
       ? GlobalUnitsModel.Side.JAPAN
       : GlobalUnitsModel.Side.US
 
-  console.log("move orphaned CAP ....")
   await moveOrphanedCAPUnitsToEliminatedBox(sideBeingAttacked)
 
   if (GlobalGameState.orphanedAirUnits.length > 0) {
@@ -275,7 +264,7 @@ async function airOperationsHandler({
     ) {
       GlobalGameState.phaseCompleted = true
 
-      GlobalInit.controller.setAllUnitsToNotMoved()
+      await GlobalInit.controller.setAllUnitsToNotMoved()
       decrementAirOpsPoints()
       if (GlobalGameState.gamePhase === GlobalGameState.PHASE.MIDWAY_ATTACK) {
         if (GlobalGameState.midwayAirOp === 1) {
@@ -283,7 +272,7 @@ async function airOperationsHandler({
           GlobalGameState.airOperationPoints.japan = 1
         } else {
           console.log("MIDWAY ATTACK 2")
-          midwayTidyUp()
+          await midwayTidyUp()
         }
         console.log("MIDWAY ATTACK 1")
 
@@ -317,7 +306,7 @@ async function airOperationsHandler({
 
     if (await endOfAirOperation(GlobalUnitsModel.Side.US, capAirUnits, setAirUnitUpdate, setEliminatedUnitsPanelShow)) {
       GlobalGameState.phaseCompleted = true
-      GlobalInit.controller.setAllUnitsToNotMoved()
+      await GlobalInit.controller.setAllUnitsToNotMoved()
       decrementAirOpsPoints()
 
       GlobalGameState.gamePhase = GlobalGameState.PHASE.END_OF_AIR_OPERATION
@@ -332,7 +321,6 @@ async function airOperationsHandler({
 function midwayOrAirOps() {
   if (GlobalGameState.taskForceTarget === GlobalUnitsModel.TaskForce.MIDWAY) {
     GlobalGameState.midwayAirOpsCompleted = GlobalGameState.midwayAirOp
-    console.log("SET midwayAirOpsCompleted to", GlobalGameState.midwayAirOpsCompleted)
     GlobalGameState.gamePhase = GlobalGameState.PHASE.MIDWAY_ATTACK
   } else {
     GlobalGameState.gamePhase = GlobalGameState.PHASE.AIR_OPERATIONS
@@ -401,7 +389,6 @@ export default async function handleAction({
   //   }
 
   console.log("+++++++++++++++++++ GLOBAL GAME STATE phase =", GlobalGameState.gamePhase)
-  console.log("SIDE WITH INITIATIVE=", GlobalGameState.sideWithInitiative)
 
   if (GlobalGameState.gamePhase === GlobalGameState.PHASE.JAPAN_SETUP) {
     japanSetUpHandler()
@@ -472,7 +459,7 @@ export default async function handleAction({
       setEliminatedUnitsPanelShow,
     })
     GlobalGameState.updateGlobalState()
-    midwayTidyUp()
+    await midwayTidyUp()
     return
   } else if (GlobalGameState.gamePhase === GlobalGameState.PHASE.TARGET_DETERMINATION) {
     console.log("STATE CHANGE TARGET => CAP")
@@ -605,10 +592,13 @@ export default async function handleAction({
   } else if (GlobalGameState.gamePhase === GlobalGameState.PHASE.AIR_ATTACK_2) {
     GlobalGameState.gamePhase = GlobalGameState.PHASE.ATTACK_DAMAGE_RESOLUTION
   } else if (GlobalGameState.gamePhase === GlobalGameState.PHASE.ATTACK_DAMAGE_RESOLUTION) {
+    if ( GlobalGameState.attackingStrikeGroup) {
+      console.log("SPAZ 1974 GlobalGameState.attackingStrikeGroup airOpattack=", 
+        GlobalGameState.attackingStrikeGroup.airOpAttacked)
+    }
     if (GlobalGameState.carrierTarget2 !== "" && GlobalGameState.carrierTarget2 !== undefined) {
       GlobalGameState.gamePhase = GlobalGameState.PHASE.AIR_ATTACK_2
     } else {
-      console.log("SIDE WITH INITIATIVE=", GlobalGameState.sideWithInitiative)
       await endOfAirOperation(
         GlobalGameState.sideWithInitiative,
         capAirUnits,
@@ -616,12 +606,6 @@ export default async function handleAction({
         setEliminatedUnitsPanelShow
       )
       GlobalGameState.gamePhase = GlobalGameState.PHASE.AIR_OPERATIONS
-      if (GlobalGameState.attackingStrikeGroup) {
-        GlobalGameState.attackingStrikeGroup.attacked = true
-        const attackingSG = GlobalGameState.attackingStrikeGroup
-        attackingSG.attacked = true
-        attackingSG.airOpAttacked = GlobalGameState.gameTurn
-      }
     }
   } else if (GlobalGameState.gamePhase === GlobalGameState.PHASE.MIDWAY_DAMAGE_RESOLUTION) {
     console.log("IN STATE MIDWAY DAMAGE")
@@ -634,9 +618,14 @@ export default async function handleAction({
     )
     midwayOrAirOps()
   } else if (GlobalGameState.gamePhase === GlobalGameState.PHASE.AIR_OPERATIONS) {
-    tidyUp(setAirUnitUpdate)
-    GlobalGameState.gamePhase = GlobalGameState.PHASE.END_OF_AIR_OPERATION
-    setEndOfAirOpAlertShow(true)
+    if (GlobalGameState.orphanedAirUnits.length > 0) {
+      setEliminatedUnitsPanelShow(true)
+    } else {
+      await tidyUp(setAirUnitUpdate)
+      GlobalGameState.gamePhase = GlobalGameState.PHASE.END_OF_AIR_OPERATION
+      setEndOfAirOpAlertShow(true)
+    }
+ 
   } else if (GlobalGameState.gamePhase === GlobalGameState.PHASE.END_OF_AIR_OPERATION) {
     console.log("GO TO INITIATIVE DETERMINATION...")
     GlobalGameState.gamePhase = GlobalGameState.PHASE.INITIATIVE_DETERMINATION

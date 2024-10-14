@@ -379,7 +379,7 @@ const USAirBoxOffsets = [
     ],
   },
   {
-    name: GlobalUnitsModel.AirBox.US_MIDWAY_RETURN2,
+    name: GlobalUnitsModel.AirBox.US_MIDWAY_RETURN1,
     taskForce: GlobalUnitsModel.TaskForce.MIDWAY,
     carriers: [GlobalUnitsModel.Carrier.MIDWAY],
     offsets: [
@@ -410,7 +410,7 @@ const USAirBoxOffsets = [
     ],
   },
   {
-    name: GlobalUnitsModel.AirBox.US_MIDWAY_RETURN1,
+    name: GlobalUnitsModel.AirBox.US_MIDWAY_RETURN2,
     taskForce: GlobalUnitsModel.TaskForce.MIDWAY,
     carriers: [GlobalUnitsModel.Carrier.MIDWAY],
     offsets: [
