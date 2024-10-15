@@ -70,6 +70,18 @@ export default class AirOperationsModel {
     return filteredEntries
   }
 
+  getTaskForceForAirBox(box) {
+    const boxTokens = box.split(" ")
+    return boxTokens[0]
+  }
+
+  getCarrierForAirBox(box) {
+    const boxTokens = box.split(" ")
+    const str = boxTokens[0].toLowerCase()
+    const modStr = str[0].toUpperCase() + str.slice(1)
+    return modStr
+  }
+
   getReturn2AirBoxForNamedTaskForce(side, tf) {
     let sideKey = side === GlobalUnitsModel.Side.JAPAN ? "JP" : "US"
     const filteredEntries = Object.keys(GlobalUnitsModel.AirBox)

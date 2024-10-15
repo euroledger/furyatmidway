@@ -237,11 +237,18 @@ export default class Controller {
         return airUnitsInBox && airUnitsInBox.length > 0
       })
     }
-
     // do not return strike boxes containing a strike group which has already moved
     strikeBoxes = strikeBoxes.filter((box) => {
       const strikeGroup = this.getStrikeGroupForBox(side, box)
-      return strikeGroup.moved === false
+
+      // filter false if either moved is true or airopmoved is not undefined
+      let x = true
+      // if (strikeGroup.moved === true || strikeGroup.airOpMoved !== undefined) {
+      if (strikeGroup.moved === true) {
+        x = false
+      }
+
+      return x
     })
 
     if (side === GlobalUnitsModel.Side.US) {
@@ -306,6 +313,14 @@ export default class Controller {
 
   getReturn1AirBoxForNamedTaskForce(side, tf) {
     return Object.values(this.airOperationsModel.getReturn1AirBoxForNamedTaskForce(side, tf))[0]
+  }
+
+  getTaskForceForAirBox(box) {
+    return this.airOperationsModel.getTaskForceForAirBox(box)
+  }
+
+  getCarrierForAirBox(box) {
+    return this.airOperationsModel.getCarrierForAirBox(box)
   }
 
   getReturn2AirBoxForNamedTaskForce(side, tf) {
@@ -467,7 +482,7 @@ export default class Controller {
         location.boxName.includes("RETURNING (1)") ||
         location.boxName.includes("STRIKE BOX")
       ) {
-        console.log("UNIT NOVE MOVED:", unit.name, "location=", location.boxName)
+        // console.log("UNIT NOT MOVED:", unit.name, "location=", location.boxName)
         return true
       }
     }
@@ -476,7 +491,7 @@ export default class Controller {
   getStrikeGroupsNotMoved2(side) {
     const strikeGroups = this.getAllStrikeGroups(side)
     if (strikeGroups.length === 0) {
-        return false
+      return false
     }
     for (let s of strikeGroups) {
       if (!s.moved) {
@@ -949,6 +964,9 @@ export default class Controller {
     let boxName = Object.values(flightDeckBox)[0]
 
     const units = this.getAllAirUnitsInBox(boxName)
+
+    const kdb = this.counters.get("Kaga-D3A-1")
+    const location = this.getAirUnitLocation(kdb.name)
 
     // for carriers if hits + units length >= 2 unavailable, for Midway 3
     const capacity = carrierName.toUpperCase().includes("MIDWAY") ? 3 : 2

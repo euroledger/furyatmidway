@@ -7,7 +7,7 @@ import HexCommand from "../src/commands/HexCommand"
 import {
   doAttackFireRolls,
 } from "../src/DiceHandler"
-import { doStrikeBoxUS, doStrikeBoxJapan } from "../src/controller/AirOperationsHandler"
+import { doStrikeBoxUS, doStrikeBoxJapan, setValidDestinationBoxes } from "../src/controller/AirOperationsHandler"
 
 describe("Controller tests", () => {
   let controller
@@ -249,5 +249,14 @@ describe("Controller tests", () => {
         expect(destinations[1]).toEqual(GlobalUnitsModel.AirBox.US_TF17_RETURN2)
         expect(destinations[2]).toEqual(GlobalUnitsModel.AirBox.US_MIDWAY_RETURN2)
     }
+  })
+
+  test("US Air Units in Return2 Box of Other TF, check correct valid dest = Return1 box pf same TF", () => {
+    // Two Enterprise Air Units in TF17 Return2 Box
+    controller.addAirUnitToBox(GlobalUnitsModel.AirBox.US_TF17_RETURN2, 0, ef1)
+
+    setValidDestinationBoxes(controller, ef1.name, GlobalUnitsModel.Side.US)
+    let destinations = controller.getValidAirUnitDestinations(ef1.name)
+    expect(destinations[0]).toEqual(GlobalUnitsModel.AirBox.US_TF17_RETURN1)
   })
 })

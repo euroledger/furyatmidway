@@ -940,7 +940,7 @@ const jpSGPosition7 = {
   top: "90.5%",
 }
 
-const japanStrikeGroups = [
+export const japanStrikeGroups = [
   {
     name: "JP-SG1",
     longName: "Strike Group 1",
@@ -1042,7 +1042,7 @@ const usSGPosition7 = {
   left: "95%",
   top: "89.5%",
 }
-const usStrikeGroups = [
+export const usStrikeGroups = [
   {
     name: "US-SG1",
     longName: "Strike Group 1",

@@ -15,6 +15,7 @@ export function determineAllUnitsDeployedForCarrier(controller, side, carrier) {
     const numAirUnitsInCarrier = GlobalGameState.currentCarrier === 3 ? 7 : 5
     if (airUnitsDeployed.length === numAirUnitsInCarrier) {
       // all units deployed -> activate button
+
       GlobalGameState.phaseCompleted = true
     } else {
       GlobalGameState.phaseCompleted = false

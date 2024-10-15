@@ -42,6 +42,7 @@ import {
 } from "./DiceHandler"
 import { determineAllUnitsDeployedForCarrier } from "./controller/AirUnitSetupHandler"
 
+
 import { usCSFStartHexes, japanAF1StartHexesNoMidway, japanAF1StartHexesMidway } from "./components/MapRegions"
 import YesNoDialog from "./components/dialogs/YesNoDialog"
 import { saveGameState } from "./SaveLoadGame"
@@ -65,7 +66,7 @@ import { AttackResolutionHeaders, AttackResolutionFooters } from "./attackscreen
 import UITester from "./UIEvents/UITester"
 import { getJapanEnabledAirBoxes, getUSEnabledAirBoxes } from "./AirBoxZoneHandler"
 import handleAction, { calcAirOpsPointsMidway } from "./GameStateHandler"
-import { setStrikeGroupAirUnitsToNotMoved } from "./controller/AirOperationsHandler"
+import { setStrikeGroupAirUnitsToNotMoved,resetStrikeGroup } from "./controller/AirOperationsHandler"
 
 export default App
 
@@ -327,6 +328,7 @@ export function App() {
     if (GlobalGameState.gamePhase === GlobalGameState.PHASE.ESCORT_COUNTERATTACK) {
       GlobalGameState.dieRolls = 0
       GlobalGameState.dieRolls = []
+      GlobalGameState.fighterHits = 0
       setEscortPanelShow(true)
     }
   }, [GlobalGameState.gamePhase])
@@ -334,6 +336,7 @@ export function App() {
   useEffect(() => {
     if (GlobalGameState.gamePhase === GlobalGameState.PHASE.ANTI_AIRCRAFT_FIRE) {
       GlobalGameState.dieRolls = 0
+      GlobalGameState.antiaircraftHits
       setAaaPanelShow(true)
     }
   }, [GlobalGameState.gamePhase])
@@ -346,6 +349,7 @@ export function App() {
   }
 
   const setUsFleetRegions = () => {
+
     GlobalGameState.phaseCompleted = true // may just want to skip any fleet movement (leave fleet where it is)
     const csfLocation = GlobalInit.controller.getFleetLocation("CSF", GlobalUnitsModel.Side.US)
     const usRegion = allHexesWithinDistance(csfLocation.currentHex, 2, true)
@@ -389,6 +393,7 @@ export function App() {
         setUsFleetRegions()
       } else {
         setUSMapRegions([])
+
         GlobalGameState.phaseCompleted = true
       }
     } else if (GlobalGameState.gamePhase === GlobalGameState.PHASE.JAPAN_FLEET_MOVEMENT) {
@@ -399,9 +404,11 @@ export function App() {
       //   GlobalGameState.phaseCompleted = true
     } else if (GlobalGameState.gamePhase === GlobalGameState.PHASE.US_FLEET_MOVEMENT) {
       setJapanMapRegions([])
+
       GlobalGameState.phaseCompleted = true
     } else if (GlobalGameState.gamePhase === GlobalGameState.PHASE.AIR_SEARCH) {
       setJapanMapRegions([])
+
       GlobalGameState.phaseCompleted = true
     } else if (
       GlobalGameState.gamePhase === GlobalGameState.PHASE.AIR_OPERATIONS ||
@@ -411,12 +418,6 @@ export function App() {
       if (GlobalGameState.sideWithInitiative === GlobalUnitsModel.Side.JAPAN) {
         setJapanStrikePanelEnabled(true)
         setUsStrikePanelEnabled(false)
-        const units = GlobalInit.controller.getStrikeGroupsNotMoved(GlobalUnitsModel.Side.JAPAN)
-        if (units.length === 0) {
-          GlobalGameState.phaseCompleted = true
-        } else {
-          GlobalGameState.phaseCompleted = false
-        }
         if (GlobalGameState.gamePhase === GlobalGameState.PHASE.MIDWAY_ATTACK) {
           if (GlobalGameState.midwayAirOp === 1) {
             let distance = GlobalInit.controller.numHexesBetweenFleets(
@@ -521,11 +522,6 @@ export function App() {
     }
     return false
   }
- 
-  if ( GlobalGameState.attackingStrikeGroup) {
-    console.log("NARF 88888 GlobalGameState.attackingStrikeGroup airOpattack=", 
-      GlobalGameState.attackingStrikeGroup.airOpAttacked)
-  }
   async function endOfMyAirOperation(side) {
     const anyUnitsNotMoved = GlobalInit.controller.getStrikeGroupsNotMoved2(side)
 
@@ -540,7 +536,7 @@ export function App() {
     } else {
       await setStrikeGroupAirUnitsToNotMoved(GlobalGameState.sideWithInitiative)
     }
-   
+
     const sideBeingAttacked =
       GlobalGameState.sideWithInitiative === GlobalUnitsModel.Side.US
         ? GlobalUnitsModel.Side.JAPAN
@@ -591,7 +587,7 @@ export function App() {
     if (midwayStrikeGroupsReady) {
       GlobalGameState.nextActionButtonDisabled = false
     }
-    if (prevButton !==  GlobalGameState.nextActionButtonDisabled) {
+    if (prevButton !== GlobalGameState.nextActionButtonDisabled) {
       GlobalGameState.updateGlobalState()
     }
   }
@@ -640,6 +636,7 @@ export function App() {
                   !GlobalGameState.usCardsDrawn && GlobalGameState.gamePhase !== GlobalGameState.PHASE.US_CARD_DRAW
                 }
                 onClick={(e) => {
+
                   GlobalGameState.phaseCompleted = true
                   GlobalGameState.usCardsDrawn = true
                   if (GlobalGameState.gamePhase === GlobalGameState.PHASE.US_CARD_DRAW) {
@@ -658,6 +655,7 @@ export function App() {
                   !GlobalGameState.jpCardsDrawn && GlobalGameState.gamePhase !== GlobalGameState.PHASE.JAPAN_CARD_DRAW
                 }
                 onClick={(e) => {
+
                   GlobalGameState.phaseCompleted = true
                   GlobalGameState.jpCardsDrawn = true
                   if (GlobalGameState.gamePhase === GlobalGameState.PHASE.JAPAN_CARD_DRAW) {
@@ -683,10 +681,10 @@ export function App() {
                 size="sm"
                 variant="outline-light"
                 onClick={() => {
-                  setShowZones(!showZones)
+                  setJapanStrikePanelEnabled(() => !japanStrikePanelEnabled)
                 }}
               >
-                Undo
+                Hide SGs
               </Button>
             </Nav>
 
@@ -980,10 +978,12 @@ export function App() {
       <AttackResolutionFooters totalHits={carrierHits}></AttackResolutionFooters>
     </>
   )
+
+  // console.log("GlobalUnitsModel.usStrikeGroups=", GlobalUnitsModel.usStrikeGroups)
   function doInitiativeRoll(roll0, roll1) {
     // for testing QUACK
-    // doIntiativeRoll(GlobalInit.controller, 6, 1, true) // JAPAN initiative
-    doIntiativeRoll(GlobalInit.controller, 1, 6, true) // US initiative
+    doIntiativeRoll(GlobalInit.controller, 6, 1, true) // JAPAN initiative
+    // doIntiativeRoll(GlobalInit.controller, 1, 6, true) // US initiative
 
     // doIntiativeRoll(GlobalInit.controller, roll0, roll1)
     GlobalGameState.updateGlobalState()

@@ -72,14 +72,14 @@ function StrikeCounter({ setStrikeGroupPopup, currentUSHex, currentJapanHex, cou
     ((strikeGroupUpdate.position.currentHex != undefined && position.currentHex.q !== hex.q) ||
       position.currentHex.r !== hex.r)
   ) {
-    console.log(
-      "I am",
-      strikeGroupUpdate.name,
-      " -> STRIKE GROUP UPDATE, moved= ",
-      strikeGroupUpdate.moved,
-      "attacked =",
-      strikeGroupUpdate.attacked
-    )
+    // console.log(
+    //   "I am",
+    //   strikeGroupUpdate.name,
+    //   " -> STRIKE GROUP UPDATE, moved= ",
+    //   strikeGroupUpdate.moved,
+    //   "attacked =",
+    //   strikeGroupUpdate.attacked
+    // )
 
     if (side === GlobalUnitsModel.Side.US) {
       setUSPosition(hex)
@@ -110,30 +110,41 @@ function StrikeCounter({ setStrikeGroupPopup, currentUSHex, currentJapanHex, cou
   }
 
   function setJapanRegions() {
-    let jpRegion1
+    let jpRegion
 
-    console.log(
-      "GlobalGameState.airOpJapan",
-      GlobalGameState.airOpJapan,
-      "counterData.airOpMoved=",
-      counterData.airOpMoved
-    )
+    // console.log(
+    //   "GlobalGameState.airOpJapan",
+    //   GlobalGameState.airOpJapan,
+    //   "counterData.airOpMoved=",
+    //   counterData.airOpMoved
+    // )
     // Use 1AF
     if (counterData.airOpMoved !== undefined && GlobalGameState.airOpJapan !== counterData.airOpMoved) {
       // second air op for this SG, use movement allowance (3) and position of SG to determine regions
       const locationOfStrikeGroup = controller.getStrikeGroupLocation(counterData.name, side)
+
       setCurrentHex(locationOfStrikeGroup)
-      if (locationOfStrikeGroup) {
-        jpRegion1 = allHexesWithinDistance(locationOfStrikeGroup.currentHex, 3, true)
-        setJapanMapRegions(jpRegion1)
+      const locationOfEnemyCarrier = controller.getFleetLocation("CSF", GlobalUnitsModel.Side.US)
+
+      // if enemy fleet within range of 3
+      // SG must move to enemy
+      if (locationOfStrikeGroup !== undefined && locationOfEnemyCarrier !== undefined) {
+        if (distanceBetweenHexes(locationOfStrikeGroup.currentHex, locationOfEnemyCarrier.currentHex) <= 3) {
+          // strike group can move to attack enemy carrier fleet
+          jpRegion = [locationOfEnemyCarrier.currentHex]
+          setJapanMapRegions(jpRegion)
+        } else {
+          // strike group must return to "RETURN 2" space
+          // @TODO move SG counter offboard and mark Strike Units as moved
+        }
       }
     } else {
       const locationOfCarrier = controller.getFleetLocation("1AF", GlobalUnitsModel.Side.JAPAN)
       // First Air Op: Set Regions to be any hex within 2 of 1AF
       setCurrentHex(locationOfCarrier)
       if (locationOfCarrier) {
-        jpRegion1 = allHexesWithinDistance(locationOfCarrier.currentHex, 2, true)
-        setJapanMapRegions(jpRegion1)
+        jpRegion = allHexesWithinDistance(locationOfCarrier.currentHex, 2, true)
+        setJapanMapRegions(jpRegion)
       }
     }
 
@@ -183,10 +194,11 @@ function StrikeCounter({ setStrikeGroupPopup, currentUSHex, currentJapanHex, cou
       if (locationOfStrikeGroup !== undefined && locationOfEnemyCarrier !== undefined) {
         if (distanceBetweenHexes(locationOfStrikeGroup.currentHex, locationOfEnemyCarrier.currentHex) <= speed) {
           // strike group can move to attack enemy carrier fleet
-          usRegion=[locationOfEnemyCarrier.currentHex]
+          usRegion = [locationOfEnemyCarrier.currentHex]
           setUSMapRegions(usRegion)
         } else {
           // strike group must return to "RETURN 2" space
+          // @TODO move SG counter offboard and mark Strike Units as moved
         }
       }
     } else {
@@ -328,13 +340,13 @@ function StrikeCounter({ setStrikeGroupPopup, currentUSHex, currentJapanHex, cou
     setIsMoveable(true)
     const sg = controller.getStrikeGroupForBox(side, counterData.box)
     if (!sg.attacked) {
+
       if (side === GlobalUnitsModel.Side.JAPAN) {
         setJapanRegions()
       } else {
         setUSRegions()
       }
     }
-
     const location = controller.getStrikeGroupLocation(counterData.name, side)
     setStrikeGroupPopup(side, true, location)
   }

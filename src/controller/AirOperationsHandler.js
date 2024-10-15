@@ -8,12 +8,16 @@ import USAirBoxOffsets from "../components/draganddrop/USAirBoxOffsets"
 import JapanAirBoxOffsets from "../components/draganddrop/JapanAirBoxOffsets"
 import { moveAirUnitToEliminatedBox } from "../DiceHandler"
 import { distanceBetweenHexes } from "../components/HexUtils"
+import { japanStrikeGroups, usStrikeGroups } from "../CounterLoader"
 
-function getValidUSDestinationsRETURN1(controller, parentCarrier, side, useMidway) {
-  // For returning strikers, always return to carrier in same TF if possible, or other TF if not
+function getValidUSDestinationsRETURN1(controller, name, parentCarrier, side, useMidway) {
+  // Returning US Strike Aircraft can return to either TF's carriers or Midway if within 2 hexes of CSF
   let destinationsArray = new Array()
-  const thisTF = controller.getTaskForceForCarrier(parentCarrier, side)
-  const carriersInTF = controller.getAllCarriersInTaskForce(thisTF, side)
+
+  const { boxName } = controller.getAirUnitLocation(name)
+  const tf = controller.getTaskForceForAirBox(boxName)
+
+  const carriersInTF = controller.getAllCarriersInTaskForce(tf, side)
 
   for (const carrier of carriersInTF) {
     if (!controller.isSunk(carrier.name) && controller.isHangarAvailable(carrier.name)) {
@@ -22,10 +26,28 @@ function getValidUSDestinationsRETURN1(controller, parentCarrier, side, useMidwa
       destinationsArray.push(box)
     }
   }
-  if (destinationsArray.length === 0 && parentCarrier !== "Midway") {
+  if (destinationsArray.length === 0 && tf !== GlobalUnitsModel.TaskForce.MIDWAY) {
     destinationsArray = tryOtherTaskForce(controller, parentCarrier, side, useMidway)
   }
 
+  return destinationsArray
+}
+
+function getValidJapanDestinationsRETURN1OtherTF(controller, name, side) {
+  let destinationsArray = new Array()
+
+  const { boxName } = controller.getAirUnitLocation(name)
+  const tf = controller.getTaskForceForAirBox(boxName)
+
+  const carriersInTF = controller.getAllCarriersInTaskForce(tf, side)
+
+  for (const carrier of carriersInTF) {
+    if (!controller.isSunk(carrier.name) && controller.isHangarAvailable(carrier.name)) {
+      // this unit can go to its parent carrier hangar
+      const box = controller.getAirBoxForNamedShip(side, carrier.name, "HANGAR")
+      destinationsArray.push(box)
+    }
+  }
   return destinationsArray
 }
 export function getValidUSDestinationsCAP(controller, parentCarrier, side) {
@@ -39,7 +61,6 @@ export function getValidUSDestinationsCAP(controller, parentCarrier, side) {
     const boxName = controller.getAirBoxForNamedShip(side, carrier.name, "FLIGHT_DECK")
 
     const destAvailable = controller.isFlightDeckAvailable(carrier.name, side)
-
     // console.log(carrier.name, "-> destAvailable = ", destAvailable)
     if (!controller.isSunk(carrier.name) && destAvailable) {
       // this unit can go to its parent carrier flight deck
@@ -105,7 +126,7 @@ function tryOtherTaskForce(controller, parentCarrier, side, useMidway) {
   let destinationsArray = new Array()
   const taskForce = controller.getTaskForceForCarrier(parentCarrier, side)
   const carriersInOtherTaskForce = controller.getCarriersInOtherTF(taskForce, side)
-  if (useMidway) {
+  if (useMidway && !controller.isMidwayBaseDestroyed()) {
     // add Midway base to carriers
     carriersInOtherTaskForce.push(GlobalUnitsModel.usFleetUnits.get(GlobalUnitsModel.Carrier.MIDWAY))
   }
@@ -174,9 +195,17 @@ export function doReturn1(controller, name, side, useMidway) {
   const parentCarrier = controller.getCarrierForAirUnit(name)
   let destinationsArray = new Array()
   if (side === GlobalUnitsModel.Side.US) {
-    destinationsArray = getValidUSDestinationsRETURN1(controller, parentCarrier, side, useMidway)
+    destinationsArray = getValidUSDestinationsRETURN1(controller, name, parentCarrier, side, useMidway)
   } else {
-    destinationsArray = getValidJapanDestinationsRETURN1(controller, parentCarrier, side)
+    const { boxName } = controller.getAirUnitLocation(name)
+    const tf = controller.getTaskForceForAirBox(boxName)
+    const parentTF = controller.getTaskForceForCarrier(parentCarrier, side)
+
+    if (tf === parentTF) {
+      destinationsArray = getValidJapanDestinationsRETURN1(controller, parentCarrier, side)      
+    } else {
+      destinationsArray = getValidJapanDestinationsRETURN1OtherTF(controller, name, side)
+    }
   }
   controller.setValidAirUnitDestinations(name, destinationsArray)
 
@@ -188,8 +217,9 @@ export function doReturn1(controller, name, side, useMidway) {
 }
 
 export function doReturn2(controller, name, side) {
-  const parentCarrier = controller.getCarrierForAirUnit(name)
-  const tf = controller.getTaskForceForCarrier(parentCarrier, side)
+  // Unit can only move to return1 box (of same TF return2 box in which it currently resides)
+  const { boxName } = controller.getAirUnitLocation(name)
+  const tf = controller.getTaskForceForAirBox(boxName)
   const destBox = controller.getReturn1AirBoxForNamedTaskForce(side, tf)
 
   const boxArray = new Array()
@@ -198,7 +228,8 @@ export function doReturn2(controller, name, side) {
     controller.setValidAirUnitDestinations(name, boxArray)
   }
 }
-export function doStrikeBoxJapan(controller, name, side) {
+
+export function doStrikeBoxJapan(controller, name, strikeGroup, side) {
   // For now
   // Once a unit has moved into the strike box
   // disallow further moves
@@ -206,13 +237,18 @@ export function doStrikeBoxJapan(controller, name, side) {
 
   // Once strike has finished, set possible return boxes as destinations
   // some tests do not have strike groups set up, no need for this function
-  if (!GlobalGameState.attackingStrikeGroup) {
-    return
-  }
-  const strikeGroup = GlobalGameState.attackingStrikeGroup
-  const unit = controller.getAirUnitForName(name)
-  const tf = controller.getTaskForceForCarrier(unit.carrier)
 
+  const unit = controller.getAirUnitForName(name)
+  const tf = controller.getTaskForceForCarrier(unit.carrier, side)
+
+  // console.log(
+  //   "SG:",
+  //   strikeGroup.name,
+  //   "strikeGroup.airOpMoved=",
+  //   strikeGroup.airOpMoved,
+  //   "strikeGroup.airOpAttacked=",
+  //   strikeGroup.airOpAttacked
+  // )
   // Japanese Units must go to return box of parent carrier unless it is damaged
   const parentCarrier = controller.getCarrierForAirUnit(name)
   const hits = controller.getCarrierHits(parentCarrier)
@@ -237,8 +273,8 @@ export function doStrikeBoxJapan(controller, name, side) {
     }
   } else if (strikeGroup.attacked && strikeGroup.airOpMoved !== strikeGroup.airOpAttacked) {
     // GOTO RETURN 2 BOX
-    const return2Box = controller.getReturn1AirBoxForNamedTaskForce(side, tf)
-    destArray.push(return1Box)
+    const return2Box = controller.getReturn2AirBoxForNamedTaskForce(side, tf)
+    destArray.push(return2Box)
 
     if (hits !== 0) {
       // parent carrier damaged - allow other TF as well
@@ -329,7 +365,9 @@ export function doStrikeBoxUS(controller, name, side) {
 }
 export function doFlightDeck(controller, name, side) {
   // Air Units on the Flight Deck can go to
-  const carrierName = controller.getCarrierForAirUnit(name)
+  const location = controller.getAirUnitLocation(name)
+  const carrierName = controller.getCarrierForAirBox(location.boxName)
+  const old = controller.getCarrierForAirUnit(name)
 
   let destinationsArray = new Array()
 
@@ -354,6 +392,8 @@ export function doFlightDeck(controller, name, side) {
 }
 
 export function doHangar(controller, name, side) {
+  controller.setValidAirUnitDestinations(name, new Array())
+
   const parentCarrier = controller.getCarrierForAirUnit(name)
   const destBox = controller.getAirBoxForNamedShip(side, parentCarrier, "FLIGHT_DECK")
 
@@ -394,6 +434,33 @@ export function delay(ms) {
     setTimeout(resolve, ms)
   })
 }
+
+export async function resetStrikeGroups(side) {
+  let positions, groups
+  if (side === GlobalUnitsModel.Side.JAPAN) {
+    positions = japanStrikeGroups.map(({position}) => position)
+    groups = GlobalUnitsModel.jpStrikeGroups
+  } else {
+    positions = usStrikeGroups.map(({position}) => position)
+    groups = GlobalUnitsModel.usStrikeGroups
+  }
+  
+  let index = 0
+  for (let strikeGroup of groups.values()) {
+    if (!strikeGroup.attacked) {
+      index++
+      continue
+    }
+    strikeGroup.airOpAttacked = undefined
+    strikeGroup.airOpMoved = undefined
+    strikeGroup.moved = false
+    strikeGroup.attacked = false
+    strikeGroup.position = positions[index]
+    strikeGroup.location = GlobalUnitsModel.AirBox.OFFBOARD
+    index++
+  }
+}
+
 export async function moveAirUnitToReturnBox(controller, strikeGroup, unit, side, setAirUnitUpdate) {
   const tf = controller.getTaskForceForCarrier(unit.carrier, side)
 
@@ -461,17 +528,11 @@ export async function setStrikeGroupAirUnitsToNotMoved(side) {
 
     // .....................
 
-
-
     const unitsInGroup = GlobalInit.controller.getAirUnitsInStrikeGroups(group.box)
     for (const unit of unitsInGroup) {
-      // allow new move from strike box to return box (manual)      
+      // allow new move from strike box to return box (manual)
       unit.aircraftUnit.moved = false
     }
-  }
-  if ( GlobalGameState.attackingStrikeGroup) {
-    console.log("NARF 2887 GlobalGameState.attackingStrikeGroup airOpattack=", 
-      GlobalGameState.attackingStrikeGroup.airOpAttacked)
   }
 }
 export async function moveCAPtoReturnBox(controller, capAirUnits, setAirUnitUpdate) {
@@ -849,6 +910,8 @@ export function checkAllBoxesForReorganization(controller, unit, fromBox, side, 
 }
 
 export function setValidDestinationBoxes(controller, airUnitName, side) {
+  controller.setValidAirUnitDestinations(airUnitName, new Array()) // just to be sure last entries are gone
+
   const location = controller.getAirUnitLocation(airUnitName)
   if (location.boxName.includes("RETURNING (1)")) {
     // see if US CSF within two hexes of Midway
@@ -900,9 +963,12 @@ export function setValidDestinationBoxes(controller, airUnitName, side) {
   }
 
   if (location.boxName.includes("STRIKE")) {
+    // get strike group based on location
     if (side === GlobalUnitsModel.Side.JAPAN) {
-      doStrikeBoxJapan(controller, airUnitName, side)
+      const strikeGroup = controller.getStrikeGroupForBox(GlobalUnitsModel.Side.JAPAN, location.boxName)
+      doStrikeBoxJapan(controller, airUnitName, strikeGroup, side)
     } else {
+      const strikeGroup = controller.getStrikeGroupForBox(GlobalUnitsModel.Side.US, location.boxName)
       doStrikeBoxUS(controller, airUnitName, side)
     }
   }

@@ -38,8 +38,8 @@ class ViewEventStrikeGroupMoveHandler {
       }
 
       if (this.controller.checkForAirAttack(to, side)) {
-       this.controller.setAirOpAttacked(counterData)
-        
+        this.controller.setAirOpAttacked(counterData)
+
         if (GlobalGameState.gamePhase === GlobalGameState.PHASE.MIDWAY_ATTACK) {
           GlobalGameState.gamePhase = GlobalGameState.PHASE.CAP_INTERCEPTION
           GlobalGameState.taskForceTarget = GlobalUnitsModel.TaskForce.MIDWAY
@@ -50,10 +50,10 @@ class ViewEventStrikeGroupMoveHandler {
         // @TODO we may need a global state reset function that
         // gets invoked before each air strike move
         this.controller.resetTargetMap()
-        GlobalGameState.carrierTarget1=""
-        GlobalGameState.carrierTarget2=""
+        GlobalGameState.carrierTarget1 = ""
+        GlobalGameState.carrierTarget2 = ""
         counterData.attacked = true
-        GlobalGameState.attackingStrikeGroup = counterData 
+        GlobalGameState.attackingStrikeGroup = counterData
       }
     } else {
       counterData.moved = moved

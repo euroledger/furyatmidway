@@ -392,6 +392,13 @@ export function doCarrierDamageRolls(controller, testRoll) {
   const carrier = GlobalGameState.currentCarrierAttackTarget
   let roll = testRoll === undefined ? randomDice(1) : testRoll
 
+
+
+  // QUACK FOR TESTING ONLY
+  roll = 1
+  //  -------------TAKE THIS OUT
+
+
   // Undamaged Carrier
   if (roll < 4) {
     damage.bow = true
@@ -414,6 +421,7 @@ export function doCarrierDamageRolls(controller, testRoll) {
     }
     controller.setCarrierHits(carrier, 1)
   }
+  
   GlobalGameState.carrierDamageRoll = roll
   GlobalGameState.damageThisAttack = damage
 

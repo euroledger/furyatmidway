@@ -3,6 +3,7 @@ import GlobalInit from "./model/GlobalInit"
 import GlobalUnitsModel from "./model/GlobalUnitsModel"
 import JapanAirBoxOffsets from "./components/draganddrop/JapanAirBoxOffsets"
 import USAirBoxOffsets from "./components/draganddrop/USAirBoxOffsets"
+import { updateSwitch } from "typescript"
 
 export function saveGameState(controller, gameId) {
   const arr = Object.getOwnPropertyNames(GlobalGameState.prototype.constructor)
@@ -144,33 +145,37 @@ function createsDamageUpdates(controller, damage, side, carrierName) {
     controller.setMarkerLocation(marker2.name, boxName, 1)
     return [markerUpdate1, markerUpdate2]
   } else {
+    let markerUpdate1 = null
+    let markerUpdate2 = null
     if (damage.bow) {
       let marker = GlobalInit.controller.getNextAvailableMarker("DAMAGED")
       GlobalGameState.nextAvailableDamageMarker++
 
-      const markerUpdate = {
+      markerUpdate1 = {
         name: marker.name,
         box: boxName,
         index: 0,
         side: side,
       }
       controller.setMarkerLocation(marker.name, boxName, 0)
-      return [markerUpdate, null]
     }
 
     if (damage.stern) {
       let marker = GlobalInit.controller.getNextAvailableMarker("DAMAGED")
       GlobalGameState.nextAvailableDamageMarker++
 
-      const markerUpdate = {
+      markerUpdate2 = {
         name: marker.name,
         box: boxName,
         index: 1,
         side,
       }
       controller.setMarkerLocation(marker.name, boxName, 1)
-      return [null, markerUpdate]
     }
+    if (markerUpdate1 !== null || markerUpdate2 !== null) {
+      return [markerUpdate1, markerUpdate2]
+    }
+    return undefined
   }
 }
 

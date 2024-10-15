@@ -74,7 +74,6 @@ async function doTargetSelection() {
     oneOrZero === 1 ? GlobalUnitsModel.TaskForce.CARRIER_DIV_1 : GlobalUnitsModel.TaskForce.CARRIER_DIV_2
   GlobalGameState.updateGlobalState()
 
-  console.log(">> QUACK GlobalGameState.testTarget =", GlobalGameState.testTarget)
   await delay(500)
 
   GlobalGameState.rollDice = true

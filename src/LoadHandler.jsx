@@ -67,9 +67,14 @@ async function loadHandler({
     }
   }
 
-  for (const update of usDamageMarkerUpdates) {
-    setDamageMarkerUpdate(update)
-    await delay(1)
+  for (const updateArray of usDamageMarkerUpdates) {
+    for (let update of updateArray) {
+      if (update === null) {
+        continue
+      }
+      setDamageMarkerUpdate(update)
+      await delay(1)  
+    }
   }
   GlobalGameState.logItems = new Array()
   for (let item of logItems.values()) {

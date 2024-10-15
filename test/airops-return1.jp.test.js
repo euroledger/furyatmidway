@@ -7,7 +7,7 @@ import {
   handleAirUnitMoves,
   doReturn1,
 } from "../src/controller/AirOperationsHandler"
-import { createFleetMove } from "./TestUtils"
+import { createFleetMove } from "./testUtils"
 
 describe("Air Operations tests with Preset air unit locations", () => {
   let controller
@@ -190,13 +190,14 @@ describe("Air Operations tests with air unit locations set in tests", () => {
     controller.addAirUnitToBox(GlobalUnitsModel.AirBox.JP_KAGA_HANGAR, 0, kdb)
     controller.addAirUnitToBox(GlobalUnitsModel.AirBox.JP_KAGA_HANGAR, 1, aaf1)
     controller.addAirUnitToBox(GlobalUnitsModel.AirBox.JP_KAGA_HANGAR, 2, aaf2)
+    controller.addAirUnitToBox(GlobalUnitsModel.AirBox.JP_CD1_RETURN1, 0, ktb)
 
     const isHangarAvailable = controller.isHangarAvailable(GlobalUnitsModel.Carrier.KAGA)
     expect(isHangarAvailable).toEqual(false)
 
     // Now the Kaga torpedo bomber unit wants to land on Kaga...should be diverted to Akagi instead
-    doReturn1(controller, "Kaga-B5N-2", GlobalUnitsModel.Side.JAPAN)
-    const destinations = controller.getValidAirUnitDestinations("Kaga-B5N-2")
+    doReturn1(controller, ktb.name, GlobalUnitsModel.Side.JAPAN)
+    const destinations = controller.getValidAirUnitDestinations(ktb.name)
 
     expect(destinations.length).toEqual(1)
     expect(destinations[0]).toEqual(GlobalUnitsModel.AirBox.JP_AKAGI_HANGAR)

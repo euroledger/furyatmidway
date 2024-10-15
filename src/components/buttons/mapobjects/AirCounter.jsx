@@ -25,7 +25,6 @@ function AirCounter({ getAirBox, setAirBox, counterData, side }) {
   })
 
   const onDrag = () => {
-    console.log("DRAGGING...")
     setIsMoveable(true)
 
     // only the selected (clicked) air unit should be draggable
@@ -287,7 +286,7 @@ function AirCounter({ getAirBox, setAirBox, counterData, side }) {
       moveOrphanedCAPUnitsToEliminatedBox(counterData.side)
     }
     const destBoxes = controller.getValidAirUnitDestinations(counterData.name)
-    console.log(">>>>>>>>>>> dest Boxes for valid destinations=", destBoxes)
+    console.log("destBoxes=", destBoxes)
     if (counterData.side === GlobalUnitsModel.Side.JAPAN) {
       setEnabledJapanBoxes(() => destBoxes)
     } else {

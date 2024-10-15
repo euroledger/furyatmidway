@@ -4,7 +4,7 @@ import AirOperationsModel from "../src/model/AirOperationsModel"
 import GlobalUnitsModel from "../src/model/GlobalUnitsModel"
 import GlobalGameState from "../src/model/GlobalGameState"
 import { handleAirUnitMoves, doReturn1 } from "../src/controller/AirOperationsHandler"
-import { createFleetMove } from "./TestUtils"
+import { createFleetMove } from "./testUtils"
 
 describe("Air Operations tests with Preset air unit locations", () => {
   let controller
@@ -229,19 +229,21 @@ describe("Air Operations tests with air unit locations set in tests", () => {
     const edb1 = counters.get("Enterprise-SBD3-1")
     const edb2 = counters.get("Enterprise-SBD3-2")
     const hf1 = counters.get("Hornet-F4F4-1")
+    const etb = counters.get("Enterprise-TBD1")
 
     controller.addAirUnitToBox(GlobalUnitsModel.AirBox.US_ENTERPRISE_FLIGHT_DECK, 0, ef1)
     controller.addAirUnitToBox(GlobalUnitsModel.AirBox.US_ENTERPRISE_FLIGHT_DECK, 1, ef2)
     controller.addAirUnitToBox(GlobalUnitsModel.AirBox.US_ENTERPRISE_HANGAR, 0, edb1)
     controller.addAirUnitToBox(GlobalUnitsModel.AirBox.US_ENTERPRISE_HANGAR, 1, edb2)
     controller.addAirUnitToBox(GlobalUnitsModel.AirBox.US_ENTERPRISE_HANGAR, 2, hf1)
+    controller.addAirUnitToBox(GlobalUnitsModel.AirBox.US_TF16_RETURN1, 0, etb)
 
     const isHangarAvailable = controller.isHangarAvailable(GlobalUnitsModel.Carrier.ENTERPRISE)
     expect(isHangarAvailable).toEqual(false)
 
     // Now the Enterprise torpedo bomber unit wants to land on Enterprise...should be diverted to Hornet instead
-    doReturn1(controller, "Enterprise-TBD1", GlobalUnitsModel.Side.US)
-    const destinations = controller.getValidAirUnitDestinations("Enterprise-TBD1")
+    doReturn1(controller, etb.name, GlobalUnitsModel.Side.US)
+    const destinations = controller.getValidAirUnitDestinations(etb.name)
 
     expect(destinations.length).toEqual(1)
     expect(destinations[0]).toEqual(GlobalUnitsModel.AirBox.US_HORNET_HANGAR)
