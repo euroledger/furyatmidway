@@ -26,6 +26,7 @@ class ViewEventAirUnitMoveHandler {
     if (!loading && counterData.side === GlobalGameState.sideWithInitiative) { // CAP returns don't set to moved = true
       counterData.aircraftUnit.moved = true
     }
+    counterData.border = undefined
     GlobalGameState.log(`${command.toString()}`)
   }
 }

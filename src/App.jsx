@@ -42,7 +42,6 @@ import {
 } from "./DiceHandler"
 import { determineAllUnitsDeployedForCarrier } from "./controller/AirUnitSetupHandler"
 
-
 import { usCSFStartHexes, japanAF1StartHexesNoMidway, japanAF1StartHexesMidway } from "./components/MapRegions"
 import YesNoDialog from "./components/dialogs/YesNoDialog"
 import { saveGameState } from "./SaveLoadGame"
@@ -66,7 +65,8 @@ import { AttackResolutionHeaders, AttackResolutionFooters } from "./attackscreen
 import UITester from "./UIEvents/UITester"
 import { getJapanEnabledAirBoxes, getUSEnabledAirBoxes } from "./AirBoxZoneHandler"
 import handleAction, { calcAirOpsPointsMidway } from "./GameStateHandler"
-import { setStrikeGroupAirUnitsToNotMoved,resetStrikeGroup } from "./controller/AirOperationsHandler"
+import { setStrikeGroupAirUnitsToNotMoved } from "./controller/AirOperationsHandler"
+import styleConsole from "react-scroll-to-bottom/lib/utils/styleConsole"
 
 export default App
 
@@ -226,6 +226,7 @@ export function App() {
     if (GlobalGameState.gamePhase === GlobalGameState.PHASE.AIR_OPERATIONS) {
       GlobalGameState.phaseCompleted = false
       GlobalGameState.nextActionButtonDisabled = true
+      GlobalGameState.updateGlobalState()
     }
   }, [GlobalGameState.gamePhase])
 
@@ -349,7 +350,6 @@ export function App() {
   }
 
   const setUsFleetRegions = () => {
-
     GlobalGameState.phaseCompleted = true // may just want to skip any fleet movement (leave fleet where it is)
     const csfLocation = GlobalInit.controller.getFleetLocation("CSF", GlobalUnitsModel.Side.US)
     const usRegion = allHexesWithinDistance(csfLocation.currentHex, 2, true)
@@ -496,8 +496,8 @@ export function App() {
   async function midwayStrikeReady() {
     const strikeGroups = GlobalInit.controller.getAllStrikeGroups(GlobalUnitsModel.Side.JAPAN)
     for (let sg of strikeGroups) {
-      if (sg.moved === true) {
-        return false // once strike group has moved disable button
+      if (sg.moved !== true) {
+        return false // if strike group has not moved we're not ready
       }
     }
 
@@ -511,18 +511,24 @@ export function App() {
     if (GlobalGameState.midwayAirOpsCompleted < 2) {
       return false
     }
-    const sideBeingAttacked =
-      GlobalGameState.sideWithInitiative === GlobalUnitsModel.Side.US
-        ? GlobalUnitsModel.Side.JAPAN
-        : GlobalUnitsModel.Side.US
-    // 2. CHECK ALL INTERCEPTING CAP UNITS HAVE RETURNED TO CARRIERS
-    const capUnitsReturning = GlobalInit.controller.getAllCAPDefendersInCAPReturnBoxes(sideBeingAttacked)
+    const returningUnitsNotMoved = GlobalInit.controller.getReturningUnitsNotMoved(GlobalUnitsModel.Side.JAPAN)
+    if (returningUnitsNotMoved) {
+      return false
+    } else {
+      await setStrikeGroupAirUnitsToNotMoved(GlobalGameState.sideWithInitiative)
+    }
+    
+    // 2. CHECK ALL INTERCEPTING CAP UNITS HAVE RETURNED TO MIDWAY
+    const capUnitsReturning = GlobalInit.controller.getAllCAPDefendersInCAPReturnBoxes(GlobalUnitsModel.Side.US)
     if (capUnitsReturning.length === 0) {
       return true
     }
     return false
   }
   async function endOfMyAirOperation(side) {
+    if (GlobalGameState.gamePhase !== GlobalGameState.PHASE.AIR_OPERATIONS) {
+      return false
+    }
     const anyUnitsNotMoved = GlobalInit.controller.getStrikeGroupsNotMoved2(side)
 
     if (anyUnitsNotMoved) {
@@ -548,6 +554,39 @@ export function App() {
     }
     return false
   }
+  const getAllAirUnitsRequiringMoves = () => {
+    // get list of units in stike boxes and return boxes still to move this air op
+    if (GlobalGameState.sideWithInitiative === undefined) {
+      return
+    }
+
+    // 1. Get Attacking Strike Units Ready to Return
+    let units = GlobalInit.controller.getAirUnitsInStrikeBoxesReadyToReturn(GlobalGameState.sideWithInitiative)
+
+    // 2. Get Units in return boxes for side with initiative
+    let returningUnits = GlobalInit.controller.getAttackingReturningUnitsNotMoved(GlobalGameState.sideWithInitiative)
+
+    // 3. Get Defending units in CAP return boxes
+    const sideBeingAttacked =
+      GlobalGameState.sideWithInitiative === GlobalUnitsModel.Side.US
+        ? GlobalUnitsModel.Side.JAPAN
+        : GlobalUnitsModel.Side.US
+    const capUnitsReturning = GlobalInit.controller.getAllCAPDefendersInCAPReturnBoxes(sideBeingAttacked)
+
+    units = units.concat(returningUnits).concat(capUnitsReturning)
+
+    for (let unit of units) {
+      unit.border = true
+    }
+  }
+
+  if (
+    GlobalGameState.gamePhase === GlobalGameState.PHASE.AIR_OPERATIONS ||
+    GlobalGameState.gamePhase === GlobalGameState.PHASE.MIDWAY_ATTACK
+  ) {
+    getAllAirUnitsRequiringMoves()
+  }
+
   const nextActionButtonDisabled = async () => {
     const prevButton = GlobalGameState.nextActionButtonDisabled
     if (GlobalGameState.gamePhase === GlobalGameState.PHASE.US_FLEET_MOVEMENT_PLANNING) {
@@ -577,16 +616,22 @@ export function App() {
     if (GlobalGameState.gamePhase !== GlobalGameState.PHASE.MIDWAY_ATTACK) {
       endOfAirOps = await endOfMyAirOperation(GlobalGameState.sideWithInitiative, setAirUnitUpdate)
     } else {
-      endOfAirOps = await endOfMidwayOperation()
+
+      // @TODO Can have midway strike in first air op
+      // need code to do this
+      if (GlobalGameState.midwayAirOp === 2) {
+        endOfAirOps = await endOfMidwayOperation()
+      }
     }
     if (endOfAirOps) {
       GlobalGameState.nextActionButtonDisabled = false
     } else {
       GlobalGameState.nextActionButtonDisabled = true
     }
-    if (midwayStrikeGroupsReady) {
+    if (midwayStrikeGroupsReady && GlobalGameState.midwayAirOp === 1) {
       GlobalGameState.nextActionButtonDisabled = false
     }
+    console.log("GlobalGameState.nextActionButtonDisabled=", GlobalGameState.nextActionButtonDisabled)
     if (prevButton !== GlobalGameState.nextActionButtonDisabled) {
       GlobalGameState.updateGlobalState()
     }
@@ -619,6 +664,7 @@ export function App() {
         midwayMsg = "(Second Air Op)"
       }
     }
+
     return (
       <Navbar bg="black" data-bs-theme="dark" fixed="top" className="justify-content-between navbar-fixed-top">
         <Container>
@@ -636,7 +682,6 @@ export function App() {
                   !GlobalGameState.usCardsDrawn && GlobalGameState.gamePhase !== GlobalGameState.PHASE.US_CARD_DRAW
                 }
                 onClick={(e) => {
-
                   GlobalGameState.phaseCompleted = true
                   GlobalGameState.usCardsDrawn = true
                   if (GlobalGameState.gamePhase === GlobalGameState.PHASE.US_CARD_DRAW) {
@@ -655,7 +700,6 @@ export function App() {
                   !GlobalGameState.jpCardsDrawn && GlobalGameState.gamePhase !== GlobalGameState.PHASE.JAPAN_CARD_DRAW
                 }
                 onClick={(e) => {
-
                   GlobalGameState.phaseCompleted = true
                   GlobalGameState.jpCardsDrawn = true
                   if (GlobalGameState.gamePhase === GlobalGameState.PHASE.JAPAN_CARD_DRAW) {
@@ -692,9 +736,9 @@ export function App() {
             <p
               className="navbar-text"
               style={{
-                marginLeft: "10px",
-                marginTop: "17px",
-                marginRight: "45px",
+                marginLeft: "5px",
+                marginTop: "10px",
+                marginRight: "35px",
               }}
             >
               {GlobalGameState.gamePhase} <br></br>
@@ -982,10 +1026,10 @@ export function App() {
   // console.log("GlobalUnitsModel.usStrikeGroups=", GlobalUnitsModel.usStrikeGroups)
   function doInitiativeRoll(roll0, roll1) {
     // for testing QUACK
-    doIntiativeRoll(GlobalInit.controller, 6, 1, true) // JAPAN initiative
+    // doIntiativeRoll(GlobalInit.controller, 6, 1, true) // JAPAN initiative
     // doIntiativeRoll(GlobalInit.controller, 1, 6, true) // US initiative
 
-    // doIntiativeRoll(GlobalInit.controller, roll0, roll1)
+    doIntiativeRoll(GlobalInit.controller, roll0, roll1)
     GlobalGameState.updateGlobalState()
   }
 
@@ -1148,8 +1192,23 @@ export function App() {
           nextAction(e)
         }}
       >
-        <h4>INFO</h4>
-        <p>End of Air Operation! Click "Close" to continue...</p>
+        <h4
+          style={{
+            display: "flex",
+            justifyContent: "center",
+            alignItems: "center",
+          }}
+        >
+          INFO
+        </h4>
+        <div style={{
+            justifyContent: "center",
+            alignItems: "center",
+          }}>
+          <p>End of Air Operation!</p>
+          <br></br>
+          <p>Click "Close" to continue...</p>
+        </div>
       </AlertPanel>
       <AlertPanel
         show={!testClicked && searchValuesAlertShow}
@@ -1422,7 +1481,6 @@ export function App() {
         onHide={(e) => {
           setEliminatedUnitsPanelShow(false)
           GlobalGameState.orphanedAirUnits = new Array()
-          nextAction(e)
         }}
         width={30}
         closeButtonStr="Next..."

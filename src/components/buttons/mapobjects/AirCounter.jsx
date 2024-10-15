@@ -325,6 +325,7 @@ function AirCounter({ getAirBox, setAirBox, counterData, side }) {
     counterData.aircraftUnit.moved || counterData.aircraftUnit.airOpMoved !== undefined ? "rotate(45deg)" : ""
 
   // console.log(counterData.name, transform)
+  const outline = counterData.border ? "3px solid rgb(184,29,29)" : ""
 
   let disp = "block"
   if (
@@ -356,6 +357,7 @@ function AirCounter({ getAirBox, setAirBox, counterData, side }) {
             borderRadius: "2px",
             border: "3px solid rgb(197,9,9)",
           },
+          outline: outline,
           transform: transform,
         }}
         id="saveForm2"

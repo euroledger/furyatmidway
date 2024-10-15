@@ -436,6 +436,7 @@ export function delay(ms) {
 }
 
 export async function resetStrikeGroups(side) {
+  console.log("RESET STRIKE GROUPS...")
   let positions, groups
   if (side === GlobalUnitsModel.Side.JAPAN) {
     positions = japanStrikeGroups.map(({position}) => position)
@@ -451,6 +452,7 @@ export async function resetStrikeGroups(side) {
       index++
       continue
     }
+    console.log("SG", strikeGroup.name, "-> RESET!")
     strikeGroup.airOpAttacked = undefined
     strikeGroup.airOpMoved = undefined
     strikeGroup.moved = false

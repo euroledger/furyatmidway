@@ -18,10 +18,8 @@ function FleetCounter({
   currentMouseHex,
   setCurrentMouseHex,
   setCurrentUSHex,
-  setCurrentJapanHex
+  setCurrentJapanHex,
 }) {
-
- 
   const { setIsMoveable } = useContext(BoardContext)
   const { controller, onDrag, onStop, fleetUnitUpdate } = useContext(BoardContext)
 
@@ -48,7 +46,7 @@ function FleetCounter({
     const groups = controller.getAllStrikeGroupsInLocation(hex, side)
     setstrikeGroupsAtLocation(() => groups)
 
-    let fleets=[]
+    let fleets = []
     fleets = controller.getAllFleetsInLocation(hex, side)
     setFleetsAtLocation(() => fleets)
 
@@ -66,7 +64,7 @@ function FleetCounter({
     hex = fleetUnitUpdate.position.currentHex
   }
 
-  // This code for the test mode fleet unit updates
+  // This code for the test mode fleet unit updates (and game loads)
   if (
     fleetUnitUpdate &&
     counterData.name === fleetUnitUpdate.name &&
@@ -74,7 +72,7 @@ function FleetCounter({
   ) {
     hex = fleetUnitUpdate.position.currentHex
 
-    // console.log("I am", fleetUnitUpdate.name, "side:", side, "-> FLEET UNIT UPDATE, move to", hex.row + ",", hex.col)
+    console.log("I am", fleetUnitUpdate.name, "side:", side, "-> FLEET UNIT UPDATE, move to", hex.row + ",", hex.col)
     setPosition({
       initial: false,
       left: hex.x + counterData.position.left + counterData.offsets.x,
@@ -97,7 +95,7 @@ function FleetCounter({
         from,
         to,
         side,
-        loading: true
+        loading: true,
       },
     })
   }
@@ -112,6 +110,7 @@ function FleetCounter({
       } else {
         GlobalGameState.usFleetMoved = true
         GlobalGameState.usFleetPlaced = true
+        GlobalGameState.phaseCompleted = true
       }
     } else {
       let isThere = jpRegions && jpRegions.find((h) => h.q === hex.q && h.r === hex.r)
@@ -120,6 +119,7 @@ function FleetCounter({
       }
       GlobalGameState.jpFleetPlaced = true
       GlobalGameState.jpFleetMoved = true
+      GlobalGameState.phaseCompleted = true
     }
 
     // console.log(
@@ -162,7 +162,6 @@ function FleetCounter({
     setStrikeGroupPopup(side, false)
   }
   const handleDragEnter = () => {
-    
     const location = controller.getFleetLocation(counterData.name, side)
 
     if (!location) {

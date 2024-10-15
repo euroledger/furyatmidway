@@ -158,7 +158,6 @@ export default class Controller {
       // TEST SHIT
       unit.location = location
       quack.push(unit)
-
       if (location.boxName.includes("CAP RETURNING")) {
         units.push(unit)
       }
@@ -460,6 +459,39 @@ export default class Controller {
     }
   }
 
+  getAirUnitsInStrikeBoxesReadyToReturn(side) {
+    const units = new Array()
+    const strikeGroups = this.getAllStrikeGroups(side)
+    for (const group of strikeGroups) {
+      if (!group.attacked) {
+        continue
+      }
+      const unitsInGroup = this.getAirUnitsInStrikeGroups(group.box)
+      for (const unit of unitsInGroup) {
+        // allow new move from strike box to return box (manual)
+        units.push(unit)
+      }
+    }
+    return units
+  }
+
+  getAttackingReturningUnitsNotMoved(side) {
+    const airUnits = Array.from(this.counters.values())
+    const defenders = airUnits.filter((unit) => unit.constructor.name === "AirUnit" && unit.side === side)
+
+    const units = new Array()
+    for (const unit of defenders) {
+      if (unit.aircraftUnit.moved) {
+        continue // only want units that have not yet moved
+      }
+      const location = this.getAirUnitLocation(unit.name)
+
+      if (location.boxName.includes("RETURNING (2)") || location.boxName.includes("RETURNING (1)")) {
+        units.push(unit)
+      }
+    }
+    return units
+  }
   getReturningUnitsNotMoved(side) {
     const airUnits = Array.from(this.counters.values())
     const defenders = airUnits.filter((unit) => unit.constructor.name === "AirUnit" && unit.side === side)

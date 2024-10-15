@@ -3,7 +3,7 @@ import GlobalInit from "./model/GlobalInit"
 import GlobalUnitsModel from "./model/GlobalUnitsModel"
 import JapanAirBoxOffsets from "./components/draganddrop/JapanAirBoxOffsets"
 import USAirBoxOffsets from "./components/draganddrop/USAirBoxOffsets"
-import { updateSwitch } from "typescript"
+import { flatHexToPixel } from "./components/HexUtils"
 
 export function saveGameState(controller, gameId) {
   const arr = Object.getOwnPropertyNames(GlobalGameState.prototype.constructor)
@@ -16,7 +16,6 @@ export function saveGameState(controller, gameId) {
       globalState.set(key, val)
     }
   }
-  // console.log(globalState)
 
   let airState = new Map()
   const units = Array.from(GlobalInit.counters.values())
@@ -88,6 +87,15 @@ function createFleetUpdates(fleetMap) {
   for (const key of fleetMap.keys()) {
     let update
     const cHex = fleetMap.get(key).currentHex
+
+    // calculate hex coords from grid coords q,r -> x.y
+    const h = {
+      q: cHex.q,
+      r: cHex.r
+    }
+    const newhex = flatHexToPixel(h)
+    cHex.x = newhex.x
+    cHex.y = newhex.y
     update = {
       name: key,
       position: {
@@ -314,6 +322,7 @@ export function loadGameStateForId(controller, gameId) {
     }
   }
 
+
   const airOperationText = gameDetails.airoperations
   GlobalGameState.airOperationPoints = JSON.parse(airOperationText)
 
@@ -323,12 +332,21 @@ export function loadGameStateForId(controller, gameId) {
 
   const jpStrikeText = gameDetails.jpStrike
   const jpStrikeMap = new Map(JSON.parse(jpStrikeText))
+  // const sg2 = jpStrikeMap.get("JAPAN STRIKE BOX 1")
+  // sg2._airOpMoved = undefined
   if (jpStrikeText) {
     loadJapanStrikeUnits(jpStrikeMap)
   }
 
   const usStrikeText = gameDetails.usStrike
   const usStrikeMap = new Map(JSON.parse(usStrikeText))
+
+  // console.log("usStrikeMap=",usStrikeMap)
+
+  // QUACK TEMPORARY HACK TO GET ROUND INCORRECT SAVED DATA - remove
+  // const sg = usStrikeMap.get("US STRIKE BOX 1")
+  // sg._airOpMoved = undefined
+
   if (usStrikeText) {
     loadUSStrikeUnits(usStrikeMap)
   }
@@ -341,7 +359,6 @@ export function loadGameStateForId(controller, gameId) {
   const jpFleetText = gameDetails.jpFleetMap
 
   let jpFleetUnitsMap, usFleetUnitsMap
-  // QUACK some saved games may not have fleet info. Remove this in due course
   if (jpFleetText !== undefined) {
     jpFleetUnitsMap = new Map(JSON.parse(jpFleetText))
     loadJapanFleetUnits(jpFleetUnitsMap)

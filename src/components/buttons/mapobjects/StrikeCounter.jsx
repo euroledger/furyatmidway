@@ -112,12 +112,12 @@ function StrikeCounter({ setStrikeGroupPopup, currentUSHex, currentJapanHex, cou
   function setJapanRegions() {
     let jpRegion
 
-    // console.log(
-    //   "GlobalGameState.airOpJapan",
-    //   GlobalGameState.airOpJapan,
-    //   "counterData.airOpMoved=",
-    //   counterData.airOpMoved
-    // )
+    console.log(
+      "GlobalGameState.airOpJapan",
+      GlobalGameState.airOpJapan,
+      "counterData.airOpMoved=",
+      counterData.airOpMoved
+    )
     // Use 1AF
     if (counterData.airOpMoved !== undefined && GlobalGameState.airOpJapan !== counterData.airOpMoved) {
       // second air op for this SG, use movement allowance (3) and position of SG to determine regions
@@ -152,7 +152,7 @@ function StrikeCounter({ setStrikeGroupPopup, currentUSHex, currentJapanHex, cou
     // ensure that SG moves to within two hexes of Midway
     if (GlobalGameState.gamePhase === GlobalGameState.PHASE.MIDWAY_ATTACK && GlobalGameState.midwayAirOp === 1) {
       const jpRegion2 = allHexesWithinDistance(Controller.MIDWAY_HEX.currentHex, 3, true)
-      const hexes = hexesInTwoRegions(jpRegion1, jpRegion2)
+      const hexes = hexesInTwoRegions(jpRegion, jpRegion2)
       setJapanMapRegions(hexes)
     }
 
@@ -220,8 +220,11 @@ function StrikeCounter({ setStrikeGroupPopup, currentUSHex, currentJapanHex, cou
   const handleClick = (e) => {
     const sg = controller.getStrikeGroupForBox(side, counterData.box)
     if (sg.attacked) {
+      console.log("COMPUTER MAN HE SAY NO")
       return
     }
+
+    console.log("HEY")
     if (side === GlobalUnitsModel.Side.US) {
       setUSRegions()
     } else {
@@ -340,10 +343,10 @@ function StrikeCounter({ setStrikeGroupPopup, currentUSHex, currentJapanHex, cou
     setIsMoveable(true)
     const sg = controller.getStrikeGroupForBox(side, counterData.box)
     if (!sg.attacked) {
-
       if (side === GlobalUnitsModel.Side.JAPAN) {
         setJapanRegions()
       } else {
+        console.log("WOOO")
         setUSRegions()
       }
     }

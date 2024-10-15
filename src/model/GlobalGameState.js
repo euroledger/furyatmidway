@@ -18,6 +18,7 @@ export default class GlobalGameState {
     INITIATIVE_DETERMINATION: "Initiative Determination",
     AIR_OPERATIONS: "Air Operations Phase",
     END_OF_AIR_OPERATION: "Air Operations Tidy Up",
+    END_OF_TURN: "End of Turn",
     TARGET_DETERMINATION: "Target Determination Phase",
     CAP_INTERCEPTION:"CAP Interception Phase",
     AIR_ATTACK_1: "Attack Resolution Phase (1)",
