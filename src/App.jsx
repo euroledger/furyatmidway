@@ -471,6 +471,7 @@ export function App() {
       capSteps,
       capAirUnits,
       setAirUnitUpdate,
+      setStrikeGroupUpdate,
       setEliminatedUnitsPanelShow,
     })
   }
@@ -517,7 +518,7 @@ export function App() {
     } else {
       await setStrikeGroupAirUnitsToNotMoved(GlobalGameState.sideWithInitiative)
     }
-    
+
     // 2. CHECK ALL INTERCEPTING CAP UNITS HAVE RETURNED TO MIDWAY
     const capUnitsReturning = GlobalInit.controller.getAllCAPDefendersInCAPReturnBoxes(GlobalUnitsModel.Side.US)
     if (capUnitsReturning.length === 0) {
@@ -616,7 +617,6 @@ export function App() {
     if (GlobalGameState.gamePhase !== GlobalGameState.PHASE.MIDWAY_ATTACK) {
       endOfAirOps = await endOfMyAirOperation(GlobalGameState.sideWithInitiative, setAirUnitUpdate)
     } else {
-
       // @TODO Can have midway strike in first air op
       // need code to do this
       if (GlobalGameState.midwayAirOp === 2) {
@@ -631,11 +631,13 @@ export function App() {
     if (midwayStrikeGroupsReady && GlobalGameState.midwayAirOp === 1) {
       GlobalGameState.nextActionButtonDisabled = false
     }
-    console.log("GlobalGameState.nextActionButtonDisabled=", GlobalGameState.nextActionButtonDisabled)
     if (prevButton !== GlobalGameState.nextActionButtonDisabled) {
       GlobalGameState.updateGlobalState()
     }
   }
+
+  const sg2 = GlobalUnitsModel.usStrikeGroups.get(GlobalUnitsModel.AirBox.US_STRIKE_BOX_1)
+  console.log("SG2=", sg2.name, "airOpMoved=", sg2.airOpMoved, "sg2.position=", sg2.position)
   const Controls = () => {
     const { zoomIn, zoomOut, resetTransform } = useControls()
     let image = "/images/usaflag.jpg"
@@ -1027,9 +1029,9 @@ export function App() {
   function doInitiativeRoll(roll0, roll1) {
     // for testing QUACK
     // doIntiativeRoll(GlobalInit.controller, 6, 1, true) // JAPAN initiative
-    // doIntiativeRoll(GlobalInit.controller, 1, 6, true) // US initiative
+    doIntiativeRoll(GlobalInit.controller, 1, 6, true) // US initiative
 
-    doIntiativeRoll(GlobalInit.controller, roll0, roll1)
+    // doIntiativeRoll(GlobalInit.controller, roll0, roll1)
     GlobalGameState.updateGlobalState()
   }
 
@@ -1201,10 +1203,12 @@ export function App() {
         >
           INFO
         </h4>
-        <div style={{
+        <div
+          style={{
             justifyContent: "center",
             alignItems: "center",
-          }}>
+          }}
+        >
           <p>End of Air Operation!</p>
           <br></br>
           <p>Click "Close" to continue...</p>
@@ -1475,7 +1479,7 @@ export function App() {
       ></MidwayDamageDicePanel>
       <EliminatedReturningUnits
         controller={GlobalInit.controller}
-        show={eliminatedUnitsPanelShow}
+        show={!testClicked && eliminatedUnitsPanelShow}
         headerText="Eliminated Air Units"
         margin={0}
         onHide={(e) => {
