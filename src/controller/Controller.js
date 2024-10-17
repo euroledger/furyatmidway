@@ -149,19 +149,34 @@ export default class Controller {
     const airUnits = Array.from(this.counters.values())
     const defenders = airUnits.filter((unit) => unit.constructor.name === "AirUnit" && unit.side === side)
 
-    let quack = new Array()
+    let units = new Array()
+    for (const unit of defenders) {
+      const location = this.getAirUnitLocation(unit.name)
+      // TEST SHIT
+      unit.location = location
+      if (location.boxName.includes("CAP RETURNING")) {
+        units.push(unit)
+      }
+    }
+    return units
+  }
+
+  getAllUnitsOnJapaneseFlightDecks(fighters) {
+    const airUnits = Array.from(this.counters.values())
+    const defenders = airUnits.filter(
+      (unit) => unit.constructor.name === "AirUnit" && unit.side === GlobalUnitsModel.Side.JAPAN
+    )
 
     let units = new Array()
     for (const unit of defenders) {
       const location = this.getAirUnitLocation(unit.name)
 
-      // TEST SHIT
-      unit.location = location
-      quack.push(unit)
-      if (location.boxName.includes("CAP RETURNING")) {
+      if (location.boxName.includes("FLIGHT")) {
         units.push(unit)
       }
     }
+    // will either filter all fighters or all non-fighters
+    units = units.filter((unit) => unit.aircraftUnit.attack !== fighters)
     return units
   }
 
@@ -242,8 +257,7 @@ export default class Controller {
 
       // filter false if either moved is true or airopmoved is not undefined
       let x = true
-      // if (strikeGroup.moved === true || strikeGroup.airOpMoved !== undefined) {
-      if (strikeGroup.moved === true) {
+      if (strikeGroup.moved === true || strikeGroup.attacked === true) {
         x = false
       }
 
@@ -354,6 +368,7 @@ export default class Controller {
 
   setAirOpMoved(counterData) {
     if (GlobalGameState.sideWithInitiative === GlobalUnitsModel.Side.JAPAN) {
+      console.log("ARSE 1")
       counterData.airOpMoved = GlobalGameState.airOpJapan
     } else {
       counterData.airOpMoved = GlobalGameState.airOpUS
@@ -877,7 +892,9 @@ export default class Controller {
 
   getStrikeGroupForBox(side, box) {
     if (side === GlobalUnitsModel.Side.US) {
-      return GlobalUnitsModel.usStrikeGroups.get(box)
+
+      const sg =  GlobalUnitsModel.usStrikeGroups.get(box)
+      return sg
     } else {
       return GlobalUnitsModel.jpStrikeGroups.get(box)
     }
@@ -907,6 +924,11 @@ export default class Controller {
   setStrikeGroupLocation(id, location, side) {
     this.mapModel.setStrikeGroupLocation(id, location, side)
   }
+  
+  removeStrikeGroupFromLocation(id, side) {
+    this.mapModel.removeStrikeGroupFromLocation(id, side)
+  }
+
   addAirUnitToJapaneseCarrier(carrier, value) {
     this.boxModel.addAirUnitToJapaneseCarrier(carrier, value)
   }
@@ -983,12 +1005,19 @@ export default class Controller {
 
   isFlightDeckAvailable(carrierName, side) {
     let hits = 0
+    let carrier
     if (side === GlobalUnitsModel.Side.JAPAN) {
-      const carrier = GlobalUnitsModel.jpFleetUnits.get(carrierName)
+      carrier = GlobalUnitsModel.jpFleetUnits.get(carrierName)
       hits = carrier.hits
     } else {
-      const carrier = GlobalUnitsModel.usFleetUnits.get(carrierName)
+      carrier = GlobalUnitsModel.usFleetUnits.get(carrierName)
       hits = carrier.hits
+    }
+
+    if (carrier.name === GlobalUnitsModel.Carrier.MIDWAY) {
+      if (GlobalGameState.midwayBox0Damaged) hits++
+      if (GlobalGameState.midwayBox1Damaged) hits++
+      if (GlobalGameState.midwayBox2Damaged) hits++
     }
     // return false if both slots either damaged or occupied by an air unit
     const flightDeckBox = this.airOperationsModel.getAirBoxForNamedShip(side, carrierName, "FLIGHT")
@@ -996,9 +1025,6 @@ export default class Controller {
     let boxName = Object.values(flightDeckBox)[0]
 
     const units = this.getAllAirUnitsInBox(boxName)
-
-    const kdb = this.counters.get("Kaga-D3A-1")
-    const location = this.getAirUnitLocation(kdb.name)
 
     // for carriers if hits + units length >= 2 unavailable, for Midway 3
     const capacity = carrierName.toUpperCase().includes("MIDWAY") ? 3 : 2

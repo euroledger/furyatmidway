@@ -1,6 +1,6 @@
 import BaseUnit from "./BaseUnit"
 export default class StrikeGroupUnit extends BaseUnit {
-    constructor(name, longName, position, image, width, location, box, side, offsets, moved, attacked) {
+    constructor(name, longName, position, image, width, location, box, side, offsets, moved, attacked, initialPosition) {
     super(name, longName, position, offsets, image, width)
     this.box = box
     this.location = location
@@ -9,6 +9,7 @@ export default class StrikeGroupUnit extends BaseUnit {
     this.attacked = attacked
     this.airOpMoved = undefined
     this.airOpAttacked = undefined
+    this.initialPosition = initialPosition
   }
 
   set box(b) {
@@ -25,6 +26,14 @@ export default class StrikeGroupUnit extends BaseUnit {
 
   get location() {
     return this._location
+  }
+
+  set initialPosition(ip) {
+    this._initialPosition = ip
+  }
+
+  get initialPosition() {
+    return this._initialPosition
   }
 
   set side(s) {

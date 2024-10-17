@@ -48,6 +48,13 @@ export default class CardModel {
     return fleets
   }
 
+  removeStrikeGroupFromLocation(name, side) {
+    if (side === GlobalUnitsModel.Side.JAPAN) {
+      return this.jpMap.delete(name)
+    } else {
+      return this.usMap.delete(name)
+    } 
+  }
   getAllStrikeGroupsInLocation(location, side) {
     let strikeGroups = new Array()
 

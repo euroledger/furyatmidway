@@ -36,6 +36,7 @@ export function saveGameState(controller, gameId) {
 
   const jpStrikeText = JSON.stringify(Array.from(GlobalUnitsModel.jpStrikeGroups.entries()))
 
+  console.log("+++++++++++++++++++ SAVING SOMETHING WRONG: ", GlobalUnitsModel.usStrikeGroups)
   const usStrikeText = JSON.stringify(Array.from(GlobalUnitsModel.usStrikeGroups.entries()))
 
   const jpCardText = JSON.stringify(GlobalUnitsModel.jpCards)
@@ -44,6 +45,7 @@ export function saveGameState(controller, gameId) {
   // console.log(usCardText)
 
   const usmaps = controller.getUSFleetLocations()
+  console.log("US QUACK MAPS =", usmaps)
   const usMapText = JSON.stringify(Array.from(usmaps.entries()))
 
   const jpmaps = controller.getJapanFleetLocations()
@@ -53,8 +55,8 @@ export function saveGameState(controller, gameId) {
   // console.log(jpMapText)
 
   const usFleetText = JSON.stringify(Array.from(GlobalUnitsModel.usFleetUnits.entries()))
-  const jpFleetText = JSON.stringify(Array.from(GlobalUnitsModel.jpFleetUnits.entries()))
 
+  const jpFleetText = JSON.stringify(Array.from(GlobalUnitsModel.jpFleetUnits.entries()))
   const logItems = JSON.stringify(Array.from(GlobalGameState.logItems.entries()))
   // console.log(logItems)
   // const size = new TextEncoder().encode(logItems).length
@@ -88,10 +90,11 @@ function createFleetUpdates(fleetMap) {
     let update
     const cHex = fleetMap.get(key).currentHex
 
+    console.log("KEY=", key, "cHEX=", cHex)
     // calculate hex coords from grid coords q,r -> x.y
     const h = {
       q: cHex.q,
-      r: cHex.r
+      r: cHex.r,
     }
     const newhex = flatHexToPixel(h)
     cHex.x = newhex.x
@@ -114,13 +117,14 @@ function createStrikeGroupUpdates(strikeGroupMap) {
     const sg = strikeGroupMap.get(key)
     const cHex = sg._location.currentHex
 
+    console.log("SG LOADED:", sg._name, "vals=", sg)
     update = {
       name: sg._name,
       position: {
         currentHex: cHex,
       },
       moved: sg._moved,
-      attacked: sg._attacked
+      attacked: sg._attacked,
     }
     updates.push(update)
   }
@@ -186,18 +190,66 @@ function createsDamageUpdates(controller, damage, side, carrierName) {
     return undefined
   }
 }
+function createDamageUpdatesMidway(controller) {
+  console.log("CREATE DAMAGE MIDWAY!")
+  const boxName = controller.getAirBoxForNamedShip(
+    GlobalUnitsModel.Side.US,
+    GlobalUnitsModel.Carrier.MIDWAY,
+    "FLIGHT_DECK"
+  )
+  let markers = new Array()
+  if (GlobalGameState.midwayBox0Damaged) {
+    const marker1 = GlobalInit.controller.getNextAvailableMarker("DAMAGED")
+    const markerUpdate = {
+      name: marker1.name,
+      box: boxName,
+      index: 0,
+      side: GlobalUnitsModel.Side.US,
+    }
+    controller.setMarkerLocation(marker1.name, boxName, 0)
+    markers.push(markerUpdate)
+  }
+  if (GlobalGameState.midwayBox1Damaged) {
+    const marker2 = GlobalInit.controller.getNextAvailableMarker("DAMAGED")
+    const markerUpdate = {
+      name: marker2.name,
+      box: boxName,
+      index: 1,
+      side: GlobalUnitsModel.Side.US,
+    }
+    controller.setMarkerLocation(marker2.name, boxName, 0)
+    markers.push(markerUpdate)
+  }
+  if (GlobalGameState.midwayBox2Damaged) {
+    const marker2 = GlobalInit.controller.getNextAvailableMarker("DAMAGED")
+    const markerUpdate = {
+      name: marker2.name,
+      box: boxName,
+      index: 2,
+      side: GlobalUnitsModel.Side.US,
+    }
+    controller.setMarkerLocation(marker2.name, boxName, 0)
+    markers.push(markerUpdate)
+  }
+  return markers
+}
 
 function createDamageMarkerUpdates(controller, fleetUnitsMap) {
   let fleetUpdates = new Array()
   for (const key of fleetUnitsMap.keys()) {
+    let updates
     const carrier = fleetUnitsMap.get(key)
-    const sunk = carrier._hits >= 3
-    const damage = {
-      sunk,
-      bow: carrier._bowDamaged,
-      stern: carrier._sternDamaged,
+    if (carrier._name === GlobalUnitsModel.Carrier.MIDWAY) {
+      updates = createDamageUpdatesMidway(controller)
+    } else {
+      const sunk = carrier._hits >= 3
+      const damage = {
+        sunk,
+        bow: carrier._bowDamaged,
+        stern: carrier._sternDamaged,
+      }
+      updates = createsDamageUpdates(controller, damage, carrier._side, carrier._name)
     }
-    const updates = createsDamageUpdates(controller, damage, carrier._side, carrier._name)
     if (updates !== undefined) {
       fleetUpdates.push(updates)
     }
@@ -257,12 +309,14 @@ function loadAirUnits(airUnitMap) {
 }
 
 function loadUSStrikeUnits(loadedMap) {
+  console.log(">>>>>>>>>>>>>>>>>>>> CULPRIT:", loadedMap)
   for (let key of loadedMap.keys()) {
     const sg = GlobalUnitsModel.usStrikeGroups.get(key)
     const loadedSG = loadedMap.get(key)
     sg.moved = loadedSG._moved
     sg.airOpMoved = loadedSG._airOpMoved
     sg.airOpAttacked = loadedSG._airOpAttacked
+    console.log("HERE IS WHERE WE ARE DOING BAD STUFF:-> key", key, "SG=", sg)
     GlobalUnitsModel.usStrikeGroups.set(key, sg)
   }
 }
@@ -322,7 +376,6 @@ export function loadGameStateForId(controller, gameId) {
     }
   }
 
-
   const airOperationText = gameDetails.airoperations
   GlobalGameState.airOperationPoints = JSON.parse(airOperationText)
 
@@ -332,8 +385,6 @@ export function loadGameStateForId(controller, gameId) {
 
   const jpStrikeText = gameDetails.jpStrike
   const jpStrikeMap = new Map(JSON.parse(jpStrikeText))
-  // const sg2 = jpStrikeMap.get("JAPAN STRIKE BOX 1")
-  // sg2._airOpMoved = undefined
   if (jpStrikeText) {
     loadJapanStrikeUnits(jpStrikeMap)
   }
@@ -341,16 +392,12 @@ export function loadGameStateForId(controller, gameId) {
   const usStrikeText = gameDetails.usStrike
   const usStrikeMap = new Map(JSON.parse(usStrikeText))
 
-  // console.log("usStrikeMap=",usStrikeMap)
-
-  // QUACK TEMPORARY HACK TO GET ROUND INCORRECT SAVED DATA - remove
-  // const sg = usStrikeMap.get("US STRIKE BOX 1")
-  // sg._airOpMoved = undefined
-
   if (usStrikeText) {
     loadUSStrikeUnits(usStrikeMap)
   }
   const jpStrikeUpdates = createStrikeGroupUpdates(jpStrikeMap)
+
+  console.log("****************** usStrikeMap=", usStrikeMap)
   const usStrikeUpdates = createStrikeGroupUpdates(usStrikeMap)
 
   const airUpdates = createAirUnitUpdates(controller, airMap)
@@ -371,10 +418,10 @@ export function loadGameStateForId(controller, gameId) {
   }
   let jpDamageMarkerUpdates = new Array(),
     usDamageMarkerUpdates = new Array()
-  if (jpFleetText !== undefined) {
+  if (jpFleetUnitsMap !== undefined) {
     jpDamageMarkerUpdates = createDamageMarkerUpdates(controller, jpFleetUnitsMap)
   }
-  if (usFleetText !== undefined) {
+  if (usFleetUnitsMap !== undefined) {
     usDamageMarkerUpdates = createDamageMarkerUpdates(controller, usFleetUnitsMap)
   }
 
@@ -393,6 +440,7 @@ export function loadGameStateForId(controller, gameId) {
   const usMapText = gameDetails.usMap
   const usFleetMap = new Map(JSON.parse(usMapText))
 
+  console.log("US FLEET MAP=", usFleetMap)
   const usfleetUpdates = createFleetUpdates(usFleetMap)
   const jpfleetUpdates = createFleetUpdates(jpFleetMap)
 

@@ -197,11 +197,11 @@ async function midwayTidyUp(setJapanStrikePanelEnabled, setUSMapRegions) {
   GlobalGameState.dieRolls = []
 }
 
-async function tidyUp(setAirUnitUpdate) {
+async function tidyUp(setAirUnitUpdate, setStrikeGroupUpdate) {
   await setStrikeGroupAirUnitsToNotMoved(GlobalGameState.sideWithInitiative, setAirUnitUpdate)
 
   // reset SG attributes to allow that Strike Group and its boxes to be available
-  await resetStrikeGroups(GlobalGameState.sideWithInitiative)
+  await resetStrikeGroups(GlobalInit.controller, GlobalGameState.sideWithInitiative, setStrikeGroupUpdate)
   await GlobalInit.controller.setAllUnitsToNotMoved()
   decrementAirOpsPoints()
   GlobalGameState.sideWithInitiative = undefined
@@ -209,13 +209,12 @@ async function tidyUp(setAirUnitUpdate) {
 }
 
 export async function endOfAirOperation(side, capAirUnits, setAirUnitUpdate, setEliminatedUnitsPanelShow) {
+  console.log("MOVE CAP TO RETURN BOX........")
   await moveCAPtoReturnBox(GlobalInit.controller, capAirUnits, setAirUnitUpdate)
   const anySGsNotMoved = GlobalInit.controller.getStrikeGroupsNotMoved2(GlobalGameState.sideWithInitiative)
 
   if (!anySGsNotMoved) {
     await setStrikeGroupAirUnitsToNotMoved(GlobalGameState.sideWithInitiative, setAirUnitUpdate)
-    // GlobalGameState.allStrikeUnitsReturned = true
-    // GlobalGameState.updateGlobalState()
   } else {
     return false
   }
@@ -356,6 +355,7 @@ export default async function handleAction({
   capSteps,
   capAirUnits,
   setAirUnitUpdate,
+  setStrikeGroupUpdate,
   setEliminatedUnitsPanelShow,
 }) {
   //   switch (
@@ -416,6 +416,7 @@ export default async function handleAction({
     japanFleetMovementHandler({ setMidwayNoAttackAlertShow, setJapanMapRegions, setFleetUnitUpdate })
     if (GlobalGameState.midwayAttackDeclaration) {
       GlobalGameState.midwayAirOp = 1
+      GlobalGameState.airOpJapan = 1
       setJapanStrikePanelEnabled(true)
       setUsStrikePanelEnabled(false)
       GlobalGameState.phaseCompleted = false
@@ -471,6 +472,7 @@ export default async function handleAction({
     // })
     if (GlobalGameState.midwayAirOp === 1) {
       GlobalGameState.midwayAirOp = 2
+      GlobalGameState.airOpJapan = 2
       GlobalGameState.airOperationPoints.japan = 1
     } else {
       await midwayTidyUp(setJapanStrikePanelEnabled, setUSMapRegions)
@@ -626,6 +628,8 @@ export default async function handleAction({
       GlobalGameState.gamePhase = GlobalGameState.PHASE.AIR_OPERATIONS
     }
   } else if (GlobalGameState.gamePhase === GlobalGameState.PHASE.MIDWAY_DAMAGE_RESOLUTION) {
+    console.log("DO TRACE FUCKER...")
+    console.trace()
     console.log("IN STATE MIDWAY DAMAGE")
 
     await endOfAirOperation(
@@ -639,7 +643,7 @@ export default async function handleAction({
     if (GlobalGameState.orphanedAirUnits.length > 0) {
       setEliminatedUnitsPanelShow(true)
     } else {
-      await tidyUp(setAirUnitUpdate)
+      await tidyUp(setAirUnitUpdate, setStrikeGroupUpdate)
       GlobalGameState.gamePhase = GlobalGameState.PHASE.END_OF_AIR_OPERATION
       setEndOfAirOpAlertShow(true)
     }
