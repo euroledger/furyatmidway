@@ -21,6 +21,9 @@ function StrikeGroupPopUp({ strikeGroup, fleetUnits, popUpPosition, hex, side })
     return <PopUpStrikeCounter counterData={newFleetUnit}></PopUpStrikeCounter>
   })
   const sgCounters = strikeGroup.map((strikeGroupUnit) => {
+    if (!strikeGroupUnit.moved) {
+      return
+    }
     strikeGroupUnit.position.left = 3 + 30 * index
     strikeGroupUnit.position.top = 30
     index += 1

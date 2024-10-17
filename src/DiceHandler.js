@@ -81,7 +81,7 @@ export function doFighterCounterattack(controller, testRolls) {
   }
   GlobalGameState.dieRolls = 1
   GlobalGameState.fighterHits = hits
-    // GlobalGameState.fighterHits = 1 // QUACK TESTING ONLY
+    GlobalGameState.fighterHits = 1 // QUACK TESTING ONLY
 
 }
 
@@ -367,7 +367,8 @@ export function autoAllocateDamage(controller) {
       moveAirUnitToEliminatedBox(controller, airUnit)
       GlobalGameState.eliminatedAirUnits.push(airUnit)
     }
-    if (hits >= 3) {
+    controller.setCarrierHits(carrier, Math.min(3, currentCarrierHits + hits))
+    if (controller.getCarrierHits(carrier) >= 3) {
       damage.sunk = true
       const airUnits = getAirUnitsInHangar(controller, carrier)
       for (let unit of airUnits) {
@@ -375,9 +376,9 @@ export function autoAllocateDamage(controller) {
         GlobalGameState.eliminatedAirUnits.push(unit)
       }
     }
-    controller.setCarrierHits(carrier, Math.min(3, currentCarrierHits + hits))
   }
   GlobalGameState.damageThisAttack = damage
+
 
   return damage
 }
@@ -395,7 +396,7 @@ export function doCarrierDamageRolls(controller, testRoll) {
 
 
   // QUACK FOR TESTING ONLY
-  roll = 1
+  // roll = 1
   //  -------------TAKE THIS OUT
 
 
@@ -626,8 +627,8 @@ export function doAttackFireRolls(controller, testRolls) {
     GlobalGameState.carrierAttackHitsThisAttack = hits
 
     // QUACK REMOVE TEESTING ONLY
-    GlobalGameState.carrierAttackHits = 1
-    GlobalGameState.carrierAttackHitsThisAttack = 1
+    // GlobalGameState.carrierAttackHits = 2
+    // GlobalGameState.carrierAttackHitsThisAttack = 2
   }
   return hits
 }
