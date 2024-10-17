@@ -1,3 +1,4 @@
+import { useEffect, useRef } from "react"
 import Modal from "react-bootstrap/Modal"
 import Button from "react-bootstrap/Button"
 import GlobalGameState from "../../model/GlobalGameState"
@@ -62,7 +63,25 @@ function MidwayDamageDicePanel(props) {
     setDamageMarkerUpdate,
     ...rest
   } = props
-  const hits = GlobalGameState.midwayHits
+
+  const button1Ref = useRef(null)
+  const button2Ref = useRef(null)
+
+  useEffect(() => {
+    if (button1Ref.current) {
+      if (GlobalGameState.rollDice === true) {
+        button1Ref.current.click()
+      }
+    }
+  }, [GlobalGameState.rollDice])
+
+  useEffect(() => {
+    if (button2Ref.current) {
+      if (GlobalGameState.closePanel === true) {
+        button2Ref.current.click()
+      }
+    }
+  }, [GlobalGameState.closePanel])
 
   const bg = "#293a4b"
   const bg2 = "rgba(92, 131, 228, 0.8)"
@@ -151,9 +170,11 @@ function MidwayDamageDicePanel(props) {
     )
     const element = image !== undefined ? myImage : myElement
     runwayCounters.push(
-      <div style={{
-        marginTop: "7px"
-      }}>
+      <div
+        style={{
+          marginTop: "7px",
+        }}
+      >
         {element}
         <div
           style={{
@@ -358,11 +379,12 @@ function MidwayDamageDicePanel(props) {
 
       <Modal.Footer style={{ background: `${bg}`, color: "black" }}>
         {numDice > 0 && (
-          <Button disabled={diceButtonDisabled} onClick={() => doRoll()}>
+          <Button ref={button1Ref} disabled={diceButtonDisabled} onClick={() => doRoll()}>
             {diceButtonStr}
           </Button>
         )}
         <Button
+          ref={button2Ref}
           disabled={closeButtonDisabled}
           onClick={(e) => {
             if (nextState) {

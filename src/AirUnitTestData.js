@@ -230,10 +230,11 @@ export function calcTestDataUS(unit, controller) {
 }
 
 export function calcStrikeDataJapan(unit) {
-    // TODO -> iterate over each carrier
-  // -> Move any non fighter units to strike group
-  // -> Move fighter units to strike group
-  // (If two fighter units on flight deck, move to CAP if possible)
+  const update = {
+    name: unit.name,
+    boxName: unit.boxName,
+  }
+  return update
 }
 
 export function calcStrikeDataUS(unit) { 

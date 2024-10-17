@@ -945,6 +945,7 @@ export const japanStrikeGroups = [
     name: "JP-SG1",
     longName: "Strike Group 1",
     position: jpSGPosition1,
+    initialPosition: jpSGPosition1,
     image: "/images/aircounters/ijnStrike1.png",
     width: "2.1%",
     box: GlobalUnitsModel.AirBox.JP_STRIKE_BOX_0,
@@ -955,6 +956,7 @@ export const japanStrikeGroups = [
     name: "JP-SG2",
     longName: "Strike Group 2",
     position: jpSGPosition2,
+    initialPosition: jpSGPosition2,
     image: "/images/aircounters/ijnStrike2.png",
     width: "2.1%",
     box: GlobalUnitsModel.AirBox.JP_STRIKE_BOX_1,
@@ -965,6 +967,7 @@ export const japanStrikeGroups = [
     name: "JP-SG3",
     longName: "Strike Group 3",
     position: jpSGPosition3,
+    initialPosition: jpSGPosition3,
     image: "/images/aircounters/ijnStrike3.png",
     width: "2.1%",
     box: GlobalUnitsModel.AirBox.JP_STRIKE_BOX_2,
@@ -975,6 +978,7 @@ export const japanStrikeGroups = [
     name: "JP-SG4",
     longName: "Strike Group 4",
     position: jpSGPosition4,
+    initialPosition: jpSGPosition4,
     image: "/images/aircounters/ijnStrike4.png",
     width: "2.1%",
     box: GlobalUnitsModel.AirBox.JP_STRIKE_BOX_3,
@@ -985,6 +989,7 @@ export const japanStrikeGroups = [
     name: "JP-SG5",
     longName: "Strike Group 5",
     position: jpSGPosition5,
+    initialPosition: jpSGPosition5,
     image: "/images/aircounters/ijnStrike5.png",
     width: "2.1%",
     box: GlobalUnitsModel.AirBox.JP_STRIKE_BOX_4,
@@ -995,6 +1000,7 @@ export const japanStrikeGroups = [
     name: "JP-SG6",
     longName: "Strike Group 6",
     position: jpSGPosition6,
+    initialPosition: jpSGPosition6,
     image: "/images/aircounters/ijnStrike6.png",
     width: "2.1%",
     box: GlobalUnitsModel.AirBox.JP_STRIKE_BOX_5,
@@ -1005,6 +1011,7 @@ export const japanStrikeGroups = [
     name: "JP-SG7",
     longName: "Strike Group 7",
     position: jpSGPosition7,
+    initialPosition: jpSGPosition7,
     image: "/images/aircounters/ijnStrike7.png",
     width: "2.1%",
     box: GlobalUnitsModel.AirBox.JP_STRIKE_BOX_6,
@@ -1047,6 +1054,7 @@ export const usStrikeGroups = [
     name: "US-SG1",
     longName: "Strike Group 1",
     position: usSGPosition1,
+    initialPosition: usSGPosition1,
     image: "/images/aircounters/usStrike1.png",
     // image: "/images/aircounters/USN-SG1.jpg",
 
@@ -1059,6 +1067,7 @@ export const usStrikeGroups = [
     name: "US-SG2",
     longName: "Strike Group 2",
     position: usSGPosition2,
+    initialPosition: usSGPosition2,
     image: "/images/aircounters/usStrike2.png",
     width: "2.1%",
     box: GlobalUnitsModel.AirBox.US_STRIKE_BOX_1,
@@ -1069,6 +1078,7 @@ export const usStrikeGroups = [
     name: "US-SG3",
     longName: "Strike Group 3",
     position: usSGPosition3,
+    initialPosition: usSGPosition3,
     image: "/images/aircounters/usStrike3.png",
     width: "2.1%",
     box: GlobalUnitsModel.AirBox.US_STRIKE_BOX_2,
@@ -1079,6 +1089,7 @@ export const usStrikeGroups = [
     name: "US-SG4",
     longName: "Strike Group 4",
     position: usSGPosition4,
+    initialPosition: usSGPosition4,
     image: "/images/aircounters/usStrike4.png",
     width: "2.1%",
     box: GlobalUnitsModel.AirBox.US_STRIKE_BOX_3,
@@ -1089,6 +1100,7 @@ export const usStrikeGroups = [
     name: "US-SG5",
     longName: "Strike Group 5",
     position: usSGPosition5,
+    initialPosition: usSGPosition5,
     image: "/images/aircounters/usStrike5.png",
     width: "2.1%",
     box: GlobalUnitsModel.AirBox.US_STRIKE_BOX_4,
@@ -1099,6 +1111,7 @@ export const usStrikeGroups = [
     name: "US-SG6",
     longName: "Strike Group 6",
     position: usSGPosition6,
+    initialPosition: usSGPosition6,
     image: "/images/aircounters/usStrike6.png",
     width: "2.1%",
     box: GlobalUnitsModel.AirBox.US_STRIKE_BOX_5,
@@ -1109,6 +1122,7 @@ export const usStrikeGroups = [
     name: "US-SG7",
     longName: "Strike Group 7",
     position: usSGPosition7,
+    initialPosition: usSGPosition7,
     image: "/images/aircounters/usStrike7.png",
     width: "2.1%",
     box: GlobalUnitsModel.AirBox.US_STRIKE_BOX_6,
@@ -1161,7 +1175,8 @@ function loadStrikeGroups(controller, counters) {
         top: 50,
       },
       false, // moved
-      false  // attacked
+      false,  // attacked
+      group.initialPosition,
     )
 
     GlobalUnitsModel.jpStrikeGroups.set(group.box, sgu)
@@ -1184,7 +1199,8 @@ function loadStrikeGroups(controller, counters) {
         top: 50,
       },
       false, // moved
-      false  // attacked
+      false,  // attacked
+      group.initialPosition,
     )
 
     GlobalUnitsModel.usStrikeGroups.set(group.box, sgu)
