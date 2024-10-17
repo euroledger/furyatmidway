@@ -242,7 +242,7 @@ function AirCounter({ getAirBox, setAirBox, counterData, side }) {
       left: offsets.left + "%",
       top: offsets.top - 0.2 + "%",
     })
-    moveOrphanedCAPUnitsToEliminatedBox(counterData.side)
+    // moveOrphanedCAPUnitsToEliminatedBox(counterData.side)
 
     if (
       GlobalGameState.gamePhase === GlobalGameState.PHASE.AIR_OPERATIONS ||
@@ -286,7 +286,6 @@ function AirCounter({ getAirBox, setAirBox, counterData, side }) {
       moveOrphanedCAPUnitsToEliminatedBox(counterData.side)
     }
     const destBoxes = controller.getValidAirUnitDestinations(counterData.name)
-    console.log("destBoxes=", destBoxes)
     if (counterData.side === GlobalUnitsModel.Side.JAPAN) {
       setEnabledJapanBoxes(() => destBoxes)
     } else {
