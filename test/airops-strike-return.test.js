@@ -171,9 +171,12 @@ describe("Controller tests", () => {
     createFleetMove(controller, 7, 1, "1AF", GlobalUnitsModel.Side.US) // G-4
     createFleetMove(controller, 7, 2, "CSF", GlobalUnitsModel.Side.US) // G-5
   }
-  test("US Strike Group Attacks, same AIR OP as moved, units move to RETURN 1", () => {
+  test("US Strike Group Attacks in same AIR OP as moved, units move to RETURN 1", () => {
     setupUSStrikeGroups(7,2)
     let strikeGroup = GlobalUnitsModel.usStrikeGroups.get(GlobalUnitsModel.AirBox.US_STRIKE_BOX_0)
+    strikeGroup.airOpMoved = 1
+    strikeGroup.airOpAttacked = 1
+
     let unitsInGroup = controller.getAirUnitsInStrikeGroups(strikeGroup.box)
     expect(unitsInGroup.length).toEqual(2)
 
@@ -212,14 +215,16 @@ describe("Controller tests", () => {
   test("US Strike Group Attacks, different AIR OP turn to moved, units move to RETURN 2", () => {
     setupUSStrikeGroups(7,1)
     GlobalGameState.airOpUS = 2
-
-
+   
     strikeGroupMoveUS(GlobalUnitsModel.AirBox.US_STRIKE_BOX_0, 7, 2)
 
     let strikeGroup = GlobalUnitsModel.usStrikeGroups.get(GlobalUnitsModel.AirBox.US_STRIKE_BOX_0)
 
-    GlobalGameState.attackingStrikeGroup.airOpMoved = 1
-    GlobalGameState.attackingStrikeGroup.airOpAttacked = 2
+    strikeGroup.attacked = true
+    strikeGroup.airOpMoved = 1
+    strikeGroup.airOpAttacked = 2
+
+    GlobalUnitsModel.usStrikeGroups.set(strikeGroup.name, strikeGroup)
 
     let unitsInGroup = controller.getAirUnitsInStrikeGroups(strikeGroup.box)
     expect(unitsInGroup.length).toEqual(2)

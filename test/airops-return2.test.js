@@ -2,7 +2,7 @@ import Controller from "../src/controller/Controller"
 import loadCounters from "../src/CounterLoader"
 import GlobalUnitsModel from "../src/model/GlobalUnitsModel"
 import { handleAirUnitMoves } from "../src/controller/AirOperationsHandler"
-import { createFleetMove } from "./TestUtils"
+import { createFleetMove } from "./testUtils"
 
 describe("Air Operations tests for air units in Return 2 boxes", () => {
   let controller

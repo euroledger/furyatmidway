@@ -8,18 +8,6 @@ const USAirBoxOffsets = [
         left: 35,
         top: 50,
       },
-      // {
-      //   left: 17.7,
-      //   top: 68.3,
-      // },
-      // {
-      //   left: 19.9,
-      //   top: 68.3,
-      // },
-      // {
-      //   left: 22.1,
-      //   top: 68.3,
-      // },
     ],
   },
   {
@@ -97,6 +85,14 @@ const USAirBoxOffsets = [
         left: 50.8,
         top: 81.0,
       },
+      {
+        left: 45.5,
+        top: 78.3,
+      },
+      {
+        left: 45.5,
+        top: 81.0,
+      },
     ],
   },
   {
@@ -126,6 +122,14 @@ const USAirBoxOffsets = [
       },
       {
         left: 50.8,
+        top: 89.8,
+      },
+      {
+        left: 45.5,
+        top: 87.0,
+      },
+      {
+        left: 45.5,
         top: 89.8,
       },
     ],
@@ -273,6 +277,14 @@ const USAirBoxOffsets = [
         left: 70.5,
         top: 81.5,
       },
+      {
+        left: 72.2,
+        top: 78.7
+      },
+      {
+        left: 72.2,
+        top: 81.5,
+      }
     ],
   },
   {
@@ -302,6 +314,14 @@ const USAirBoxOffsets = [
       },
       {
         left: 70.5,
+        top: 90.6,
+      },
+      {
+        left: 72.2,
+        top: 87.7
+      },
+      {
+        left: 72.2,
         top: 90.6,
       },
     ],

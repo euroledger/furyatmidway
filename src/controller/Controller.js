@@ -239,6 +239,10 @@ export default class Controller {
     this.counters.set(name, airUnit)
   }
 
+  getCarrierAirUnitLaunchedFrom(name) {
+    const location = this.getAirUnitLocation(name)
+    return this.getCarrierForAirBox(location.boxName)
+  }
   getStrikeBoxes(name, side) {
     const unit = this.getAirUnitForName(name)
     let strikeBoxes = Object.values(this.airOperationsModel.getStrikeBoxesForSide(side))
@@ -268,7 +272,12 @@ export default class Controller {
       // get all units for each strike box, any there
       // from a different carrer should be removed
       // (US cannot mix air units from different carriers in same strike)
-      const carrier = this.getCarrierForAirUnit(name)
+
+      // Note different carriers means carrier where unit launches from
+      // not original carrier printed on the counter
+      // const carrier = this.getCarrierForAirUnit(name)
+
+      const carrier = this.getCarrierAirUnitLaunchedFrom(name)
 
       strikeBoxes = strikeBoxes.filter((box) => {
         const airUnitsInBox = this.boxModel.getAllAirUnitsInBox(box)
@@ -368,7 +377,6 @@ export default class Controller {
 
   setAirOpMoved(counterData) {
     if (GlobalGameState.sideWithInitiative === GlobalUnitsModel.Side.JAPAN) {
-      console.log("ARSE 1")
       counterData.airOpMoved = GlobalGameState.airOpJapan
     } else {
       counterData.airOpMoved = GlobalGameState.airOpUS
@@ -511,19 +519,11 @@ export default class Controller {
     const airUnits = Array.from(this.counters.values())
     const defenders = airUnits.filter((unit) => unit.constructor.name === "AirUnit" && unit.side === side)
 
-    let quack = new Array()
-    let units = new Array()
     for (const unit of defenders) {
       if (unit.aircraftUnit.moved) {
         continue // only want units that have not yet moved
       }
       const location = this.getAirUnitLocation(unit.name)
-
-      // TEST SHIT
-      // unit.location = location
-      // quack.push(unit)
-
-      // console.log("air unit:", unit.name, "-> location=", location)
       if (
         location.boxName.includes("RETURNING (2)") ||
         location.boxName.includes("RETURNING (1)") ||
@@ -892,8 +892,7 @@ export default class Controller {
 
   getStrikeGroupForBox(side, box) {
     if (side === GlobalUnitsModel.Side.US) {
-
-      const sg =  GlobalUnitsModel.usStrikeGroups.get(box)
+      const sg = GlobalUnitsModel.usStrikeGroups.get(box)
       return sg
     } else {
       return GlobalUnitsModel.jpStrikeGroups.get(box)
@@ -924,7 +923,7 @@ export default class Controller {
   setStrikeGroupLocation(id, location, side) {
     this.mapModel.setStrikeGroupLocation(id, location, side)
   }
-  
+
   removeStrikeGroupFromLocation(id, side) {
     this.mapModel.removeStrikeGroupFromLocation(id, side)
   }

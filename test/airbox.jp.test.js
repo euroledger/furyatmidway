@@ -145,7 +145,7 @@ describe("Japan Air Box tests", () => {
     expect(numZones).toEqual(4)
 
     numZones = controller.getNumberZonesInBox(GlobalUnitsModel.AirBox.JP_CD1_RETURN1)
-    expect(numZones).toEqual(6)
+    expect(numZones).toEqual(9)
 
     const haf1 = counters.get("Hiryu-A6M-2b-1")
     const haf2 = counters.get("Hiryu-A6M-2b-2")

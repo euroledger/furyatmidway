@@ -2,11 +2,11 @@ import React, { useState } from "react"
 import "../../board.css"
 import "./counter.css"
 
-function PopUpStrikeCounter({ counterData }) {
+function PopUpStrikeCounter({ pos, image }) {
   const [position, setPosition] = useState({
     initial: true,
-    left: counterData.position.left,
-    top: counterData.position.top,
+    left: pos.left,
+    top: pos.top,
   })
 
   return (
@@ -14,7 +14,7 @@ function PopUpStrikeCounter({ counterData }) {
       <div>
         <input
           type="image"
-          src={counterData.image}
+          src={image}
           style={{
             position: "absolute",
             width: 27,

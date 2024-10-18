@@ -505,7 +505,7 @@ const usMidwayStartPosition1 = {
 
 const usMidwayStartPosition2 = {
   left: "95%",
-  top: "29%",
+  top: "29.1%",
 }
 
 const usMidwayStartPosition3 = {

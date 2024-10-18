@@ -6,28 +6,33 @@ import BaseUnit from "./BaseUnit"
 function StrikeGroupPopUp({ strikeGroup, fleetUnits, popUpPosition, hex, side }) {
   let index = 0
   const fleetCounters = fleetUnits.map((fleetUnit) => {
-    let newFleetUnit = new BaseUnit(
-      fleetUnit.name,
-      fleetUnit.longName,
-      {
-        left: 3 + 30 * index,
-        top: 30
-      },
-      { x: 50, y: 68 }, // offsets
-      fleetUnit.image,
-      fleetUnit.width
-    )
+    // let newFleetUnit = new BaseUnit(
+    //   fleetUnit.name,
+    //   fleetUnit.longName,
+    //   {
+    //     left: 3 + 30 * index,
+    //     top: 30
+    //   },
+    //   { x: 50, y: 68 }, // offsets
+    //   fleetUnit.image,
+    //   fleetUnit.width
+    // )
+    let pos = {
+      left: 3 + 30 * index,
+      top: 30
+    }
     index += 1
-    return <PopUpStrikeCounter counterData={newFleetUnit}></PopUpStrikeCounter>
+    return <PopUpStrikeCounter pos={pos} image={fleetUnit.image}></PopUpStrikeCounter>
   })
   const sgCounters = strikeGroup.map((strikeGroupUnit) => {
-    if (!strikeGroupUnit.moved) {
-      return
-    }
-    strikeGroupUnit.position.left = 3 + 30 * index
-    strikeGroupUnit.position.top = 30
+    // strikeGroupUnit.position.left = 3 + 30 * index
+    // strikeGroupUnit.position.top = 30
     index += 1
-    return <PopUpStrikeCounter counterData={strikeGroupUnit}></PopUpStrikeCounter>
+    let pos = {
+      left: -25 + 30 * index,
+      top: 30
+    }
+    return <PopUpStrikeCounter pos={pos} image={strikeGroupUnit.image}></PopUpStrikeCounter>
   })
   const width = 40 + index * 30
 

@@ -41,21 +41,6 @@ function StrikeCounter({ setStrikeGroupPopup, currentUSHex, currentJapanHex, cou
     })
   }
 
-  function setJapanOffBoardPosition(position) {
-    setPosition({
-      initial: true,
-      left: position.left,
-      top: position.top,
-    })
-  }
-  function setUSOffBoardPosition(position) {
-    setPosition({
-      initial: true,
-      left: position.left,
-      top: position.top,
-    })
-  }
-
   function setUSPosition(hex) {
     setPosition({
       initial: false,
@@ -78,74 +63,78 @@ function StrikeCounter({ setStrikeGroupPopup, currentUSHex, currentJapanHex, cou
     hex = strikeGroupUpdate.position.currentHex
     // console.log("\t=>hex=", hex)
   }
-  // const locationOfStrikeGroup = controller.getStrikeGroupLocation(counterData.name, side)
+  // console.log("STRIKE GROUP", counterData.name, "location=", locationOfStrikeGroup )
 
-  // if (side === GlobalUnitsModel.Side.US && counterData.attacked) {
-  //   console.log("STRIKE GROUP", counterData.name, "HAS ATTACKED, location =", locationOfStrikeGroup)
-  // } else {
-  //   console.log("STRIKE GROUP", counterData.name, "HAS NOT ATTACKED, location =", locationOfStrikeGroup)
-  // }
-  // console.log("*********** UPDATE=", strikeGroupUpdate, "hex=", hex)
-  if (strikeGroupUpdate && strikeGroupUpdate.name != "" && counterData.name === strikeGroupUpdate.name) {
-    if (
-      hex === undefined &&
-      position.initial !== true &&
-      strikeGroupUpdate.position.left !== position.left &&
-      strikeGroupUpdate.position.top !== position.top
-    ) {
-      console.log("I am", strikeGroupUpdate.name, " -> STRIKE GROUP TO OFFBOARD UPDATE= ", strikeGroupUpdate)
+  function setJapanOffBoardPosition(position) {
+    setPosition({
+      initial: true,
+      left: position.left,
+      top: position.top,
+    })
+  }
+  function setUSOffBoardPosition(position) {
+    setPosition({
+      initial: true,
+      left: position.left,
+      top: position.top,
+    })
+  }
 
-      if (side === GlobalUnitsModel.Side.US) {
-        setUSOffBoardPosition(strikeGroupUpdate.position)
-       } else {
-        setJapanOffBoardPosition(strikeGroupUpdate.position)
-      }
+
+  if(
+    strikeGroupUpdate &&
+    hex != undefined &&
+    strikeGroupUpdate.name != "" &&
+    counterData.name === strikeGroupUpdate.name &&
+    ((strikeGroupUpdate.position.currentHex != undefined && position.currentHex.q !== hex.q) ||
+      position.currentHex.r !== hex.r)
+  ) {
+    console.log(
+      "I am",
+      strikeGroupUpdate.name,
+      " -> STRIKE GROUP UPDATE, moved= ",
+      strikeGroupUpdate.moved,
+      "attacked =",
+      strikeGroupUpdate.attacked
+    )
+
+    if (side === GlobalUnitsModel.Side.US) {
+      setUSPosition(hex)
     } else {
-      if (
-        (strikeGroupUpdate.position.currentHex !== undefined && position.currentHex.q !== hex.q) ||
-        (strikeGroupUpdate.position.currentHex !== undefined && position.currentHex.r !== hex.r)
-      ) {
-        console.log("I am", strikeGroupUpdate.name, " -> STRIKE NORMAL UPDATE= ", strikeGroupUpdate)
-
-        if (side === GlobalUnitsModel.Side.US) {
-          setUSPosition(hex)
-        } else {
-          setJapanPosition(hex)
-        }
-        let from, to
-        if (position.initial) {
-          from = HexCommand.OFFBOARD
-        } else {
-          from = { currentHex: position.currentHex }
-        }
-        to = { currentHex: hex }
-        const loading = strikeGroupUpdate.loading === false ? false : true
-        controller.viewEventHandler({
-          type: Controller.EventTypes.STRIKE_GROUP_MOVE,
-          data: {
-            initial: position.initial,
-            counterData,
-            from,
-            to,
-            side,
-            loading,
-            moved: true,
-            attacked: strikeGroupUpdate.attacked,
-          },
-        })
-      }
+      setJapanPosition(hex)
     }
+    let from, to
+    if (position.initial) {
+      from = HexCommand.OFFBOARD
+    } else {
+      from = { currentHex: position.currentHex }
+    }
+    to = { currentHex: hex }
+    const loading = strikeGroupUpdate.loading === false ? false : true
+    controller.viewEventHandler({
+      type: Controller.EventTypes.STRIKE_GROUP_MOVE,
+      data: {
+        initial: position.initial,
+        counterData,
+        from,
+        to,
+        side,
+        loading,
+        moved: true,
+        attacked: strikeGroupUpdate.attacked,
+      },
+    })
   }
 
   function setJapanRegions() {
     let jpRegion
 
-    // console.log(
-    //   "GlobalGameState.airOpJapan",
-    //   GlobalGameState.airOpJapan,
-    //   "counterData.airOpMoved=",
-    //   counterData.airOpMoved
-    // )
+    console.log(
+      "GlobalGameState.airOpJapan",
+      GlobalGameState.airOpJapan,
+      "counterData.airOpMoved=",
+      counterData.airOpMoved
+    )
     // Use 1AF
     if (counterData.airOpMoved !== undefined && GlobalGameState.airOpJapan !== counterData.airOpMoved) {
       // second air op for this SG, use movement allowance (3) and position of SG to determine regions
@@ -248,9 +237,11 @@ function StrikeCounter({ setStrikeGroupPopup, currentUSHex, currentJapanHex, cou
   const handleClick = (e) => {
     const sg = controller.getStrikeGroupForBox(side, counterData.box)
     if (sg.attacked) {
+      console.log("COMPUTER MAN HE SAY NO")
       return
     }
 
+    console.log("HEY")
     if (side === GlobalUnitsModel.Side.US) {
       setUSRegions()
     } else {
@@ -289,7 +280,6 @@ function StrikeCounter({ setStrikeGroupPopup, currentUSHex, currentJapanHex, cou
 
     // let from = { currentHex: position.currentHex }
     let from = HexCommand.OFFBOARD
-    console.log("CURRENT HEX=", currentHex)
     let to = { currentHex }
     if (side === GlobalUnitsModel.Side.US) {
       const hex = { q: currentUSHex.q, r: currentUSHex.r }
@@ -317,7 +307,7 @@ function StrikeCounter({ setStrikeGroupPopup, currentUSHex, currentJapanHex, cou
           currentUSHex.x += 6 * index
           currentUSHex.y -= 6 * index
         }
-        setUSPosition(() => currentUSHex)
+        setUSPosition(currentUSHex)
         if (position.initial) {
           from = HexCommand.OFFBOARD
         } else {
@@ -325,7 +315,7 @@ function StrikeCounter({ setStrikeGroupPopup, currentUSHex, currentJapanHex, cou
         }
         to = { currentHex: currentUSHex }
         setUSMapRegions([])
-        setCurrentHex(() => currentUSHex)
+        setCurrentHex(currentUSHex)
       }
     } else {
       const hex = { q: currentJapanHex.q, r: currentJapanHex.r }
@@ -337,7 +327,7 @@ function StrikeCounter({ setStrikeGroupPopup, currentUSHex, currentJapanHex, cou
           currentJapanHex.x += 6 * index
           currentJapanHex.y -= 6 * index
         }
-        setJapanPosition(() => currentJapanHex)
+        setJapanPosition(currentJapanHex)
         if (position.initial) {
           from = HexCommand.OFFBOARD
         } else {
@@ -346,9 +336,8 @@ function StrikeCounter({ setStrikeGroupPopup, currentUSHex, currentJapanHex, cou
         to = { currentHex: currentJapanHex }
       }
       setJapanMapRegions([])
-      setCurrentHex(() => currentJapanHex)
+      setCurrentHex(currentJapanHex)
     }
-    console.log("**** IMPORTANT FROM=", from)
 
     controller.viewEventHandler({
       type: Controller.EventTypes.STRIKE_GROUP_MOVE,
@@ -370,11 +359,11 @@ function StrikeCounter({ setStrikeGroupPopup, currentUSHex, currentJapanHex, cou
   const handleMouseEnter = () => {
     setIsMoveable(true)
     const sg = controller.getStrikeGroupForBox(side, counterData.box)
-    console.log("SG ", sg.name, "attacked=", sg.attacked)
     if (!sg.attacked) {
       if (side === GlobalUnitsModel.Side.JAPAN) {
         setJapanRegions()
       } else {
+        console.log("WOOO")
         setUSRegions()
       }
     }
@@ -404,8 +393,6 @@ function StrikeCounter({ setStrikeGroupPopup, currentUSHex, currentJapanHex, cou
       setUSMapRegions([])
     }
   }
-  // console.log("DISPLAY STRIKE GROUP", counterData.name, "position=", position)
-
   return (
     <>
       <div>

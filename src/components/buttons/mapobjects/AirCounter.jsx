@@ -62,7 +62,7 @@ function AirCounter({ getAirBox, setAirBox, counterData, side }) {
   const [theSide, setSide] = useState(side)
 
   const doUpdate = (update) => {
-    // console.log("I am ", counterData.name, " -> AIR UNIT UPDATE = ", update)
+    console.log("I am ", counterData.name, " -> AIR UNIT UPDATE = ", update)
 
     const unit = controller.getAirUnitInBox(update.boxName, update.index)
     if (unit) {
@@ -281,7 +281,7 @@ function AirCounter({ getAirBox, setAirBox, counterData, side }) {
     setAirBox({})
   }
 
-  const setBoxes =  (counterData, box) => {
+  const setBoxes = (counterData, box) => {
     if (box !== undefined && box.includes("CAP RETURNING")) {
       moveOrphanedCAPUnitsToEliminatedBox(counterData.side)
     }
@@ -319,7 +319,7 @@ function AirCounter({ getAirBox, setAirBox, counterData, side }) {
     e.preventDefault()
   }
   const zx = side === GlobalUnitsModel.Side.JAPAN ? 93 : 11
-  
+
   const transform =
     counterData.aircraftUnit.moved || counterData.aircraftUnit.airOpMoved !== undefined ? "rotate(45deg)" : ""
 

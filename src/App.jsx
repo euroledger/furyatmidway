@@ -636,8 +636,8 @@ export function App() {
     }
   }
 
-  const sg2 = GlobalUnitsModel.usStrikeGroups.get(GlobalUnitsModel.AirBox.US_STRIKE_BOX_1)
-  console.log("SG2=", sg2.name, "airOpMoved=", sg2.airOpMoved, "sg2.position=", sg2.position)
+  // const loc = GlobalInit.controller.getAirUnitLocation("Midway-F2A-3")
+  // console.log("Midway-F2A-3 LOCATION=",loc) 
   const Controls = () => {
     const { zoomIn, zoomOut, resetTransform } = useControls()
     let image = "/images/usaflag.jpg"
@@ -1028,8 +1028,8 @@ export function App() {
   // console.log("GlobalUnitsModel.usStrikeGroups=", GlobalUnitsModel.usStrikeGroups)
   function doInitiativeRoll(roll0, roll1) {
     // for testing QUACK
-    // doIntiativeRoll(GlobalInit.controller, 6, 1, true) // JAPAN initiative
-    doIntiativeRoll(GlobalInit.controller, 1, 6, true) // US initiative
+    doIntiativeRoll(GlobalInit.controller, 6, 1, true) // JAPAN initiative
+    // doIntiativeRoll(GlobalInit.controller, 1, 6, true) // US initiative
 
     // doIntiativeRoll(GlobalInit.controller, roll0, roll1)
     GlobalGameState.updateGlobalState()

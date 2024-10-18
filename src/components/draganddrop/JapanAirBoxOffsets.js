@@ -98,27 +98,39 @@ const JapanAirBoxOffsets = [
     offsets: [
       {
         left: 6.5,
-        top: 81.0,
+        top: 80.0,
       },
       {
         left: 8.3,
-        top: 83.9,
+        top: 82.9,
       },
       {
         left: 6.5,
-        top: 83.9,
+        top: 82.9,
       },
       {
         left: 8.3,
-        top: 81.0,
+        top: 80.0,
       },
       {
         left: 10.0,
-        top: 83.9,
+        top: 82.9,
       },
       {
         left: 10.0,
-        top: 81.0,
+        top: 80.0,
+      },
+        {
+        left: 6.5,
+        top: 85.8,
+      },
+      {
+        left: 8.3,
+        top: 85.8,
+      },
+      {
+        left: 10.0,
+        top: 85.8,
       },
     ],
   },
@@ -150,6 +162,18 @@ const JapanAirBoxOffsets = [
       {
         left: 10.0,
         top: 93.0,
+      },
+      {
+        left: 6.5,
+        top: 96.0,
+      },
+      {
+        left: 8.3,
+        top: 96.0,
+      },
+      {
+        left: 10.0,
+        top: 96.0,
       },
     ],
   },

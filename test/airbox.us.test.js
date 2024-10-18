@@ -158,7 +158,7 @@ describe("US Air Box tests", () => {
     expect(numZones).toEqual(4)
 
     numZones = controller.getNumberZonesInBox(GlobalUnitsModel.AirBox.US_TF16_RETURN1)
-    expect(numZones).toEqual(6)
+    expect(numZones).toEqual(8)
 
     const haf1 = counters.get("Hornet-F4F4-1")
     const haf2 = counters.get("Hornet-F4F4-2")
@@ -189,8 +189,8 @@ describe("US Air Box tests", () => {
     controller.addAirUnitToBox(GlobalUnitsModel.AirBox.US_TF16_RETURN1, 2, haf1)
     controller.addAirUnitToBox(GlobalUnitsModel.AirBox.US_TF16_RETURN1, 4, haf2)
     slots = controller.getAllFreeZonesInBox(GlobalUnitsModel.AirBox.US_TF16_RETURN1)
-    expect(slots.length).toEqual(4)
-    expect(slots).toEqual([ 0, 1, 3, 5 ])
+    expect(slots.length).toEqual(6)
+    expect(slots).toEqual([ 0, 1, 3, 5, 6, 7 ])
   })
 
   test("getUSEnabledAirBoxes returns correct zones for various game states", () => {
