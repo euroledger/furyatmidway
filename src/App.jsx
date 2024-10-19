@@ -636,8 +636,6 @@ export function App() {
     }
   }
 
-  // const loc = GlobalInit.controller.getAirUnitLocation("Midway-F2A-3")
-  // console.log("Midway-F2A-3 LOCATION=",loc) 
   const Controls = () => {
     const { zoomIn, zoomOut, resetTransform } = useControls()
     let image = "/images/usaflag.jpg"
@@ -739,7 +737,7 @@ export function App() {
               className="navbar-text"
               style={{
                 marginLeft: "5px",
-                marginTop: "10px",
+                marginTop: "15px",
                 marginRight: "35px",
               }}
             >
@@ -1028,10 +1026,10 @@ export function App() {
   // console.log("GlobalUnitsModel.usStrikeGroups=", GlobalUnitsModel.usStrikeGroups)
   function doInitiativeRoll(roll0, roll1) {
     // for testing QUACK
-    doIntiativeRoll(GlobalInit.controller, 6, 1, true) // JAPAN initiative
+    // doIntiativeRoll(GlobalInit.controller, 6, 1, true) // JAPAN initiative
     // doIntiativeRoll(GlobalInit.controller, 1, 6, true) // US initiative
 
-    // doIntiativeRoll(GlobalInit.controller, roll0, roll1)
+    doIntiativeRoll(GlobalInit.controller, roll0, roll1)
     GlobalGameState.updateGlobalState()
   }
 

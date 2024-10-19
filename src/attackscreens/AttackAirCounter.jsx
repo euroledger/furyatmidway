@@ -12,6 +12,8 @@ function AirAttackCounter({
   setAttackTargetsSelected,
   attackAirCounterUpdate,
 }) {
+  const [zIndex, setZindex] = useState(10)
+
   const onDrag = () => {}
 
   const leftStr = 40 + index * 10
@@ -143,7 +145,6 @@ function AirAttackCounter({
   }
  
 
-  const [zIndex, setZindex] = useState(10)
   return (
     <div>
       <input

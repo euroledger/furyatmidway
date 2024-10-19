@@ -140,39 +140,39 @@ const JapanAirBoxOffsets = [
     carriers: [GlobalUnitsModel.Carrier.AKAGI, GlobalUnitsModel.Carrier.KAGA],
     offsets: [
       {
-        left: 6.5,
+        left: 6.51,
         top: 90.0,
       },
       {
-        left: 8.3,
+        left: 8.31,
         top: 90.0,
       },
       {
-        left: 6.5,
+        left: 6.51,
         top: 93.0,
       },
       {
-        left: 8.3,
+        left: 8.31,
         top: 93.0,
       },
       {
-        left: 10.0,
+        left: 10.1,
         top: 90.0,
       },
       {
-        left: 10.0,
+        left: 10.01,
         top: 93.0,
       },
       {
-        left: 6.5,
+        left: 6.51,
         top: 96.0,
       },
       {
-        left: 8.3,
+        left: 8.31,
         top: 96.0,
       },
       {
-        left: 10.0,
+        left: 10.01,
         top: 96.0,
       },
     ],
@@ -346,27 +346,27 @@ const JapanAirBoxOffsets = [
     carriers: [GlobalUnitsModel.Carrier.HIRYU, GlobalUnitsModel.Carrier.SORYU],
     offsets: [
       {
-        left: 26.3,
+        left: 26.31,
         top: 90.0,
       },
       {
-        left: 28.2,
+        left: 28.21,
         top: 92.9,
       },
       {
-        left: 26.3,
+        left: 26.31,
         top: 92.9,
       },
       {
-        left: 28.2,
+        left: 28.21,
         top: 90.0,
       },
       {
-        left: 30.1,
+        left: 30.11,
         top: 92.9,
       },
       {
-        left: 30.1,
+        left: 30.11,
         top: 90.0,
       },
     ],

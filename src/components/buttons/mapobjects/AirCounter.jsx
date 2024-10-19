@@ -62,8 +62,6 @@ function AirCounter({ getAirBox, setAirBox, counterData, side }) {
   const [theSide, setSide] = useState(side)
 
   const doUpdate = (update) => {
-    console.log("I am ", counterData.name, " -> AIR UNIT UPDATE = ", update)
-
     const unit = controller.getAirUnitInBox(update.boxName, update.index)
     if (unit) {
       alert(`ERROR unit already there -> ${update.boxName}, index ${update.index}`)
@@ -130,15 +128,19 @@ function AirCounter({ getAirBox, setAirBox, counterData, side }) {
     position.left !== airUnitUpdate.position.left + "%" &&
     position.top !== airUnitUpdate.position.top + "%"
   ) {
+    console.log("I am ", counterData.name," -> AIR UNIT UPDATE = ", testUpdate)
+
     doUpdate(airUnitUpdate)
   }
 
   if (
     counterData.name === testUpdate.name &&
     testUpdate.position != undefined &&
-    position.left !== testUpdate.position.left + "%" &&
-    position.top !== testUpdate.position.top + "%"
+    (position.left !== testUpdate.position.left + "%" &&
+    position.top !== testUpdate.position.top + "%")
   ) {
+    console.log("I am ", counterData.name," -> AIR UNIT UPDATE = ", testUpdate)
+
     doUpdate(testUpdate)
   }
 

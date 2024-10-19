@@ -338,23 +338,26 @@ export function doStrikeBoxUS(controller, name, side) {
     const return2Box = controller.getReturn2AirBoxForNamedTaskForce(side, tf)
 
     destArray.push(return2Box)
-    const otherTF = controller.getOtherTaskForce(tf, side)
-    const carriersInOtherTaskForce = controller.getCarriersInOtherTF(otherTF, side)
-    for (let carrier of carriersInOtherTaskForce) {
-      if (carrier.hits < 2) {
-        const return2BoxOtherTF = controller.getReturn2AirBoxForNamedTaskForce(side, otherTF)
-        destArray.push(return2BoxOtherTF)
-        break
+    // Do not allow other TF return boxes for Midway aircraft
+    if (tf !== GlobalUnitsModel.TaskForce.MIDWAY) {
+      const otherTF = controller.getOtherTaskForce(tf, side)
+      const carriersInOtherTaskForce = controller.getCarriersInOtherTF(otherTF, side)
+      for (let carrier of carriersInOtherTaskForce) {
+        if (carrier.hits < 2) {
+          const return2BoxOtherTF = controller.getReturn2AirBoxForNamedTaskForce(side, otherTF)
+          destArray.push(return2BoxOtherTF)
+          break
+        }
       }
-    }
-    const locationOfStrikeGroup = controller.getStrikeGroupLocation(strikeGroup.name, side)
-    if (
-      distanceBetweenHexes(locationOfStrikeGroup.currentHex, Controller.MIDWAY_HEX.currentHex) <= 5 &&
-      !controller.isMidwayBaseDestroyed()
-    ) {
-      const midwayTF = GlobalUnitsModel.TaskForce.MIDWAY
-      const return2BoxMidway = controller.getReturn2AirBoxForNamedTaskForce(side, midwayTF)
-      destArray.push(return2BoxMidway)
+      const locationOfStrikeGroup = controller.getStrikeGroupLocation(strikeGroup.name, side)
+      if (
+        distanceBetweenHexes(locationOfStrikeGroup.currentHex, Controller.MIDWAY_HEX.currentHex) <= 5 &&
+        !controller.isMidwayBaseDestroyed()
+      ) {
+        const midwayTF = GlobalUnitsModel.TaskForce.MIDWAY
+        const return2BoxMidway = controller.getReturn2AirBoxForNamedTaskForce(side, midwayTF)
+        destArray.push(return2BoxMidway)
+      }
     }
   }
   controller.setValidAirUnitDestinations(name, destArray)

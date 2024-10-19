@@ -33,7 +33,6 @@ async function loadHandler({
     logItems,
   } = loadGameStateForId(controller, id)
   for (const update of airUpdates) {
-    console.log("AIR UNIT UPDATE->", update)
     await delay(2)
     setAirUnitUpdate(update)
     await delay(2)

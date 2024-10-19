@@ -12,7 +12,11 @@ import JapanAirBoxOffsets from "../components/draganddrop/JapanAirBoxOffsets"
 import USAirBoxOffsets from "../components/draganddrop/USAirBoxOffsets"
 import { airUnitDataJapan, airUnitDataUS, airUnitsToStrikeGroupsUS, createStrikeGroupUpdate } from "../AirUnitTestData"
 import GlobalUnitsModel from "../model/GlobalUnitsModel"
-import { getValidJapanDestinationsCAP, getValidUSDestinationsCAP, setValidDestinationBoxes } from "../controller/AirOperationsHandler"
+import {
+  getValidJapanDestinationsCAP,
+  getValidUSDestinationsCAP,
+  setValidDestinationBoxes,
+} from "../controller/AirOperationsHandler"
 
 const DELAY = 1
 const MIDWAY_ATTACK = true
@@ -23,59 +27,68 @@ function delay(ms) {
   })
 }
 
-async function moveAttackingStrikeUnitsToReturnBoxes(setTestUpdate, side) {
-  console.log("side with init=",GlobalGameState.sideWithInitiative)
+async function moveAirUnit(unit, setTestUpdate) {
+  const destBoxes = GlobalInit.controller.getValidAirUnitDestinations(unit.name)
+  if (destBoxes.length === 0) {
+    // this can only happen if all carriers sunk, leave for now
+    return
+  }
+  // go to first available destination
+  let update = {
+    name: unit.name,
+    boxName: destBoxes[0],
+  }
 
+  const position1 =
+    GlobalGameState.sideWithInitiative === GlobalUnitsModel.Side.JAPAN
+      ? JapanAirBoxOffsets.find((box) => box.name === update.boxName)
+      : USAirBoxOffsets.find((box) => box.name === update.boxName)
+  update.index = GlobalInit.controller.getFirstAvailableZone(update.boxName)
+  if (position1 === undefined) {
+    console.log("ERROR: position1 undefined in return strike units")
+    return
+  }
+  update.position = position1.offsets[update.index]
+
+  await delay(1)
+
+  setTestUpdate(update)
+  await delay(1)
+}
+async function moveUnitsFromReturnBoxes(setTestUpdate, side) {
+  const airUnits = GlobalInit.controller.getAllAirUnits(side)
+
+  for (const unit of airUnits) {
+    if (unit.aircraftUnit.moved) {
+      continue // only want units that have not yet moved
+    }
+    const location = GlobalInit.controller.getAirUnitLocation(unit.name)
+    if (location.boxName.includes("RETURNING (2)") || location.boxName.includes("RETURNING (1)")) {
+      setValidDestinationBoxes(GlobalInit.controller, unit.name, unit.side)
+      await moveAirUnit(unit, setTestUpdate)
+    }
+  }
+}
+async function moveAttackingStrikeUnitsToReturnBoxes(setTestUpdate, side) {
   let s = side ?? GlobalGameState.sideWithInitiative
   let strikeUnitsReturning = GlobalInit.controller.getAirUnitsInStrikeBoxesReadyToReturn(s)
 
   for (const unit of strikeUnitsReturning) {
     setValidDestinationBoxes(GlobalInit.controller, unit.name, unit.side)
 
-    const destBoxes = GlobalInit.controller.getValidAirUnitDestinations(unit.name)
-    if (destBoxes.length === 0) {
-      // this can only happen if all carriers sunk, leave for now
-    }
-
-    // go to first available destination
-    let update = {
-      name: unit.name,
-      boxName: destBoxes[0],
-    }
-
-    const position1 =
-      GlobalGameState.sideWithInitiative === GlobalUnitsModel.Side.JAPAN
-        ? JapanAirBoxOffsets.find((box) => box.name === update.boxName)
-        : USAirBoxOffsets.find((box) => box.name === update.boxName)
-    update.index = GlobalInit.controller.getFirstAvailableZone(update.boxName)
-    console.log("position1 = ", position1, "box name=", update.boxName)
-    if (position1 === undefined) {
-      console.log("ERROR: position1 undefined in return strike units")
-      continue
-    }
-    update.position = position1.offsets[update.index]
-
-    setTestUpdate(update)
-    await delay(5)
+    await moveAirUnit(unit, setTestUpdate)
   }
 }
 async function moveCAPUnitsFromReturnBoxToCarrier(side, setTestUpdate) {
   const capUnitsReturning = GlobalInit.controller.getAllCAPDefendersInCAPReturnBoxes(side)
 
-  console.log("******* capUnitsReturning=",capUnitsReturning)
   for (const unit of capUnitsReturning) {
     const parentCarrier = GlobalInit.controller.getCarrierForAirUnit(unit.name)
 
-    let destinationsArray = side === GlobalUnitsModel.Side.JAPAN ? getValidJapanDestinationsCAP(
-      GlobalInit.controller,
-      parentCarrier,
-      side
-    ):
-    getValidUSDestinationsCAP(
-      GlobalInit.controller,
-      parentCarrier,
-      side
-    )
+    let destinationsArray =
+      side === GlobalUnitsModel.Side.JAPAN
+        ? getValidJapanDestinationsCAP(GlobalInit.controller, parentCarrier, side)
+        : getValidUSDestinationsCAP(GlobalInit.controller, parentCarrier, side)
     // go to first available destination
     let update = {
       name: unit.name,
@@ -83,10 +96,11 @@ async function moveCAPUnitsFromReturnBoxToCarrier(side, setTestUpdate) {
     }
 
     update.index = GlobalInit.controller.getFirstAvailableZone(update.boxName)
-    let position1 = side === GlobalUnitsModel.Side.JAPAN ?
-      JapanAirBoxOffsets.find((box) => box.name === update.boxName) :
-      USAirBoxOffsets.find((box) => box.name === update.boxName)
-      
+    let position1 =
+      side === GlobalUnitsModel.Side.JAPAN
+        ? JapanAirBoxOffsets.find((box) => box.name === update.boxName)
+        : USAirBoxOffsets.find((box) => box.name === update.boxName)
+
     console.log("position1 = ", position1, "box name=", update.boxName)
     if (position1 === undefined) {
       // orphaned CAP Unit, ignore
@@ -98,7 +112,7 @@ async function moveCAPUnitsFromReturnBoxToCarrier(side, setTestUpdate) {
     await delay(5)
   }
 }
-async function setupUSAirStrike(strikeGroup, setStrikeGroupUpdate) {
+async function moveUSStrikeGroup(strikeGroup, setStrikeGroupUpdate) {
   await delay(100)
   const usStrikeGroupMove = createStrikeGroupUpdate(strikeGroup, 2, 2)
   setStrikeGroupUpdate(usStrikeGroupMove)
@@ -106,7 +120,7 @@ async function setupUSAirStrike(strikeGroup, setStrikeGroupUpdate) {
   await delay(DELAY)
 }
 
-async function setupJapanAirStrike(strikeGroup, setStrikeGroupUpdate, q, r) {
+async function moveJapanStrikeGroup(strikeGroup, setStrikeGroupUpdate, q, r) {
   await delay(100)
   const jpStrikeGroupMove = createStrikeGroupUpdate(strikeGroup, q, r)
   setStrikeGroupUpdate(jpStrikeGroupMove)
@@ -114,10 +128,12 @@ async function setupJapanAirStrike(strikeGroup, setStrikeGroupUpdate, q, r) {
   await delay(DELAY)
 }
 
-async function doTargetSelection() {
+async function doTargetSelection(defendingSide) {
   if (GlobalGameState.gamePhase !== GlobalGameState.PHASE.TARGET_DETERMINATION) {
+    console.log("BARK!!!!!! CANNOT DO TARGET SELECTION, game phase=", GlobalGameState.gamePhase)
     return
   }
+
   // TARGET SELECTION SCREEN
   GlobalGameState.closePanel = false
 
@@ -125,9 +141,16 @@ async function doTargetSelection() {
 
   let oneOrZero = Math.random() >= 0.5 ? 1 : 0
 
-  GlobalGameState.testTarget =
-    oneOrZero === 1 ? GlobalUnitsModel.TaskForce.CARRIER_DIV_1 : GlobalUnitsModel.TaskForce.CARRIER_DIV_2
+  if (defendingSide === GlobalUnitsModel.Side.JAPAN) {
+    GlobalGameState.testTarget =
+      oneOrZero === 1 ? GlobalUnitsModel.TaskForce.CARRIER_DIV_1 : GlobalUnitsModel.TaskForce.CARRIER_DIV_2
+  } else {
+    GlobalGameState.testTarget =
+      oneOrZero === 1 ? GlobalUnitsModel.TaskForce.TASK_FORCE_16 : GlobalUnitsModel.TaskForce.TASK_FORCE_17
+  }
   GlobalGameState.updateGlobalState()
+
+  console.log("SELECTED TARGET =", GlobalGameState.testTarget)
 
   await delay(500)
 
@@ -274,16 +297,25 @@ async function doAntiAircraftDamage() {
       GlobalGameState.updateGlobalState()
       await delay(1000)
     }
+
+    GlobalGameState.closePanel = true
+    GlobalGameState.updateGlobalState()
   }
+
+  console.log("---------------> QUACK 100 CHANGING STATE old State = ", GlobalGameState.gamePhase)
 
   await delay(1000)
   GlobalGameState.closePanel = true
   GlobalGameState.rollDice = false
+  await delay(500)
+  console.log("----------------> QUACK 200 CHANGING STATE New State = ", GlobalGameState.gamePhase)
+
   GlobalGameState.updateGlobalState()
 }
 
-async function doCarrierTargetSelection(setAttackAirCounterUpdate) {
+async function doCarrierTargetSelection(setAttackAirCounterUpdate, sideDefending) {
   if (GlobalGameState.gamePhase !== GlobalGameState.PHASE.ATTACK_TARGET_SELECTION) {
+    console.log("RETURN ARSE !!!!!!!!!!!!!!!! state=", GlobalGameState.gamePhase)
     return
   }
 
@@ -294,29 +326,26 @@ async function doCarrierTargetSelection(setAttackAirCounterUpdate) {
 
   const strikeUnits = GlobalInit.controller.getAttackingStrikeUnits(true)
 
+  let oneOrZero = Math.random() >= 0.5 ? 1 : 0
+  // Assures all carrier units attack the same target
+  // which simplifies the test
   for (let unit of strikeUnits) {
     let attackAirCounterUpdate
     await delay(300)
     GlobalGameState.testCarrierSelection = -1
     GlobalGameState.updateGlobalState()
     await delay(100)
-    let oneOrZero = Math.random() >= 0.5 ? 1 : 0
-    const carriersInTF = GlobalInit.controller.getAllCarriersInTaskForce(
-      GlobalGameState.taskForceTarget,
-      GlobalUnitsModel.Side.JAPAN
-    )
-    // oneOrZero= 0 // TEST QUACK TAKE THIS OUT
+    const carriersInTF = GlobalInit.controller.getAllCarriersInTaskForce(GlobalGameState.taskForceTarget, sideDefending)
     const carrier = carriersInTF[oneOrZero]
-
     const uuid = Date.now()
     attackAirCounterUpdate = {
       unit,
       carrier: carrier.name,
       id: oneOrZero + 1,
-      side: GlobalUnitsModel.Side.US,
+      side: GlobalGameState.sideWithInitiative,
       uuid,
     }
-
+    console.log("CARRIER TARGET SELECTION: attackAirCounterUpdate=", attackAirCounterUpdate)
     setAttackAirCounterUpdate(attackAirCounterUpdate)
     await delay(10)
 
@@ -324,6 +353,7 @@ async function doCarrierTargetSelection(setAttackAirCounterUpdate) {
     await delay(1000)
   }
   await delay(1000)
+  console.log("CLOSE PANEL CARRIER TARGET SELECTION")
   GlobalGameState.closePanel = true
   GlobalGameState.rollDice = false
   GlobalGameState.updateGlobalState()
@@ -379,7 +409,7 @@ async function doCarrierDamage() {
 }
 
 async function doAirStrike(defendingSide, setAttackAirCounterUpdate) {
-  await doTargetSelection()
+  await doTargetSelection(defendingSide)
 
   await doCAPInterception(defendingSide)
 
@@ -393,11 +423,69 @@ async function doAirStrike(defendingSide, setAttackAirCounterUpdate) {
 
   await doAntiAircraftDamage()
 
-  await doCarrierTargetSelection(setAttackAirCounterUpdate)
+  if (GlobalGameState.gamePhase === GlobalGameState.PHASE.AIR_OPERATIONS) {
+    // no attacking aircraft left
+    return
+  }
+  await doCarrierTargetSelection(setAttackAirCounterUpdate, defendingSide)
 
   await doAttackResolution()
 
   await doCarrierDamage()
+}
+
+async function setupJapanAirStrikes(setTestUpdate) {
+  // 1. Get all fighters on flight decks
+  const fighters = GlobalInit.controller.getAllUnitsOnJapaneseFlightDecks(true)
+
+  // 2. Get all attack aircraft on flight decks
+  const attackAircraft = GlobalInit.controller.getAllUnitsOnJapaneseFlightDecks(false)
+
+  // 3. Create two strike groups from above units, allocate attack unit then fighter alternatively
+  const strikeUnits1 = new Array()
+  const strikeUnits2 = new Array()
+  const boxName1 = GlobalUnitsModel.AirBox.JP_STRIKE_BOX_0
+  const boxName2 = GlobalUnitsModel.AirBox.JP_STRIKE_BOX_2
+
+  for (let i = 0; i < attackAircraft.length; i++) {
+    if (i % 2 == 0) {
+      strikeUnits1.push(attackAircraft[i])
+    } else {
+      strikeUnits2.push(attackAircraft[i])
+    }
+  }
+  for (let i = 0; i < fighters.length; i++) {
+    if (i % 2 == 0) {
+      strikeUnits1.push(fighters[i])
+    } else {
+      strikeUnits2.push(fighters[i])
+    }
+  }
+
+  for (const unit of strikeUnits1) {
+    let update = {
+      name: unit.name,
+      boxName: boxName1,
+    }
+    update.index = GlobalInit.controller.getFirstAvailableZone(update.boxName)
+
+    let position1 = JapanAirBoxOffsets.find((box) => box.name === update.boxName)
+    update.position = position1.offsets[update.index]
+    setTestUpdate(update)
+    await delay(DELAY)
+  }
+  for (const unit of strikeUnits2) {
+    let update = {
+      name: unit.name,
+      boxName: boxName2,
+    }
+    update.index = GlobalInit.controller.getFirstAvailableZone(update.boxName)
+
+    let position1 = JapanAirBoxOffsets.find((box) => box.name === update.boxName)
+    update.position = position1.offsets[update.index]
+    setTestUpdate(update)
+    await delay(DELAY)
+  }
 }
 
 async function doMidwayAttack(nextAction, e, setTestUpdate, setStrikeGroupUpdate) {
@@ -437,23 +525,20 @@ async function doMidwayAttack(nextAction, e, setTestUpdate, setStrikeGroupUpdate
     let position1 = JapanAirBoxOffsets.find((box) => box.name === update.boxName)
 
     update.position = position1.offsets[update.index]
-    console.log("Send Air Unit update:", update)
     setTestUpdate(update)
 
     await delay(DELAY)
   }
 
   // FIRST AIR OP - MOVE STRIKE GROUP OUT TO SEA
-  await setupJapanAirStrike("JP-SG1", setStrikeGroupUpdate, 4, 2)
+  await moveJapanStrikeGroup("JP-SG1", setStrikeGroupUpdate, 4, 2)
   await nextAction(e)
 
   // SECOND AIR OP - MOVE STRIKE GROUP TO MIDWAY
   await delay(DELAY)
-  await setupJapanAirStrike("JP-SG1", setStrikeGroupUpdate, 6, 3)
+  await moveJapanStrikeGroup("JP-SG1", setStrikeGroupUpdate, 6, 3)
 
-  console.log("AIR STRIKE BEGIN")
   await doAirStrike(GlobalUnitsModel.Side.US)
-  console.log("AIR STRIKE END")
 
   await delay(1000)
   await moveCAPUnitsFromReturnBoxToCarrier(GlobalUnitsModel.Side.US, setTestUpdate)
@@ -545,71 +630,109 @@ const UITester = async ({
   nextAction(e)
 
   if (GlobalGameState.midwayAttackDeclaration) {
-    doMidwayAttack(nextAction, e, setTestUpdate, setStrikeGroupUpdate)
+    await doMidwayAttack(nextAction, e, setTestUpdate, setStrikeGroupUpdate)
+    await delay(DELAY)
+    nextAction(e)
   }
-  // await delay(DELAY)
-  // nextAction(e)
-  // await delay(DELAY)
-  // nextAction(e)
 
-  // // Set dice roll automatically -> US initiative
-  // doInitiativeRoll(2, 3)
+  await delay(DELAY)
+  nextAction(e)
 
-  // nextAction(e)
+  await nextAction(e)
+  await delay(DELAY)
 
-  // // Allocate Air Units to Strike Boxes
-  // for (const unit of airUnitsToStrikeGroupsUS) {
-  //   update = calcStrikeDataUS(unit, GlobalInit.controller)
-  //   if (!update) {
-  //     continue
-  //   }
-  //   update.index = GlobalInit.controller.getFirstAvailableZone(update.boxName)
+  // Set dice roll automatically -> US initiative
+  doInitiativeRoll(1, 6)
+  await nextAction(e)
 
-  //   let position1 = USAirBoxOffsets.find((box) => box.name === update.boxName)
+  // Allocate Air Units to Strike Boxes
+  for (const unit of airUnitsToStrikeGroupsUS) {
+    update = calcStrikeDataUS(unit, GlobalInit.controller)
+    if (!update) {
+      continue
+    }
+    update.index = GlobalInit.controller.getFirstAvailableZone(update.boxName)
 
-  //   update.position = position1.offsets[update.index]
-  //   // console.log("Send Air Unit update:", update)
-  //   setTestUpdate(update)
+    let position1 = USAirBoxOffsets.find((box) => box.name === update.boxName)
 
-  //   await delay(DELAY)
-  //   if (update.nextAction) {
-  //     nextAction(e)
-  //   }
-  // }
+    update.position = position1.offsets[update.index]
+    // console.log("Send Air Unit update:", update)
+    setTestUpdate(update)
 
-  // await setupUSAirStrike("US-SG1", setStrikeGroupUpdate)
-  // await doAirStrike(GlobalUnitsModel.Side.JAPAN, setAttackAirCounterUpdate)
+    await delay(DELAY)
+    if (update.nextAction) {
+      nextAction(e)
+    }
+  }
 
-  // await delay(10)
+  await moveUSStrikeGroup("US-SG1", setStrikeGroupUpdate)
+  await doAirStrike(GlobalUnitsModel.Side.JAPAN, setAttackAirCounterUpdate)
 
-  // await setupUSAirStrike("US-SG2", setStrikeGroupUpdate)
-  // await doAirStrike( GlobalUnitsModel.Side.JAPAN, setAttackAirCounterUpdate)
+  await delay(10)
 
-  // await delay(10)
+  await moveUSStrikeGroup("US-SG2", setStrikeGroupUpdate)
+  await doAirStrike(GlobalUnitsModel.Side.JAPAN, setAttackAirCounterUpdate)
 
-  // await setupUSAirStrike("US-SG3", setStrikeGroupUpdate)
-  // await doAirStrike( GlobalUnitsModel.Side.JAPAN, setAttackAirCounterUpdate)
+  await delay(10)
 
-  // await delay(1000)
+  await moveUSStrikeGroup("US-SG3", setStrikeGroupUpdate)
+  await doAirStrike(GlobalUnitsModel.Side.JAPAN, setAttackAirCounterUpdate)
+
+  await delay(1000)
 
   // // We need to do this in the UI tester because this is a manual (not automated) operation
   // // reason being that sometimes there is a choice for the player
-  // console.log("MOVE CAP UNITS BACK TO CARRIER")
-  // await moveCAPUnitsFromReturnBoxToCarrier(GlobalUnitsModel.Side.JAPAN, setTestUpdate)
+  console.log("MOVE CAP UNITS BACK TO CARRIER")
+  await moveCAPUnitsFromReturnBoxToCarrier(GlobalUnitsModel.Side.JAPAN, setTestUpdate)
 
-  // console.log("MOVE STRIKE UNITS TO RETURN BOXES")
-  // // move strike units that have attacked to return boxes
-  // await moveAttackingStrikeUnitsToReturnBoxes(setTestUpdate)
+  console.log("MOVE STRIKE UNITS TO RETURN BOXES")
+  // move strike units that have attacked to return boxes
+  await moveAttackingStrikeUnitsToReturnBoxes(setTestUpdate)
 
-  // GlobalGameState.closePanel = false
-  // await delay(100)
-  // GlobalGameState.closePanel = true // in case eliminated air units are on display
+  GlobalGameState.closePanel = false
+  await delay(100)
+  GlobalGameState.closePanel = true // in case eliminated air units are on display
 
-  // // doInitiativeRoll(3, 2)
-  // // await delay(1000)
-  // // nextAction(e) // go from tidy up to initiative determination
-  // // console.log("GlobalGameState.sideWithInitiative=",GlobalGameState.sideWithInitiative)
-  // // console.log("Now allocate Japan Air Units to strike boxes")
+  nextAction(e) // -> AIR OPERATIONS TIDY UP
+  await delay(1)
+
+  nextAction(e) // -> INITIATIVE DETERMINATIOMN
+  await delay(1)
+
+  doInitiativeRoll(6, 1) // GIVE JAPAN NEXT AIR OP
+  nextAction(e) // -> INITIATIVE DETERMINATION
+  await delay(10)
+  await setupJapanAirStrikes(setTestUpdate)
+
+  await moveJapanStrikeGroup("JP-SG1", setStrikeGroupUpdate, 4, 1)
+  await doAirStrike(GlobalUnitsModel.Side.US, setAttackAirCounterUpdate)
+  await delay(1)
+
+  await moveJapanStrikeGroup("JP-SG3", setStrikeGroupUpdate, 4, 1)
+  await doAirStrike(GlobalUnitsModel.Side.US, setAttackAirCounterUpdate)
+
+  await delay(1000)
+
+  // // We need to do this in the UI tester because this is a manual (not automated) operation
+  // // reason being that sometimes there is a choice for the player
+  console.log("MOVE US CAP UNITS BACK TO CARRIER")
+  await moveCAPUnitsFromReturnBoxToCarrier(GlobalUnitsModel.Side.US, setTestUpdate)
+
+  console.log("MOVE STRIKE UNITS TO RETURN BOXES")
+  // move strike units that have attacked to return boxes
+  await moveAttackingStrikeUnitsToReturnBoxes(setTestUpdate)
+
+  await moveUnitsFromReturnBoxes(setTestUpdate, GlobalUnitsModel.Side.JAPAN)
+
+  GlobalGameState.closePanel = false
+  await delay(100)
+  GlobalGameState.closePanel = true // in case eliminated air units are on display
+
+  // nextAction(e) // -> AIR OPERATIONS TIDY UP
+  // await delay(1)
+
+  // nextAction(e) // -> INITIATIVE DETERMINATIOMN
+  // await delay(1)
 }
 
 export default UITester

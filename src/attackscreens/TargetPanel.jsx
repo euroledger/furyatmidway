@@ -17,6 +17,12 @@ export function TargetHeaders({ controller, setTargetSelected, setTargetDetermin
     if (GlobalGameState.testTarget === GlobalUnitsModel.TaskForce.CARRIER_DIV_2) {
       button2Ref.current.click(GlobalGameState.testTarget)
     }
+    if (GlobalGameState.testTarget === GlobalUnitsModel.TaskForce.TASK_FORCE_16) {
+      button1Ref.current.click(GlobalGameState.testTarget)
+    }
+    if (GlobalGameState.testTarget === GlobalUnitsModel.TaskForce.TASK_FORCE_17) {
+      button2Ref.current.click(GlobalGameState.testTarget)
+    }
   }, [GlobalGameState.testTarget])
 
   const handleClick = (target) => {

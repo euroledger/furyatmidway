@@ -183,8 +183,10 @@ function decrementAirOpsPoints() {
   GlobalGameState.updateGlobalState()
 }
 
-async function midwayTidyUp(setJapanStrikePanelEnabled, setUSMapRegions) {
+async function midwayTidyUp(setJapanStrikePanelEnabled, setUSMapRegions, setStrikeGroupUpdate) {
   // moveCAPtoReturnBox(GlobalInit.controller, capAirUnits)
+  await resetStrikeGroups(GlobalInit.controller, GlobalGameState.sideWithInitiative, setStrikeGroupUpdate)
+
   await GlobalInit.controller.setAllUnitsToNotMoved()
 
   GlobalGameState.airOperationPoints.japan = 0
@@ -209,7 +211,6 @@ async function tidyUp(setAirUnitUpdate, setStrikeGroupUpdate) {
 }
 
 export async function endOfAirOperation(side, capAirUnits, setAirUnitUpdate, setEliminatedUnitsPanelShow) {
-  console.log("MOVE CAP TO RETURN BOX........")
   await moveCAPtoReturnBox(GlobalInit.controller, capAirUnits, setAirUnitUpdate)
   const anySGsNotMoved = GlobalInit.controller.getStrikeGroupsNotMoved2(GlobalGameState.sideWithInitiative)
 
@@ -240,86 +241,6 @@ export async function endOfAirOperation(side, capAirUnits, setAirUnitUpdate, set
   }
   return false
 }
-
-// async function airOperationsHandler({
-//   setEnabledJapanBoxes,
-//   setEnabledUSBoxes,
-//   setJapanStrikePanelEnabled,
-//   setUsStrikePanelEnabled,
-//   sideWithInitiative,
-//   setAirUnitUpdate,
-//   setEliminatedUnitsPanelShow,
-//   capAirUnits,
-// }) {
-//   GlobalGameState.phaseCompleted = false
-//   if (GlobalGameState.sideWithInitiative === GlobalUnitsModel.Side.JAPAN) {
-//     console.log("CHECK JAPAN AIR STUFF")
-//     const enabledBoxes = getJapanEnabledAirBoxes(sideWithInitiative)
-//     setEnabledJapanBoxes(() => enabledBoxes)
-//     setEnabledUSBoxes()
-//     setJapanStrikePanelEnabled(true)
-//     setUsStrikePanelEnabled(false)
-//     if (GlobalGameState.attackingStrikeGroup) {
-//       GlobalGameState.attackingStrikeGroup.attacked = true
-//       const attackingSG = GlobalGameState.attackingStrikeGroup
-//       attackingSG.attacked = true
-//       attackingSG.airOpAttacked = GlobalGameState.airOpJapan
-//     }
-
-//     if (
-//       await endOfAirOperation(GlobalUnitsModel.Side.JAPAN, capAirUnits, setAirUnitUpdate, setEliminatedUnitsPanelShow)
-//     ) {
-//       GlobalGameState.phaseCompleted = true
-
-//       await GlobalInit.controller.setAllUnitsToNotMoved()
-//       decrementAirOpsPoints()
-//       if (GlobalGameState.gamePhase === GlobalGameState.PHASE.MIDWAY_ATTACK) {
-//         if (GlobalGameState.midwayAirOp === 1) {
-//           GlobalGameState.midwayAirOp = 2
-//           GlobalGameState.airOperationPoints.japan = 1
-//         } else {
-//           await midwayTidyUp(setJapanStrikePanelEnabled, setUSMapRegions)
-//         }
-
-//         // const strikeGroups = GlobalInit.controller.getAllStrikeGroups(GlobalUnitsModel.Side.JAPAN)
-//         // for (let sg of strikeGroups) {
-//         //   sg.moved = false
-//         // }
-
-//         GlobalGameState.phaseCompleted = false
-//       } else {
-//         GlobalGameState.gamePhase = GlobalGameState.PHASE.END_OF_AIR_OPERATION
-//       }
-//     } else {
-//       GlobalGameState.phaseCompleted = false
-//     }
-//   } else {
-//     const enabledUSBoxes = getUSEnabledAirBoxes(sideWithInitiative)
-//     setEnabledUSBoxes(() => enabledUSBoxes)
-//     setEnabledJapanBoxes(() => [])
-
-//     setUsStrikePanelEnabled(true)
-//     setJapanStrikePanelEnabled(false)
-//     if (GlobalGameState.attackingStrikeGroup) {
-//       GlobalGameState.attackingStrikeGroup.attacked = true
-//       const attackingSG = GlobalGameState.attackingStrikeGroup
-//       attackingSG.attacked = true
-//       attackingSG.airOpAttacked = GlobalGameState.airOpUS
-//     }
-
-//     if (await endOfAirOperation(GlobalUnitsModel.Side.US, capAirUnits, setAirUnitUpdate, setEliminatedUnitsPanelShow)) {
-//       GlobalGameState.phaseCompleted = true
-//       await GlobalInit.controller.setAllUnitsToNotMoved()
-//       decrementAirOpsPoints()
-
-//       GlobalGameState.gamePhase = GlobalGameState.PHASE.END_OF_AIR_OPERATION
-//     } else {
-//       GlobalGameState.phaseCompleted = false
-//     }
-//   }
-
-//   GlobalGameState.updateGlobalState()
-// }
 
 function endOfTurn() {
   return GlobalGameState.airOperationPoints.japan === 0 && GlobalGameState.airOperationPoints.us === 0
@@ -456,26 +377,12 @@ export default async function handleAction({
     return
   } else if (GlobalGameState.gamePhase === GlobalGameState.PHASE.MIDWAY_ATTACK) {
     console.log("DOING end of AIR OPERATION stuff ")
-    // airOperationsHandler({
-    //   setEnabledJapanBoxes,
-    //   setEnabledUSBoxes,
-    //   setJapanStrikePanelEnabled,
-    //   setUsStrikePanelEnabled,
-    //   sideWithInitiative,
-    //   setInitiativePanelShow,
-    //   capAirUnits,
-    //   setAirUnitUpdate,
-    //   setSearchValues,
-    //   setSearchResults,
-    //   setSearchValuesAlertShow,
-    //   setEliminatedUnitsPanelShow,
-    // })
     if (GlobalGameState.midwayAirOp === 1) {
       GlobalGameState.midwayAirOp = 2
       GlobalGameState.airOpJapan = 2
       GlobalGameState.airOperationPoints.japan = 1
     } else {
-      await midwayTidyUp(setJapanStrikePanelEnabled, setUSMapRegions)
+      await midwayTidyUp(setJapanStrikePanelEnabled, setUSMapRegions, setStrikeGroupUpdate)
     }
     GlobalGameState.updateGlobalState()
     return
@@ -544,6 +451,7 @@ export default async function handleAction({
     } else if (GlobalInit.controller.getAttackingStepsRemaining() > 0) {
       let display = displayAttackTargetPanel(GlobalInit.controller)
       if (display) {
+        console.log("NEW STATE = ATTACK TARGET SELECTION WOOOOOOOOOOOOOOO")
         GlobalGameState.gamePhase = GlobalGameState.PHASE.ATTACK_TARGET_SELECTION
       } else {
         const anyTargets = GlobalInit.controller.autoAssignTargets()
@@ -574,6 +482,7 @@ export default async function handleAction({
     if (GlobalInit.controller.getAttackingStepsRemaining() > 0) {
       let display = displayAttackTargetPanel(GlobalInit.controller)
       if (display) {
+        console.log("STATE = ATTACK TARGET SELECTION")
         GlobalGameState.gamePhase = GlobalGameState.PHASE.ATTACK_TARGET_SELECTION
       } else {
         const anyTargets = GlobalInit.controller.autoAssignTargets()

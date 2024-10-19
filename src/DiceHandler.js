@@ -12,8 +12,12 @@ export function doIntiativeRoll(controller, roll0, roll1, showDice) {
     const rolls = randomDice(2, [roll0, roll1])
     GlobalGameState.sideWithInitiative = controller.determineInitiative(roll0, roll1)  
   } else {
+    console.log("IN HERE CUNT")
     if (roll0 && roll1) {
+      console.log("ARSE 100")
       GlobalGameState.sideWithInitiative = controller.determineInitiative(roll0, roll1)
+
+      console.log("BIG TITS -> GlobalGameState.sideWithInitiative =",GlobalGameState.sideWithInitiative)
       jpRolls = [roll0]
       usRolls = [roll1]
     } else {
@@ -23,11 +27,14 @@ export function doIntiativeRoll(controller, roll0, roll1, showDice) {
       usRolls = [rolls[1]]
     }    
   }
+
   if (GlobalGameState.sideWithInitiative === GlobalUnitsModel.Side.JAPAN) {
     GlobalGameState.airOpJapan++
   } else {
     GlobalGameState.airOpUS++
   }
+  console.log("BIG TITS 2 -> GlobalGameState.sideWithInitiative =",GlobalGameState.sideWithInitiative)
+
   controller.viewEventHandler({
     type: Controller.EventTypes.INITIATIVE_ROLL,
     data: {
@@ -35,6 +42,8 @@ export function doIntiativeRoll(controller, roll0, roll1, showDice) {
       usRolls,
     },
   })
+  console.log("BIG TITS 3 -> GlobalGameState.sideWithInitiative =",GlobalGameState.sideWithInitiative)
+
 }
 
 export function doSelectionRoll(controller, roll0) {
