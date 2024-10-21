@@ -13,6 +13,7 @@ import ViewEventStrikeGroupMoveHandler from "./ViewEventStrikeGroupMoveHandler"
 import ViewEventSelectionHandler from "./ViewEventSelectionHandler"
 import ViewEventCapHandler from "./ViewEventCapHandler"
 import ViewEventCarrierDamageHandler from "./ViewEventDamageHandler"
+import ViewEventCardHandler from "./ViewEventCardHandler"
 import { isMidwayHex } from "../components/HexUtils"
 
 export default class Controller {
@@ -34,6 +35,9 @@ export default class Controller {
     ATTACK_RESOLUTION_ROLL: "Attack Resolution Roll",
     CARRIER_DAMAGE: "Carrier Damage Allocation",
     MIDWAY_DAMAGE: "Midway Damage Allocation",
+    CARD_PLAY: "Play Event Card",
+    NAVAL_BOMBARDMENT_ROLL: "Naval Bombardment Roll",
+    TROUBLED_RECON_ROLL: "Troubled Reconnaissance Roll",
   }
 
   static MIDWAY_HEX = {
@@ -61,6 +65,7 @@ export default class Controller {
     this.selectionEventHandler = new ViewEventSelectionHandler(this)
     this.capHandler = new ViewEventCapHandler(this)
     this.damageHandler = new ViewEventCarrierDamageHandler(this)
+    this.cardEventHandler = new ViewEventCardHandler(this)
   }
 
   clearTargetMap() {
@@ -384,6 +389,9 @@ export default class Controller {
   }
   getTaskForceForCarrier(name, side) {
     const carrier = side === GlobalUnitsModel.Side.JAPAN ? this.getJapanFleetUnit(name) : this.getUSFleetUnit(name)
+    if (carrier == undefined) {
+      console.log("ERROR cannot find carrier:", name, "side", side)
+    }
     return carrier.taskForce
   }
 
@@ -1229,6 +1237,14 @@ export default class Controller {
     return this.cardModel.usHandContainsCard(cardNum)
   }
 
+  setCardPlayed(cardNum) {
+    this.cardModel.setCardPlayed(cardNum)
+  }
+
+  getCardPlayed(cardNum) {
+    return this.cardModel.getCardPlayed(cardNum)
+  }
+
   setFleetUnitLocation(id, location, side) {
     this.mapModel.setFleetUnitLocation(id, location, side)
   }
@@ -1319,6 +1335,7 @@ export default class Controller {
 
   calcSearchResults(distances) {
     let jpVal = Math.max(1, GlobalGameState.SearchValue.JP_AF - distances.jp_af)
+
 
     jpVal -= GlobalGameState.midwayAirOpsCompleted
     jpVal = Math.max(0, jpVal)
@@ -1466,6 +1483,14 @@ export default class Controller {
         this.dieRollEventHandler.handleAAADiceRollEvent(event)
         break
 
+      case Controller.EventTypes.NAVAL_BOMBARDMENT_ROLL:
+        this.dieRollEventHandler.handleNavalBombardmentDiceRollEvent(event)
+        break
+
+      case Controller.EventTypes.TROUBLED_RECON_ROLL:
+        this.dieRollEventHandler.handleTroubledReconnaissanceDiceRollEvent(event)
+        break
+
       case Controller.EventTypes.CARRIER_TARGET_SELECTION:
         this.selectionEventHandler.handleSelectCarrierTargetsEvent(event)
         break
@@ -1476,6 +1501,10 @@ export default class Controller {
 
       case Controller.EventTypes.SELECT_CAP_UNITS:
         this.capHandler.handleCapSelectionEvent(event)
+        break
+
+      case Controller.EventTypes.CARD_PLAY:
+        this.cardEventHandler.handleCardEvent(event)
         break
       default:
         console.log(`Unknown event type: ${event.type}`)

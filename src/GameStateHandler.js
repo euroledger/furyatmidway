@@ -33,15 +33,16 @@ function japanCardDrawHandler({ setUSMapRegions, setCSFAlertShow }) {
   GlobalGameState.phaseCompleted = false
 }
 
-function usCardDrawHandler({ setMidwayDialogShow }) {
+function usCardDrawHandler({ setCardNumber }) {
   if (GlobalGameState.gameTurn != 1) {
-    console.log("Set game state to Both Card Draw")
     GlobalGameState.gamePhase = GlobalGameState.PHASE.BOTH_CARD_DRAW
   } else {
-    console.log("Set game state to Midway")
-    GlobalGameState.gamePhase = GlobalGameState.PHASE.JAPAN_MIDWAY
-    // @TODO hard wire or randomly select midway attack decision here
-    setMidwayDialogShow(true)
+    if (GlobalInit.controller.japanHandContainsCard(6)) {
+      setCardNumber(() => 6)
+    } else {
+      setCardNumber(() => 0)
+    }
+    GlobalGameState.gamePhase = GlobalGameState.PHASE.CARD_PLAY
   }
   GlobalGameState.phaseCompleted = false
 }
@@ -52,6 +53,47 @@ function setupUSFleetHandler({ setUSMapRegions }) {
   GlobalGameState.phaseCompleted = false
 }
 
+function setNextStateFollowingCardPlay({
+  cardNumber,
+  setCardNumber,
+  setMidwayDialogShow,
+  setSearchValues,
+  setSearchResults,
+  setSearchValuesAlertShow,
+}) {
+  switch (cardNumber) {
+    case 0:
+      GlobalGameState.gamePhase = GlobalGameState.PHASE.JAPAN_MIDWAY
+      setMidwayDialogShow(true)
+    case 1:
+      break
+
+    case 5:
+      // Naval Bombardment
+      setMidwayDialogShow(true)
+      GlobalGameState.gamePhase = GlobalGameState.PHASE.JAPAN_MIDWAY
+      break
+
+    case 6:
+      // High Speed Reconnaissance
+      if (GlobalGameState.gameTurn === 4 || GlobalGameState.gameTurn === 7) {
+        // Now check for possible play of card 5
+        setCardNumber(() => 5)
+      } else {
+        setMidwayDialogShow(true)
+        setCardNumber(() => 0) // reset for next card play
+        GlobalGameState.gamePhase = GlobalGameState.PHASE.JAPAN_MIDWAY
+      }
+      break
+    case 7:
+      // Troubled Reconnaissance
+      GlobalGameState.gamePhase = GlobalGameState.PHASE.AIR_SEARCH
+      console.log("QUaCK CALC AIR OPS PTS")
+      calcAirOpsPoints({ setSearchValues, setSearchResults, setSearchValuesAlertShow })
+    default:
+      console.log("ERROR unknown card number: ", cardNumber)
+  }
+}
 function setupUSAirHandler() {
   GlobalGameState.currentCarrier++
   GlobalGameState.currentTaskForce =
@@ -162,11 +204,16 @@ export function displayAttackTargetPanel(controller) {
   return true
 }
 
-function usFleetMovementHandler({ setFleetUnitUpdate, setSearchValues, setSearchResults, setSearchValuesAlertShow }) {
+function usFleetMovementHandler({ setFleetUnitUpdate, setCardNumber }) {
   const update = createMapUpdateForFleet(GlobalInit.controller, "CSF", GlobalUnitsModel.Side.US)
   setFleetUnitUpdate(update)
-  GlobalGameState.gamePhase = GlobalGameState.PHASE.AIR_SEARCH
-  calcAirOpsPoints({ setSearchValues, setSearchResults, setSearchValuesAlertShow })
+  console.log("usFleetMovementHandler...")
+  if (GlobalInit.controller.usHandContainsCard(7)) {
+    setCardNumber(() => 7)
+    GlobalGameState.gamePhase = GlobalGameState.PHASE.CARD_PLAY
+  } else {
+    GlobalGameState.gamePhase = GlobalGameState.PHASE.AIR_SEARCH
+  }
 }
 
 function decrementAirOpsPoints() {
@@ -278,6 +325,8 @@ export default async function handleAction({
   setAirUnitUpdate,
   setStrikeGroupUpdate,
   setEliminatedUnitsPanelShow,
+  cardNumber,
+  setCardNumber,
 }) {
   //   switch (
   // GlobalGameState.gamePhase
@@ -328,7 +377,16 @@ export default async function handleAction({
   } else if (GlobalGameState.gamePhase === GlobalGameState.PHASE.US_SETUP_AIR) {
     setupUSAirHandler()
   } else if (GlobalGameState.gamePhase === GlobalGameState.PHASE.US_CARD_DRAW) {
-    usCardDrawHandler({ setMidwayDialogShow })
+    usCardDrawHandler({ setCardNumber })
+  } else if (GlobalGameState.gamePhase === GlobalGameState.PHASE.CARD_PLAY) {
+    setNextStateFollowingCardPlay({
+      cardNumber,
+      setCardNumber,
+      setMidwayDialogShow,
+      setSearchValues,
+      setSearchResults,
+      setSearchValuesAlertShow,
+    })
   } else if (GlobalGameState.gamePhase === GlobalGameState.PHASE.JAPAN_MIDWAY) {
     midwayDeclarationHandler({ setUsFleetRegions })
   } else if (GlobalGameState.gamePhase === GlobalGameState.PHASE.US_FLEET_MOVEMENT_PLANNING) {
@@ -348,7 +406,7 @@ export default async function handleAction({
       //   setUsStrikePanelEnabled,
       //   sideWithInitiative,
       //   setInitiativePanelShow,
-      //   capAirUnits,
+      //   capAirUnits,8
       //   setAirUnitUpdate,
       //   setSearchValues,
       //   setSearchResults,
@@ -361,9 +419,7 @@ export default async function handleAction({
   } else if (GlobalGameState.gamePhase === GlobalGameState.PHASE.US_FLEET_MOVEMENT) {
     usFleetMovementHandler({
       setFleetUnitUpdate,
-      setSearchValues,
-      setSearchResults,
-      setSearchValuesAlertShow,
+      setCardNumber,
     })
   } else if (GlobalGameState.gamePhase === GlobalGameState.PHASE.INITIATIVE_DETERMINATION) {
     if (GlobalGameState.sideWithInitiative === GlobalUnitsModel.Side.US) {
@@ -392,7 +448,9 @@ export default async function handleAction({
   } else if (GlobalGameState.gamePhase === GlobalGameState.PHASE.CAP_INTERCEPTION) {
     console.log("STATE CHANGE CAP -> AAA FIRE")
     GlobalGameState.gamePhase =
-      capSteps > 0 ? GlobalGameState.PHASE.CAP_DAMAGE_ALLOCATION : GlobalGameState.PHASE.ANTI_AIRCRAFT_FIRE
+      GlobalGameState.capHits > 0
+        ? GlobalGameState.PHASE.CAP_DAMAGE_ALLOCATION
+        : GlobalGameState.PHASE.ANTI_AIRCRAFT_FIRE
   } else if (GlobalGameState.gamePhase === GlobalGameState.PHASE.CAP_DAMAGE_ALLOCATION) {
     console.log("END OF CAP_DAMAGE_ALLOCATION")
     if (GlobalGameState.attackingStepsRemaining > 0 || getNumEscortFighterSteps(GlobalInit.controller) > 0) {

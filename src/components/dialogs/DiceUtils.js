@@ -1,5 +1,15 @@
 import GlobalGameState from "../../model/GlobalGameState";
-	
+
+// just get the result, no dice graphics
+export const randomDieRolls = (num) => {
+  const rolls = new Array()
+  for (let i = 0; i < num; i++) {
+    const random = Math.floor(Math.random() * 6) + 1
+    rolls.push(random)
+  }
+  return rolls
+}
+
 export const randomDice = (num, testRolls) => {
   if (testRolls) {
     rollDice(testRolls)

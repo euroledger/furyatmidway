@@ -24,7 +24,9 @@ export default class CardModel {
   drawUSCards(num, initial) {
     let drawDeck = Array.from(GlobalUnitsModel.cards)
     if (initial) {
-      drawDeck = Array.from(GlobalUnitsModel.cards).filter((card) => card.side === GlobalUnitsModel.Side.US || card.side === GlobalUnitsModel.Side.BOTH)
+      drawDeck = Array.from(GlobalUnitsModel.cards).filter(
+        (card) => card.side === GlobalUnitsModel.Side.US || card.side === GlobalUnitsModel.Side.BOTH
+      )
     }
 
     for (let i = 0; i < num; i++) {
@@ -43,6 +45,26 @@ export default class CardModel {
   }
 
   japanHandContainsCard(cardNum) {
-    console.log("JP CARDS = ", GlobalUnitsModel.jpCards)
+    const found = GlobalUnitsModel.jpCards.find((card) => card._number === cardNum)
+    if (found) {
+      return true
+    }
+    return false
+  }
+
+  usHandContainsCard(cardNum) {
+    const found = GlobalUnitsModel.usCards.find((card) => card._number === cardNum)
+    if (found) {
+      return true
+    }
+    return false
+  }
+
+  setCardPlayed(cardNum) {
+    GlobalUnitsModel.cards[cardNum - 1].played = true
+  }
+
+  getCardPlayed(cardNum) {
+    return GlobalUnitsModel.cards[cardNum - 1].played
   }
 }

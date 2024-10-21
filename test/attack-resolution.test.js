@@ -417,6 +417,12 @@ describe("Controller tests", () => {
     hits = doAttackFireRolls(controller, dieRolls)
 
     boxDamaged = doMidwayDamage(controller)
+
+    expect(controller.isMidwayBaseDestroyed()).toEqual(true)
+    let mtb2Eliminated = controller.isAirUnitInBox(GlobalUnitsModel.AirBox.US_ELIMINATED, mtb2.name)
+    expect(mtb2Eliminated).toEqual(true)
+    let mdbEliminated = controller.isAirUnitInBox(GlobalUnitsModel.AirBox.US_ELIMINATED, mdb.name)
+    expect(mdbEliminated).toEqual(true)
   })
 
   test("Attack by Midway-based planes", () => {

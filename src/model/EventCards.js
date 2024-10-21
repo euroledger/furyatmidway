@@ -1,9 +1,9 @@
 export default class EventCard {
-    constructor(number, title, side, playable) {
+    constructor(number, title, side) {
         this.number = number;
         this.title = title;
         this.side = side;
-        this.playable = playable
+        this.played = false
     };
 
     set number(n) {
@@ -18,16 +18,16 @@ export default class EventCard {
         this._side = s
     }
 
-    set playable(p) {
-        this._playable = p
+    set played(p) {
+        this._played = p
     }
     
     get number() {
         return this._number
     }
     
-    get playable() {
-        return this._.playable
+    get played() {
+        return this._played
     }
 
     get title() {

@@ -129,12 +129,12 @@ function StrikeCounter({ setStrikeGroupPopup, currentUSHex, currentJapanHex, cou
   function setJapanRegions() {
     let jpRegion
 
-    console.log(
-      "GlobalGameState.airOpJapan",
-      GlobalGameState.airOpJapan,
-      "counterData.airOpMoved=",
-      counterData.airOpMoved
-    )
+    // console.log(
+    //   "GlobalGameState.airOpJapan",
+    //   GlobalGameState.airOpJapan,
+    //   "counterData.airOpMoved=",
+    //   counterData.airOpMoved
+    // )
     // Use 1AF
     if (counterData.airOpMoved !== undefined && GlobalGameState.airOpJapan !== counterData.airOpMoved) {
       // second air op for this SG, use movement allowance (3) and position of SG to determine regions
@@ -189,14 +189,14 @@ function StrikeCounter({ setStrikeGroupPopup, currentUSHex, currentJapanHex, cou
 
     // }
 
-    console.log(
-      "GlobalGameState.airOpUS=",
-      GlobalGameState.airOpUS,
-      "counter data name:",
-      counterData.name,
-      "counterData.airOpMoved=",
-      counterData.airOpMoved
-    )
+    // console.log(
+    //   "GlobalGameState.airOpUS=",
+    //   GlobalGameState.airOpUS,
+    //   "counter data name:",
+    //   counterData.name,
+    //   "counterData.airOpMoved=",
+    //   counterData.airOpMoved
+    // )
 
     if (counterData.airOpMoved !== undefined && GlobalGameState.airOpUS !== counterData.airOpMoved) {
       // second air op for this SG, use movement allowance (3) and position of SG to determine regions
@@ -237,11 +237,9 @@ function StrikeCounter({ setStrikeGroupPopup, currentUSHex, currentJapanHex, cou
   const handleClick = (e) => {
     const sg = controller.getStrikeGroupForBox(side, counterData.box)
     if (sg.attacked) {
-      console.log("COMPUTER MAN HE SAY NO")
       return
     }
 
-    console.log("HEY")
     if (side === GlobalUnitsModel.Side.US) {
       setUSRegions()
     } else {
@@ -363,7 +361,6 @@ function StrikeCounter({ setStrikeGroupPopup, currentUSHex, currentJapanHex, cou
       if (side === GlobalUnitsModel.Side.JAPAN) {
         setJapanRegions()
       } else {
-        console.log("WOOO")
         setUSRegions()
       }
     }

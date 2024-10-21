@@ -3,88 +3,75 @@ import EventCard from "./model/EventCards"
 
 const cards = [
   {
-    title: "TOWED TO A FRIENDLY PORT",
+    title: "Towed to a Friendly Port",
     number: 1,
     side: GlobalUnitsModel.Side.US,
-
   },
   {
-    title: "DAMAGE CONTROL",
+    title: "Damage Control",
     number: 2,
     side: GlobalUnitsModel.Side.BOTH,
-
   },
   {
-    title: "AIR REPLACEMENTS",
+    title: "Air Replacements",
     number: 3,
     side: GlobalUnitsModel.Side.BOTH,
-
   },
   {
-    title: "SUBMARINE",
+    title: "Submarine",
     number: 4,
     side: GlobalUnitsModel.Side.BOTH,
-
   },
   {
-    title: "NAVAL BOMBARDMENT",
+    title: "Naval Bombardment",
     number: 5,
     side: GlobalUnitsModel.Side.JAPAN,
-
   },
   {
-    title: "HIGH SPEED RECONNAISANCE",
+    title: "High Speed Reconnaissance",
     number: 6,
     side: GlobalUnitsModel.Side.JAPAN,
-
   },
   {
-    title: "TROUBLED RECONNAISANCE",
+    title: "Troubled Reconnaissance",
     number: 7,
     side: GlobalUnitsModel.Side.US,
-
   },
   {
-    title: "SEMPER FI",
+    title: "Semper Fi",
     number: 8,
     side: GlobalUnitsModel.Side.US,
-
   },
   {
-    title: "ESCORT SEPARATED",
+    title: "Escort Separated",
     number: 9,
     side: GlobalUnitsModel.Side.JAPAN,
-
   },
   {
-    title: "US CARRIER PLANES DITCH",
+    title: "US Carrier Planes Ditch",
     number: 10,
     side: GlobalUnitsModel.Side.JAPAN,
-
   },
   {
-    title: "US STRIKE LOST",
+    title: "US Strike Lost",
     number: 11,
     side: GlobalUnitsModel.Side.JAPAN,
-
   },
   {
-    title: "ELITE PILOTS",
+    title: "Elite Pilots",
     number: 12,
     side: GlobalUnitsModel.Side.JAPAN,
-
   },
   {
-    title: "CRITICAL HIT",
+    title: "Critical Hit",
     number: 13,
     side: GlobalUnitsModel.Side.US,
-
   },
 ]
 function loadCards() {
   GlobalUnitsModel.cards = new Array()
   for (const c of cards) {
-    const card = new EventCard(c.number, c.title, c.side, false)
+    const card = new EventCard(c.number, c.title, c.side)
     GlobalUnitsModel.cards.push(card)
   }
 }

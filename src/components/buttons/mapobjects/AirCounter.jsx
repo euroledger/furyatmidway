@@ -128,7 +128,7 @@ function AirCounter({ getAirBox, setAirBox, counterData, side }) {
     position.left !== airUnitUpdate.position.left + "%" &&
     position.top !== airUnitUpdate.position.top + "%"
   ) {
-    console.log("I am ", counterData.name," -> AIR UNIT UPDATE = ", testUpdate)
+    // console.log("I am ", counterData.name," -> AIR UNIT UPDATE = ", testUpdate)
 
     doUpdate(airUnitUpdate)
   }
@@ -139,7 +139,7 @@ function AirCounter({ getAirBox, setAirBox, counterData, side }) {
     (position.left !== testUpdate.position.left + "%" &&
     position.top !== testUpdate.position.top + "%")
   ) {
-    console.log("I am ", counterData.name," -> AIR UNIT UPDATE = ", testUpdate)
+    // console.log("I am ", counterData.name," -> AIR UNIT UPDATE = ", testUpdate)
 
     doUpdate(testUpdate)
   }

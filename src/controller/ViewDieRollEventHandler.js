@@ -5,6 +5,7 @@ import TargetStatusChange from "../commands/TargetStatusChange"
 import InitiativeStatusChange from "../commands/InitiativeStatusChange"
 import GlobalUnitsModel from "../model/GlobalUnitsModel"
 import TrackStatusChange from "../commands/TrackStatusChange"
+import EventCardDiceCommand from "../commands/EventCardDiceCommand"
 
 class ViewDieRollEventHandler {
   constructor(controller) {
@@ -75,6 +76,25 @@ class ViewDieRollEventHandler {
       jpRolls = rolls
     }
     let command = new DiceCommand(event.type, jpRolls, usRolls, null, side, GlobalGameState.antiaircraftHits, target)
+    GlobalGameState.log(`${command.toString()}`)
+  }
+
+  
+  handleNavalBombardmentDiceRollEvent(event) {
+    // event contains type and data
+    const { roll, side } = event.data
+    
+    const message = `Midway Garrison Level now ${GlobalGameState.midwayGarrisonLevel}`
+    let command = new EventCardDiceCommand(event.type, roll, side, message)
+    GlobalGameState.log(`${command.toString()}`)
+  }
+
+  handleTroubledReconnaissanceDiceRollEvent(event) {
+    // event contains type and data
+    const { roll, side } = event.data
+    
+    const message = `Japanese Search Level now ${GlobalGameState.SearchValue.JP_AF}`
+    let command = new EventCardDiceCommand(event.type, roll, side, message)
     GlobalGameState.log(`${command.toString()}`)
   }
 

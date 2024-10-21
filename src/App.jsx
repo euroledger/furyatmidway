@@ -15,9 +15,12 @@ import LoadGamePanel from "./components/dialogs/LoadGamePanel"
 import CardPanel from "./components/dialogs/CardPanel"
 import GameStatusPanel from "./components/dialogs/GameStatusPanel"
 import SplashScreen from "./components/dialogs/SplashScreen"
+import Controller from "./controller/Controller"
 import "./style.css"
 import {
   doIntiativeRoll,
+  doNavalBombardmentRoll,
+  doTroubledReconnaissanceRoll,
   doSelectionRoll,
   doCAP,
   getNumEscortFighterSteps,
@@ -53,6 +56,7 @@ import AttackDicePanel from "./components/dialogs/AttackDicePanel"
 import CarrierDamageDicePanel from "./components/dialogs/CarrierDamageDicePanel"
 import MidwayDamageDicePanel from "./components/dialogs/MidwayDamageDicePanel"
 import EliminatedReturningUnits from "./components/dialogs/EliminatedReturningUnitsPanel"
+import CardAlertPanel from "./components/dialogs/CardAlertPanel"
 import { AirOpsHeaders, AirOpsFooters } from "./attackscreens/AirOpsDataPanels"
 import { TargetHeaders, TargetFooters } from "./attackscreens/TargetPanel"
 import { AttackTargetHeaders, AttackTargetFooters } from "./attackscreens/AttackTargetPanel"
@@ -62,7 +66,14 @@ import { EscortHeaders, EscortFooters } from "./attackscreens/EscortPanel"
 import { AAAHeaders, AAAFooters } from "./attackscreens/AAAPanel"
 import { AttackResolutionHeaders, AttackResolutionFooters } from "./attackscreens/AttackResolutionPanel"
 
+import { CardAlertHeaders, CardAlertFooters } from "./attackscreens/PlayCardPanel"
+
+import { NavalBombardmentHeader, NavalBombardmentFooter } from "./attackscreens/NavalBombardmentPanel"
+import { TroubledReconnaissanceHeader, TroubledReconnaissanceFooter } from "./attackscreens/TroubledReconnaissancePanel"
+
 import UITester from "./UIEvents/UITester"
+import UITesterHeadless from "./UIEvents/UITesterHeadless"
+
 import { getJapanEnabledAirBoxes, getUSEnabledAirBoxes } from "./AirBoxZoneHandler"
 import handleAction, { calcAirOpsPointsMidway } from "./GameStateHandler"
 import { setStrikeGroupAirUnitsToNotMoved } from "./controller/AirOperationsHandler"
@@ -96,6 +107,8 @@ export function App() {
   const [isMoveable, setIsMoveable] = useState(false)
   const [scale, setScale] = useState(1)
   const [testClicked, setTestClicked] = useState(false)
+  const [testyClicked, setTestyClicked] = useState(false)
+
   const [csfAlertShow, setCSFAlertShow] = useState(false)
 
   const [saveGameShow, setSaveGameShow] = useState(false)
@@ -123,6 +136,10 @@ export function App() {
   const [gameStateShow, setGameStateShow] = useState(false)
   const [initiativePanelShow, setInitiativePanelShow] = useState(false)
   const [targetPanelShow, setTargetPanelShow] = useState(false)
+
+  const [cardDicePanelShow5, setCardDicePanelShow5] = useState(false)
+  const [cardDicePanelShow7, setCardDicePanelShow7] = useState(false)
+
   const [attackTargetPanelShow, setAttackTargetPanelShow] = useState(false)
   const [attackResolutionPanelShow, setAttackResolutionPanelShow] = useState(false)
   const [carrierDamagePanelShow, setCarrierDamagePanelShow] = useState(false)
@@ -134,6 +151,7 @@ export function App() {
 
   const [damageAllocationPanelShow, setDamageAllocationPanelShow] = useState(false)
 
+  const [cardAlertPanelShow, setCardAlertPanelShow] = useState(false)
   const [escortPanelShow, setEscortPanelShow] = useState(false)
   const [aaaPanelShow, setAaaPanelShow] = useState(false)
 
@@ -204,6 +222,12 @@ export function App() {
   const [carrierHits, setCarrierHits] = useState(-1)
   const [numDiceToRoll, setNumDiceToRoll] = useState(16)
 
+  const [cardNumber, setCardNumber] = useState(5)
+
+  const [showCardFooter, setShowCardFooter] = useState(false)
+
+  const [showDice, setShowDice] = useState(false)
+
   // QUACK TESTING ONLY REMOVE THESE ***********
   // GlobalGameState.TESTING = true
   // GlobalGameState.carrierAttackHits = 3
@@ -251,6 +275,16 @@ export function App() {
       GlobalGameState.isFirstAirOp = false
     }
   }, [GlobalGameState.gamePhase])
+
+  useEffect(() => {
+    if (GlobalGameState.gamePhase === GlobalGameState.PHASE.CARD_PLAY) {
+      if (cardNumber !== 0 && !GlobalInit.controller.getCardPlayed(cardNumber)) {
+        setCardAlertPanelShow(true)
+      } else {
+        nextAction()
+      }
+    }
+  }, [GlobalGameState.gamePhase, cardNumber])
 
   useEffect(() => {
     if (GlobalGameState.gamePhase === GlobalGameState.PHASE.AIR_ATTACK_1) {
@@ -305,7 +339,7 @@ export function App() {
       setCapAirUnits([])
       GlobalInit.controller.setAllDefendersToNotIntercepting()
       GlobalGameState.dieRolls = 0
-      GlobalGameState.carrierAttackHits = 0
+      GlobalGameState.capHits = 0
     }
   }, [GlobalGameState.gamePhase])
 
@@ -339,6 +373,12 @@ export function App() {
       GlobalGameState.dieRolls = 0
       GlobalGameState.antiaircraftHits
       setAaaPanelShow(true)
+    }
+  }, [GlobalGameState.gamePhase])
+
+  useEffect(() => {
+    if (GlobalGameState.gamePhase === GlobalGameState.PHASE.END_OF_TURN) {
+      GlobalGameState.SearchValue.JP_AF = 6 // in case card 6 was played
     }
   }, [GlobalGameState.gamePhase])
 
@@ -445,11 +485,7 @@ export function App() {
     setEnabledUSBoxes(() => enabledUSBoxes)
   }
 
-  const nextAction = (e) => {
-    if (e) {
-      e.preventDefault()
-    }
-
+  const nextAction = () => {
     handleAction({
       setUSMapRegions,
       setCSFAlertShow,
@@ -473,20 +509,46 @@ export function App() {
       setAirUnitUpdate,
       setStrikeGroupUpdate,
       setEliminatedUnitsPanelShow,
+      cardNumber,
+      setCardNumber,
+      setMidwayDialogShow,
     })
   }
 
-  const testUi = async (e) => {
-    await UITester({
-      e,
-      setTestClicked,
-      setTestUpdate,
-      setAttackAirCounterUpdate,
-      setFleetUnitUpdate,
-      setStrikeGroupUpdate,
-      nextAction,
-      doInitiativeRoll,
-    })
+  const testUi = async (e, headless) => {
+    if (headless) {
+      setTestClicked(true)
+
+      const stateObject = {
+        // FOR AI AND TESTING
+        e,
+        setTestClicked,
+        setTestUpdate,
+        setAttackAirCounterUpdate,
+        setFleetUnitUpdate,
+        setStrikeGroupUpdate,
+        nextAction,
+        doInitiativeRoll,
+        setCapAirUnits,
+        setCapSteps,
+        setFightersPresent,
+        capAirUnits,
+        capSteps,
+        fightersPresent,
+      }
+      await UITesterHeadless(stateObject)
+    } else {
+      setTestyClicked(true)
+      await UITester({
+        e,
+        setTestUpdate,
+        setAttackAirCounterUpdate,
+        setFleetUnitUpdate,
+        setStrikeGroupUpdate,
+        nextAction,
+        doInitiativeRoll,
+      })
+    }
   }
 
   var v = process.env.REACT_APP_MYVAR || "none"
@@ -684,9 +746,6 @@ export function App() {
                 onClick={(e) => {
                   GlobalGameState.phaseCompleted = true
                   GlobalGameState.usCardsDrawn = true
-                  if (GlobalGameState.gamePhase === GlobalGameState.PHASE.US_CARD_DRAW) {
-                    nextAction(e)
-                  }
                   setusHandShow(true)
                 }}
               >
@@ -732,13 +791,13 @@ export function App() {
               </Button>
             </Nav>
 
-            <img src={image} alt="test" style={{ marginLeft: "120px" }} width="40px" height="30px" />
+            <img src={image} alt="test" style={{ marginLeft: "20px" }} width="40px" height="30px" />
             <p
               className="navbar-text"
               style={{
                 marginLeft: "5px",
                 marginTop: "15px",
-                marginRight: "35px",
+                marginRight: "10px",
               }}
             >
               {GlobalGameState.gamePhase} <br></br>
@@ -747,9 +806,9 @@ export function App() {
             <p
               className="navbar-text"
               style={{
-                marginLeft: "10px",
+                marginLeft: "5px",
                 marginTop: "17px",
-                marginRight: "15px",
+                marginRight: "20px",
               }}
             >
               {GlobalGameState.getSetupMessage()}
@@ -770,14 +829,32 @@ export function App() {
             {test && (
               <Nav>
                 <Button
+                  style={{
+                    marginLeft: "25px",
+                    background: "#9e1527",
+                  }}
                   size="sm"
                   className="me-1"
                   variant="secondary"
                   onClick={(e) => testUi(e)}
                   // disabled={!GlobalGameState.phaseCompleted}
-                  style={{ background: "#9e1527" }}
                 >
                   TEST
+                </Button>
+                {/* {testClicked && <TestComponent testClicked={testClicked}></TestComponent>} */}
+              </Nav>
+            )}
+            {test && (
+              <Nav>
+                <Button
+                  size="sm"
+                  className="me-1"
+                  variant="secondary"
+                  onClick={(e) => testUi(e, true)}
+                  // disabled={!GlobalGameState.phaseCompleted}
+                  style={{ background: "#9e1527" }}
+                >
+                  HEADLESS
                 </Button>
                 {/* {testClicked && <TestComponent testClicked={testClicked}></TestComponent>} */}
               </Nav>
@@ -1023,6 +1100,70 @@ export function App() {
     </>
   )
 
+  const cardAlertHeaders = (
+    <>
+      <CardAlertHeaders cardNumber={cardNumber}></CardAlertHeaders>
+    </>
+  )
+
+  let cardDicePanelHeaders, cardDicePanelFooters
+
+  if (cardNumber === 5) {
+    cardDicePanelHeaders = (
+      <>
+        <NavalBombardmentHeader></NavalBombardmentHeader>
+      </>
+    )
+    cardDicePanelFooters = (
+      <>
+        <NavalBombardmentFooter></NavalBombardmentFooter>
+      </>
+    )
+  } else if (cardNumber === 7) {
+    cardDicePanelHeaders = (
+      <>
+        <TroubledReconnaissanceHeader></TroubledReconnaissanceHeader>
+      </>
+    )
+    cardDicePanelFooters = (
+      <>
+        <TroubledReconnaissanceFooter></TroubledReconnaissanceFooter>
+      </>
+    )
+  }
+
+  const cardAlertFooters = (
+    <>
+      <CardAlertFooters
+        controller={GlobalInit.controller}
+        showCardFooter={showCardFooter}
+        cardNumber={cardNumber}
+        side={GlobalUnitsModel.Side.JAPAN}
+        setShowDice={setShowDice}
+      ></CardAlertFooters>
+    </>
+  )
+
+  const cardEventHandler = (cardNumber) => {
+    const title = GlobalUnitsModel.cards[cardNumber - 1].title
+    const side = GlobalUnitsModel.cards[cardNumber - 1].side // @TODO can be BOTH
+    GlobalInit.controller.viewEventHandler({
+      type: Controller.EventTypes.CARD_PLAY,
+      data: {
+        number: cardNumber,
+        title,
+        side,
+      },
+    })
+  }
+
+  function doCardRoll(roll) {
+    if (cardNumber === 5) {
+      doNavalBombardmentRoll(GlobalInit.controller, roll)
+    } else if (cardNumber === 7) {
+      doTroubledReconnaissanceRoll(GlobalInit.controller, roll)
+    }
+  }
   // console.log("GlobalUnitsModel.usStrikeGroups=", GlobalUnitsModel.usStrikeGroups)
   function doInitiativeRoll(roll0, roll1) {
     // for testing QUACK
@@ -1044,7 +1185,6 @@ export function App() {
     doCAP(GlobalInit.controller, capAirUnits, fightersPresent)
     GlobalGameState.updateGlobalState()
   }
-
   function doCounterattackRolls() {
     doFighterCounterattack(GlobalInit.controller)
   }
@@ -1170,15 +1310,18 @@ export function App() {
         <h4>ALERT</h4>
         <p>This air unit is not a fighter unit so cannot be used for CAP.</p>
       </AlertPanel>
-      <AlertPanel show={!testClicked && csfAlertShow} onHide={() => setCSFAlertShow(false)}>
+      <AlertPanel show={!testClicked && !testyClicked && csfAlertShow} onHide={() => setCSFAlertShow(false)}>
         <h4>INFO</h4>
         <p>Drag the US CSF Fleet Unit to any hex in the shaded blue area of the map.</p>
       </AlertPanel>
-      <AlertPanel show={!testClicked && jpAlertShow} onHide={() => setJpAlertShow(false)}>
+      <AlertPanel show={!testClicked && !testyClicked && jpAlertShow} onHide={() => setJpAlertShow(false)}>
         <h4>INFO</h4>
         <p>Drag the Japanese 1AF Fleet Unit to any hex in the shaded red area of the map.</p>
       </AlertPanel>
-      <AlertPanel show={!testClicked && fleetMoveAlertShow} onHide={() => setFleetMoveAlertShow(false)}>
+      <AlertPanel
+        show={!testClicked && !testyClicked && fleetMoveAlertShow}
+        onHide={() => setFleetMoveAlertShow(false)}
+      >
         <h4>INFO</h4>
         <p>
           Drag the Fleet Unit to any hex in the shaded area of the map, or press Next Action to leave fleet in current
@@ -1186,7 +1329,7 @@ export function App() {
         </p>
       </AlertPanel>
       <AlertPanel
-        show={!testClicked && endOfAirOpAlertShow}
+        show={!testClicked && !testyClicked && endOfAirOpAlertShow}
         onHide={(e) => {
           setEndOfAirOpAlertShow(false)
           nextAction(e)
@@ -1213,7 +1356,7 @@ export function App() {
         </div>
       </AlertPanel>
       <AlertPanel
-        show={!testClicked && searchValuesAlertShow}
+        show={!testClicked && !testyClicked && searchValuesAlertShow}
         size={4}
         onHide={(e) => {
           setSearchValuesAlertShow(false)
@@ -1235,7 +1378,7 @@ export function App() {
         </ul>
       </AlertPanel>
       <AlertPanel
-        show={!testClicked && midwayNoAttackAlertShow}
+        show={!testClicked && !testyClicked && midwayNoAttackAlertShow}
         onHide={() => {
           GlobalGameState.gamePhase = GlobalGameState.PHASE.US_FLEET_MOVEMENT
           setMidwayNoAttackAlertShow(false)
@@ -1246,7 +1389,7 @@ export function App() {
         <p>No Midway attack declared this turn.</p>
       </AlertPanel>
       <YesNoDialog
-        show={!testClicked && midwayDialogShow}
+        show={!testClicked && !testyClicked && midwayDialogShow}
         yesHandler={(e) => midwayYesHandler(e)}
         noHandler={(e) => midwayNoHandler(e)}
       >
@@ -1258,9 +1401,10 @@ export function App() {
         <p>Game State Successfully Saved!</p>
         <p>Game Id = {gameSaveID} </p>
       </AlertPanel>
+      
       <DicePanel
         numDice={2}
-        show={!testClicked && initiativePanelShow}
+        show={!testClicked && !testyClicked && initiativePanelShow}
         headerText="Air Ops Initiative"
         headers={airOpsHeaders}
         footers={airOpsFooters}
@@ -1276,7 +1420,7 @@ export function App() {
       ></DicePanel>
       <DicePanel
         numDice={1}
-        show={targetPanelShow}
+        show={!testClicked && targetPanelShow}
         headerText="Target Determination"
         headers={targetHeaders}
         footers={targetFooters}
@@ -1293,7 +1437,7 @@ export function App() {
         disabled={true}
       ></DicePanel>
       <DicePanel
-        show={attackTargetPanelShow}
+        show={!testClicked && attackTargetPanelShow}
         headerText="Attack Target Selection"
         numDice={0}
         headers={attackTargetHeaders}
@@ -1314,7 +1458,7 @@ export function App() {
         numDice={capSteps}
         diceButtonDisabled={capInterceptionDiceButtonDisabled}
         closeButtonDisabled={!capInterceptionDiceButtonDisabled}
-        show={capInterceptionPanelShow}
+        show={!testClicked && capInterceptionPanelShow}
         headerText="CAP Interception"
         headers={capHeaders}
         footers={capFooters}
@@ -1332,7 +1476,7 @@ export function App() {
       ></LargeDicePanel>
       <LargeDicePanel
         numDice={0}
-        show={damageAllocationPanelShow}
+        show={!testClicked && damageAllocationPanelShow}
         headerText="Damage Allocation"
         headers={damageHeaders}
         footers={damageFooters}
@@ -1350,7 +1494,7 @@ export function App() {
       ></LargeDicePanel>
       <LargeDicePanel
         numDice={getNumEscortFighterSteps(GlobalInit.controller)}
-        show={escortPanelShow}
+        show={!testClicked && escortPanelShow}
         headerText="Escort Counterattack"
         headers={escortHeaders}
         footers={escortFooters}
@@ -1371,7 +1515,7 @@ export function App() {
       ></LargeDicePanel>
       <LargeDicePanel
         numDice={numAAADice}
-        show={aaaPanelShow} // also check for any attacking steps left
+        show={!testClicked && aaaPanelShow} // also check for any attacking steps left
         headerText="Anti-Aircraft Fire"
         headers={aaaHeaders}
         footers={aaaFooters}
@@ -1392,7 +1536,7 @@ export function App() {
         // numDice={GlobalInit.controller.getAttackingStepsRemainingTEST()}
         controller={GlobalInit.controller}
         numDice={numDiceToRoll}
-        show={attackResolutionPanelShow}
+        show={!testClicked && attackResolutionPanelShow}
         headerText="Attack Resolution"
         headers={attackResolutionHeaders}
         footers={attackResolutionFooters}
@@ -1429,7 +1573,7 @@ export function App() {
       <CarrierDamageDicePanel
         numDice={1}
         controller={GlobalInit.controller}
-        show={carrierDamagePanelShow}
+        show={!testClicked && carrierDamagePanelShow}
         headerText="Carrier Damage"
         showDice={GlobalGameState.currentCarrierAttackTarget !== GlobalUnitsModel.Carrier.MIDWAY}
         margin={0}
@@ -1453,7 +1597,7 @@ export function App() {
       <MidwayDamageDicePanel
         numDice={1}
         controller={GlobalInit.controller}
-        show={midwayDamagePanelShow}
+        show={!testClicked && midwayDamagePanelShow}
         headerText="Midway Base Damage"
         headers={attackResolutionHeaders}
         footers={attackResolutionFooters}
@@ -1489,9 +1633,69 @@ export function App() {
         closeButtonDisabled={false}
         disabled={false}
       ></EliminatedReturningUnits>
+      <CardAlertPanel
+        show={!testClicked && cardAlertPanelShow}
+        controller={GlobalInit.controller}
+        headerText={"Possible Card Play: Card #" + cardNumber}
+        headers={cardAlertHeaders}
+        setShowCardFooter={setShowCardFooter}
+        footers={cardAlertFooters}
+        cardNumber={cardNumber}
+        eventHandler={cardEventHandler}
+        margin={0}
+        setCardDicePanelShow5={setCardDicePanelShow5}
+        setCardDicePanelShow7={setCardDicePanelShow7}
+        onHide={(e) => {
+          setCardAlertPanelShow(false)
+        }}
+        nextAction={nextAction}
+        width={30}
+      ></CardAlertPanel>
+      <DicePanel
+        numDice={1}
+        show={!testClicked && cardDicePanelShow5}
+        headerText="Naval Bombardment"
+        headers={cardDicePanelHeaders}
+        footers={cardDicePanelFooters}
+        width={30}
+        showDice={true}
+        margin={315}
+        diceButtonDisabled={GlobalGameState.dieRolls.length !== 0}
+        closeButtonDisabled={GlobalGameState.dieRolls.length === 0}
+        onHide={(e) => {
+          setCardDicePanelShow5(false)
+        }}
+        doRoll={doCardRoll}
+        disabled={true}
+      ></DicePanel>
+
+      <DicePanel
+        numDice={1}
+        show={!testClicked && cardDicePanelShow7}
+        headerText="Troubled Reconnaissance"
+        headers={cardDicePanelHeaders}
+        footers={cardDicePanelFooters}
+        width={30}
+        showDice={true}
+        margin={315}
+        diceButtonDisabled={GlobalGameState.dieRolls.length !== 0}
+        closeButtonDisabled={GlobalGameState.dieRolls.length === 0}
+        onHide={(e) => {
+          setCardDicePanelShow7(false)
+        }}
+        doRoll={doCardRoll}
+        disabled={true}
+      ></DicePanel>
       <GameStatusPanel show={gameStateShow} gameState={gameState} onHide={() => setGameStateShow(false)} />
       <CardPanel show={jpHandShow} side={GlobalUnitsModel.Side.JAPAN} onHide={() => setjpHandShow(false)}></CardPanel>
-      <CardPanel show={usHandShow} side={GlobalUnitsModel.Side.US} onHide={() => setusHandShow(false)}></CardPanel>
+      <CardPanel
+        show={usHandShow}
+        side={GlobalUnitsModel.Side.US}
+        onHide={(e) => {
+          setusHandShow(false)
+          nextAction(e)
+        }}
+      ></CardPanel>
       <TransformWrapper
         initialScale={1}
         disabled={isMoveable}

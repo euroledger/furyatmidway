@@ -4,6 +4,39 @@ import Controller from "./controller/Controller"
 import GlobalUnitsModel from "./model/GlobalUnitsModel"
 import GlobalInit from "./model/GlobalInit"
 
+export function doNavalBombardmentRoll(controller, roll) {
+  let theRoll = roll ?? randomDice(1)
+  GlobalGameState.dieRolls = [theRoll]
+  const midwayGarrisonReduction = Math.floor(theRoll/2)
+
+  GlobalGameState.midwayGarrisonLevel = Math.max(2, GlobalGameState.midwayGarrisonLevel - midwayGarrisonReduction)
+  GlobalGameState.updateGlobalState()
+
+  controller.viewEventHandler({
+    type: Controller.EventTypes.NAVAL_BOMBARDMENT_ROLL,
+    data: {
+      roll: theRoll,
+      side: GlobalUnitsModel.Side.JAPAN
+    },
+  })
+}
+export function doTroubledReconnaissanceRoll(controller, roll) {
+  let theRoll = roll ?? randomDice(1)
+  GlobalGameState.dieRolls = [theRoll]
+
+  GlobalGameState.SearchValue.JP_AF = GlobalGameState.dieRolls[0]
+  GlobalGameState.updateGlobalState()
+
+  controller.viewEventHandler({
+    type: Controller.EventTypes.TROUBLED_RECON_ROLL,
+    data: {
+      roll: theRoll,
+      side: GlobalUnitsModel.Side.US
+    },
+  })
+}
+
+
 export function doIntiativeRoll(controller, roll0, roll1, showDice) {
   // for automated testing
   // let sideWithInitiative
@@ -12,12 +45,9 @@ export function doIntiativeRoll(controller, roll0, roll1, showDice) {
     const rolls = randomDice(2, [roll0, roll1])
     GlobalGameState.sideWithInitiative = controller.determineInitiative(roll0, roll1)  
   } else {
-    console.log("IN HERE CUNT")
     if (roll0 && roll1) {
-      console.log("ARSE 100")
       GlobalGameState.sideWithInitiative = controller.determineInitiative(roll0, roll1)
 
-      console.log("BIG TITS -> GlobalGameState.sideWithInitiative =",GlobalGameState.sideWithInitiative)
       jpRolls = [roll0]
       usRolls = [roll1]
     } else {
@@ -33,8 +63,6 @@ export function doIntiativeRoll(controller, roll0, roll1, showDice) {
   } else {
     GlobalGameState.airOpUS++
   }
-  console.log("BIG TITS 2 -> GlobalGameState.sideWithInitiative =",GlobalGameState.sideWithInitiative)
-
   controller.viewEventHandler({
     type: Controller.EventTypes.INITIATIVE_ROLL,
     data: {
@@ -42,8 +70,6 @@ export function doIntiativeRoll(controller, roll0, roll1, showDice) {
       usRolls,
     },
   })
-  console.log("BIG TITS 3 -> GlobalGameState.sideWithInitiative =",GlobalGameState.sideWithInitiative)
-
 }
 
 export function doSelectionRoll(controller, roll0) {
@@ -271,7 +297,6 @@ export function doMidwayDamageRoll(controller, testRoll) {
 }
 
 export function autoAllocateMidwayDamage(controller) {
-  GlobalGameState.SearchValue.US_MIDWAY = 0 // base destroyed
 
   let box = -1
   let damage = {
@@ -309,6 +334,8 @@ export function autoAllocateMidwayDamage(controller) {
     damage.box0 = false
     damage.box1 = false
     damage.box2 = false
+    GlobalGameState.SearchValue.US_MIDWAY = 0 // base destroyed
+    // All units in hangar to eliminated box
   }
   GlobalGameState.damageThisAttack = damage
   if (GlobalGameState.midwayHits > 0) {
@@ -620,17 +647,17 @@ export function doAttackFireRolls(controller, testRolls) {
       index++
     }
   }
-
+  // Note: Cannot inflict more than two hits on <idway in any one attack
   if (GlobalGameState.currentCarrierAttackTarget === GlobalUnitsModel.Carrier.MIDWAY) {
-    GlobalGameState.midwayHits = hits
-    GlobalGameState.midwayHitsThisAttack = hits
+    GlobalGameState.midwayHits = Math.min(2, hits)
+    GlobalGameState.midwayHitsThisAttack = Math.min(2, hits)
 
     // QUACK REMOVE TEESTING ONLY
     GlobalGameState.dieRolls = rolls
     doAttackResolutionEvent(controller, hits)
 
-    // GlobalGameState.midwayHits = 2
-    // GlobalGameState.midwayHitsThisAttack = 2
+    // GlobalGameState.midwayHits = 3
+    // GlobalGameState.midwayHitsThisAttack = 3
   } else {
     GlobalGameState.carrierAttackHits = hits
     GlobalGameState.carrierAttackHitsThisAttack = hits
