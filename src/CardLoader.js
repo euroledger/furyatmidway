@@ -1,7 +1,7 @@
 import GlobalUnitsModel from "./model/GlobalUnitsModel"
 import EventCard from "./model/EventCards"
 
-const cards = [
+export const allCards = [
   {
     title: "Towed to a Friendly Port",
     number: 1,
@@ -70,7 +70,7 @@ const cards = [
 ]
 function loadCards() {
   GlobalUnitsModel.cards = new Array()
-  for (const c of cards) {
+  for (const c of allCards) {
     const card = new EventCard(c.number, c.title, c.side)
     GlobalUnitsModel.cards.push(card)
   }

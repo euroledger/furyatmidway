@@ -139,6 +139,9 @@ export const isHexInRegion = (hex, region) => {
 }
 
 export const hexesInTwoRegions = (region1, region2) => {
+  if (!region1) {
+    return
+  }
   let hexes = new Array()
   for (const h1 of region1) {
     if (isHexInRegion(h1, region2)) {

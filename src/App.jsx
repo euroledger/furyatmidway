@@ -17,6 +17,7 @@ import GameStatusPanel from "./components/dialogs/GameStatusPanel"
 import SplashScreen from "./components/dialogs/SplashScreen"
 import Controller from "./controller/Controller"
 import "./style.css"
+import { allCards } from "./CardLoader"
 import {
   doIntiativeRoll,
   doNavalBombardmentRoll,
@@ -62,6 +63,9 @@ import { TargetHeaders, TargetFooters } from "./attackscreens/TargetPanel"
 import { AttackTargetHeaders, AttackTargetFooters } from "./attackscreens/AttackTargetPanel"
 import { CAPHeaders, CAPFooters } from "./attackscreens/CAPPanel"
 import { DamageHeaders, DamageFooters } from "./attackscreens/DamageAllocationPanel"
+
+import { StrikeLostDamageHeaders, StrikeLostDamageFooters } from "./attackscreens/StrikeLostDamagePanel"
+
 import { EscortHeaders, EscortFooters } from "./attackscreens/EscortPanel"
 import { AAAHeaders, AAAFooters } from "./attackscreens/AAAPanel"
 import { AttackResolutionHeaders, AttackResolutionFooters } from "./attackscreens/AttackResolutionPanel"
@@ -151,6 +155,8 @@ export function App() {
 
   const [damageAllocationPanelShow, setDamageAllocationPanelShow] = useState(false)
 
+  const [strikeLostPanelShow, setStrikeLostPanelShow] = useState(false)
+
   const [cardAlertPanelShow, setCardAlertPanelShow] = useState(false)
   const [escortPanelShow, setEscortPanelShow] = useState(false)
   const [aaaPanelShow, setAaaPanelShow] = useState(false)
@@ -222,7 +228,7 @@ export function App() {
   const [carrierHits, setCarrierHits] = useState(-1)
   const [numDiceToRoll, setNumDiceToRoll] = useState(16)
 
-  const [cardNumber, setCardNumber] = useState(5)
+  const [cardNumber, setCardNumber] = useState(0)
 
   const [showCardFooter, setShowCardFooter] = useState(false)
 
@@ -241,7 +247,7 @@ export function App() {
       setTargetDetermined(false)
       setTargetSelected(false)
       setTargetPanelShow(true)
-      GlobalGameState.dieRolls = 0
+      GlobalGameState.dieRolls = []
       GlobalGameState.capHits = undefined
     }
   }, [GlobalGameState.gamePhase])
@@ -278,7 +284,8 @@ export function App() {
 
   useEffect(() => {
     if (GlobalGameState.gamePhase === GlobalGameState.PHASE.CARD_PLAY) {
-      if (cardNumber !== 0 && !GlobalInit.controller.getCardPlayed(cardNumber)) {
+      setEliminatedSteps(0)
+      if (cardNumber !== 0) {
         setCardAlertPanelShow(true)
       } else {
         nextAction()
@@ -337,8 +344,7 @@ export function App() {
       setCapInterceptionPanelShow(true)
       setCapSteps(0)
       setCapAirUnits([])
-      GlobalInit.controller.setAllDefendersToNotIntercepting()
-      GlobalGameState.dieRolls = 0
+      GlobalGameState.dieRolls = []
       GlobalGameState.capHits = 0
     }
   }, [GlobalGameState.gamePhase])
@@ -361,7 +367,6 @@ export function App() {
   }, [GlobalGameState.gamePhase])
   useEffect(() => {
     if (GlobalGameState.gamePhase === GlobalGameState.PHASE.ESCORT_COUNTERATTACK) {
-      GlobalGameState.dieRolls = 0
       GlobalGameState.dieRolls = []
       GlobalGameState.fighterHits = 0
       setEscortPanelShow(true)
@@ -370,7 +375,7 @@ export function App() {
 
   useEffect(() => {
     if (GlobalGameState.gamePhase === GlobalGameState.PHASE.ANTI_AIRCRAFT_FIRE) {
-      GlobalGameState.dieRolls = 0
+      GlobalGameState.dieRolls = []
       GlobalGameState.antiaircraftHits
       setAaaPanelShow(true)
     }
@@ -717,7 +722,9 @@ export function App() {
     let midwayMsg = ""
     nextActionButtonDisabled()
     if (GlobalGameState.gamePhase === GlobalGameState.PHASE.END_OF_AIR_OPERATION) {
+      GlobalInit.controller.setAllDefendersToNotInterceptingAndNotSeparated()
       GlobalGameState.nextActionButtonDisabled = false
+      GlobalGameState.elitePilots = false // reset for future air combats
     }
     if (GlobalGameState.gamePhase === GlobalGameState.PHASE.MIDWAY_ATTACK) {
       if (GlobalGameState.midwayAirOp === 1) {
@@ -744,7 +751,9 @@ export function App() {
                   !GlobalGameState.usCardsDrawn && GlobalGameState.gamePhase !== GlobalGameState.PHASE.US_CARD_DRAW
                 }
                 onClick={(e) => {
-                  GlobalGameState.phaseCompleted = true
+                  if (GlobalGameState.gamePhase === GlobalGameState.PHASE.US_CARD_DRAW) {
+                    GlobalGameState.phaseCompleted = true
+                  }
                   GlobalGameState.usCardsDrawn = true
                   setusHandShow(true)
                 }}
@@ -1043,9 +1052,27 @@ export function App() {
     </>
   )
 
+  const strikeLostDamageHeaders = (
+    <>
+      <StrikeLostDamageHeaders
+        controller={GlobalInit.controller}
+        eliminatedSteps={eliminatedSteps}
+        setEliminatedSteps={setEliminatedSteps}
+        setStepsLeft={setStepsLeft}
+        cardNumber={cardNumber}
+      ></StrikeLostDamageHeaders>
+    </>
+  )
+
+  const strikeLostDamageFooters = (
+    <>
+      <StrikeLostDamageFooters eliminatedSteps={eliminatedSteps}></StrikeLostDamageFooters>
+    </>
+  )
+
   const escortHeaders = (
     <>
-      <EscortHeaders controller={GlobalInit.controller}></EscortHeaders>
+      <EscortHeaders controller={GlobalInit.controller} setCapAirUnits={setCapAirUnits}></EscortHeaders>
     </>
   )
 
@@ -1138,15 +1165,14 @@ export function App() {
         controller={GlobalInit.controller}
         showCardFooter={showCardFooter}
         cardNumber={cardNumber}
-        side={GlobalUnitsModel.Side.JAPAN}
         setShowDice={setShowDice}
       ></CardAlertFooters>
     </>
   )
 
   const cardEventHandler = (cardNumber) => {
-    const title = GlobalUnitsModel.cards[cardNumber - 1].title
-    const side = GlobalUnitsModel.cards[cardNumber - 1].side // @TODO can be BOTH
+    const title = allCards[cardNumber - 1].title
+    const side = allCards[cardNumber - 1].side // @TODO can be BOTH
     GlobalInit.controller.viewEventHandler({
       type: Controller.EventTypes.CARD_PLAY,
       data: {
@@ -1269,6 +1295,8 @@ export function App() {
     closeDamageButtonDisabled = eliminatedSteps !== GlobalGameState.fighterHits && stepsLeft !== 0
   } else if (GlobalGameState.gamePhase === GlobalGameState.PHASE.AAA_DAMAGE_ALLOCATION) {
     closeDamageButtonDisabled = eliminatedSteps !== GlobalGameState.antiaircraftHits && stepsLeft != 0
+  } else if (GlobalGameState.gamePhase === GlobalGameState.PHASE.CARD_PLAY) {
+    closeDamageButtonDisabled = eliminatedSteps !== 2 && stepsLeft != 0
   }
 
   const oldCarrierHits = GlobalInit.controller.getCarrierHits(GlobalGameState.currentCarrierAttackTarget)
@@ -1290,6 +1318,28 @@ export function App() {
   let airOpsDiceButtonDisabled =
     GlobalGameState.sideWithInitiative !== undefined && GlobalGameState.sideWithInitiative !== ""
 
+  const escortCloseCallback = () => {
+    let capUnits
+    if (GlobalGameState.taskForceTarget === GlobalUnitsModel.TaskForce.MIDWAY) {
+      const sideBeingAttacked =
+        GlobalGameState.sideWithInitiative === GlobalUnitsModel.Side.US
+          ? GlobalUnitsModel.Side.JAPAN
+          : GlobalUnitsModel.Side.US
+
+      if (GlobalGameState.elitePilots) {
+        const capBox = GlobalInit.controller.getCAPBoxForTaskForce(GlobalGameState.taskForceTarget, sideBeingAttacked)
+        capUnits = GlobalInit.controller.getAllAirUnitsInBox(capBox)
+        if (capUnits.length === 0) {
+          NoFightersMsg = "No CAP At Midway. Click Close to move on to next phase."
+        } else {
+          setCapAirUnits(() => capUnits)
+        }
+      }
+    }
+    setEscortPanelShow(false)
+    sendEscortEvent()
+    nextAction()
+  }
   return (
     <>
       <LoadGamePanel
@@ -1401,7 +1451,7 @@ export function App() {
         <p>Game State Successfully Saved!</p>
         <p>Game Id = {gameSaveID} </p>
       </AlertPanel>
-      
+
       <DicePanel
         numDice={2}
         show={!testClicked && !testyClicked && initiativePanelShow}
@@ -1481,7 +1531,7 @@ export function App() {
         headers={damageHeaders}
         footers={damageFooters}
         width={74}
-        showDice={true}
+        showDice={false}
         margin={0}
         onHide={(e) => {
           setDamageAllocationPanelShow(false)
@@ -1497,6 +1547,7 @@ export function App() {
         show={!testClicked && escortPanelShow}
         headerText="Escort Counterattack"
         headers={escortHeaders}
+        closeButtonCallback={escortCloseCallback}
         footers={escortFooters}
         // width={100}
         showDice={true}
@@ -1508,9 +1559,7 @@ export function App() {
         }}
         doRoll={doCounterattackRolls}
         diceButtonDisabled={GlobalGameState.dieRolls.length !== 0}
-        closeButtonDisabled={
-          GlobalGameState.dieRolls.length === 0 && getNumEscortFighterSteps(GlobalInit.controller) !== 0
-        }
+        closeButtonDisabled={GlobalGameState.dieRolls.length === 0}
         disabled={false}
       ></LargeDicePanel>
       <LargeDicePanel
@@ -1645,6 +1694,7 @@ export function App() {
         margin={0}
         setCardDicePanelShow5={setCardDicePanelShow5}
         setCardDicePanelShow7={setCardDicePanelShow7}
+        setStrikeLostPanelShow={setStrikeLostPanelShow}
         onHide={(e) => {
           setCardAlertPanelShow(false)
         }}
@@ -1678,6 +1728,7 @@ export function App() {
         width={30}
         showDice={true}
         margin={315}
+        nextState={GlobalGameState.PHASE.AIR_SEARCH}
         diceButtonDisabled={GlobalGameState.dieRolls.length !== 0}
         closeButtonDisabled={GlobalGameState.dieRolls.length === 0}
         onHide={(e) => {
@@ -1686,6 +1737,24 @@ export function App() {
         doRoll={doCardRoll}
         disabled={true}
       ></DicePanel>
+      <LargeDicePanel
+        numDice={0}
+        show={!testClicked && strikeLostPanelShow}
+        headerText="US Strike Lost"
+        headers={strikeLostDamageHeaders}
+        footers={strikeLostDamageFooters}
+        width={74}
+        showDice={true}
+        margin={0}
+        onHide={(e) => {
+          setStrikeLostPanelShow(false)
+          sendDamageEvent(eliminatedSteps)
+          nextAction(e)
+        }}
+        doRoll={doDamageAllocation}
+        disabled={true}
+        closeButtonDisabled={closeDamageButtonDisabled}
+      ></LargeDicePanel>
       <GameStatusPanel show={gameStateShow} gameState={gameState} onHide={() => setGameStateShow(false)} />
       <CardPanel show={jpHandShow} side={GlobalUnitsModel.Side.JAPAN} onHide={() => setjpHandShow(false)}></CardPanel>
       <CardPanel
@@ -1693,7 +1762,6 @@ export function App() {
         side={GlobalUnitsModel.Side.US}
         onHide={(e) => {
           setusHandShow(false)
-          nextAction(e)
         }}
       ></CardPanel>
       <TransformWrapper
@@ -1730,6 +1798,7 @@ export function App() {
                   onStop,
                   scale,
                   airUnitUpdate,
+                  setCardNumber,
                   testUpdate,
                   fleetUnitUpdate,
                   strikeGroupUpdate,

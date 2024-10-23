@@ -4,6 +4,7 @@ import Modal from "react-bootstrap/Modal"
 import Button from "react-bootstrap/Button"
 import GlobalGameState from "../../model/GlobalGameState"
 import "./modal.css"
+import GlobalUnitsModel from "../../model/GlobalUnitsModel"
 
 function CardAlertPanel(props) {
   const {
@@ -19,6 +20,7 @@ function CardAlertPanel(props) {
     margin,
     setCardDicePanelShow5,
     setCardDicePanelShow7,
+    setStrikeLostPanelShow,
     nextAction,
     ...rest
   } = props
@@ -39,18 +41,36 @@ function CardAlertPanel(props) {
     // setButtonPressed(() => false)
     setShowCardFooter(false)
     onHide(e)
+    nextAction()
   }
 
   const yesHandler = (e) => {
     if (cardNumber === 5) {
       setCardDicePanelShow5(true)
+      controller.setCardPlayed(5, GlobalUnitsModel.Side.JAPAN)
       onHide(e)
-    } else if (cardNumber === 7) { 
-      setCardDicePanelShow7(true)
-      onHide(e)
-    }else {
+    } else if (cardNumber === 6) {
+      controller.setCardPlayed(6, GlobalUnitsModel.Side.JAPAN)
       setShowCardFooter(() => true)
-      nextAction()
+    } else if (cardNumber === 7) {
+      setCardDicePanelShow7(true)
+      controller.setCardPlayed(7, GlobalUnitsModel.Side.US)
+      onHide(e)
+    } else if (cardNumber === 9) {
+      controller.setCardPlayed(9, GlobalUnitsModel.Side.US)
+      setShowCardFooter(() => true)
+    } else if (cardNumber === 11) {
+      setStrikeLostPanelShow(true)
+      controller.setCardPlayed(11, GlobalUnitsModel.Side.JAPAN)
+      onHide(e)
+    } else if (cardNumber === 12) {
+      controller.setCardPlayed(12, GlobalUnitsModel.Side.JAPAN)
+      setShowCardFooter(() => true)
+
+      // onHide(e)
+    } else {
+      setShowCardFooter(() => true)
+      // nextAction()
     }
     setThisCard(cardNumber)
     setButtonPressed(() => true)

@@ -53,7 +53,7 @@ function setupUSFleetHandler({ setUSMapRegions }) {
   GlobalGameState.phaseCompleted = false
 }
 
-function setNextStateFollowingCardPlay({
+async function setNextStateFollowingCardPlay({
   cardNumber,
   setCardNumber,
   setMidwayDialogShow,
@@ -76,7 +76,10 @@ function setNextStateFollowingCardPlay({
 
     case 6:
       // High Speed Reconnaissance
-      if (GlobalGameState.gameTurn === 4 || GlobalGameState.gameTurn === 7) {
+      if (
+        (GlobalGameState.gameTurn === 4 || GlobalGameState.gameTurn === 7) &&
+        GlobalInit.controller.japanHandContainsCard(5)
+      ) {
         // Now check for possible play of card 5
         setCardNumber(() => 5)
       } else {
@@ -88,8 +91,43 @@ function setNextStateFollowingCardPlay({
     case 7:
       // Troubled Reconnaissance
       GlobalGameState.gamePhase = GlobalGameState.PHASE.AIR_SEARCH
-      console.log("QUaCK CALC AIR OPS PTS")
       calcAirOpsPoints({ setSearchValues, setSearchResults, setSearchValuesAlertShow })
+
+    case 9:
+      // Escort Separated
+
+      // Now check for possible play of card 12
+      if (GlobalInit.controller.japanHandContainsCard(12)) {
+        setCardNumber(() => 12)
+      } else {
+        setCardNumber(() => 0) // reset for next card play
+        GlobalGameState.gamePhase = GlobalGameState.PHASE.CAP_INTERCEPTION
+      }
+
+      break
+    case 11:
+      // US Strike Lost
+      // if the card was played we go back to AIR OPERATIONS
+      // otherwise TARGET DETERMINATION
+      if (GlobalInit.controller.getCardPlayed(11, GlobalUnitsModel.Side.JAPAN)) {
+        GlobalGameState.gamePhase = GlobalGameState.PHASE.AIR_OPERATIONS
+      } else {
+        GlobalGameState.gamePhase = GlobalGameState.PHASE.TARGET_DETERMINATION
+      }
+      break
+
+    case 12:
+      // Elite Pilots
+      if (GlobalInit.controller.getCardPlayed(12, GlobalUnitsModel.Side.JAPAN)) {
+        if (GlobalGameState.taskForceTarget !== GlobalUnitsModel.TaskForce.MIDWAY) {
+          GlobalGameState.gamePhase = GlobalGameState.PHASE.CAP_INTERCEPTION
+        } else {
+          GlobalGameState.gamePhase = GlobalGameState.PHASE.ESCORT_COUNTERATTACK
+        }
+      } else {
+        GlobalGameState.gamePhase = GlobalGameState.PHASE.CAP_INTERCEPTION
+      }
+
     default:
       console.log("ERROR unknown card number: ", cardNumber)
   }
@@ -99,7 +137,6 @@ function setupUSAirHandler() {
   GlobalGameState.currentTaskForce =
     GlobalGameState.currentCarrier <= 1 ? 1 : GlobalGameState.currentCarrier === 2 ? 2 : 3 // 3 is Midway
   if (GlobalGameState.currentCarrier === 4) {
-    console.log("Set game state to US Card Draw")
     GlobalGameState.gamePhase = GlobalGameState.PHASE.US_CARD_DRAW
     GlobalGameState.usSetUpComplete = true
     GlobalInit.controller.drawUSCards(2, true)
@@ -386,6 +423,8 @@ export default async function handleAction({
       setSearchValues,
       setSearchResults,
       setSearchValuesAlertShow,
+      setAirUnitUpdate,
+      setStrikeGroupUpdate,
     })
   } else if (GlobalGameState.gamePhase === GlobalGameState.PHASE.JAPAN_MIDWAY) {
     midwayDeclarationHandler({ setUsFleetRegions })
@@ -444,25 +483,70 @@ export default async function handleAction({
     return
   } else if (GlobalGameState.gamePhase === GlobalGameState.PHASE.TARGET_DETERMINATION) {
     console.log("STATE CHANGE TARGET => CAP")
-    GlobalGameState.gamePhase = GlobalGameState.PHASE.CAP_INTERCEPTION
+    if (
+      GlobalGameState.sideWithInitiative === GlobalUnitsModel.Side.US &&
+      GlobalInit.controller.anyFightersInStrike(GlobalGameState.taskForceTarget, GlobalGameState.sideWithInitiative)
+    ) {
+      GlobalGameState.gamePhase = GlobalGameState.PHASE.CARD_PLAY
+      if (GlobalInit.controller.japanHandContainsCard(9)) {
+        setCardNumber(() => 9)
+      } else if (GlobalInit.controller.japanHandContainsCard(12)) {
+        setCardNumber(() => 12)
+      } else {
+        GlobalGameState.gamePhase = GlobalGameState.PHASE.CAP_INTERCEPTION
+      }
+    } else {
+      GlobalGameState.gamePhase = GlobalGameState.PHASE.CAP_INTERCEPTION
+    }
+    GlobalGameState.gamePhase = GlobalGameState.PHASE.CARD_PLAY
   } else if (GlobalGameState.gamePhase === GlobalGameState.PHASE.CAP_INTERCEPTION) {
-    console.log("STATE CHANGE CAP -> AAA FIRE")
-    GlobalGameState.gamePhase =
-      GlobalGameState.capHits > 0
-        ? GlobalGameState.PHASE.CAP_DAMAGE_ALLOCATION
-        : GlobalGameState.PHASE.ANTI_AIRCRAFT_FIRE
+    console.log("STATE CHANGE CAP -> AAA FIRE OR ESCORT COUNTERATTACK OR CAP DAMAGE")
+
+    if (GlobalGameState.capHits > 0) {
+      GlobalGameState.gamePhase = GlobalGameState.PHASE.CAP_DAMAGE_ALLOCATION
+    } else {
+      if (GlobalGameState.taskForceTarget === GlobalUnitsModel.TaskForce.MIDWAY && GlobalGameState.elitePilots) {
+        if (GlobalGameState.attackingStepsRemaining > 0) {
+          GlobalGameState.gamePhase = GlobalGameState.PHASE.ANTI_AIRCRAFT_FIRE
+        } else {
+          await endOfAirOperation(
+            GlobalGameState.sideWithInitiative,
+            capAirUnits,
+            setAirUnitUpdate,
+            setEliminatedUnitsPanelShow
+          )
+          midwayOrAirOps()
+        }
+      } else {
+        GlobalGameState.gamePhase = GlobalGameState.PHASE.ESCORT_COUNTERATTACK
+      }
+    }
   } else if (GlobalGameState.gamePhase === GlobalGameState.PHASE.CAP_DAMAGE_ALLOCATION) {
     console.log("END OF CAP_DAMAGE_ALLOCATION")
-    if (GlobalGameState.attackingStepsRemaining > 0 || getNumEscortFighterSteps(GlobalInit.controller) > 0) {
-      GlobalGameState.gamePhase = GlobalGameState.PHASE.ESCORT_COUNTERATTACK
+    if (GlobalGameState.taskForceTarget === GlobalUnitsModel.TaskForce.MIDWAY && GlobalGameState.elitePilots) {
+      if (GlobalGameState.attackingStepsRemaining > 0) {
+        GlobalGameState.gamePhase = GlobalGameState.PHASE.ANTI_AIRCRAFT_FIRE
+      } else {
+        await endOfAirOperation(
+          GlobalGameState.sideWithInitiative,
+          capAirUnits,
+          setAirUnitUpdate,
+          setEliminatedUnitsPanelShow
+        )
+        midwayOrAirOps()
+      }
     } else {
-      await endOfAirOperation(
-        GlobalGameState.sideWithInitiative,
-        capAirUnits,
-        setAirUnitUpdate,
-        setEliminatedUnitsPanelShow
-      )
-      midwayOrAirOps()
+      if (GlobalGameState.attackingStepsRemaining > 0 || getNumEscortFighterSteps(GlobalInit.controller) > 0) {
+        GlobalGameState.gamePhase = GlobalGameState.PHASE.ESCORT_COUNTERATTACK
+      } else {
+        await endOfAirOperation(
+          GlobalGameState.sideWithInitiative,
+          capAirUnits,
+          setAirUnitUpdate,
+          setEliminatedUnitsPanelShow
+        )
+        midwayOrAirOps()
+      }
     }
   } else if (GlobalGameState.gamePhase === GlobalGameState.PHASE.ESCORT_COUNTERATTACK) {
     console.log("END OF ESCORT_COUNTERATTACK")
@@ -472,8 +556,12 @@ export default async function handleAction({
       GlobalGameState.gamePhase = GlobalGameState.PHASE.ESCORT_DAMAGE_ALLOCATION
     } else {
       if (GlobalInit.controller.getAttackingStepsRemaining() > 0) {
-        console.log("GOING TO ANTI AIRCRAFT FIRE....))))))))))))))))))))))")
-        GlobalGameState.gamePhase = GlobalGameState.PHASE.ANTI_AIRCRAFT_FIRE
+        if (GlobalGameState.taskForceTarget === GlobalUnitsModel.TaskForce.MIDWAY && GlobalGameState.elitePilots) {
+          GlobalGameState.gamePhase = GlobalGameState.PHASE.CAP_INTERCEPTION
+        } else {
+          console.log("GOING TO ANTI AIRCRAFT FIRE....))))))))))))))))))))))")
+          GlobalGameState.gamePhase = GlobalGameState.PHASE.ANTI_AIRCRAFT_FIRE
+        }
       } else {
         await endOfAirOperation(
           GlobalGameState.sideWithInitiative,
@@ -489,13 +577,19 @@ export default async function handleAction({
     if (GlobalGameState.attackingStepsRemaining > 0) {
       GlobalGameState.gamePhase = GlobalGameState.PHASE.ANTI_AIRCRAFT_FIRE
     } else {
-      await endOfAirOperation(
-        GlobalGameState.sideWithInitiative,
-        capAirUnits,
-        setAirUnitUpdate,
-        setEliminatedUnitsPanelShow
-      )
-      midwayOrAirOps()
+      // if elite pilots and midway attack we did escort counterattack first
+      // so transition to CAP_INTERCEPTION
+      if (GlobalGameState.taskForceTarget === GlobalUnitsModel.TaskForce.MIDWAY && GlobalGameState.elitePilots) {
+        GlobalGameState.gamePhase = GlobalGameState.PHASE.CAP_INTERCEPTION
+      } else {
+        await endOfAirOperation(
+          GlobalGameState.sideWithInitiative,
+          capAirUnits,
+          setAirUnitUpdate,
+          setEliminatedUnitsPanelShow
+        )
+        midwayOrAirOps()
+      }
     }
   } else if (GlobalGameState.gamePhase === GlobalGameState.PHASE.ANTI_AIRCRAFT_FIRE) {
     console.log("END OF ANTI_AIRCRAFT_FIRE")
@@ -577,12 +671,6 @@ export default async function handleAction({
   } else if (GlobalGameState.gamePhase === GlobalGameState.PHASE.AIR_ATTACK_2) {
     GlobalGameState.gamePhase = GlobalGameState.PHASE.ATTACK_DAMAGE_RESOLUTION
   } else if (GlobalGameState.gamePhase === GlobalGameState.PHASE.ATTACK_DAMAGE_RESOLUTION) {
-    if (GlobalGameState.attackingStrikeGroup) {
-      console.log(
-        "SPAZ 1974 GlobalGameState.attackingStrikeGroup airOpattack=",
-        GlobalGameState.attackingStrikeGroup.airOpAttacked
-      )
-    }
     if (GlobalGameState.carrierTarget2 !== "" && GlobalGameState.carrierTarget2 !== undefined) {
       GlobalGameState.gamePhase = GlobalGameState.PHASE.AIR_ATTACK_2
     } else {
@@ -595,10 +683,6 @@ export default async function handleAction({
       GlobalGameState.gamePhase = GlobalGameState.PHASE.AIR_OPERATIONS
     }
   } else if (GlobalGameState.gamePhase === GlobalGameState.PHASE.MIDWAY_DAMAGE_RESOLUTION) {
-    console.log("DO TRACE FUCKER...")
-    console.trace()
-    console.log("IN STATE MIDWAY DAMAGE")
-
     await endOfAirOperation(
       GlobalGameState.sideWithInitiative,
       capAirUnits,

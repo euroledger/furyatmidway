@@ -302,15 +302,10 @@ async function doAntiAircraftDamage() {
     GlobalGameState.closePanel = true
     GlobalGameState.updateGlobalState()
   }
-
-  console.log("---------------> QUACK 100 CHANGING STATE old State = ", GlobalGameState.gamePhase)
-
   await delay(1000)
   GlobalGameState.closePanel = true
   GlobalGameState.rollDice = false
   await delay(500)
-  console.log("----------------> QUACK 200 CHANGING STATE New State = ", GlobalGameState.gamePhase)
-
   GlobalGameState.updateGlobalState()
 }
 

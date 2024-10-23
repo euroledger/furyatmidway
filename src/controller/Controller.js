@@ -465,11 +465,12 @@ export default class Controller {
     }
   }
 
-  setAllDefendersToNotIntercepting() {
+  setAllDefendersToNotInterceptingAndNotSeparated() {
     const airunits = this.counters.values().filter((unit) => unit.constructor.name === "AirUnit")
 
     for (const unit of airunits) {
       unit.aircraftUnit.intercepting = false
+      unit.aircraftUnit.separated = false
       this.counters.set(unit.name, unit)
     }
   }
@@ -775,8 +776,10 @@ export default class Controller {
       GlobalGameState.sideWithInitiative === GlobalUnitsModel.Side.US
         ? GlobalUnitsModel.Side.JAPAN
         : GlobalUnitsModel.Side.US
+
     const fleetBeingAttacked = this.getFleetForTaskForce(GlobalGameState.taskForceTarget, sideBeingAttacked)
     let location
+
     if (fleetBeingAttacked === "MIDWAY") {
       location = Controller.MIDWAY_HEX
     } else {
@@ -790,7 +793,6 @@ export default class Controller {
       //   location
       // )
     }
-
     const strikeGroups = this.getAllStrikeGroupsInLocation(location, GlobalGameState.sideWithInitiative)
     if (strikeGroups.length === 0) {
       return []
@@ -804,6 +806,9 @@ export default class Controller {
     if (excludeFighters) {
       unitsInGroup = unitsInGroup.filter((unit) => unit.aircraftUnit.attack === true)
     }
+    // filter out fighter separated by Japan Card #9
+    unitsInGroup = unitsInGroup.filter((unit) => unit.aircraftUnit.separated !== true)
+
     return unitsInGroup
   }
 
@@ -1221,12 +1226,12 @@ export default class Controller {
   getValidAirUnitDestinations(name) {
     return this.airOperationsModel.getValidAirUnitDestinations(name)
   }
-  drawJapanCards(num, initial) {
-    this.cardModel.drawJapanCards(num, initial)
+  drawJapanCards(num, initial, testCards) {
+    this.cardModel.drawJapanCards(num, initial, testCards)
   }
 
-  drawUSCards(num, initial) {
-    this.cardModel.drawUSCards(num, initial)
+  drawUSCards(num, initial, testCards) {
+    this.cardModel.drawUSCards(num, initial, testCards)
   }
 
   japanHandContainsCard(cardNum) {
@@ -1237,12 +1242,12 @@ export default class Controller {
     return this.cardModel.usHandContainsCard(cardNum)
   }
 
-  setCardPlayed(cardNum) {
-    this.cardModel.setCardPlayed(cardNum)
+  setCardPlayed(cardNum, side) {
+    this.cardModel.setCardPlayed(cardNum, side)
   }
 
-  getCardPlayed(cardNum) {
-    return this.cardModel.getCardPlayed(cardNum)
+  getCardPlayed(cardNum, side) {
+    return this.cardModel.getCardPlayed(cardNum, side)
   }
 
   setFleetUnitLocation(id, location, side) {
@@ -1335,7 +1340,6 @@ export default class Controller {
 
   calcSearchResults(distances) {
     let jpVal = Math.max(1, GlobalGameState.SearchValue.JP_AF - distances.jp_af)
-
 
     jpVal -= GlobalGameState.midwayAirOpsCompleted
     jpVal = Math.max(0, jpVal)

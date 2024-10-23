@@ -67,13 +67,13 @@ export default class CardModel {
     const strikeGroupLocations = new Map(
       [...mapMap].filter(([k, v]) => k.includes("SG") && this.locationsEqual(v, location))
     )
-
     // for each key get the strike group and add to array
     for (let sg of strikeGroupLocations.keys()) {
       const group = new Map([...strikeMap].filter(([_, v]) => v.name === sg))
       let values = Array.from(group.values())
       strikeGroups.push(values[0]) // should only ever be 1
     }
+    // console.trace()
     return strikeGroups
   }
 

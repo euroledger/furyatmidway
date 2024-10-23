@@ -8,7 +8,7 @@ class ViewEventStrikeGroupMoveHandler {
     this.controller = controller
   }
   handleEvent(event) {
-    const { initial, counterData, from, to, side, loading, moved, attacked } = event.data
+    const { initial, counterData, from, to, side, loading, moved, attacked, setCardNumber } = event.data
 
     // add strike group to map holding name -> current Hex
     this.controller.setStrikeGroupLocation(counterData.name, to, side)
@@ -41,10 +41,20 @@ class ViewEventStrikeGroupMoveHandler {
         this.controller.setAirOpAttacked(counterData)
 
         if (GlobalGameState.gamePhase === GlobalGameState.PHASE.MIDWAY_ATTACK) {
-          GlobalGameState.gamePhase = GlobalGameState.PHASE.CAP_INTERCEPTION
+          if (this.controller.japanHandContainsCard(9)) {
+            GlobalGameState.gamePhase = GlobalGameState.PHASE.CARD_PLAY
+            setCardNumber(() => 9)
+          } else {
+            GlobalGameState.gamePhase = GlobalGameState.PHASE.CAP_INTERCEPTION
+          }
           GlobalGameState.taskForceTarget = GlobalUnitsModel.TaskForce.MIDWAY
         } else {
-          GlobalGameState.gamePhase = GlobalGameState.PHASE.TARGET_DETERMINATION
+          if (this.controller.japanHandContainsCard(11)) {
+            GlobalGameState.gamePhase = GlobalGameState.PHASE.CARD_PLAY
+            setCardNumber(() => 11)
+          } else {
+            GlobalGameState.gamePhase = GlobalGameState.PHASE.TARGET_DETERMINATION
+          }
         }
 
         // @TODO we may need a global state reset function that

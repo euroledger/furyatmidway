@@ -134,6 +134,8 @@ export default class GlobalGameState {
   static sideWithInitiative = ""
   static allStrikeUnitsReturned = false
 
+  static elitePilots = false
+  
   static updateGlobalState = () => {
     this.stateHandler();
   }

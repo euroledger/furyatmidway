@@ -1,4 +1,4 @@
-import { React, useEffect, useState, createRef} from "react"
+import { React, useEffect, useState, createRef } from "react"
 import "./cap.css"
 import GlobalUnitsModel from "../model/GlobalUnitsModel"
 import GlobalGameState from "../model/GlobalGameState"
@@ -15,17 +15,22 @@ export function CAPHeaders({ controller, setCapAirUnits, capSteps, setCapSteps }
   const capUnits = controller.getAllAirUnitsInBox(capBox)
   const arrLength = capUnits.length
 
+  const elitePilotsMsg =
+    GlobalGameState.elitePilots && sideBeingAttacked === GlobalUnitsModel.Side.JAPAN
+      ? "Elite Pilots: +1 DRM for all die rolls"
+      : ""
+
   useEffect(() => {
     // add or remove refs
     setElRefs((elRefs) =>
       Array(arrLength)
         .fill()
-        .map((_, i) => elRefs[i] || createRef()),
-    );
+        .map((_, i) => elRefs[i] || createRef())
+    )
     const myRef = elRefs[GlobalGameState.testCapSelection]
     if (myRef !== undefined) {
       myRef.current.click(myRef.current)
-    } 
+    }
   }, [arrLength, GlobalGameState.testCapSelection])
   const msg = "Target For Air Attack:"
 
@@ -46,8 +51,7 @@ export function CAPHeaders({ controller, setCapAirUnits, capSteps, setCapSteps }
     GlobalGameState.updateGlobalState()
   }
   const attackers = controller.getAttackingStrikeUnits(false)
-
-
+  
   const strikeCounters = attackers.map((airUnit) => {
     return (
       <div>
@@ -173,6 +177,19 @@ export function CAPHeaders({ controller, setCapAirUnits, capSteps, setCapSteps }
           }}
         >
           Steps Selected: &nbsp;<strong>{capSteps}</strong>&nbsp;
+        </p>
+      </div>
+      <div>
+        <p
+          style={{
+            display: "flex",
+            marginTop: "50px",
+            justifyContent: "center",
+            alignItems: "center",
+            color: "white",
+          }}
+        >
+          {elitePilotsMsg}
         </p>
       </div>
     </>

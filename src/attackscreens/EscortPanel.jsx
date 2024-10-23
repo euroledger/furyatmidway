@@ -4,18 +4,19 @@ import GlobalUnitsModel from "../model/GlobalUnitsModel"
 import GlobalGameState from "../model/GlobalGameState"
 import Controller from "../controller/Controller"
 
-export function EscortHeaders({ controller, setEscortSteps }) {
-  const sideBeingAttacked =
-    GlobalGameState.sideWithInitiative === GlobalUnitsModel.Side.US
-      ? GlobalUnitsModel.Side.JAPAN
-      : GlobalUnitsModel.Side.US
-
+export function EscortHeaders({ controller, setCapAirUnits }) {
   const msg = "Target For Air Attack:"
 
   const box = GlobalGameState.attackingStrikeGroup.box
   let fighters = controller.getAllFightersInBox(box)
 
+  fighters = fighters.filter((unit) => unit.aircraftUnit.separated !== true)
+
   let NoFightersMsg = "Roll 1 Die for each Fighter Step"
+  if (GlobalGameState.elitePilots) {
+    NoFightersMsg += ". +1 DRM For Elite Pilots (Japan Card #12)"
+  }
+ 
   if (fighters.length === 0) {
     NoFightersMsg = "No Escort Fighters. Click Close to move on to next phase"
   }
@@ -90,31 +91,31 @@ export function EscortHeaders({ controller, setEscortSteps }) {
 }
 
 export function EscortFooters({ controller, setFightersPresent }) {
-  const show =  GlobalGameState.dieRolls.length > 0
+  const show = GlobalGameState.dieRolls.length > 0
 
-    const msg="Number of Hits:"
- 
-    return (
-      <>
-        {show && (
-          <div
+  const msg = "Number of Hits:"
+
+  return (
+    <>
+      {show && (
+        <div
+          style={{
+            marginTop: "10px",
+            marginLeft: "-28px",
+          }}
+        >
+          <p
             style={{
-              marginTop: "10px",
-              marginLeft: "-28px",
+              display: "flex",
+              justifyContent: "center",
+              alignItems: "center",
+              color: "white",
             }}
           >
-            <p
-              style={{
-                display: "flex",
-                justifyContent: "center",
-                alignItems: "center",
-                color: "white",
-              }}
-            >
-              {msg} &nbsp;<strong>{GlobalGameState.fighterHits}</strong>&nbsp;
-            </p>
-          </div>
-        )}
-      </>
-    )
+            {msg} &nbsp;<strong>{GlobalGameState.fighterHits}</strong>&nbsp;
+          </p>
+        </div>
+      )}
+    </>
+  )
 }

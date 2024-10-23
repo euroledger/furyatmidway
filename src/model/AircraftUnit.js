@@ -9,6 +9,7 @@ export default class AircraftUnit {
         this.moved = moved
         this.intercepting = intercepting
         this.hitsScored = 0
+        this.separated = false
     };
 
     get movement() {
@@ -72,6 +73,15 @@ export default class AircraftUnit {
 
     set intercepting(i) {
         this._intercepting = i
+    }
+
+    
+    get separated() {
+        return this._separated
+    }
+
+    set separated(s) {
+        this._separated = s
     }
 
     get hitsScored() {

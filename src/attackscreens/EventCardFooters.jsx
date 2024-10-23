@@ -1,67 +1,8 @@
 import GlobalGameState from "../model/GlobalGameState"
-import Die from "../components/dialogs/Die"
-import Col from "react-bootstrap/Col"
-import Row from "react-bootstrap/Row"
+import GlobalInit from "../model/GlobalInit"
+import GlobalUnitsModel from "../model/GlobalUnitsModel"
 
 export function EventCardFooter({ cardNumber, showCardFooter, setShowDice }) {
-//   if (cardNumber === 5) {
-//     setShowDice(() => true)
-//     return (
-//       <>
-//         {showCardFooter && (
-//           <div
-//             style={{
-//               marginTop: "10px",
-//               marginLeft: "-28px",
-//             }}
-//           >
-//             <p
-//               style={{
-//                 display: "flex",
-//                 justifyContent: "center",
-//                 alignItems: "center",
-//                 color: "white",
-//               }}
-//             >
-//               Roll the die. Midway Garrison reduced by die roll / 2 (rounded down)
-//               <br></br>
-//             </p>
-//             <div
-//               style={{
-//                 display: "flex",
-//                 justifyContent: "center",
-//                 alignItems: "center",
-//                 color: "white",
-//               }}
-//             >
-//                <div
-//                 style={{
-//                   display: "flex",
-//                   justifyContent: "center",
-//                   alignItems: "center",
-//                 }}
-//               >
-//                 <Row xs={1}>
-//                   {Array.from({ length: 1 }).map((_, idx) => {
-//                     const dieName = "dice" + (idx + 1)
-//                     return (
-//                       <Col key={idx} className="d-flex">
-//                         <div>
-//                           <Die name={dieName}></Die>
-//                         </div>
-//                       </Col>
-//                     )
-//                   })}
-//                 </Row>
-             
-//               </div>
-//             </div>
-//           </div>
-//         )}
-//       </>
-//     )
-//   }
-
   if (cardNumber === 6) {
     setShowDice(false)
     GlobalGameState.SearchValue.JP_AF = 8
@@ -84,6 +25,82 @@ export function EventCardFooter({ cardNumber, showCardFooter, setShowDice }) {
             >
               The IJN Search Value for the 1AF is 8 for this turn.
               <br></br>
+            </p>
+          </div>
+        )}
+      </>
+    )
+  }
+  if (cardNumber === 9) {
+    setShowDice(false)
+    // remove US Fighter From Strike Group
+    let airMsg = ""
+    if (showCardFooter) {
+      const units = GlobalInit.controller.getAttackingStrikeUnits()
+      for (const unit of units) {
+        if (!unit.aircraftUnit.attack) {
+          console.log("ARSE AGAIN!!!!!!!!!")
+          unit.aircraftUnit.separated = true
+          airMsg = "Fighter Unit Removed From Air Strike: " + unit.name
+          break
+        }
+      }
+    }
+
+    return (
+      <>
+        {showCardFooter && (
+          <div
+            style={{
+              marginTop: "10px",
+              marginLeft: "-28px",
+            }}
+          >
+            <p
+              style={{
+                display: "flex",
+                justifyContent: "center",
+                alignItems: "center",
+                color: "white",
+              }}
+            >
+              {airMsg}
+            </p>
+          </div>
+        )}
+      </>
+    )
+  }
+  if (cardNumber === 12) {
+    setShowDice(false)
+    // set DRM For Japanese Fighters to 1 and elite pilots flag to true (reverses order of
+    // combat for Midway attacks)
+    let airMsg =
+      GlobalGameState.sideWithInitiative === GlobalUnitsModel.Side.US
+        ? "Elite Japanese Pilots: +1 DRM for CAP Combat Die Rolls this Air Op."
+        : "Elite Japanese Pilots: +1 DRM for Escort Die Rolls this Air Op."
+    if (showCardFooter) {
+      GlobalGameState.elitePilots = true
+    }
+
+    return (
+      <>
+        {showCardFooter && (
+          <div
+            style={{
+              marginTop: "10px",
+              marginLeft: "-28px",
+            }}
+          >
+            <p
+              style={{
+                display: "flex",
+                justifyContent: "center",
+                alignItems: "center",
+                color: "white",
+              }}
+            >
+              {airMsg}
             </p>
           </div>
         )}

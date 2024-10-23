@@ -169,6 +169,7 @@ function LargeDicePanel(props) {
             if(closeButtonCallback) {
               closeButtonCallback(e)
             } else {
+              console.log("HIDE THE FUCKR")
               onHide(e)
             }
           }}

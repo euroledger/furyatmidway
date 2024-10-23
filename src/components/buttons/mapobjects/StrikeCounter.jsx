@@ -18,6 +18,7 @@ function StrikeCounter({ setStrikeGroupPopup, currentUSHex, currentJapanHex, cou
     setJapanMapRegions,
     japanMapRegions,
     strikeGroupUpdate,
+    setCardNumber
   } = useContext(BoardContext)
 
   const [currentHex, setCurrentHex] = useState({})
@@ -120,6 +121,7 @@ function StrikeCounter({ setStrikeGroupPopup, currentUSHex, currentJapanHex, cou
         to,
         side,
         loading,
+        setCardNumber,
         moved: true,
         attacked: strikeGroupUpdate.attacked,
       },
@@ -270,6 +272,7 @@ function StrikeCounter({ setStrikeGroupPopup, currentUSHex, currentJapanHex, cou
     // draw hexes around this location as drop zone
   } // end handleClick
   const handleDrop = (event) => {
+    setStrikeGroupPopup(side, false)
     const sg = controller.getStrikeGroupForBox(side, counterData.box)
     if (sg.attacked) {
       // if this strike group has attacked, disallow further movement for this air op
@@ -346,6 +349,7 @@ function StrikeCounter({ setStrikeGroupPopup, currentUSHex, currentJapanHex, cou
         to,
         side,
         loading,
+        setCardNumber
       },
     })
 
@@ -364,8 +368,10 @@ function StrikeCounter({ setStrikeGroupPopup, currentUSHex, currentJapanHex, cou
         setUSRegions()
       }
     }
-    const location = controller.getStrikeGroupLocation(counterData.name, side)
-    setStrikeGroupPopup(side, true, location)
+    if (!sg.attacked) {
+      const location = controller.getStrikeGroupLocation(counterData.name, side)
+      setStrikeGroupPopup(side, true, location)      
+    }
   }
 
   const onDrag = () => {

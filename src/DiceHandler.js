@@ -73,7 +73,7 @@ export function doIntiativeRoll(controller, roll0, roll1, showDice) {
 }
 
 export function doSelectionRoll(controller, roll0) {
-  GlobalGameState.dieRolls = 0
+  GlobalGameState.dieRolls = []
 
   // for automated testing
   let actualTarget
@@ -104,11 +104,13 @@ export function doFighterCounterattack(controller, testRolls) {
 
   let rolls = testRolls === undefined ? randomDice(numSteps) : testRolls
 
+  let drm = GlobalGameState.elitePilots ? 1: 0
+
   let hits = 0,
     index = 0
   for (let unit of attackers) {
     for (let i = 0; i < unit.aircraftUnit.steps; i++) {
-      if (rolls[index] <= unit.aircraftUnit.strength) {
+      if (rolls[index] <= unit.aircraftUnit.strength + drm) {
         hits++
       }
       index++
@@ -116,7 +118,7 @@ export function doFighterCounterattack(controller, testRolls) {
   }
   GlobalGameState.dieRolls = 1
   GlobalGameState.fighterHits = hits
-    GlobalGameState.fighterHits = 1 // QUACK TESTING ONLY
+    // GlobalGameState.fighterHits = 1 // QUACK TESTING ONLY
 
 }
 
@@ -730,6 +732,8 @@ function getNumStepsInStrikeUnits(units) {
 
 export function getNumEscortFighterSteps(controller) {
   let fighters = getFightersForStrikeGroup(controller)
+  fighters = fighters.filter((unit) => unit.aircraftUnit.separated !== true)
+
   let steps = 0
 
   for (let unit of fighters) {
@@ -889,7 +893,9 @@ export function doCAP(controller, capAirUnits, fightersPresent, testRolls) {
 
   let rolls = testRolls === undefined ? randomDice(numSteps) : testRolls
 
-  const drm = fightersPresent ? 0 : 1
+  let drm = fightersPresent ? 0 : 1
+  drm += GlobalGameState.elitePilots ? 1: 0
+
   // compare each roll with the steps of the defending units, and the corresponding attack factor
   let hits = 0,
     index = 0
