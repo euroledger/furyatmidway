@@ -104,11 +104,13 @@ export function DamageHeaders({ controller, eliminatedSteps, setEliminatedSteps,
         // setEliminatedSteps(0)
         return // don't allow more steps to be eliminated than is necessary
       }
+      GlobalGameState.attackingStepsRemaining = totalSteps
     } else if (GlobalGameState.gamePhase === GlobalGameState.PHASE.AAA_DAMAGE_ALLOCATION) {
       if (eliminatedSteps === GlobalGameState.antiaircraftHits) {
         // setEliminatedSteps(0)
         return // don't allow more steps to be eliminated than is necessary
       }
+      GlobalGameState.attackingStepsRemaining = totalSteps
     }
 
     doDamageAllocation(controller, airUnit)

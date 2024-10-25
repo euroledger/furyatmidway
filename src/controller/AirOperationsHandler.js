@@ -498,9 +498,11 @@ export async function resetStrikeGroups(controller, side, setStrikeGroupUpdate) 
   for (let strikeGroup of groups.values()) {
     if (!strikeGroup.attacked) {
       index++
+      console.log("SG", strikeGroup.name, "-> HAS NOT ATTACKED -NO RESET!")
+
       continue
     }
-    // console.log("SG", strikeGroup.name, "-> RESET!")
+    console.log("SG", strikeGroup.name, "-> RESET!")
     strikeGroup.airOpAttacked = undefined
     strikeGroup.airOpMoved = undefined
     strikeGroup.moved = false

@@ -24,6 +24,8 @@ function AirCounter({ getAirBox, setAirBox, counterData, side }) {
     top: counterData.position.top,
   })
 
+  const location = controller.getAirUnitLocation(counterData.name)
+
   const onDrag = () => {
     setIsMoveable(true)
 
@@ -33,7 +35,13 @@ function AirCounter({ getAirBox, setAirBox, counterData, side }) {
     // Only CAP Units can be moved during the other side's air operation (at the end
     // of all airstrikes to return to carrier)
     const location = controller.getAirUnitLocation(counterData.name)
+
+    console.log("COunterData:", counterData.name, "LOCATION=", location)
     if (GlobalGameState.sideWithInitiative !== counterData.side && !location.boxName.includes("CAP RETURNING")) {
+      return
+    }
+
+    if (location.boxName.includes("ELIMINATED")) {
       return
     }
     if (
@@ -136,8 +144,8 @@ function AirCounter({ getAirBox, setAirBox, counterData, side }) {
   if (
     counterData.name === testUpdate.name &&
     testUpdate.position != undefined &&
-    (position.left !== testUpdate.position.left + "%" &&
-    position.top !== testUpdate.position.top + "%")
+    position.left !== testUpdate.position.left + "%" &&
+    position.top !== testUpdate.position.top + "%"
   ) {
     // console.log("I am ", counterData.name," -> AIR UNIT UPDATE = ", testUpdate)
 
@@ -339,6 +347,9 @@ function AirCounter({ getAirBox, setAirBox, counterData, side }) {
     // if (side !== GlobalGameState.sideWithInitiative) {
     //   disp = "none"
     // }
+    if (location.boxName.includes("OFFBOARD") && GlobalGameState.gamePhase === GlobalGameState.PHASE.AIR_OPERATIONS) {
+      disp = "none"
+    }
   }
   return (
     <div>

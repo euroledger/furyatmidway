@@ -422,7 +422,16 @@ export function loadGameStateForId(controller, gameId) {
   const jpCardText = gameDetails.jpcards
 
   GlobalUnitsModel.jpCards = JSON.parse(jpCardText)
+
+  // QUACK TEST JAPAN CARD 10 - "US Carrier Planes Ditch"
+  // GlobalInit.controller.setCardPlayed(9, GlobalUnitsModel.Side.JAPAN)
+  // GlobalInit.controller.drawJapanCards(1, false, [10])
+
   GlobalUnitsModel.usCards = JSON.parse(usCardText)
+
+  // QUACK TEST US CARD 1 - "Towed to a Friendly Port"\
+  // GlobalInit.controller.setCardPlayed(2, GlobalUnitsModel.Side.US)
+  // GlobalInit.controller.drawUSCards(1, false, [1])
 
   const items = gameDetails.log
   const logItems = new Map(JSON.parse(items))

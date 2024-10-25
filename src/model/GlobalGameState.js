@@ -86,6 +86,9 @@ export default class GlobalGameState {
   static currentCarrierAttackTarget=""
 
   static attackingStrikeGroup= undefined
+
+  static usCVsSunk = 0
+  static japanCVsSunk = 0
   
   // Can attack both carriers in a task force
   static carrierTarget1=""

@@ -116,7 +116,7 @@ export function doFighterCounterattack(controller, testRolls) {
       index++
     }
   }
-  GlobalGameState.dieRolls = 1
+  // GlobalGameState.dieRolls = 1
   GlobalGameState.fighterHits = hits
     // GlobalGameState.fighterHits = 1 // QUACK TESTING ONLY
 
@@ -383,6 +383,14 @@ export function autoAllocateDamage(controller) {
     controller.setCarrierHits(carrier, Math.min(3, currentCarrierHits + hits))
     if (controller.getCarrierHits(carrier) >= 3) {
       damage.sunk = true
+   
+      if (GlobalGameState.sideWithInitiative === GlobalUnitsModel.US) {
+        GlobalGameState.japanCVsSunk++
+      } else {
+        GlobalGameState.usCVsSunk++
+        }   
+
+      
       const airUnits = getAirUnitsInHangar(controller, carrier)
       for (let unit of airUnits) {
         moveAirUnitToEliminatedBox(controller, unit)
@@ -665,8 +673,8 @@ export function doAttackFireRolls(controller, testRolls) {
     GlobalGameState.carrierAttackHitsThisAttack = hits
 
     // QUACK REMOVE TEESTING ONLY
-    // GlobalGameState.carrierAttackHits = 2
-    // GlobalGameState.carrierAttackHitsThisAttack = 2
+    GlobalGameState.carrierAttackHits = 2
+    GlobalGameState.carrierAttackHitsThisAttack = 2
   }
   return hits
 }

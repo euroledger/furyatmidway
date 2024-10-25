@@ -53,11 +53,17 @@ describe("Air Operations tests for air units in Flight Deck boxes", () => {
     // TF 16
     controller.addAirUnitToBox(GlobalUnitsModel.AirBox.US_ENTERPRISE_FLIGHT_DECK, 0, ef1)
     controller.addAirUnitToBox(GlobalUnitsModel.AirBox.US_ENTERPRISE_FLIGHT_DECK, 1, edb1)
+    edb2.launchedFrom = GlobalUnitsModel.Carrier.ENTERPRISE
+    etb.launchedFrom = GlobalUnitsModel.Carrier.ENTERPRISE
+
     controller.addAirUnitToBox(GlobalUnitsModel.AirBox.US_STRIKE_BOX_0, 0, edb2)
     controller.addAirUnitToBox(GlobalUnitsModel.AirBox.US_STRIKE_BOX_3, 0, etb)
 
     controller.addAirUnitToBox(GlobalUnitsModel.AirBox.US_HORNET_FLIGHT_DECK, 0, hf1)
     controller.addAirUnitToBox(GlobalUnitsModel.AirBox.US_HORNET_FLIGHT_DECK, 1, hdb1)
+
+    htb1.launchedFrom = GlobalUnitsModel.Carrier.HORNET
+    hdb2.launchedFrom = GlobalUnitsModel.Carrier.HORNET
     controller.addAirUnitToBox(GlobalUnitsModel.AirBox.US_STRIKE_BOX_1, 0, hdb2)
     controller.addAirUnitToBox(GlobalUnitsModel.AirBox.US_STRIKE_BOX_2, 0, htb1)
   })
@@ -111,15 +117,15 @@ describe("Air Operations tests for air units in Flight Deck boxes", () => {
     expect(destinations.length).toEqual(6) // dive bomber cannot go to CAP
     // cannot go to strike boxes 1 or 2 as these contain Hornet units
     expect(destinations[0]).toEqual(GlobalUnitsModel.AirBox.US_STRIKE_BOX_0)
-    // expect(destinations[1]).toEqual(GlobalUnitsModel.AirBox.US_STRIKE_BOX_1)
-    // expect(destinations[2]).toEqual(GlobalUnitsModel.AirBox.US_STRIKE_BOX_2)
+
     expect(destinations[1]).toEqual(GlobalUnitsModel.AirBox.US_STRIKE_BOX_3)
     expect(destinations[2]).toEqual(GlobalUnitsModel.AirBox.US_STRIKE_BOX_4)
     expect(destinations[3]).toEqual(GlobalUnitsModel.AirBox.US_STRIKE_BOX_5)
     expect(destinations[4]).toEqual(GlobalUnitsModel.AirBox.US_STRIKE_BOX_6)
     expect(destinations[5]).toEqual(GlobalUnitsModel.AirBox.US_ENTERPRISE_HANGAR)
 
-    // Add dive bomber to strike box 2
+    // // Add dive bomber to strike box 2
+    edb1.launchedFrom = GlobalUnitsModel.Carrier.ENTERPRISE
     controller.addAirUnitToBox(GlobalUnitsModel.AirBox.US_STRIKE_BOX_2, 0, edb1)
     const airUnitsInBox = controller.getAllAirUnitsInBox(GlobalUnitsModel.AirBox.US_STRIKE_BOX_2)
     expect(airUnitsInBox.length).toEqual(1)
@@ -136,13 +142,5 @@ describe("Air Operations tests for air units in Flight Deck boxes", () => {
     expect(destinations[3]).toEqual(GlobalUnitsModel.AirBox.US_STRIKE_BOX_3)
     expect(destinations[4]).toEqual(GlobalUnitsModel.AirBox.US_ENTERPRISE_HANGAR)
     
-  })
- 
-  // @TODO Midway test
-
-  // @TODO test for which boxes are valid destinations for units already in strike box
-  // i.e., other strike boxes (only) until after strike
-
-  // Do post strike, post CAP valid boxes later
- 
+  }) 
 })

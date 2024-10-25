@@ -60,8 +60,15 @@ async function setNextStateFollowingCardPlay({
   setSearchValues,
   setSearchResults,
   setSearchValuesAlertShow,
+  setAirUnitUpdate,
+  setStrikeGroupUpdate,
+  setEndOfAirOpAlertShow,
 }) {
   switch (cardNumber) {
+    case -1:
+      GlobalGameState.gamePhase = GlobalGameState.PHASE.CAP_INTERCEPTION
+      break
+
     case 0:
       GlobalGameState.gamePhase = GlobalGameState.PHASE.JAPAN_MIDWAY
       setMidwayDialogShow(true)
@@ -96,19 +103,22 @@ async function setNextStateFollowingCardPlay({
     case 9:
       // Escort Separated
 
-      // Now check for possible play of card 12
-      if (GlobalInit.controller.japanHandContainsCard(12)) {
-        setCardNumber(() => 12)
-      } else {
-        setCardNumber(() => 0) // reset for next card play
-        GlobalGameState.gamePhase = GlobalGameState.PHASE.CAP_INTERCEPTION
-      }
+      setCardNumber(() => -1) // reset for next card play
+      GlobalGameState.gamePhase = GlobalGameState.PHASE.CAP_INTERCEPTION
 
       break
+    case 10:
+      // US Carrier Planes Ditch
+      await tidyUp(setAirUnitUpdate, setStrikeGroupUpdate)
+      GlobalGameState.gamePhase = GlobalGameState.PHASE.END_OF_AIR_OPERATION
+      setEndOfAirOpAlertShow(true)
+      break
+      
     case 11:
       // US Strike Lost
       // if the card was played we go back to AIR OPERATIONS
       // otherwise TARGET DETERMINATION
+      setCardNumber(() => -1) // reset for next card play
       if (GlobalInit.controller.getCardPlayed(11, GlobalUnitsModel.Side.JAPAN)) {
         GlobalGameState.gamePhase = GlobalGameState.PHASE.AIR_OPERATIONS
       } else {
@@ -241,7 +251,13 @@ export function displayAttackTargetPanel(controller) {
   return true
 }
 
-function usFleetMovementHandler({ setFleetUnitUpdate, setCardNumber }) {
+function usFleetMovementHandler({
+  setFleetUnitUpdate,
+  setCardNumber,
+  setSearchValues,
+  setSearchResults,
+  setSearchValuesAlertShow,
+}) {
   const update = createMapUpdateForFleet(GlobalInit.controller, "CSF", GlobalUnitsModel.Side.US)
   setFleetUnitUpdate(update)
   console.log("usFleetMovementHandler...")
@@ -249,6 +265,7 @@ function usFleetMovementHandler({ setFleetUnitUpdate, setCardNumber }) {
     setCardNumber(() => 7)
     GlobalGameState.gamePhase = GlobalGameState.PHASE.CARD_PLAY
   } else {
+    calcAirOpsPoints({ setSearchValues, setSearchResults, setSearchValuesAlertShow })
     GlobalGameState.gamePhase = GlobalGameState.PHASE.AIR_SEARCH
   }
 }
@@ -425,6 +442,7 @@ export default async function handleAction({
       setSearchValuesAlertShow,
       setAirUnitUpdate,
       setStrikeGroupUpdate,
+      setEndOfAirOpAlertShow,
     })
   } else if (GlobalGameState.gamePhase === GlobalGameState.PHASE.JAPAN_MIDWAY) {
     midwayDeclarationHandler({ setUsFleetRegions })
@@ -438,20 +456,6 @@ export default async function handleAction({
       setJapanStrikePanelEnabled(true)
       setUsStrikePanelEnabled(false)
       GlobalGameState.phaseCompleted = false
-      // airOperationsHandler({
-      //   setEnabledJapanBoxes,
-      //   setEnabledUSBoxes,
-      //   setJapanStrikePanelEnabled,
-      //   setUsStrikePanelEnabled,
-      //   sideWithInitiative,
-      //   setInitiativePanelShow,
-      //   capAirUnits,8
-      //   setAirUnitUpdate,
-      //   setSearchValues,
-      //   setSearchResults,
-      //   setSearchValuesAlertShow,
-      //   setEliminatedUnitsPanelShow,
-      // })
     }
     // } else if (GlobalGameState.gamePhase === GlobalGameState.PHASE.MIDWAY_ATTACK) {
     //   midwayAttackHandler()
@@ -459,8 +463,15 @@ export default async function handleAction({
     usFleetMovementHandler({
       setFleetUnitUpdate,
       setCardNumber,
+      setSearchValues,
+      setSearchResults,
+      setSearchValuesAlertShow,
     })
   } else if (GlobalGameState.gamePhase === GlobalGameState.PHASE.INITIATIVE_DETERMINATION) {
+    console.log(
+      "INITIATIVE DETERMINATION DONE-> GlobalGameState.sideWithInitiative =",
+      GlobalGameState.sideWithInitiative
+    )
     if (GlobalGameState.sideWithInitiative === GlobalUnitsModel.Side.US) {
       setUsStrikePanelEnabled(true)
     } else {
@@ -488,9 +499,15 @@ export default async function handleAction({
       GlobalInit.controller.anyFightersInStrike(GlobalGameState.taskForceTarget, GlobalGameState.sideWithInitiative)
     ) {
       GlobalGameState.gamePhase = GlobalGameState.PHASE.CARD_PLAY
-      if (GlobalInit.controller.japanHandContainsCard(9)) {
+      if (
+        GlobalGameState.sideWithInitiative === GlobalUnitsModel.Side.US &&
+        GlobalInit.controller.japanHandContainsCard(9)
+      ) {
         setCardNumber(() => 9)
-      } else if (GlobalInit.controller.japanHandContainsCard(12)) {
+      } else if (
+        GlobalGameState.sideWithInitiative === GlobalUnitsModel.Side.JAPAN &&
+        GlobalInit.controller.japanHandContainsCard(12)
+      ) {
         setCardNumber(() => 12)
       } else {
         GlobalGameState.gamePhase = GlobalGameState.PHASE.CAP_INTERCEPTION
@@ -518,7 +535,11 @@ export default async function handleAction({
           midwayOrAirOps()
         }
       } else {
-        GlobalGameState.gamePhase = GlobalGameState.PHASE.ESCORT_COUNTERATTACK
+        if (capSteps > 0) {
+          GlobalGameState.gamePhase = GlobalGameState.PHASE.ESCORT_COUNTERATTACK
+        } else {
+          GlobalGameState.gamePhase = GlobalGameState.PHASE.ANTI_AIRCRAFT_FIRE
+        }
       }
     }
   } else if (GlobalGameState.gamePhase === GlobalGameState.PHASE.CAP_DAMAGE_ALLOCATION) {
@@ -603,7 +624,6 @@ export default async function handleAction({
     } else if (GlobalInit.controller.getAttackingStepsRemaining() > 0) {
       let display = displayAttackTargetPanel(GlobalInit.controller)
       if (display) {
-        console.log("NEW STATE = ATTACK TARGET SELECTION WOOOOOOOOOOOOOOO")
         GlobalGameState.gamePhase = GlobalGameState.PHASE.ATTACK_TARGET_SELECTION
       } else {
         const anyTargets = GlobalInit.controller.autoAssignTargets()
@@ -694,9 +714,17 @@ export default async function handleAction({
     if (GlobalGameState.orphanedAirUnits.length > 0) {
       setEliminatedUnitsPanelShow(true)
     } else {
-      await tidyUp(setAirUnitUpdate, setStrikeGroupUpdate)
-      GlobalGameState.gamePhase = GlobalGameState.PHASE.END_OF_AIR_OPERATION
-      setEndOfAirOpAlertShow(true)
+      if (
+        GlobalGameState.sideWithInitiative === GlobalUnitsModel.Side.US &&
+        GlobalInit.controller.japanHandContainsCard(10)
+      ) {
+        setCardNumber(() => 10)
+        GlobalGameState.gamePhase = GlobalGameState.PHASE.CARD_PLAY
+      } else {
+        await tidyUp(setAirUnitUpdate, setStrikeGroupUpdate)
+        GlobalGameState.gamePhase = GlobalGameState.PHASE.END_OF_AIR_OPERATION
+        setEndOfAirOpAlertShow(true)
+      }
     }
   } else if (GlobalGameState.gamePhase === GlobalGameState.PHASE.END_OF_AIR_OPERATION) {
     console.log("GO TO INITIATIVE DETERMINATION...")

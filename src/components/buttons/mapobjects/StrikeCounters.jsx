@@ -70,6 +70,7 @@ function StrikeCounters({
         GlobalGameState.gamePhase !== GlobalGameState.PHASE.ESCORT_DAMAGE_ALLOCATION && 
         GlobalGameState.gamePhase !== GlobalGameState.PHASE.AAA_DAMAGE_ALLOCATION && 
         GlobalGameState.gamePhase !== GlobalGameState.PHASE.ATTACK_TARGET_SELECTION && 
+        GlobalGameState.gamePhase !== GlobalGameState.PHASE.CARD_PLAY && 
         GlobalGameState.gamePhase !== GlobalGameState.PHASE.MIDWAY_ATTACK)
        ||
       controller.getAirUnitsInStrikeGroups(strikeGroupUnit.box).length === 0

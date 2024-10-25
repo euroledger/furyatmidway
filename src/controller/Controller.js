@@ -245,8 +245,17 @@ export default class Controller {
   }
 
   getCarrierAirUnitLaunchedFrom(name) {
+    const unit = this.getAirUnitForName(name)
     const location = this.getAirUnitLocation(name)
-    return this.getCarrierForAirBox(location.boxName)
+    // console.log("Air Unit", name, "launched from", location)
+
+    let loc = location.boxName
+    if (location.boxName.includes("STRIKE")) {
+      loc = unit.launchedFrom
+    }
+    // console.log("Air Unit", name, "launched from", launchedFrom)
+
+    return this.getCarrierForAirBox(loc)
   }
   getStrikeBoxes(name, side) {
     const unit = this.getAirUnitForName(name)
@@ -273,6 +282,8 @@ export default class Controller {
       return x
     })
 
+
+
     if (side === GlobalUnitsModel.Side.US) {
       // get all units for each strike box, any there
       // from a different carrer should be removed
@@ -289,7 +300,7 @@ export default class Controller {
         // if no air units in this box, no need to filter
         if (!airUnitsInBox || airUnitsInBox.length === 0) return true
 
-        let carriers = airUnitsInBox.map((a) => a.carrier)
+        let carriers = airUnitsInBox.map((a) => this.getCarrierAirUnitLaunchedFrom(a.name))
         return carriers.includes(carrier) || carriers.length === 0
       })
     } else {
@@ -464,7 +475,14 @@ export default class Controller {
       return carriers
     }
   }
+  setAllDefendersToNotIntercepting() {
+    const airunits = this.counters.values().filter((unit) => unit.constructor.name === "AirUnit")
 
+    for (const unit of airunits) {
+      unit.aircraftUnit.intercepting = false
+      this.counters.set(unit.name, unit)
+    }
+  }
   setAllDefendersToNotInterceptingAndNotSeparated() {
     const airunits = this.counters.values().filter((unit) => unit.constructor.name === "AirUnit")
 
@@ -475,7 +493,6 @@ export default class Controller {
     }
   }
   async setAllUnitsToNotMoved() {
-    console.trace()
     const airunits = this.counters.values().filter((unit) => unit.constructor.name === "AirUnit")
 
     for (const unit of airunits) {
@@ -699,6 +716,35 @@ export default class Controller {
       }
     }
     return false
+  }
+
+  getSunkCarriers(side) {
+    let sunkCarriers = new Array
+    if (side === GlobalUnitsModel.Side.JAPAN) {
+      if (this.isSunk(GlobalUnitsModel.Carrier.AKAGI)) {
+        sunkCarriers.append(GlobalUnitsModel.Carrier.AKAGI)
+      }
+      if (this.isSunk(GlobalUnitsModel.Carrier.KAGA)) {
+        sunkCarriers.append(GlobalUnitsModel.Carrier.KAGA)
+      }
+      if (this.isSunk(GlobalUnitsModel.Carrier.HIRYU)) {
+        sunkCarriers.append(GlobalUnitsModel.Carrier.HIRYU)
+      }
+      if (this.isSunk(GlobalUnitsModel.Carrier.SORYU)) {
+        sunkCarriers.append(GlobalUnitsModel.Carrier.SORYU)
+      }
+    } else {
+      if (this.isSunk(GlobalUnitsModel.Carrier.ENTERPRISE)) {
+        sunkCarriers.append(GlobalUnitsModel.Carrier.ENTERPRISE)
+      }
+      if (this.isSunk(GlobalUnitsModel.Carrier.HORNET)) {
+        sunkCarriers.append(GlobalUnitsModel.Carrier.HORNET)
+      }
+      if (this.isSunk(GlobalUnitsModel.Carrier.YORKTOWN)) {
+        sunkCarriers.append(GlobalUnitsModel.Carrier.YORKTOWN)
+      }
+    }
+    return sunkCarriers
   }
 
   getTargetForAttack() {
@@ -1293,6 +1339,9 @@ export default class Controller {
     if (fleetA.name === "MIDWAY") {
       locationA = Controller.MIDWAY_HEX
     }
+    if (locationA.currentHex === undefined) 
+      return undefined
+    
     let hexA = {
       q: locationA.currentHex.q,
       r: locationA.currentHex.r,

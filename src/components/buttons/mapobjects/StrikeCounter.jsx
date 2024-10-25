@@ -18,7 +18,7 @@ function StrikeCounter({ setStrikeGroupPopup, currentUSHex, currentJapanHex, cou
     setJapanMapRegions,
     japanMapRegions,
     strikeGroupUpdate,
-    setCardNumber
+    setCardNumber,
   } = useContext(BoardContext)
 
   const [currentHex, setCurrentHex] = useState({})
@@ -49,6 +49,7 @@ function StrikeCounter({ setStrikeGroupPopup, currentUSHex, currentJapanHex, cou
       top: hex.y + 220,
       currentHex: hex,
     })
+    console.log("\tname: ", counterData.name, "=>NEW POSITION=", hex)
   }
   // STRIKE GROUP UPDATE CODE
   let hex = {}
@@ -66,23 +67,7 @@ function StrikeCounter({ setStrikeGroupPopup, currentUSHex, currentJapanHex, cou
   }
   // console.log("STRIKE GROUP", counterData.name, "location=", locationOfStrikeGroup )
 
-  function setJapanOffBoardPosition(position) {
-    setPosition({
-      initial: true,
-      left: position.left,
-      top: position.top,
-    })
-  }
-  function setUSOffBoardPosition(position) {
-    setPosition({
-      initial: true,
-      left: position.left,
-      top: position.top,
-    })
-  }
-
-
-  if(
+  if (
     strikeGroupUpdate &&
     hex != undefined &&
     strikeGroupUpdate.name != "" &&
@@ -138,16 +123,21 @@ function StrikeCounter({ setStrikeGroupPopup, currentUSHex, currentJapanHex, cou
     //   counterData.airOpMoved
     // )
     // Use 1AF
-    if (counterData.airOpMoved !== undefined && GlobalGameState.airOpJapan !== counterData.airOpMoved) {
+    const locationOfStrikeGroup = controller.getStrikeGroupLocation(counterData.name, side)
+
+    if (
+      locationOfStrikeGroup !== undefined &&
+      counterData.airOpMoved !== undefined &&
+      GlobalGameState.airOpJapan !== counterData.airOpMoved
+    ) {
       // second air op for this SG, use movement allowance (3) and position of SG to determine regions
-      const locationOfStrikeGroup = controller.getStrikeGroupLocation(counterData.name, side)
 
       setCurrentHex(locationOfStrikeGroup)
       const locationOfEnemyCarrier = controller.getFleetLocation("CSF", GlobalUnitsModel.Side.US)
 
       // if enemy fleet within range of 3
       // SG must move to enemy
-      if (locationOfStrikeGroup !== undefined && locationOfEnemyCarrier !== undefined) {
+      if (locationOfEnemyCarrier !== undefined) {
         if (distanceBetweenHexes(locationOfStrikeGroup.currentHex, locationOfEnemyCarrier.currentHex) <= 3) {
           // strike group can move to attack enemy carrier fleet
           jpRegion = [locationOfEnemyCarrier.currentHex]
@@ -155,6 +145,8 @@ function StrikeCounter({ setStrikeGroupPopup, currentUSHex, currentJapanHex, cou
         } else {
           // strike group must return to "RETURN 2" space
           // @TODO move SG counter offboard and mark Strike Units as moved
+          // Set SG to attacked - will trigger units to be moved to return 2
+          counterData.attacked = true
         }
       }
     } else {
@@ -191,18 +183,23 @@ function StrikeCounter({ setStrikeGroupPopup, currentUSHex, currentJapanHex, cou
 
     // }
 
-    // console.log(
-    //   "GlobalGameState.airOpUS=",
-    //   GlobalGameState.airOpUS,
-    //   "counter data name:",
-    //   counterData.name,
-    //   "counterData.airOpMoved=",
-    //   counterData.airOpMoved
-    // )
+    console.log(
+      "GlobalGameState.airOpUS=",
+      GlobalGameState.airOpUS,
+      "counter data name:",
+      counterData.name,
+      "counterData.airOpMoved=",
+      counterData.airOpMoved
+    )
 
-    if (counterData.airOpMoved !== undefined && GlobalGameState.airOpUS !== counterData.airOpMoved) {
+    const locationOfStrikeGroup = controller.getStrikeGroupLocation(counterData.name, side)
+
+    if (
+      locationOfStrikeGroup !== undefined &&
+      counterData.airOpMoved !== undefined &&
+      GlobalGameState.airOpUS !== counterData.airOpMoved
+    ) {
       // second air op for this SG, use movement allowance (3) and position of SG to determine regions
-      const locationOfStrikeGroup = controller.getStrikeGroupLocation(counterData.name, side)
       const speed = controller.getSlowestUnitSpeedInStrikeGroup(counterData.box)
 
       setCurrentHex(locationOfStrikeGroup)
@@ -210,7 +207,7 @@ function StrikeCounter({ setStrikeGroupPopup, currentUSHex, currentJapanHex, cou
 
       // if enemy fleet within range of (speed hexes calculated above)
       // SG must move to enemy
-      if (locationOfStrikeGroup !== undefined && locationOfEnemyCarrier !== undefined) {
+      if (locationOfEnemyCarrier !== undefined) {
         if (distanceBetweenHexes(locationOfStrikeGroup.currentHex, locationOfEnemyCarrier.currentHex) <= speed) {
           // strike group can move to attack enemy carrier fleet
           usRegion = [locationOfEnemyCarrier.currentHex]
@@ -218,6 +215,9 @@ function StrikeCounter({ setStrikeGroupPopup, currentUSHex, currentJapanHex, cou
         } else {
           // strike group must return to "RETURN 2" space
           // @TODO move SG counter offboard and mark Strike Units as moved
+          console.log("@TODO enemy carrier is out of range, return SG to return 2 box")
+          // Set SG to attacked - will trigger units to be moved to return 2
+          counterData.attacked = true
         }
       }
     } else {
@@ -289,21 +289,6 @@ function StrikeCounter({ setStrikeGroupPopup, currentUSHex, currentJapanHex, cou
       if (!isThere) {
         return
       } else {
-        // ??
-        // console.log(
-        //   `Strike Unit ${counterData.name} moves to q:${hex.q}, r:${hex.r} => row: ${currentUSHex.row}, col: ${currentUSHex.col}`
-        // )
-
-        // TODO determine how many strike groups in this hex and
-        // adjust positions accordingly
-        // (set state in parent StrikeCounters component so all counters in the hex
-        // shift their position slightly if needed)
-
-        // we will need each counter to have an index in the stack
-        // and the offset will be a factor of the index
-
-        // also a means to select a counter in a stack
-
         if (index > 0) {
           currentUSHex.x += 6 * index
           currentUSHex.y -= 6 * index
@@ -349,7 +334,7 @@ function StrikeCounter({ setStrikeGroupPopup, currentUSHex, currentJapanHex, cou
         to,
         side,
         loading,
-        setCardNumber
+        setCardNumber,
       },
     })
 
@@ -361,6 +346,7 @@ function StrikeCounter({ setStrikeGroupPopup, currentUSHex, currentJapanHex, cou
   const handleMouseEnter = () => {
     setIsMoveable(true)
     const sg = controller.getStrikeGroupForBox(side, counterData.box)
+    console.log("SG", sg)
     if (!sg.attacked) {
       if (side === GlobalUnitsModel.Side.JAPAN) {
         setJapanRegions()
@@ -370,7 +356,7 @@ function StrikeCounter({ setStrikeGroupPopup, currentUSHex, currentJapanHex, cou
     }
     if (!sg.attacked) {
       const location = controller.getStrikeGroupLocation(counterData.name, side)
-      setStrikeGroupPopup(side, true, location)      
+      setStrikeGroupPopup(side, true, location)
     }
   }
 
@@ -396,6 +382,7 @@ function StrikeCounter({ setStrikeGroupPopup, currentUSHex, currentJapanHex, cou
       setUSMapRegions([])
     }
   }
+
   return (
     <>
       <div>

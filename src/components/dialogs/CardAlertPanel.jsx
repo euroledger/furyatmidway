@@ -21,6 +21,7 @@ function CardAlertPanel(props) {
     setCardDicePanelShow5,
     setCardDicePanelShow7,
     setStrikeLostPanelShow,
+    setCarrierPlanesDitchPanelShow,
     nextAction,
     ...rest
   } = props
@@ -59,6 +60,10 @@ function CardAlertPanel(props) {
     } else if (cardNumber === 9) {
       controller.setCardPlayed(9, GlobalUnitsModel.Side.US)
       setShowCardFooter(() => true)
+    } else if (cardNumber === 10) {
+      setCarrierPlanesDitchPanelShow(true)
+      controller.setCardPlayed(10, GlobalUnitsModel.Side.US)
+      onHide(e)
     } else if (cardNumber === 11) {
       setStrikeLostPanelShow(true)
       controller.setCardPlayed(11, GlobalUnitsModel.Side.JAPAN)

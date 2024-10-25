@@ -8,10 +8,7 @@ export function StrikeLostDamageHeaders({ controller, eliminatedSteps, setElimin
 
   const msg = "Number of Hits to Allocate:"
 
-  console.log("controller=", controller)
-
   let unitsInGroup = controller.getAttackingStrikeUnits()
-  console.log("POO unitsInGroup=", unitsInGroup)
 
   const arrLength = unitsInGroup.length
   useEffect(() => {

@@ -73,7 +73,6 @@ export default class CardModel {
       let values = Array.from(group.values())
       strikeGroups.push(values[0]) // should only ever be 1
     }
-    // console.trace()
     return strikeGroups
   }
 

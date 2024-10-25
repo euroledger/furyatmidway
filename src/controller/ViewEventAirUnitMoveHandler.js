@@ -20,6 +20,11 @@ class ViewEventAirUnitMoveHandler {
         ? name
         : `${name} - box ${index}`
 
+    if (name.includes("STRIKE BOX")) {
+      // console.log("UNIT", counterData.name, "moving to", name)
+      // console.log("AND IT WAS LAUNCHED FROM", boxName)
+      counterData.launchedFrom=boxName
+    }
     this.controller.addAirUnitToBox(name, index, counterData)
     let command = new MoveCommand(COMMAND_TYPE.MOVE_AIR_UNIT, counterData.longName, from, to)
 
