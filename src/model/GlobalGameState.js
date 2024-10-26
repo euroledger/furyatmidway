@@ -9,6 +9,7 @@ export default class GlobalGameState {
     US_SETUP_AIR: "US Setup (Air)",
     US_CARD_DRAW: "US Card Draw",
     BOTH_CARD_DRAW: "Draw Cards",
+    US_DRAWS_ONE_CARD: "US Card Draw Phase",
     CARD_PLAY: "Possible Card Play",
     JAPAN_MIDWAY: "Japan Midway Attack Declaration",
     US_FLEET_MOVEMENT_PLANNING: "US Fleet Movement Planning",

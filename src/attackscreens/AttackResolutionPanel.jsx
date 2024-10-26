@@ -123,7 +123,7 @@ export function AttackResolutionFooters({ totalHits }) {
   // const show = GlobalGameState.dieRolls.length > 0
 
   const show = true
-  const hits = totalHits
+  const hits = totalHits === -1 ? "" : totalHits
   const msg = "Total Number of Hits:"
 
 

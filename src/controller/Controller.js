@@ -722,26 +722,26 @@ export default class Controller {
     let sunkCarriers = new Array
     if (side === GlobalUnitsModel.Side.JAPAN) {
       if (this.isSunk(GlobalUnitsModel.Carrier.AKAGI)) {
-        sunkCarriers.append(GlobalUnitsModel.Carrier.AKAGI)
+        sunkCarriers.push(GlobalUnitsModel.Carrier.AKAGI)
       }
       if (this.isSunk(GlobalUnitsModel.Carrier.KAGA)) {
-        sunkCarriers.append(GlobalUnitsModel.Carrier.KAGA)
+        sunkCarriers.push(GlobalUnitsModel.Carrier.KAGA)
       }
       if (this.isSunk(GlobalUnitsModel.Carrier.HIRYU)) {
-        sunkCarriers.append(GlobalUnitsModel.Carrier.HIRYU)
+        sunkCarriers.push(GlobalUnitsModel.Carrier.HIRYU)
       }
       if (this.isSunk(GlobalUnitsModel.Carrier.SORYU)) {
-        sunkCarriers.append(GlobalUnitsModel.Carrier.SORYU)
+        sunkCarriers.push(GlobalUnitsModel.Carrier.SORYU)
       }
     } else {
       if (this.isSunk(GlobalUnitsModel.Carrier.ENTERPRISE)) {
-        sunkCarriers.append(GlobalUnitsModel.Carrier.ENTERPRISE)
+        sunkCarriers.push(GlobalUnitsModel.Carrier.ENTERPRISE)
       }
       if (this.isSunk(GlobalUnitsModel.Carrier.HORNET)) {
-        sunkCarriers.append(GlobalUnitsModel.Carrier.HORNET)
+        sunkCarriers.push(GlobalUnitsModel.Carrier.HORNET)
       }
       if (this.isSunk(GlobalUnitsModel.Carrier.YORKTOWN)) {
-        sunkCarriers.append(GlobalUnitsModel.Carrier.YORKTOWN)
+        sunkCarriers.push(GlobalUnitsModel.Carrier.YORKTOWN)
       }
     }
     return sunkCarriers
@@ -1274,6 +1274,10 @@ export default class Controller {
   }
   drawJapanCards(num, initial, testCards) {
     this.cardModel.drawJapanCards(num, initial, testCards)
+  }
+
+  replaceCardWithOtherCard(card, otherCard, side) {
+    this.cardModel.replaceCardWithOtherCard(card, otherCard, side)
   }
 
   drawUSCards(num, initial, testCards) {

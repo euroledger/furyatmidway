@@ -82,4 +82,18 @@ describe("Cards tests", () => {
     expect(controller.getCardPlayed(1, GlobalUnitsModel.Side.US)).toEqual(true)
     expect(controller.usHandContainsCard(1)).toEqual(false)
   })
+
+  test("Set Japan Initial Draw then replace one card with a new one (useful for UI testing)", () => {
+    GlobalUnitsModel.jpCards = new Array()
+
+    controller.drawJapanCards(3, true, [6, 11, 9])
+
+    // replace card #6 with card #5
+    controller.replaceCardWithOtherCard(6, 5, GlobalUnitsModel.Side.JAPAN)
+
+    expect(GlobalUnitsModel.jpCards.length).toEqual(3)
+    expect(controller.japanHandContainsCard(6)).toEqual(false)
+    expect(controller.japanHandContainsCard(5)).toEqual(true)
+
+  })
 })

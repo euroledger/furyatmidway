@@ -42,6 +42,9 @@ export function saveGameState(controller, gameId) {
 
   const jpCardText = JSON.stringify(GlobalUnitsModel.jpCards)
   const usCardText = JSON.stringify(GlobalUnitsModel.usCards)
+  const cardText = JSON.stringify(GlobalUnitsModel.cards)
+  
+
   // console.log(jpCardText)
   // console.log(usCardText)
 
@@ -77,6 +80,7 @@ export function saveGameState(controller, gameId) {
     usMap: usMapText,
     jpcards: jpCardText,
     uscards: usCardText,
+    cards: cardText,
     usFleetMap: usFleetText,
     jpFleetMap: jpFleetText,
     log: logItems,
@@ -421,6 +425,12 @@ export function loadGameStateForId(controller, gameId) {
   const usCardText = gameDetails.uscards
   const jpCardText = gameDetails.jpcards
 
+
+  const cardText = gameDetails.cards
+
+
+  // TODO reload draw deck
+
   GlobalUnitsModel.jpCards = JSON.parse(jpCardText)
 
   // QUACK TEST JAPAN CARD 10 - "US Carrier Planes Ditch"
@@ -429,8 +439,13 @@ export function loadGameStateForId(controller, gameId) {
 
   GlobalUnitsModel.usCards = JSON.parse(usCardText)
 
+  if (cardText !== undefined) { // QUACK should be able to remove this check, just there for legacy loads
+    GlobalUnitsModel.cards = JSON.parse(cardText)
+  } 
+
+
   // QUACK TEST US CARD 1 - "Towed to a Friendly Port"\
-  // GlobalInit.controller.setCardPlayed(2, GlobalUnitsModel.Side.US)
+  // GlobalInit.controller.setCardPlayed(1, GlobalUnitsModel.Side.US)
   // GlobalInit.controller.drawUSCards(1, false, [1])
 
   const items = gameDetails.log
@@ -478,9 +493,11 @@ export function loadGameState(controller) {
 
   const usCardText = localStorage.getItem("uscards")
   const jpCardText = localStorage.getItem("jpcards")
+  const cardText = localStorage.getItem("cards")
 
   GlobalUnitsModel.jpCards = JSON.parse(jpCardText)
   GlobalUnitsModel.usCards = JSON.parse(usCardText)
+  GlobalUnitsModel.cards = JSON.parse(cardText)
 
   const items = localStorage.getItem("log")
 

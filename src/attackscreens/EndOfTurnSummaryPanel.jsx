@@ -24,26 +24,26 @@ export function EndOfTurnSummaryHeaders({
   const numJapanCVsSunk = controller.getSunkCarriers(GlobalUnitsModel.Side.JAPAN).length
   const numUSCVsSunk = controller.getSunkCarriers(GlobalUnitsModel.Side.US).length
 
-  let japanCVsSunkMsg =" "
+  let japanCVsSunkMsg =""
   if (numJapanCVsSunk > 0) {
     for (let i = 0; i < japanCVsSunk.length; i++) {
-      japanCVsSunkMsg += carrier
+      japanCVsSunkMsg += japanCVsSunk[i]
       if (i < japanCVsSunk.length - 1) {
         japanCVsSunkMsg += ", "
       }
     }
-    japanCVsSunkMsg = `(${japanCVsSunkMsg})`
+    japanCVsSunkMsg = ` (${japanCVsSunkMsg})`
   }
 
-  let usCVsSunkMsg =" "
+  let usCVsSunkMsg =""
   if (numUSCVsSunk > 0) {
     for (let i = 0; i < usCVsSunk.length; i++) {
-      usCVsSunkMsg += carrier
+      usCVsSunkMsg += usCVsSunk[i]
       if (i < usCVsSunk.length - 1) {
         usCVsSunkMsg += ", "
       }
     }
-    usCVsSunkMsg = `(${usCVsSunkMsg})`
+    usCVsSunkMsg = ` (${usCVsSunkMsg})`
   }
 
   const midwayControl = GlobalUnitsModel.Side.US

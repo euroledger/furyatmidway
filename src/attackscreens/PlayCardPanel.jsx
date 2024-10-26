@@ -2,10 +2,13 @@ import { React } from "react"
 import "./cap.css"
 import { EventCardFooter } from "./EventCardFooters"
 
-export function CardAlertHeaders({ cardNumber }) {
+export function CardAlertHeaders({ cardNumber, showCardFooter }) {
+  
   if (cardNumber === 0) {
     return
   }
+  let msg=showCardFooter ? "" : "Do you wish to play this card?"
+
   let cardStr = "" + cardNumber
   if (cardNumber < 10) {
     cardStr = "0" + cardNumber
@@ -34,7 +37,7 @@ export function CardAlertHeaders({ cardNumber }) {
             }}
           ></img>
           <div>
-            <p>Do you wish to play this card?</p>
+            <p>{msg}</p>
           </div>
         </div>
       </div>

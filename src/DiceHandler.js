@@ -673,8 +673,8 @@ export function doAttackFireRolls(controller, testRolls) {
     GlobalGameState.carrierAttackHitsThisAttack = hits
 
     // QUACK REMOVE TEESTING ONLY
-    GlobalGameState.carrierAttackHits = 2
-    GlobalGameState.carrierAttackHitsThisAttack = 2
+    // GlobalGameState.carrierAttackHits = 2
+    // GlobalGameState.carrierAttackHitsThisAttack = 2
   }
   return hits
 }
@@ -902,7 +902,10 @@ export function doCAP(controller, capAirUnits, fightersPresent, testRolls) {
   let rolls = testRolls === undefined ? randomDice(numSteps) : testRolls
 
   let drm = fightersPresent ? 0 : 1
-  drm += GlobalGameState.elitePilots ? 1: 0
+
+  if (GlobalGameState.sideWithInitiative === GlobalUnitsModel.US) {
+    drm += GlobalGameState.elitePilots ? 1: 0
+  }
 
   // compare each roll with the steps of the defending units, and the corresponding attack factor
   let hits = 0,

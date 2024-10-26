@@ -33,18 +33,26 @@ function japanCardDrawHandler({ setUSMapRegions, setCSFAlertShow }) {
   GlobalGameState.phaseCompleted = false
 }
 
-function usCardDrawHandler({ setCardNumber }) {
+function usCardDrawHandler({ setCardNumber, setMidwayDialogShow }) {
+  console.log("US CARD DRAW HANDLER...")
   if (GlobalGameState.gameTurn != 1) {
-    GlobalGameState.gamePhase = GlobalGameState.PHASE.BOTH_CARD_DRAW
-  } else {
-    if (GlobalInit.controller.japanHandContainsCard(6)) {
-      setCardNumber(() => 6)
-    } else {
-      setCardNumber(() => 0)
+    if (GlobalGameState.gameTurn === 2) {
+      GlobalGameState.gamePhase = GlobalGameState.PHASE.US_DRAWS_ONE_CARD
     }
-    GlobalGameState.gamePhase = GlobalGameState.PHASE.CARD_PLAY
+    // GlobalGameState.gamePhase = GlobalGameState.PHASE.BOTH_CARD_DRAW
+  } else {
+    // if (GlobalInit.controller.japanHandContainsCard(6)) {
+    //   GlobalGameState.gamePhase = GlobalGameState.PHASE.CARD_PLAY
+    //   setCardNumber(() => 6)
+    // } else {
+    //   setCardNumber(() => 0)
+    // GlobalInit.controller.drawUSCards(2, true)
+    GlobalGameState.usCardsDrawn = true
+    GlobalGameState.gamePhase = GlobalGameState.PHASE.JAPAN_MIDWAY
+    setMidwayDialogShow(true)
+    // }
   }
-  GlobalGameState.phaseCompleted = false
+  GlobalGameState.phaseCompleted = true
 }
 function setupUSFleetHandler({ setUSMapRegions }) {
   GlobalGameState.gamePhase = GlobalGameState.PHASE.US_SETUP_AIR
@@ -113,7 +121,7 @@ async function setNextStateFollowingCardPlay({
       GlobalGameState.gamePhase = GlobalGameState.PHASE.END_OF_AIR_OPERATION
       setEndOfAirOpAlertShow(true)
       break
-      
+
     case 11:
       // US Strike Lost
       // if the card was played we go back to AIR OPERATIONS
@@ -321,6 +329,9 @@ export async function endOfAirOperation(side, capAirUnits, setAirUnitUpdate, set
     return false
   }
 
+  // RESET ELITE PILOTS FOR FUTURE AIR COMBATS
+  GlobalGameState.elitePilots = false
+
   // ELIMIMINATE ORPHANED UNITS IN RETURN BOXES
   // (CAP RETURN TO BEGIN WITH)
   const sideBeingAttacked =
@@ -381,6 +392,7 @@ export default async function handleAction({
   setEliminatedUnitsPanelShow,
   cardNumber,
   setCardNumber,
+  setEndOfTurnSummaryShow,
 }) {
   //   switch (
   // GlobalGameState.gamePhase
@@ -431,7 +443,7 @@ export default async function handleAction({
   } else if (GlobalGameState.gamePhase === GlobalGameState.PHASE.US_SETUP_AIR) {
     setupUSAirHandler()
   } else if (GlobalGameState.gamePhase === GlobalGameState.PHASE.US_CARD_DRAW) {
-    usCardDrawHandler({ setCardNumber })
+    usCardDrawHandler({ setCardNumber, setMidwayDialogShow })
   } else if (GlobalGameState.gamePhase === GlobalGameState.PHASE.CARD_PLAY) {
     setNextStateFollowingCardPlay({
       cardNumber,
@@ -498,24 +510,33 @@ export default async function handleAction({
       GlobalGameState.sideWithInitiative === GlobalUnitsModel.Side.US &&
       GlobalInit.controller.anyFightersInStrike(GlobalGameState.taskForceTarget, GlobalGameState.sideWithInitiative)
     ) {
-      GlobalGameState.gamePhase = GlobalGameState.PHASE.CARD_PLAY
       if (
         GlobalGameState.sideWithInitiative === GlobalUnitsModel.Side.US &&
         GlobalInit.controller.japanHandContainsCard(9)
       ) {
         setCardNumber(() => 9)
+        GlobalGameState.gamePhase = GlobalGameState.PHASE.CARD_PLAY
       } else if (
         GlobalGameState.sideWithInitiative === GlobalUnitsModel.Side.JAPAN &&
         GlobalInit.controller.japanHandContainsCard(12)
       ) {
         setCardNumber(() => 12)
+        GlobalGameState.gamePhase = GlobalGameState.PHASE.CARD_PLAY
       } else {
         GlobalGameState.gamePhase = GlobalGameState.PHASE.CAP_INTERCEPTION
       }
     } else {
-      GlobalGameState.gamePhase = GlobalGameState.PHASE.CAP_INTERCEPTION
+      if (
+        GlobalGameState.sideWithInitiative === GlobalUnitsModel.Side.JAPAN &&
+        GlobalInit.controller.japanHandContainsCard(12)
+      ) {
+        // May use Card #12 for elite fighter escorts
+        setCardNumber(() => 12)
+        GlobalGameState.gamePhase = GlobalGameState.PHASE.CARD_PLAY
+      } else {
+        GlobalGameState.gamePhase = GlobalGameState.PHASE.CAP_INTERCEPTION
+      }
     }
-    GlobalGameState.gamePhase = GlobalGameState.PHASE.CARD_PLAY
   } else if (GlobalGameState.gamePhase === GlobalGameState.PHASE.CAP_INTERCEPTION) {
     console.log("STATE CHANGE CAP -> AAA FIRE OR ESCORT COUNTERATTACK OR CAP DAMAGE")
 
@@ -729,12 +750,16 @@ export default async function handleAction({
   } else if (GlobalGameState.gamePhase === GlobalGameState.PHASE.END_OF_AIR_OPERATION) {
     console.log("GO TO INITIATIVE DETERMINATION...")
 
-    // @TODO!!!!!!!!!!!!!
-    // check for end of turn here
     if (endOfTurn()) {
       GlobalGameState.gamePhase = GlobalGameState.PHASE.END_OF_TURN
+      setEndOfTurnSummaryShow(true)
     } else {
       GlobalGameState.gamePhase = GlobalGameState.PHASE.INITIATIVE_DETERMINATION
+    }
+  } else if (GlobalGameState.gamePhase === GlobalGameState.PHASE.END_OF_TURN) {
+    GlobalGameState.gameTurn++
+    if (GlobalGameState.gameTurn == 2) {
+      usCardDrawHandler({ setCardNumber, setMidwayDialogShow })
     }
   }
 

@@ -22,7 +22,6 @@ function CentredButton() {
   )
 }
 function CardPanel(props) {
-
   const cardArray =
     props.side === GlobalUnitsModel.Side.JAPAN
       ? GlobalUnitsModel.jpCards.map((c) => c._number)

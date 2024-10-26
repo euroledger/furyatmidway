@@ -71,10 +71,7 @@ import {
   CarrierPlanesDitchDamageFooters,
 } from "./attackscreens/CarrierPlanesDitchDamagePanel"
 
-import {
-  EndOfTurnSummaryHeaders,
-  EndOfTurnSummaryFooters,
-} from "./attackscreens/EndOfTurnSummaryPanel"
+import { EndOfTurnSummaryHeaders, EndOfTurnSummaryFooters } from "./attackscreens/EndOfTurnSummaryPanel"
 import { EscortHeaders, EscortFooters } from "./attackscreens/EscortPanel"
 import { AAAHeaders, AAAFooters } from "./attackscreens/AAAPanel"
 import { AttackResolutionHeaders, AttackResolutionFooters } from "./attackscreens/AttackResolutionPanel"
@@ -530,6 +527,7 @@ export function App() {
       cardNumber,
       setCardNumber,
       setMidwayDialogShow,
+      setEndOfTurnSummaryShow,
     })
   }
 
@@ -764,10 +762,19 @@ export function App() {
                   !GlobalGameState.usCardsDrawn && GlobalGameState.gamePhase !== GlobalGameState.PHASE.US_CARD_DRAW
                 }
                 onClick={(e) => {
-                  if (GlobalGameState.gamePhase === GlobalGameState.PHASE.US_CARD_DRAW) {
+                  if (
+                    GlobalGameState.gamePhase === GlobalGameState.PHASE.US_CARD_DRAW ||
+                    GlobalGameState.gamePhase === GlobalGameState.PHASE.US_DRAWS_ONE_CARD
+                  ) {
                     GlobalGameState.phaseCompleted = true
                   }
                   GlobalGameState.usCardsDrawn = true
+                  if (GlobalGameState.gamePhase === GlobalGameState.PHASE.US_DRAWS_ONE_CARD) {
+                    GlobalInit.controller.drawUSCards(1, false)
+                  }
+                  if (GlobalGameState.gamePhase === GlobalGameState.PHASE.US_CARD_DRAW) {
+                    nextAction(e)
+                  }
                   setusHandShow(true)
                 }}
               >
@@ -1175,7 +1182,7 @@ export function App() {
 
   const cardAlertHeaders = (
     <>
-      <CardAlertHeaders cardNumber={cardNumber}></CardAlertHeaders>
+      <CardAlertHeaders cardNumber={cardNumber} showCardFooter={showCardFooter}></CardAlertHeaders>
     </>
   )
 
@@ -1239,7 +1246,7 @@ export function App() {
   // console.log("GlobalUnitsModel.usStrikeGroups=", GlobalUnitsModel.usStrikeGroups)
   function doInitiativeRoll(roll0, roll1) {
     // for testing QUACK
-    doIntiativeRoll(GlobalInit.controller, 6, 1, true) // JAPAN initiative
+    // doIntiativeRoll(GlobalInit.controller, 6, 1, true) // JAPAN initiative
     // doIntiativeRoll(GlobalInit.controller, 1, 6, true) // US initiative
 
     // doIntiativeRoll(GlobalInit.controller, roll0, roll1)
@@ -1825,7 +1832,7 @@ export function App() {
         disabled={true}
         closeButtonDisabled={closeDamageButtonDisabled}
       ></LargeDicePanel>
-       <LargeDicePanel
+      <LargeDicePanel
         numDice={0}
         show={!testClicked && !testyClicked && endOfTurnSummaryShow}
         headerText={endOfTurnHeader}

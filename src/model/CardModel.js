@@ -1,3 +1,4 @@
+import GlobalGameState from "./GlobalGameState"
 import GlobalUnitsModel from "./GlobalUnitsModel"
 
 export default class CardModel {
@@ -32,11 +33,41 @@ export default class CardModel {
     }
   }
 
+  replaceCardWithOtherCard(cardNumber, otherCardNumber, side) {
+    if (side === GlobalUnitsModel.Side.JAPAN) {
+      if (!this.japanHandContainsCard(cardNumber)) {
+        return
+      }
+      // Remove old card from Japan hand and put back into the deck
+      const index = GlobalUnitsModel.jpCards.findIndex(x => x._number === cardNumber);
+      GlobalUnitsModel.cards.push(...GlobalUnitsModel.jpCards.splice(index, 1));
+
+      // find new card and add to Japan hand
+      const newCard = GlobalUnitsModel.cards.find((card) => card._number === otherCardNumber)
+      GlobalUnitsModel.cards = Array.from(GlobalUnitsModel.cards).filter((c) => c._number != otherCardNumber)
+
+      GlobalUnitsModel.jpCards.push(newCard)
+    } else {
+      if (!this.usHandContainsCard(cardNumber)) {
+        return
+      }
+      // Remove old card from US hand and put back into the deck
+      const index = GlobalUnitsModel.usCards.findIndex(x => x._number === cardNumber);
+      GlobalUnitsModel.cards.push(...GlobalUnitsModel.usCards.splice(index, 1));
+
+      // find new card and add to US hand
+      const newCard = GlobalUnitsModel.cards.find((card) => card._number === otherCardNumber)
+      GlobalUnitsModel.cards = Array.from(GlobalUnitsModel.cards).filter((c) => c._number != otherCardNumber)
+
+      GlobalUnitsModel.usCards.push(newCard)
+    }
+  }
+  
   drawUSCards(num, initial, testCards) {
     let drawDeck = Array.from(GlobalUnitsModel.cards)
     if (initial) {
-      drawDeck = Array.from(GlobalUnitsModel.cards).filter((card) => card.side === GlobalUnitsModel.Side.US)
-    }
+      drawDeck = Array.from(GlobalUnitsModel.cards).filter((card) => card._side === GlobalUnitsModel.Side.US)
+    } 
 
     if (testCards !== undefined) {
       for (let i = 0; i < num; i++) {
