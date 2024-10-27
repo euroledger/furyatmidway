@@ -63,9 +63,8 @@ import { TargetHeaders, TargetFooters } from "./attackscreens/TargetPanel"
 import { AttackTargetHeaders, AttackTargetFooters } from "./attackscreens/AttackTargetPanel"
 import { CAPHeaders, CAPFooters } from "./attackscreens/CAPPanel"
 import { DamageHeaders, DamageFooters } from "./attackscreens/DamageAllocationPanel"
-
+import { TowedCVHeaders, TowedCVFooters } from "./attackscreens/TowedCVPanel"
 import { StrikeLostDamageHeaders, StrikeLostDamageFooters } from "./attackscreens/StrikeLostDamagePanel"
-
 import {
   CarrierPlanesDitchDamageHeaders,
   CarrierPlanesDitchDamageFooters,
@@ -163,6 +162,7 @@ export function App() {
   const [strikeLostPanelShow, setStrikeLostPanelShow] = useState(false)
 
   const [carrierPlanesDitchPanelShow, setCarrierPlanesDitchPanelShow] = useState(false)
+  const [towedToFriendlyPortPanelShow, setTowedToFriendlyPortPanelShow] = useState(false)
 
   const [endOfTurnSummaryShow, setEndOfTurnSummaryShow] = useState(false)
 
@@ -174,6 +174,7 @@ export function App() {
   const [capSteps, setCapSteps] = useState(0)
   const [escortSteps, setEscortSteps] = useState(0)
 
+  const [towedCVSelected, setTowedCVSelected] = useState("")
   const [fightersPresent, setFightersPresent] = useState(true)
 
   const [airUnitUpdate, setAirUnitUpdate] = useState({
@@ -771,6 +772,8 @@ export function App() {
                   GlobalGameState.usCardsDrawn = true
                   if (GlobalGameState.gamePhase === GlobalGameState.PHASE.US_DRAWS_ONE_CARD) {
                     GlobalInit.controller.drawUSCards(1, false)
+                    setMidwayDialogShow(true)
+                    GlobalGameState.gamePhase = GlobalGameState.PHASE.JAPAN_MIDWAY
                   }
                   if (GlobalGameState.gamePhase === GlobalGameState.PHASE.US_CARD_DRAW) {
                     nextAction(e)
@@ -1071,7 +1074,21 @@ export function App() {
       ></DamageFooters>
     </>
   )
+  
+  const towedCVHeaders = (
+    <>
+      <TowedCVHeaders
+        controller={GlobalInit.controller}
+        setTowedCVSelected={setTowedCVSelected}
+      ></TowedCVHeaders>
+    </>
+  )
 
+  const towedCVFooters = (
+    <>
+      <TowedCVFooters controller={GlobalInit.controller} towedCVSelected={towedCVSelected}></TowedCVFooters>
+    </>
+  )
   const strikeLostDamageHeaders = (
     <>
       <StrikeLostDamageHeaders
@@ -1212,6 +1229,8 @@ export function App() {
     )
   }
 
+  console.log("GlobalGameState.SearchValue.JP_AF=", GlobalGameState.SearchValue.JP_AF)
+
   const cardAlertFooters = (
     <>
       <CardAlertFooters
@@ -1249,7 +1268,7 @@ export function App() {
     // doIntiativeRoll(GlobalInit.controller, 6, 1, true) // JAPAN initiative
     // doIntiativeRoll(GlobalInit.controller, 1, 6, true) // US initiative
 
-    // doIntiativeRoll(GlobalInit.controller, roll0, roll1)
+    doIntiativeRoll(GlobalInit.controller, roll0, roll1)
     GlobalGameState.updateGlobalState()
   }
 
@@ -1755,6 +1774,7 @@ export function App() {
         setCardDicePanelShow7={setCardDicePanelShow7}
         setStrikeLostPanelShow={setStrikeLostPanelShow}
         setCarrierPlanesDitchPanelShow={setCarrierPlanesDitchPanelShow}
+        setTowedToFriendlyPortPanelShow={setTowedToFriendlyPortPanelShow}
         onHide={(e) => {
           setCardAlertPanelShow(false)
         }}
@@ -1827,6 +1847,24 @@ export function App() {
         onHide={(e) => {
           setCarrierPlanesDitchPanelShow(false)
           sendDamageEvent(eliminatedSteps)
+          nextAction(e)
+        }}
+        disabled={true}
+        closeButtonDisabled={closeDamageButtonDisabled}
+      ></LargeDicePanel>
+         <LargeDicePanel
+        numDice={0}
+        show={!testClicked && towedToFriendlyPortPanelShow}
+        headerText="Towed To A Friendly Port"
+        headers={towedCVHeaders}
+        footers={towedCVFooters}
+        width={74}
+        showDice={false}
+        margin={0}
+        onHide={(e) => {
+          setTowedToFriendlyPortPanelShow(false)
+          // sendDamageEvent(eliminatedSteps)
+          // @TODO send CV towed event (card play)
           nextAction(e)
         }}
         disabled={true}

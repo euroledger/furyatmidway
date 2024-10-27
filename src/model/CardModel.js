@@ -6,12 +6,15 @@ export default class CardModel {
 
   // GlobalUnitsModel.cards is the remaining draw deck
 
-
   // if initial, can only draw japan cards
   drawJapanCards(num, initial, testCards) {
     let drawDeck = Array.from(GlobalUnitsModel.cards)
     if (initial) {
       drawDeck = Array.from(GlobalUnitsModel.cards).filter((card) => card.side === GlobalUnitsModel.Side.JAPAN)
+    } else {
+      drawDeck = Array.from(GlobalUnitsModel.cards).filter(
+        (card) => card._side === GlobalUnitsModel.Side.US || card._side === GlobalUnitsModel.Side.BOTH
+      )
     }
 
     if (testCards !== undefined) {
@@ -39,8 +42,8 @@ export default class CardModel {
         return
       }
       // Remove old card from Japan hand and put back into the deck
-      const index = GlobalUnitsModel.jpCards.findIndex(x => x._number === cardNumber);
-      GlobalUnitsModel.cards.push(...GlobalUnitsModel.jpCards.splice(index, 1));
+      const index = GlobalUnitsModel.jpCards.findIndex((x) => x._number === cardNumber)
+      GlobalUnitsModel.cards.push(...GlobalUnitsModel.jpCards.splice(index, 1))
 
       // find new card and add to Japan hand
       const newCard = GlobalUnitsModel.cards.find((card) => card._number === otherCardNumber)
@@ -52,8 +55,8 @@ export default class CardModel {
         return
       }
       // Remove old card from US hand and put back into the deck
-      const index = GlobalUnitsModel.usCards.findIndex(x => x._number === cardNumber);
-      GlobalUnitsModel.cards.push(...GlobalUnitsModel.usCards.splice(index, 1));
+      const index = GlobalUnitsModel.usCards.findIndex((x) => x._number === cardNumber)
+      GlobalUnitsModel.cards.push(...GlobalUnitsModel.usCards.splice(index, 1))
 
       // find new card and add to US hand
       const newCard = GlobalUnitsModel.cards.find((card) => card._number === otherCardNumber)
@@ -62,12 +65,16 @@ export default class CardModel {
       GlobalUnitsModel.usCards.push(newCard)
     }
   }
-  
+
   drawUSCards(num, initial, testCards) {
     let drawDeck = Array.from(GlobalUnitsModel.cards)
     if (initial) {
       drawDeck = Array.from(GlobalUnitsModel.cards).filter((card) => card._side === GlobalUnitsModel.Side.US)
-    } 
+    } else {
+      drawDeck = Array.from(GlobalUnitsModel.cards).filter(
+        (card) => card._side === GlobalUnitsModel.Side.US || card._side === GlobalUnitsModel.Side.BOTH
+      )
+    }
 
     if (testCards !== undefined) {
       for (let i = 0; i < num; i++) {
@@ -122,7 +129,7 @@ export default class CardModel {
     const cardInDeck = GlobalUnitsModel.cards.find((card) => card._number === cardNum)
 
     let cardInHand
-    
+
     if (side === GlobalUnitsModel.Side.JAPAN) {
       cardInHand = GlobalUnitsModel.jpCards.find((card) => card._number === cardNum)
     } else {

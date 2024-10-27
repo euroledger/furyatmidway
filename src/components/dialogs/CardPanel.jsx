@@ -29,8 +29,35 @@ function CardPanel(props) {
 
   const bg = "#293a4b"
   const header = `${props.side} Hand`
-  const rowClass = `g-${cardArray.length}`
   const sizey = cardArray.length >= 4 ? "xl" : "lg"
+
+  const createImage = (image) => {
+    return (
+      <>
+        <div>
+          <img
+            src={image}
+            style={{
+              width: "200px",
+              height: "280px",
+              marginLeft: "10px",
+              marginRight: "10px"
+            }}
+          ></img>
+        </div>
+      </>
+    )
+  }
+  const cards = cardArray.map((card, idx) => {
+    const cardIndex = cardArray[idx] < 10 ? "0" + cardArray[idx] : "" + cardArray[idx]
+    const image = `/images/cards/MID_Card${cardIndex}.gif`
+
+    return (
+      <>
+        <div>{createImage(image)}</div>
+      </>
+    )
+  })
   return (
     <Modal {...props} size={sizey} aria-labelledby="contained-modal-title-vcenter" centered>
       <Modal.Header
@@ -46,26 +73,17 @@ function CardPanel(props) {
         <p className="text-center">{header}</p>
       </Modal.Header>
       <Modal.Body style={{ background: `${bg}`, color: "black" }}>
-        <Row xs={1} md={cardArray.length} className={rowClass}>
-          {Array.from({ length: cardArray.length }).map((_, idx) => {
-            const cardIndex =
-              cardArray[idx] < 10
-                ? "0" + cardArray[idx]
-                : "" + cardArray[idx]
-            const image = `/images/cards/MID_Card${cardIndex}.gif`
-            return (
-              <Col key={idx}>
-                <Card>
-                  <Card.Img variant="top" src={image} />
-                  {/* <Card.Body>
-                    <Card.Title>Card title</Card.Title>
-                  </Card.Body> */}
-                </Card>
-                <CentredButton />
-              </Col>
-            )
-          })}
-        </Row>
+        <div
+          style={{
+            display: "flex",
+            justifyContent: "center",
+            alignItems: "center",
+            color: "white",
+            marginTop: "5px",
+          }}
+        >
+          {cards}
+        </div>
       </Modal.Body>
       <Modal.Footer style={{ background: `${bg}`, color: "black" }}>
         <Button onClick={props.onHide}>Close</Button>

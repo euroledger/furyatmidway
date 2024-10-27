@@ -12,6 +12,7 @@ import {
   resetStrikeGroups,
 } from "./controller/AirOperationsHandler"
 import { getNumEscortFighterSteps } from "./DiceHandler"
+import { allHexesWithinDistance } from "./components/HexUtils"
 
 function japanSetUpHandler() {
   if (GlobalGameState.currentCarrier <= 2) {
@@ -71,7 +72,9 @@ async function setNextStateFollowingCardPlay({
   setAirUnitUpdate,
   setStrikeGroupUpdate,
   setEndOfAirOpAlertShow,
+  setEndOfTurnSummaryShow
 }) {
+  console.log("DOING CARD PLAY. card number=", cardNumber)
   switch (cardNumber) {
     case -1:
       GlobalGameState.gamePhase = GlobalGameState.PHASE.CAP_INTERCEPTION
@@ -80,7 +83,11 @@ async function setNextStateFollowingCardPlay({
     case 0:
       GlobalGameState.gamePhase = GlobalGameState.PHASE.JAPAN_MIDWAY
       setMidwayDialogShow(true)
+      break
+
     case 1:
+      GlobalGameState.gamePhase = GlobalGameState.PHASE.END_OF_TURN
+      setEndOfTurnSummaryShow(true)
       break
 
     case 5:
@@ -98,15 +105,24 @@ async function setNextStateFollowingCardPlay({
         // Now check for possible play of card 5
         setCardNumber(() => 5)
       } else {
-        setMidwayDialogShow(true)
         setCardNumber(() => 0) // reset for next card play
-        GlobalGameState.gamePhase = GlobalGameState.PHASE.JAPAN_MIDWAY
+        if (GlobalGameState.gameTurn === 2 || GlobalGameState.gameTurn === 4 || GlobalGameState.gameTurn === 6) {
+          GlobalGameState.gamePhase = GlobalGameState.PHASE.US_DRAWS_ONE_CARD
+        }
+        if (GlobalGameState.gameTurn === 3 || GlobalGameState.gameTurn === 5 || GlobalGameState.gameTurn === 7) {
+          GlobalGameState.gamePhase = GlobalGameState.PHASE.JAPAN_DRAWS_ONE_CARD
+          GlobalGameState.phaseCompleted = false
+        }
+        // setMidwayDialogShow(true)
+        // setCardNumber(() => 0) // reset for next card play
+        // GlobalGameState.gamePhase = GlobalGameState.PHASE.JAPAN_MIDWAY
       }
       break
     case 7:
       // Troubled Reconnaissance
       GlobalGameState.gamePhase = GlobalGameState.PHASE.AIR_SEARCH
       calcAirOpsPoints({ setSearchValues, setSearchResults, setSearchValuesAlertShow })
+      break
 
     case 9:
       // Escort Separated
@@ -145,7 +161,7 @@ async function setNextStateFollowingCardPlay({
       } else {
         GlobalGameState.gamePhase = GlobalGameState.PHASE.CAP_INTERCEPTION
       }
-
+      break
     default:
       console.log("ERROR unknown card number: ", cardNumber)
   }
@@ -175,10 +191,20 @@ function usFleetMovementPlanningHandler({ setUSMapRegions, setJapanMapRegions, s
   console.log("END OF US Fleet Movement Phase")
   GlobalGameState.gamePhase = GlobalGameState.PHASE.JAPAN_FLEET_MOVEMENT
   setUSMapRegions([])
-  if (GlobalGameState.midwayAttackDeclaration === true) {
-    setJapanMapRegions(japanAF1StartHexesMidway)
+  // if this is not turn 1 derive japan regions from position of fleet
+  if (GlobalGameState.gameTurn !== 1) {
+    const locationOfCarrier = GlobalInit.controller.getFleetLocation("1AF", GlobalUnitsModel.Side.JAPAN)
+    // First Air Op: Set Regions to be any hex within 2 of 1AF
+    if (locationOfCarrier) {
+      const jpRegion = allHexesWithinDistance(locationOfCarrier.currentHex, 2, true)
+      setJapanMapRegions(jpRegion)
+    }
   } else {
-    setJapanMapRegions(japanAF1StartHexesNoMidway)
+    if (GlobalGameState.midwayAttackDeclaration === true) {
+      setJapanMapRegions(japanAF1StartHexesMidway)
+    } else {
+      setJapanMapRegions(japanAF1StartHexesNoMidway)
+    }
   }
   setJpAlertShow(true)
   GlobalGameState.phaseCompleted = false
@@ -214,6 +240,7 @@ function calcAirOpsPoints({ setSearchValues, setSearchResults, setSearchValuesAl
     us_csf: sv.us_csf,
     us_midway: sv.us_midway,
   })
+  console.log("JAPAN SEARCH VALUE:", sv.jp_af)
   setSearchValues(sv)
   GlobalGameState.airOperationPoints.japan = sr.JAPAN
   GlobalGameState.airOperationPoints.us = sr.US
@@ -455,6 +482,7 @@ export default async function handleAction({
       setAirUnitUpdate,
       setStrikeGroupUpdate,
       setEndOfAirOpAlertShow,
+      setEndOfTurnSummaryShow
     })
   } else if (GlobalGameState.gamePhase === GlobalGameState.PHASE.JAPAN_MIDWAY) {
     midwayDeclarationHandler({ setUsFleetRegions })
@@ -751,16 +779,33 @@ export default async function handleAction({
     console.log("GO TO INITIATIVE DETERMINATION...")
 
     if (endOfTurn()) {
-      GlobalGameState.gamePhase = GlobalGameState.PHASE.END_OF_TURN
-      setEndOfTurnSummaryShow(true)
+      if (GlobalInit.controller.usHandContainsCard(1)) {
+        setCardNumber(() => 1)
+        GlobalGameState.gamePhase = GlobalGameState.PHASE.CARD_PLAY
+      } else {
+        GlobalGameState.gamePhase = GlobalGameState.PHASE.END_OF_TURN
+        setEndOfTurnSummaryShow(true)
+      }
     } else {
       GlobalGameState.gamePhase = GlobalGameState.PHASE.INITIATIVE_DETERMINATION
     }
   } else if (GlobalGameState.gamePhase === GlobalGameState.PHASE.END_OF_TURN) {
+    // START OF NEW TURN
     GlobalGameState.gameTurn++
-    if (GlobalGameState.gameTurn == 2) {
-      usCardDrawHandler({ setCardNumber, setMidwayDialogShow })
+    if (GlobalInit.controller.japanHandContainsCard(6)) {
+      setCardNumber(() => 6)
+      GlobalGameState.gamePhase = GlobalGameState.PHASE.CARD_PLAY
+    } else {
+      if (GlobalGameState.gameTurn === 2 || GlobalGameState.gameTurn === 4 || GlobalGameState.gameTurn === 6) {
+        GlobalGameState.gamePhase = GlobalGameState.PHASE.US_DRAWS_ONE_CARD
+      }
     }
+    GlobalGameState.phaseCompleted = false
+  } else if (
+    GlobalGameState.gamePhase === GlobalGameState.PHASE.US_DRAWS_ONE_CARD ||
+    GlobalGameState.gamePhase === GlobalGameState.PHASE.JAPAN_DRAWS_ONE_CARD
+  ) {
+    GlobalGameState.gamePhase = GlobalGameState.PHASE.JAPAN_MIDWAY
   }
 
   // @TODO if all air units in a strike are eliminated maybe display a dialog saying "Air Attack Phase over, no

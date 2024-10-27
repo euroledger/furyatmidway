@@ -22,6 +22,7 @@ function CardAlertPanel(props) {
     setCardDicePanelShow7,
     setStrikeLostPanelShow,
     setCarrierPlanesDitchPanelShow,
+    setTowedToFriendlyPortPanelShow,
     nextAction,
     ...rest
   } = props
@@ -46,7 +47,11 @@ function CardAlertPanel(props) {
   }
 
   const yesHandler = (e) => {
-    if (cardNumber === 5) {
+    if (cardNumber === 1) {
+      setTowedToFriendlyPortPanelShow(true)
+      controller.setCardPlayed(1, GlobalUnitsModel.Side.US)
+      onHide(e)
+    } else if (cardNumber === 5) {
       setCardDicePanelShow5(true)
       controller.setCardPlayed(5, GlobalUnitsModel.Side.JAPAN)
       onHide(e)

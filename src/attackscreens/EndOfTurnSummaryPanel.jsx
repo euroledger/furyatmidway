@@ -7,13 +7,7 @@ import GlobalUnitsModel from "../model/GlobalUnitsModel"
 // @TODO Move this into Util file somewhere (or to controller?)
 
 // @TODO extend this component to allow damage to CAP units (in response to fighter escort counterattack)
-export function EndOfTurnSummaryHeaders({
-  controller,
-  eliminatedSteps,
-  setEliminatedSteps,
-  setStepsLeft,
-  capAirUnits,
-}) {
+export function EndOfTurnSummaryHeaders({ controller }) {
   const japanCVMsg = "IJN CVs Sunk (1 VP each):"
   const usCVMsg = "US CVs Sunk (1 VP each):"
   const midwayControlMsg = "Side Controlling Midway:"
@@ -24,7 +18,7 @@ export function EndOfTurnSummaryHeaders({
   const numJapanCVsSunk = controller.getSunkCarriers(GlobalUnitsModel.Side.JAPAN).length
   const numUSCVsSunk = controller.getSunkCarriers(GlobalUnitsModel.Side.US).length
 
-  let japanCVsSunkMsg =""
+  let japanCVsSunkMsg = ""
   if (numJapanCVsSunk > 0) {
     for (let i = 0; i < japanCVsSunk.length; i++) {
       japanCVsSunkMsg += japanCVsSunk[i]
@@ -35,7 +29,7 @@ export function EndOfTurnSummaryHeaders({
     japanCVsSunkMsg = ` (${japanCVsSunkMsg})`
   }
 
-  let usCVsSunkMsg =""
+  let usCVsSunkMsg = ""
   if (numUSCVsSunk > 0) {
     for (let i = 0; i < usCVsSunk.length; i++) {
       usCVsSunkMsg += usCVsSunk[i]
@@ -46,9 +40,15 @@ export function EndOfTurnSummaryHeaders({
     usCVsSunkMsg = ` (${usCVsSunkMsg})`
   }
 
-  const midwayControl = GlobalUnitsModel.Side.US
+  const midwayControl = GlobalGameState.midwayControl === GlobalUnitsModel.Side.US ? "US" : "JAPAN"
 
   const gameContinuesMsg = GlobalGameState.gameTurn === 3 ? "Neither Side has Achieved Victory" : ""
+
+  let winner = undefined
+  if (GlobalGameState.gameTurn === 3) {
+    winner = controller.victoryCheck()
+  }
+
   return (
     <>
       <div
@@ -63,10 +63,35 @@ export function EndOfTurnSummaryHeaders({
           <p
             style={{
               color: "white",
+              marginTop: "5px",
             }}
           >
-            {japanCVMsg} &emsp;<strong>{numJapanCVsSunk}{japanCVsSunkMsg}</strong>&emsp; <br></br>
-            {usCVMsg} &emsp;<strong>{numUSCVsSunk}{usCVsSunkMsg}</strong>&emsp; <br></br>
+            {japanCVMsg} &emsp;
+            <strong>
+              {numJapanCVsSunk}
+              {japanCVsSunkMsg}
+            </strong>
+            &emsp; <br></br>
+          </p>
+          <p
+            style={{
+              color: "white",
+              marginTop: "5px",
+            }}
+          >
+            {usCVMsg} &emsp;
+            <strong>
+              {numUSCVsSunk}
+              {usCVsSunkMsg}
+            </strong>
+            &emsp; <br></br>
+          </p>
+          <p
+            style={{
+              color: "white",
+              marginTop: "5px",
+            }}
+          >
             {midwayControlMsg} &emsp;<strong>{midwayControl}</strong>&emsp; <br></br>
           </p>
           <p
@@ -77,6 +102,19 @@ export function EndOfTurnSummaryHeaders({
           >
             {gameContinuesMsg}
           </p>
+          {winner && (
+            <p
+              style={{
+                display: "flex",
+                marginTop: "50px",
+                justifyContent: "center",
+                alignItems: "center",
+                color: "white",
+              }}
+            >
+              Automatic Victory {winner} !!
+            </p>
+          )}
           <p
             style={{
               display: "flex",
@@ -90,12 +128,8 @@ export function EndOfTurnSummaryHeaders({
           </p>
         </div>
 
-        <div>
-         
-        </div>
-        <div>
-          
-        </div>
+        <div></div>
+        <div></div>
       </div>
     </>
   )

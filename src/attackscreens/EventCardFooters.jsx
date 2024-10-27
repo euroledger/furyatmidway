@@ -3,7 +3,8 @@ import GlobalInit from "../model/GlobalInit"
 import GlobalUnitsModel from "../model/GlobalUnitsModel"
 
 export function EventCardFooter({ cardNumber, showCardFooter, setShowDice }) {
-  if (cardNumber === 6) {
+
+  if (cardNumber === 6 && showCardFooter) {
     setShowDice(false)
     GlobalGameState.SearchValue.JP_AF = 8
     return (

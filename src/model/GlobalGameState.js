@@ -10,6 +10,7 @@ export default class GlobalGameState {
     US_CARD_DRAW: "US Card Draw",
     BOTH_CARD_DRAW: "Draw Cards",
     US_DRAWS_ONE_CARD: "US Card Draw Phase",
+    JAPAN_DRAWS_ONE_CARD: "Japan Card Draw Phase",
     CARD_PLAY: "Possible Card Play",
     JAPAN_MIDWAY: "Japan Midway Attack Declaration",
     US_FLEET_MOVEMENT_PLANNING: "US Fleet Movement Planning",
@@ -90,6 +91,10 @@ export default class GlobalGameState {
 
   static usCVsSunk = 0
   static japanCVsSunk = 0
+  static midwayControl = GlobalUnitsModel.Side.US
+
+  static usVPs = 0
+  static japanVPs = 0
   
   // Can attack both carriers in a task force
   static carrierTarget1=""

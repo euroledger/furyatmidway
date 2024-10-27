@@ -1046,6 +1046,51 @@ export default class Controller {
     return GlobalGameState.totalMidwayHits >= 3
   }
 
+  victoryCheck() {
+    // @TODO Will need to take account of CVs which have left the map...
+
+
+    if (GlobalGameState.gameTurn !== 3 && GlobalGameState.gameTurn !== 7) {
+      return null
+    }
+    const numJapanCVsSunk = this.getSunkCarriers(GlobalUnitsModel.Side.JAPAN).length
+    const numUSCVsSunk = this.getSunkCarriers(GlobalUnitsModel.Side.US).length
+
+    const numJapanCVsRemaining = 4 - numJapanCVsSunk
+    const numUSCVsRemaining = 3 - numUSCVsSunk
+
+    if (GlobalGameState.gameTurn === 3) {
+      if (numJapanCVsRemaining === 0 && numUSCVsRemaining !== 0) {
+        return GlobalUnitsModel.Side.US
+      }
+      if (numJapanCVsRemaining !== 0 && numUSCVsRemaining === 0) {
+        return GlobalUnitsModel.Side.JAPAN
+      }
+
+      if (numUSCVsRemaining >= numJapanCVsRemaining * 3) {
+        return GlobalUnitsModel.Side.US
+      }
+      if (numJapanCVsRemaining >= numUSCVsRemaining * 3) {
+        return GlobalUnitsModel.Side.JAPAN
+      }
+    } else if (GlobalGameState.gameTurn === 7) {
+      if (GlobalGameState.midwayControl === GlobalUnitsModel.Side.US) {
+        GlobalGameState.usVPs += 2
+      } else {
+        GlobalGameState.japanVPs += 2
+      }
+      GlobalGameState.usVPs += numJapanCVsSunk
+      GlobalGameState.japanVPs += numUSCVsSunk
+      if (GlobalGameState.usVPs > GlobalGameState.japanVPs) {
+        return GlobalUnitsModel.Side.US
+      }
+      if (GlobalGameState.japanVPs > GlobalGameState.usVPs) {
+        return GlobalUnitsModel.Side.JAPAN
+      }
+      return "DRAW"
+    }
+    return null
+  }
   isSunk(name) {
     if (name === GlobalUnitsModel.Carrier.MIDWAY) {
       return this.isMidwayBaseDestroyed()
@@ -1057,7 +1102,7 @@ export default class Controller {
       return carrier.hits >= 3
     } else {
       const carrier = GlobalUnitsModel.usFleetUnits.get(name)
-      return carrier.hits >= 3
+      return carrier.hits >= 3 && !carrier.towed
     }
   }
 
