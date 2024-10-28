@@ -4,6 +4,7 @@ import GlobalUnitsModel from "./model/GlobalUnitsModel"
 import JapanAirBoxOffsets from "./components/draganddrop/JapanAirBoxOffsets"
 import USAirBoxOffsets from "./components/draganddrop/USAirBoxOffsets"
 import { flatHexToPixel } from "./components/HexUtils"
+import HexCommand from "./commands/HexCommand"
 
 export function saveGameState(controller, gameId) {
   const arr = Object.getOwnPropertyNames(GlobalGameState.prototype.constructor)
@@ -43,7 +44,6 @@ export function saveGameState(controller, gameId) {
   const jpCardText = JSON.stringify(GlobalUnitsModel.jpCards)
   const usCardText = JSON.stringify(GlobalUnitsModel.usCards)
   const cardText = JSON.stringify(GlobalUnitsModel.cards)
-  
 
   // console.log(jpCardText)
   // console.log(usCardText)
@@ -100,6 +100,9 @@ function createFleetUpdates(fleetMap) {
       r: cHex.r,
     }
     const newhex = flatHexToPixel(h)
+    if (cHex === HexCommand.OFFBOARD) {
+      continue
+    }
     cHex.x = newhex.x
     cHex.y = newhex.y
     update = {
@@ -109,6 +112,7 @@ function createFleetUpdates(fleetMap) {
       },
     }
     updates.push(update)
+  
   }
   return updates
 }
@@ -316,6 +320,7 @@ function loadUSStrikeUnits(loadedMap) {
     sg.moved = loadedSG._moved
     sg.airOpMoved = loadedSG._airOpMoved
     sg.airOpAttacked = loadedSG._airOpAttacked
+    sg.gameTurnMoved = loadedSG._gameTurnMoved
     GlobalUnitsModel.usStrikeGroups.set(key, sg)
   }
 }
@@ -425,9 +430,7 @@ export function loadGameStateForId(controller, gameId) {
   const usCardText = gameDetails.uscards
   const jpCardText = gameDetails.jpcards
 
-
   const cardText = gameDetails.cards
-
 
   // TODO reload draw deck
 
@@ -439,14 +442,15 @@ export function loadGameStateForId(controller, gameId) {
 
   GlobalUnitsModel.usCards = JSON.parse(usCardText)
 
-  if (cardText !== undefined) { // QUACK should be able to remove this check, just there for legacy loads
+  if (cardText !== undefined) {
+    // QUACK should be able to remove this check, just there for legacy loads
     GlobalUnitsModel.cards = JSON.parse(cardText)
-  } 
+  }
 
-
-  // QUACK TEST US CARD 1 - "Towed to a Friendly Port"\
-  // GlobalInit.controller.setCardPlayed(1, GlobalUnitsModel.Side.US)
-  // GlobalInit.controller.drawUSCards(1, false, [1])
+  // QUACK REMOVE ONE CARD AND REPLACE IT WITH ANOTHER
+  GlobalInit.controller.replaceCardWithOtherCard(8, 3, GlobalUnitsModel.Side.US)
+  // GlobalInit.controller.setCardPlayed(8, GlobalUnitsModel.Side.US)
+  // GlobalInit.controller.drawUSCards(3, false, [1])
 
   const items = gameDetails.log
   const logItems = new Map(JSON.parse(items))

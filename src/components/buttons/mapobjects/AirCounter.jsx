@@ -36,7 +36,6 @@ function AirCounter({ getAirBox, setAirBox, counterData, side }) {
     // of all airstrikes to return to carrier)
     const location = controller.getAirUnitLocation(counterData.name)
 
-    console.log("COunterData:", counterData.name, "LOCATION=", location)
     if (GlobalGameState.sideWithInitiative !== counterData.side && !location.boxName.includes("CAP RETURNING")) {
       return
     }
@@ -252,6 +251,7 @@ function AirCounter({ getAirBox, setAirBox, counterData, side }) {
       left: offsets.left + "%",
       top: offsets.top - 0.2 + "%",
     })
+   
     // moveOrphanedCAPUnitsToEliminatedBox(counterData.side)
 
     if (

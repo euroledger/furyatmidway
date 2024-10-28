@@ -46,6 +46,7 @@ async function loadHandler({
   }
 
   for (const update of jpfleetUpdates) {
+    await delay(1)
     setFleetUnitUpdate(update)
     await delay(1)
   }

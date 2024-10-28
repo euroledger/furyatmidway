@@ -723,7 +723,6 @@ const UITester = async ({
   await delay(100)
   GlobalGameState.closePanel = true // in case eliminated air units are on display
 
-  console.log("GlobalGameState.gamePhase=", GlobalGameState.gamePhase)
   nextAction(e) // -> AIR OPERATIONS TIDY UP
   await delay(1)
 

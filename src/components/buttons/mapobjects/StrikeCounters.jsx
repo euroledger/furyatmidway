@@ -52,36 +52,6 @@ function StrikeCounters({
     setCurrentMouseHex({})
   }
   const sgCounters = strikeUnits.map((strikeGroupUnit) => {
-    if (
-      (GlobalGameState.gamePhase !== GlobalGameState.PHASE.AIR_OPERATIONS &&
-        GlobalGameState.gamePhase !== GlobalGameState.PHASE.END_OF_AIR_OPERATION &&
-        GlobalGameState.gamePhase !== GlobalGameState.PHASE.INITIATIVE_DETERMINATION &&
-        GlobalGameState.gamePhase !== GlobalGameState.PHASE.AIR_SEARCH &&
-        GlobalGameState.gamePhase !== GlobalGameState.PHASE.TARGET_DETERMINATION &&
-        GlobalGameState.gamePhase !== GlobalGameState.PHASE.CAP_INTERCEPTION &&
-        GlobalGameState.gamePhase !== GlobalGameState.PHASE.CAP_DAMAGE_ALLOCATION && 
-        GlobalGameState.gamePhase !== GlobalGameState.PHASE.ANTI_AIRCRAFT_FIRE && 
-        GlobalGameState.gamePhase !== GlobalGameState.PHASE.AIR_ATTACK_1 && 
-        GlobalGameState.gamePhase !== GlobalGameState.PHASE.AIR_ATTACK_2 && 
-        GlobalGameState.gamePhase !== GlobalGameState.PHASE.ATTACK_DAMAGE_RESOLUTION && 
-        GlobalGameState.gamePhase !== GlobalGameState.PHASE.MIDWAY_DAMAGE_RESOLUTION && 
-        GlobalGameState.gamePhase !== GlobalGameState.PHASE.CAP_DAMAGE_ALLOCATION && 
-        GlobalGameState.gamePhase !== GlobalGameState.PHASE.ESCORT_COUNTERATTACK && 
-        GlobalGameState.gamePhase !== GlobalGameState.PHASE.ESCORT_DAMAGE_ALLOCATION && 
-        GlobalGameState.gamePhase !== GlobalGameState.PHASE.AAA_DAMAGE_ALLOCATION && 
-        GlobalGameState.gamePhase !== GlobalGameState.PHASE.ATTACK_TARGET_SELECTION && 
-        GlobalGameState.gamePhase !== GlobalGameState.PHASE.CARD_PLAY && 
-        GlobalGameState.gamePhase !== GlobalGameState.PHASE.MIDWAY_ATTACK)
-       ||
-      controller.getAirUnitsInStrikeGroups(strikeGroupUnit.box).length === 0
-    ) {
-      return
-    } 
-
-    // if (strikeGroupUnit.side != GlobalGameState.sideWithInitiative) {
-    //   return
-    // }
-
     // determine how many counters already in this hex
     // if any, set index to pass in to counter -> this will be used for zIndex and offset
 

@@ -394,8 +394,10 @@ export default class Controller {
   setAirOpMoved(counterData) {
     if (GlobalGameState.sideWithInitiative === GlobalUnitsModel.Side.JAPAN) {
       counterData.airOpMoved = GlobalGameState.airOpJapan
+      counterData.gameTurnMoved = GlobalGameState.gameTurn
     } else {
       counterData.airOpMoved = GlobalGameState.airOpUS
+      counterData.gameTurnMoved = GlobalGameState.gameTurn
     }
   }
   getTaskForceForCarrier(name, side) {

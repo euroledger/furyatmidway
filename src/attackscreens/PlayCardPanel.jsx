@@ -45,12 +45,14 @@ export function CardAlertHeaders({ cardNumber, showCardFooter }) {
   )
 }
 
-export function CardAlertFooters({ cardNumber, showCardFooter, setShowDice }) {
+export function CardAlertFooters({ cardNumber, showCardFooter, setShowDice, doCriticalHit, attackResolved }) {
   return (
     <EventCardFooter
       cardNumber={cardNumber}
       showCardFooter={showCardFooter}
       setShowDice={setShowDice}
+      doCriticalHit={doCriticalHit}
+      attackResolved={attackResolved}
     ></EventCardFooter>
   )
 }

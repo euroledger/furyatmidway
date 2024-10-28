@@ -24,6 +24,8 @@ function CardAlertPanel(props) {
     setCarrierPlanesDitchPanelShow,
     setTowedToFriendlyPortPanelShow,
     nextAction,
+    setAttackResolved,
+    setAirReplacementsPanelShow,
     ...rest
   } = props
   const [buttonPressed, setButtonPressed] = useState(false)
@@ -51,6 +53,18 @@ function CardAlertPanel(props) {
       setTowedToFriendlyPortPanelShow(true)
       controller.setCardPlayed(1, GlobalUnitsModel.Side.US)
       onHide(e)
+    } else if (cardNumber === 3) {
+      // 
+
+      setAirReplacementsPanelShow(true)
+
+      if (controller.usHandContainsCard(3)) {
+        controller.setCardPlayed(5, GlobalUnitsModel.Side.US)
+      } else {
+        controller.setCardPlayed(5, GlobalUnitsModel.Side.JAPAN)
+      }
+      onHide(e)
+    
     } else if (cardNumber === 5) {
       setCardDicePanelShow5(true)
       controller.setCardPlayed(5, GlobalUnitsModel.Side.JAPAN)
@@ -76,9 +90,12 @@ function CardAlertPanel(props) {
     } else if (cardNumber === 12) {
       controller.setCardPlayed(12, GlobalUnitsModel.Side.JAPAN)
       setShowCardFooter(() => true)
-
       // onHide(e)
-    } else {
+    } else if (cardNumber === 13) {
+      setAttackResolved(()=>false)
+      controller.setCardPlayed(13, GlobalUnitsModel.Side.JAPAN)
+      setShowCardFooter(() => true)
+    }else {
       setShowCardFooter(() => true)
       // nextAction()
     }

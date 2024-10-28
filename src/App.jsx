@@ -160,9 +160,9 @@ export function App() {
   const [damageAllocationPanelShow, setDamageAllocationPanelShow] = useState(false)
 
   const [strikeLostPanelShow, setStrikeLostPanelShow] = useState(false)
-
   const [carrierPlanesDitchPanelShow, setCarrierPlanesDitchPanelShow] = useState(false)
   const [towedToFriendlyPortPanelShow, setTowedToFriendlyPortPanelShow] = useState(false)
+  const [airReplacementsPanelShow, setAirReplacementsPanelShow] = useState(false)
 
   const [endOfTurnSummaryShow, setEndOfTurnSummaryShow] = useState(false)
 
@@ -272,6 +272,7 @@ export function App() {
 
   useEffect(() => {
     if (GlobalGameState.gamePhase === GlobalGameState.PHASE.INITIATIVE_DETERMINATION) {
+      GlobalGameState.dieRolls = []
       GlobalGameState.sideWithInitiative = undefined
       setInitiativePanelShow(true)
     }
@@ -395,6 +396,7 @@ export function App() {
   useEffect(() => {
     if (GlobalGameState.gamePhase === GlobalGameState.PHASE.END_OF_TURN) {
       GlobalGameState.SearchValue.JP_AF = 6 // in case card 6 was played
+      
     }
   }, [GlobalGameState.gamePhase])
 
@@ -791,8 +793,18 @@ export function App() {
                   !GlobalGameState.jpCardsDrawn && GlobalGameState.gamePhase !== GlobalGameState.PHASE.JAPAN_CARD_DRAW
                 }
                 onClick={(e) => {
-                  GlobalGameState.phaseCompleted = true
+                  if (
+                    GlobalGameState.gamePhase === GlobalGameState.PHASE.JAPAN_CARD_DRAW ||
+                    GlobalGameState.gamePhase === GlobalGameState.PHASE.JAPAN_DRAWS_ONE_CARD
+                  ) {
+                    GlobalGameState.phaseCompleted = true
+                  }
                   GlobalGameState.jpCardsDrawn = true
+                  if (GlobalGameState.gamePhase === GlobalGameState.PHASE.JAPAN_DRAWS_ONE_CARD) {
+                    GlobalInit.controller.drawJapanCards(1, false)
+                    setMidwayDialogShow(true)
+                    GlobalGameState.gamePhase = GlobalGameState.PHASE.JAPAN_MIDWAY
+                  }
                   if (GlobalGameState.gamePhase === GlobalGameState.PHASE.JAPAN_CARD_DRAW) {
                     nextAction(e)
                   }
@@ -1228,9 +1240,6 @@ export function App() {
       </>
     )
   }
-
-  console.log("GlobalGameState.SearchValue.JP_AF=", GlobalGameState.SearchValue.JP_AF)
-
   const cardAlertFooters = (
     <>
       <CardAlertFooters
@@ -1238,6 +1247,8 @@ export function App() {
         showCardFooter={showCardFooter}
         cardNumber={cardNumber}
         setShowDice={setShowDice}
+        doCriticalHit={doCriticalHit}
+        attackResolved={attackResolved}
       ></CardAlertFooters>
     </>
   )
@@ -1265,10 +1276,10 @@ export function App() {
   // console.log("GlobalUnitsModel.usStrikeGroups=", GlobalUnitsModel.usStrikeGroups)
   function doInitiativeRoll(roll0, roll1) {
     // for testing QUACK
-    // doIntiativeRoll(GlobalInit.controller, 6, 1, true) // JAPAN initiative
+    doIntiativeRoll(GlobalInit.controller, 6, 1, true) // JAPAN initiative
     // doIntiativeRoll(GlobalInit.controller, 1, 6, true) // US initiative
 
-    doIntiativeRoll(GlobalInit.controller, roll0, roll1)
+    // doIntiativeRoll(GlobalInit.controller, roll0, roll1)
     GlobalGameState.updateGlobalState()
   }
 
@@ -1297,6 +1308,17 @@ export function App() {
     const box = doMidwayDamage(GlobalInit.controller)
 
     sendMidwayDamageUpdates(GlobalInit.controller, box, setDamageMarkerUpdate)
+  }
+
+  function doCriticalHit() {
+    console.log("DO CRITICAL HIT...")
+    let damage = autoAllocateDamage(GlobalInit.controller, 1)
+    sendDamageUpdates(GlobalInit.controller, damage, setDamageMarkerUpdate)
+
+    GlobalGameState.carrierAttackHits = 0
+    setAttackResolved(() => true) 
+
+    // send damage event here
   }
 
   function doDamageRolls() {
@@ -1775,6 +1797,7 @@ export function App() {
         setStrikeLostPanelShow={setStrikeLostPanelShow}
         setCarrierPlanesDitchPanelShow={setCarrierPlanesDitchPanelShow}
         setTowedToFriendlyPortPanelShow={setTowedToFriendlyPortPanelShow}
+        setAttackResolved={setAttackResolved}
         onHide={(e) => {
           setCardAlertPanelShow(false)
         }}

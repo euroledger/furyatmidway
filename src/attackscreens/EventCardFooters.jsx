@@ -2,7 +2,7 @@ import GlobalGameState from "../model/GlobalGameState"
 import GlobalInit from "../model/GlobalInit"
 import GlobalUnitsModel from "../model/GlobalUnitsModel"
 
-export function EventCardFooter({ cardNumber, showCardFooter, setShowDice }) {
+export function EventCardFooter({ cardNumber, showCardFooter, setShowDice, doCriticalHit, attackResolved }) {
 
   if (cardNumber === 6 && showCardFooter) {
     setShowDice(false)
@@ -40,7 +40,6 @@ export function EventCardFooter({ cardNumber, showCardFooter, setShowDice }) {
       const units = GlobalInit.controller.getAttackingStrikeUnits()
       for (const unit of units) {
         if (!unit.aircraftUnit.attack) {
-          console.log("ARSE AGAIN!!!!!!!!!")
           unit.aircraftUnit.separated = true
           airMsg = "Fighter Unit Removed From Air Strike: " + unit.name
           break
@@ -82,6 +81,40 @@ export function EventCardFooter({ cardNumber, showCardFooter, setShowDice }) {
         : "Elite Japanese Pilots: +1 DRM for Escort Die Rolls this Air Op."
     if (showCardFooter) {
       GlobalGameState.elitePilots = true
+    }
+
+    return (
+      <>
+        {showCardFooter && (
+          <div
+            style={{
+              marginTop: "10px",
+              marginLeft: "-28px",
+            }}
+          >
+            <p
+              style={{
+                display: "flex",
+                justifyContent: "center",
+                alignItems: "center",
+                color: "white",
+              }}
+            >
+              {airMsg}
+            </p>
+          </div>
+        )}
+      </>
+    )
+  }
+  if (cardNumber === 13) {
+    console.log("attackResolved=", attackResolved)
+    setShowDice(false)
+    // Add additional damage to just attacked carrier
+    let airMsg = "Additional Hit Added to " + GlobalGameState.currentCarrierAttackTarget
+    if (showCardFooter && !attackResolved) {
+      GlobalGameState.carrierAttackHits = 1
+      doCriticalHit()
     }
 
     return (

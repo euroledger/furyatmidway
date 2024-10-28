@@ -54,6 +54,7 @@ export function AirOpsHeaders({ show }) {
 export function AirOpsFooters({ controller }) {
   const rolls = GlobalGameState.dieRolls
   const show = GlobalGameState.dieRolls.length > 0
+  console.log("GlobalGameState.dieRolls.length=", GlobalGameState.dieRolls.length, "SHOW AIR OPS FOOTERS=", show)
 
   const sideWithInitiative = controller.determineInitiative(rolls[0], rolls[1])
 

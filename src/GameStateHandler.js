@@ -19,6 +19,7 @@ function japanSetUpHandler() {
     GlobalGameState.currentCarrier++
     GlobalGameState.currentCarrierDivision = GlobalGameState.currentCarrier <= 1 ? 1 : 2
   } else {
+    console.log("QUACK 1")
     GlobalGameState.gamePhase = GlobalGameState.PHASE.JAPAN_CARD_DRAW
     GlobalInit.controller.drawJapanCards(3, true)
     GlobalGameState.jpCardsDrawn = true
@@ -72,7 +73,9 @@ async function setNextStateFollowingCardPlay({
   setAirUnitUpdate,
   setStrikeGroupUpdate,
   setEndOfAirOpAlertShow,
-  setEndOfTurnSummaryShow
+  setEndOfTurnSummaryShow,
+  capAirUnits,
+  setEliminatedUnitsPanelShow,
 }) {
   console.log("DOING CARD PLAY. card number=", cardNumber)
   switch (cardNumber) {
@@ -86,10 +89,19 @@ async function setNextStateFollowingCardPlay({
       break
 
     case 1:
+      if (GlobalInit.controller.usHandContainsCard(3)) {
+        setCardNumber(() => 3)
+      } else {
+        GlobalGameState.gamePhase = GlobalGameState.PHASE.END_OF_TURN
+        setEndOfTurnSummaryShow(true)
+      }
+      break
+
+    case 3:
       GlobalGameState.gamePhase = GlobalGameState.PHASE.END_OF_TURN
       setEndOfTurnSummaryShow(true)
       break
-
+      
     case 5:
       // Naval Bombardment
       setMidwayDialogShow(true)
@@ -160,6 +172,21 @@ async function setNextStateFollowingCardPlay({
         }
       } else {
         GlobalGameState.gamePhase = GlobalGameState.PHASE.CAP_INTERCEPTION
+      }
+      break
+    case 13:
+      setCardNumber(() => -1) // reset for next card play
+      if (GlobalGameState.carrierTarget2 !== "" && GlobalGameState.carrierTarget2 !== undefined) {
+        GlobalGameState.gamePhase = GlobalGameState.PHASE.AIR_ATTACK_2
+      } else {
+        console.log("CAP AIR UNITS ARE QUACKING", capAirUnits)
+        await endOfAirOperation(
+          GlobalGameState.sideWithInitiative,
+          capAirUnits,
+          setAirUnitUpdate,
+          setEliminatedUnitsPanelShow
+        )
+        GlobalGameState.gamePhase = GlobalGameState.PHASE.AIR_OPERATIONS
       }
       break
     default:
@@ -336,6 +363,7 @@ async function midwayTidyUp(setJapanStrikePanelEnabled, setUSMapRegions, setStri
 }
 
 async function tidyUp(setAirUnitUpdate, setStrikeGroupUpdate) {
+  console.log("DOING TIDY UP...")
   await setStrikeGroupAirUnitsToNotMoved(GlobalGameState.sideWithInitiative, setAirUnitUpdate)
 
   // reset SG attributes to allow that Strike Group and its boxes to be available
@@ -347,7 +375,9 @@ async function tidyUp(setAirUnitUpdate, setStrikeGroupUpdate) {
 }
 
 export async function endOfAirOperation(side, capAirUnits, setAirUnitUpdate, setEliminatedUnitsPanelShow) {
-  await moveCAPtoReturnBox(GlobalInit.controller, capAirUnits, setAirUnitUpdate)
+  if (capAirUnits) {
+    await moveCAPtoReturnBox(GlobalInit.controller, capAirUnits, setAirUnitUpdate)
+  }
   const anySGsNotMoved = GlobalInit.controller.getStrikeGroupsNotMoved2(GlobalGameState.sideWithInitiative)
 
   if (!anySGsNotMoved) {
@@ -482,7 +512,7 @@ export default async function handleAction({
       setAirUnitUpdate,
       setStrikeGroupUpdate,
       setEndOfAirOpAlertShow,
-      setEndOfTurnSummaryShow
+      setEndOfTurnSummaryShow,
     })
   } else if (GlobalGameState.gamePhase === GlobalGameState.PHASE.JAPAN_MIDWAY) {
     midwayDeclarationHandler({ setUsFleetRegions })
@@ -740,16 +770,25 @@ export default async function handleAction({
   } else if (GlobalGameState.gamePhase === GlobalGameState.PHASE.AIR_ATTACK_2) {
     GlobalGameState.gamePhase = GlobalGameState.PHASE.ATTACK_DAMAGE_RESOLUTION
   } else if (GlobalGameState.gamePhase === GlobalGameState.PHASE.ATTACK_DAMAGE_RESOLUTION) {
-    if (GlobalGameState.carrierTarget2 !== "" && GlobalGameState.carrierTarget2 !== undefined) {
-      GlobalGameState.gamePhase = GlobalGameState.PHASE.AIR_ATTACK_2
+    // check for card 13 critical hit
+    const carrierName = GlobalGameState.currentCarrierAttackTarget
+
+    const carrier = GlobalInit.controller.getCarrier(carrierName)
+    if (carrier.hits > 0 && carrier.hits < 3 && GlobalInit.controller.usHandContainsCard(13)) {
+      setCardNumber(() => 13)
+      GlobalGameState.gamePhase = GlobalGameState.PHASE.CARD_PLAY
     } else {
-      await endOfAirOperation(
-        GlobalGameState.sideWithInitiative,
-        capAirUnits,
-        setAirUnitUpdate,
-        setEliminatedUnitsPanelShow
-      )
-      GlobalGameState.gamePhase = GlobalGameState.PHASE.AIR_OPERATIONS
+      if (GlobalGameState.carrierTarget2 !== "" && GlobalGameState.carrierTarget2 !== undefined) {
+        GlobalGameState.gamePhase = GlobalGameState.PHASE.AIR_ATTACK_2
+      } else {
+        await endOfAirOperation(
+          GlobalGameState.sideWithInitiative,
+          capAirUnits,
+          setAirUnitUpdate,
+          setEliminatedUnitsPanelShow
+        )
+        GlobalGameState.gamePhase = GlobalGameState.PHASE.AIR_OPERATIONS
+      }
     }
   } else if (GlobalGameState.gamePhase === GlobalGameState.PHASE.MIDWAY_DAMAGE_RESOLUTION) {
     await endOfAirOperation(
@@ -767,6 +806,7 @@ export default async function handleAction({
         GlobalGameState.sideWithInitiative === GlobalUnitsModel.Side.US &&
         GlobalInit.controller.japanHandContainsCard(10)
       ) {
+        console.log("PLAY CARD 10")
         setCardNumber(() => 10)
         GlobalGameState.gamePhase = GlobalGameState.PHASE.CARD_PLAY
       } else {
@@ -782,6 +822,10 @@ export default async function handleAction({
       if (GlobalInit.controller.usHandContainsCard(1)) {
         setCardNumber(() => 1)
         GlobalGameState.gamePhase = GlobalGameState.PHASE.CARD_PLAY
+      }
+      if (GlobalInit.controller.usHandContainsCard(3) || GlobalInit.controller.japanHandContainsCard(3)) {
+        setCardNumber(() => 3)
+        GlobalGameState.gamePhase = GlobalGameState.PHASE.CARD_PLAY
       } else {
         GlobalGameState.gamePhase = GlobalGameState.PHASE.END_OF_TURN
         setEndOfTurnSummaryShow(true)
@@ -792,12 +836,17 @@ export default async function handleAction({
   } else if (GlobalGameState.gamePhase === GlobalGameState.PHASE.END_OF_TURN) {
     // START OF NEW TURN
     GlobalGameState.gameTurn++
+    GlobalGameState.airOpJapan=0
+    GlobalGameState.airOpUS=0
     if (GlobalInit.controller.japanHandContainsCard(6)) {
       setCardNumber(() => 6)
       GlobalGameState.gamePhase = GlobalGameState.PHASE.CARD_PLAY
     } else {
       if (GlobalGameState.gameTurn === 2 || GlobalGameState.gameTurn === 4 || GlobalGameState.gameTurn === 6) {
         GlobalGameState.gamePhase = GlobalGameState.PHASE.US_DRAWS_ONE_CARD
+      }
+      if (GlobalGameState.gameTurn === 3 || GlobalGameState.gameTurn === 5 || GlobalGameState.gameTurn === 7) {
+        GlobalGameState.gamePhase = GlobalGameState.PHASE.JAPAN_DRAWS_ONE_CARD
       }
     }
     GlobalGameState.phaseCompleted = false

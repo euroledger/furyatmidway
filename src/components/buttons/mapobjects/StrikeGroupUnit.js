@@ -10,6 +10,7 @@ export default class StrikeGroupUnit extends BaseUnit {
     this.airOpMoved = undefined
     this.airOpAttacked = undefined
     this.initialPosition = initialPosition
+    this.gameTurnMoved = undefined
   }
 
   set box(b) {
@@ -58,6 +59,14 @@ export default class StrikeGroupUnit extends BaseUnit {
 
   get attacked() {
     return this._attacked
+  }
+
+  set gameTurnMoved(gt) {
+    this._gameTurnMoved = gt
+  }
+
+  get gameTurnMoved() {
+    return this._gameTurnMoved
   }
 
   set airOpMoved(tm) {

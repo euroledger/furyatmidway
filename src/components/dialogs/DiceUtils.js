@@ -58,10 +58,8 @@ const rollDice = (rolls) => {
   const diceElements = new Array()
   var audio = new Audio("/sounds/dice.wav");
 
-  console.log("Rolls len=", rolls.length)
   audio.play();
   for (let i = 0; i < rolls.length; i++) {
-    console.log("LOOKING FOR .dice" + (i+1))
     const dice = document.querySelector(".dice" + (i+1))
    
     dice.style.animation = `rolling${i+1} 1s`  

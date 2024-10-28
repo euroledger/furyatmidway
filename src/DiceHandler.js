@@ -348,8 +348,8 @@ export function autoAllocateMidwayDamage(controller) {
   return damage
 }
 
-export function autoAllocateDamage(controller) {
-  const hits = GlobalGameState.carrierAttackHits
+export function autoAllocateDamage(controller, theHits) {
+  const hits = theHits ?? GlobalGameState.carrierAttackHits
   const carrier = GlobalGameState.currentCarrierAttackTarget
 
   // this just holds damage allocated in this attack
@@ -472,6 +472,7 @@ export function doCarrierDamageRolls(controller, testRoll) {
   GlobalGameState.carrierDamageRoll = roll
   GlobalGameState.damageThisAttack = damage
 
+  
   // }
   return damage
 }

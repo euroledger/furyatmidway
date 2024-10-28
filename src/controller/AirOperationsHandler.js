@@ -9,6 +9,7 @@ import JapanAirBoxOffsets from "../components/draganddrop/JapanAirBoxOffsets"
 import { moveAirUnitToEliminatedBox } from "../DiceHandler"
 import { distanceBetweenHexes } from "../components/HexUtils"
 import { japanStrikeGroups, usStrikeGroups } from "../CounterLoader"
+import HexCommand from "../commands/HexCommand"
 
 function getValidUSDestinationsRETURN1(controller, name, parentCarrier, side, useMidway) {
   // Returning US Strike Aircraft can return to either TF's carriers or Midway if within 2 hexes of CSF
@@ -307,7 +308,6 @@ export function doStrikeBoxUS(controller, name, side) {
   //   strikeGroup.airOpAttacked
   // )
 
-
   if (strikeGroup.airOpAttacked && strikeGroup.airOpMoved === strikeGroup.airOpAttacked) {
     // GOTO RETURN 1 BOX of either TF (or Midway if in range)
     const return1Box = controller.getReturn1AirBoxForNamedTaskForce(side, tf)
@@ -483,7 +483,7 @@ export function delay(ms) {
 //   return update
 // }
 export async function resetStrikeGroups(controller, side, setStrikeGroupUpdate) {
-  // console.log("RESET STRIKE GROUPS...")
+  console.log("RESET STRIKE GROUPS...")
   let positions, groups
   if (side === GlobalUnitsModel.Side.JAPAN) {
     positions = japanStrikeGroups.map(({ position }) => position)
@@ -503,8 +503,21 @@ export async function resetStrikeGroups(controller, side, setStrikeGroupUpdate) 
       continue
     }
     console.log("SG", strikeGroup.name, "-> RESET!")
+    let update = {
+      name: strikeGroup.name,
+      position: {
+        left: strikeGroup.initialPosition.left,
+        top: strikeGroup.initialPosition.top,
+        currentHex: HexCommand.OFFBOARD,
+      },
+      moved: strikeGroup.moved,
+      attacked: true
+    }
+    setStrikeGroupUpdate(update)
+    
     strikeGroup.airOpAttacked = undefined
     strikeGroup.airOpMoved = undefined
+    strikeGroup.gameTurnMoved = undefined
     strikeGroup.moved = false
     strikeGroup.attacked = false
     strikeGroup.position = strikeGroup.initialPosition
@@ -516,6 +529,8 @@ export async function resetStrikeGroups(controller, side, setStrikeGroupUpdate) 
     controller.removeStrikeGroupFromLocation(strikeGroup.name, side)
     controller.addAirUnitToBox(GlobalUnitsModel.AirBox.OFFBOARD, 0, strikeGroup)
     index++
+
+   
   }
 }
 

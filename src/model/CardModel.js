@@ -12,9 +12,8 @@ export default class CardModel {
     if (initial) {
       drawDeck = Array.from(GlobalUnitsModel.cards).filter((card) => card.side === GlobalUnitsModel.Side.JAPAN)
     } else {
-      drawDeck = Array.from(GlobalUnitsModel.cards).filter(
-        (card) => card._side === GlobalUnitsModel.Side.US || card._side === GlobalUnitsModel.Side.BOTH
-      )
+      // all cards form draw deck, note can draw cards from other side
+      drawDeck = Array.from(GlobalUnitsModel.cards)
     }
 
     if (testCards !== undefined) {
@@ -71,9 +70,8 @@ export default class CardModel {
     if (initial) {
       drawDeck = Array.from(GlobalUnitsModel.cards).filter((card) => card._side === GlobalUnitsModel.Side.US)
     } else {
-      drawDeck = Array.from(GlobalUnitsModel.cards).filter(
-        (card) => card._side === GlobalUnitsModel.Side.US || card._side === GlobalUnitsModel.Side.BOTH
-      )
+      // all cards form draw deck, note can draw cards from other side
+      drawDeck = Array.from(GlobalUnitsModel.cards)
     }
 
     if (testCards !== undefined) {

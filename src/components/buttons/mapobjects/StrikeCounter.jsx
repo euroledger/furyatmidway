@@ -33,6 +33,15 @@ function StrikeCounter({ setStrikeGroupPopup, currentUSHex, currentJapanHex, cou
     currentHex: HexCommand.OFFBOARD,
   })
 
+  function resetJapanPosition(position) {
+    console.log("RESET JAPAN POSITION FOR", counterData.name, "new position=", position)
+    setPosition({
+      initial:true,
+      left: position.left,
+      top: position.top,
+      currentHex: HexCommand.OFFBOARD,
+    })
+  }
   function setJapanPosition(hex) {
     setPosition({
       initial: false,
@@ -40,8 +49,16 @@ function StrikeCounter({ setStrikeGroupPopup, currentUSHex, currentJapanHex, cou
       top: hex.y + 190,
       currentHex: hex,
     })
+    console.log("\tname: ", counterData.name, "=>NEW POSITION=", hex)
   }
-
+  function resetUSPosition(position) {
+    console.log("RESET US POSITION FOR", counterData.name, "new position=", position)
+    setPosition({
+      left: position.left,
+      top: position.top,
+      currentHex: HexCommand.OFFBOARD,
+    })
+  }
   function setUSPosition(hex) {
     setPosition({
       initial: false,
@@ -81,13 +98,26 @@ function StrikeCounter({ setStrikeGroupPopup, currentUSHex, currentJapanHex, cou
     //   " -> STRIKE GROUP UPDATE, moved= ",
     //   strikeGroupUpdate.moved,
     //   "attacked =",
-    //   strikeGroupUpdate.attacked
+    //   strikeGroupUpdate.attacked,
+    //   "strikeGroupUpdate.position.left=",
+    //   strikeGroupUpdate.position.left,
+    //   "strikeGroupUpdate.position.top=",
+    //   strikeGroupUpdate.position.top,
+    //   "strikeGroupUpdate.position.currentHex=",strikeGroupUpdate.position.currentHex
     // )
 
     if (side === GlobalUnitsModel.Side.US) {
-      setUSPosition(hex)
+      if (strikeGroupUpdate.position.currentHex === HexCommand.OFFBOARD) {
+        resetUSPosition(strikeGroupUpdate.position)
+      } else {
+        setUSPosition(hex)
+      }
     } else {
-      setJapanPosition(hex)
+      if (strikeGroupUpdate.position.currentHex === HexCommand.OFFBOARD && position.initial !== true) {
+        resetJapanPosition(strikeGroupUpdate.position)
+      } else {
+        setJapanPosition(hex)
+      }
     }
     let from, to
     if (position.initial) {
@@ -120,21 +150,29 @@ function StrikeCounter({ setStrikeGroupPopup, currentUSHex, currentJapanHex, cou
     //   "GlobalGameState.airOpJapan",
     //   GlobalGameState.airOpJapan,
     //   "counterData.airOpMoved=",
-    //   counterData.airOpMoved
+    //   counterData.airOpMoved,
+    //   "counterData.gemeTurnMoved=",
+    //   counterData.gemeTurnMoved,
+    //   "counterData._gemeTurnMoved=",
+    //   counterData._gemeTurnMoved
     // )
+
+    const sg = controller.getStrikeGroupForBox(side, counterData.box)
+    // console.log("SG turn moved=", sg.gameTurnMoved)
     // Use 1AF
     const locationOfStrikeGroup = controller.getStrikeGroupLocation(counterData.name, side)
 
     if (
-      locationOfStrikeGroup !== undefined &&
-      counterData.airOpMoved !== undefined &&
-      GlobalGameState.airOpJapan !== counterData.airOpMoved
+      (sg.gameTurnMoved !== undefined && sg.gameTurnMoved !== GlobalGameState.gameTurn) ||
+      (locationOfStrikeGroup !== undefined &&
+        counterData.airOpMoved !== undefined &&
+        GlobalGameState.airOpJapan !== counterData.airOpMoved)
     ) {
       // second air op for this SG, use movement allowance (3) and position of SG to determine regions
-
       setCurrentHex(locationOfStrikeGroup)
       const locationOfEnemyCarrier = controller.getFleetLocation("CSF", GlobalUnitsModel.Side.US)
 
+      // console.log("LOCATION OF ENEMY CARRIER=", locationOfEnemyCarrier)
       // if enemy fleet within range of 3
       // SG must move to enemy
       if (locationOfEnemyCarrier !== undefined) {
@@ -146,7 +184,9 @@ function StrikeCounter({ setStrikeGroupPopup, currentUSHex, currentJapanHex, cou
           // strike group must return to "RETURN 2" space
           // @TODO move SG counter offboard and mark Strike Units as moved
           // Set SG to attacked - will trigger units to be moved to return 2
+          console.log("NO ATTACK POSSIBLE, SG units to RETURN 2")
           counterData.attacked = true
+          // sg.attacked = true
         }
       }
     } else {
@@ -189,15 +229,19 @@ function StrikeCounter({ setStrikeGroupPopup, currentUSHex, currentJapanHex, cou
       "counter data name:",
       counterData.name,
       "counterData.airOpMoved=",
-      counterData.airOpMoved
+      counterData.airOpMoved,
+      "counterData.gameTurnMoved=",
+      counterData.gameTurnMoved
     )
 
     const locationOfStrikeGroup = controller.getStrikeGroupLocation(counterData.name, side)
+    const sg = controller.getStrikeGroupForBox(side, counterData.box)
 
     if (
-      locationOfStrikeGroup !== undefined &&
-      counterData.airOpMoved !== undefined &&
-      GlobalGameState.airOpUS !== counterData.airOpMoved
+      (counterData.gemeTurnMoved !== undefined && counterData.gemeTurnMoved !== GlobalGameState.gameTurn) ||
+      (locationOfStrikeGroup !== undefined &&
+        counterData.airOpMoved !== undefined &&
+        GlobalGameState.airOpUS !== counterData.airOpMoved)
     ) {
       // second air op for this SG, use movement allowance (3) and position of SG to determine regions
       const speed = controller.getSlowestUnitSpeedInStrikeGroup(counterData.box)
@@ -218,6 +262,7 @@ function StrikeCounter({ setStrikeGroupPopup, currentUSHex, currentJapanHex, cou
           console.log("@TODO enemy carrier is out of range, return SG to return 2 box")
           // Set SG to attacked - will trigger units to be moved to return 2
           counterData.attacked = true
+          // sg.attacked = true
         }
       }
     } else {
@@ -313,6 +358,7 @@ function StrikeCounter({ setStrikeGroupPopup, currentUSHex, currentJapanHex, cou
           currentJapanHex.x += 6 * index
           currentJapanHex.y -= 6 * index
         }
+        console.log("SG:", counterData.name, "SET POSITION TO", currentJapanHex)
         setJapanPosition(currentJapanHex)
         if (position.initial) {
           from = HexCommand.OFFBOARD
@@ -383,6 +429,20 @@ function StrikeCounter({ setStrikeGroupPopup, currentUSHex, currentJapanHex, cou
     }
   }
 
+  // if (counterData.name === "JP-SG2") {
+  //   console.log("JP-SG2 position -> left:", position.left, "top:", position.top, "currentHex", position.currentHex)
+  // }
+  let disp = "block"
+
+  const sg = controller.getStrikeGroupForBox(side, counterData.box)
+  if (
+    sg.attacked === true ||
+    GlobalGameState.gamePhase === GlobalGameState.PHASE.JAPAN_FLEET_MOVEMENT ||
+    GlobalGameState.gamePhase === GlobalGameState.PHASE.US_FLEET_MOVEMENT ||
+    controller.getAirUnitsInStrikeGroups(sg.box).length === 0
+  ) {
+    disp = "none"
+  }
   return (
     <>
       <div>
@@ -392,6 +452,7 @@ function StrikeCounter({ setStrikeGroupPopup, currentUSHex, currentJapanHex, cou
           style={{
             position: "absolute",
             width: counterData.width,
+            display: disp,
             left: position.left,
             top: position.top,
             zIndex: zIndex,
