@@ -80,6 +80,8 @@ import { CardAlertHeaders, CardAlertFooters } from "./attackscreens/PlayCardPane
 import { NavalBombardmentHeader, NavalBombardmentFooter } from "./attackscreens/NavalBombardmentPanel"
 import { TroubledReconnaissanceHeader, TroubledReconnaissanceFooter } from "./attackscreens/TroubledReconnaissancePanel"
 
+import { AirReplacementsHeaders, AirReplacementsFooters } from "./attackscreens/AirReplacementsPanel"
+
 import UITester from "./UIEvents/UITester"
 import UITesterHeadless from "./UIEvents/UITesterHeadless"
 
@@ -174,8 +176,13 @@ export function App() {
   const [capSteps, setCapSteps] = useState(0)
   const [escortSteps, setEscortSteps] = useState(0)
 
+  const [showCarrierDisplay, setShowCarrierDisplay] = useState(false)
+  const [airReplacementsSelected, setAirReplacementsSelected] = useState(false)
   const [towedCVSelected, setTowedCVSelected] = useState("")
   const [fightersPresent, setFightersPresent] = useState(true)
+
+  const [selectedAirUnit, setSelectedAirUnit] = useState()
+
 
   const [airUnitUpdate, setAirUnitUpdate] = useState({
     unit: {},
@@ -396,7 +403,6 @@ export function App() {
   useEffect(() => {
     if (GlobalGameState.gamePhase === GlobalGameState.PHASE.END_OF_TURN) {
       GlobalGameState.SearchValue.JP_AF = 6 // in case card 6 was played
-      
     }
   }, [GlobalGameState.gamePhase])
 
@@ -1086,13 +1092,10 @@ export function App() {
       ></DamageFooters>
     </>
   )
-  
+
   const towedCVHeaders = (
     <>
-      <TowedCVHeaders
-        controller={GlobalInit.controller}
-        setTowedCVSelected={setTowedCVSelected}
-      ></TowedCVHeaders>
+      <TowedCVHeaders controller={GlobalInit.controller} setTowedCVSelected={setTowedCVSelected}></TowedCVHeaders>
     </>
   )
 
@@ -1161,6 +1164,31 @@ export function App() {
   const escortFooters = (
     <>
       <EscortFooters></EscortFooters>
+    </>
+  )
+
+  const airReplacementsHeaders = (
+    <>
+      <AirReplacementsHeaders
+        controller={GlobalInit.controller}
+        setShowCarrierDisplay={setShowCarrierDisplay}
+        airReplacementsSelected={airReplacementsSelected}
+        setAirReplacementsSelected={setAirReplacementsSelected}
+        setSelectedAirUnit={setSelectedAirUnit}
+      ></AirReplacementsHeaders>
+    </>
+  )
+
+  const airReplacementsFooters = (
+    <>
+      <AirReplacementsFooters
+        controller={GlobalInit.controller}
+        setAirReplacementsSelected={setAirReplacementsSelected}
+        showCarrierDisplay={showCarrierDisplay}
+        selectedAirUnit={selectedAirUnit}
+        airReplacementsSelected={airReplacementsSelected}
+        setAirUnitUpdate={setAirUnitUpdate}
+      ></AirReplacementsFooters>
     </>
   )
 
@@ -1316,7 +1344,7 @@ export function App() {
     sendDamageUpdates(GlobalInit.controller, damage, setDamageMarkerUpdate)
 
     GlobalGameState.carrierAttackHits = 0
-    setAttackResolved(() => true) 
+    setAttackResolved(() => true)
 
     // send damage event here
   }
@@ -1797,6 +1825,7 @@ export function App() {
         setStrikeLostPanelShow={setStrikeLostPanelShow}
         setCarrierPlanesDitchPanelShow={setCarrierPlanesDitchPanelShow}
         setTowedToFriendlyPortPanelShow={setTowedToFriendlyPortPanelShow}
+        setAirReplacementsPanelShow={setAirReplacementsPanelShow}
         setAttackResolved={setAttackResolved}
         onHide={(e) => {
           setCardAlertPanelShow(false)
@@ -1875,7 +1904,7 @@ export function App() {
         disabled={true}
         closeButtonDisabled={closeDamageButtonDisabled}
       ></LargeDicePanel>
-         <LargeDicePanel
+      <LargeDicePanel
         numDice={0}
         show={!testClicked && towedToFriendlyPortPanelShow}
         headerText="Towed To A Friendly Port"
@@ -1892,6 +1921,24 @@ export function App() {
         }}
         disabled={true}
         closeButtonDisabled={closeDamageButtonDisabled}
+      ></LargeDicePanel>
+      <LargeDicePanel
+        numDice={0}
+        show={!testClicked && airReplacementsPanelShow}
+        headerText="Air Replacements"
+        headers={airReplacementsHeaders}
+        footers={airReplacementsFooters}
+        width={74}
+        showDice={false}
+        margin={0}
+        onHide={(e) => {
+          setAirReplacementsPanelShow(false)
+          // sendDamageEvent(eliminatedSteps)
+          // @TODO send Air Replacements event (card play)
+          nextAction(e)
+        }}
+        disabled={true}
+        closeButtonDisabled={!airReplacementsSelected}
       ></LargeDicePanel>
       <LargeDicePanel
         numDice={0}

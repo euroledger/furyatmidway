@@ -3,6 +3,8 @@ import GlobalGameState from "./model/GlobalGameState"
 import Controller from "./controller/Controller"
 import GlobalUnitsModel from "./model/GlobalUnitsModel"
 import GlobalInit from "./model/GlobalInit"
+import USAirBoxOffsets from "./components/draganddrop/USAirBoxOffsets"
+import JapanAirBoxOffsets from "./components/draganddrop/JapanAirBoxOffsets"
 
 export function doNavalBombardmentRoll(controller, roll) {
   let theRoll = roll ?? randomDice(1)
@@ -929,10 +931,11 @@ export function doCAP(controller, capAirUnits, fightersPresent, testRolls) {
 }
 
 export function moveAirUnitToEliminatedBox(controller, airUnit) {
+
   const toBox =
-    airUnit.side === GlobalUnitsModel.Side.JAPAN
-      ? GlobalUnitsModel.AirBox.JP_ELIMINATED
-      : GlobalUnitsModel.AirBox.US_ELIMINATED
+  airUnit.side === GlobalUnitsModel.Side.JAPAN
+    ? GlobalUnitsModel.AirBox.JP_ELIMINATED
+    : GlobalUnitsModel.AirBox.US_ELIMINATED
 
   controller.viewEventHandler({
     type: Controller.EventTypes.AIR_UNIT_MOVE,
@@ -941,6 +944,36 @@ export function moveAirUnitToEliminatedBox(controller, airUnit) {
       counterData: airUnit,
       index: -1,
       side: GlobalGameState.sideWithInitiative,
+      loading: false,
+    },
+  })
+}
+export function moveAirUnitFromEliminatedBox(controller, side, carrierName, airUnit, setAirUnitUpdate) {
+  let update = {}
+
+  console.log("MOVE AIR UNIT:", airUnit)
+  const boxName = controller.getAirBoxForNamedShip(side, carrierName, "HANGAR")
+
+  const index = controller.getFirstAvailableZone(boxName)
+  let position1 = USAirBoxOffsets.find((box) => box.name === boxName)
+
+  if (side === GlobalUnitsModel.Side.JAPAN) {
+    position1 = JapanAirBoxOffsets.find((box) => box.name === boxName)
+  }
+  update.boxName = boxName
+  update.position = position1.offsets[index]
+  update.name = airUnit.name
+  update.log = false // hack to prevent logging
+
+  setAirUnitUpdate(update)
+  
+  controller.viewEventHandler({
+    type: Controller.EventTypes.AIR_UNIT_MOVE,
+    data: {
+      name: boxName,
+      counterData: airUnit,
+      index,
+      side,
       loading: false,
     },
   })

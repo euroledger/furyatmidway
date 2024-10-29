@@ -13,7 +13,16 @@ class ViewEventAirUnitMoveHandler {
     const { counterData, name, index, side, loading } = event.data
 
     const { boxName, boxIndex } = this.controller.getAirUnitLocation(counterData.name)
-    let from = boxName === GlobalUnitsModel.AirBox.OFFBOARD ? "OFFBOARD" : boxName + " - box " + boxIndex
+
+    let from = boxName + " - box " + boxIndex
+    if(boxName === GlobalUnitsModel.AirBox.OFFBOARD ) {
+      from = "OFFBOARD"
+    } else if(boxName === GlobalUnitsModel.AirBox.JP_ELIMINATED ) {
+      from = "JAPAN ELIMINATED"
+    } else if(boxName === GlobalUnitsModel.AirBox.US_ELIMINATED ) {
+      from = "US ELIMINATED"
+    }
+    // let from = boxName === GlobalUnitsModel.AirBox.OFFBOARD ? "OFFBOARD" : boxName + " - box " + boxIndex
 
     const to =
       name === GlobalUnitsModel.AirBox.JP_ELIMINATED || name === GlobalUnitsModel.AirBox.US_ELIMINATED

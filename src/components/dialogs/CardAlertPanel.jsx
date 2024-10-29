@@ -54,8 +54,6 @@ function CardAlertPanel(props) {
       controller.setCardPlayed(1, GlobalUnitsModel.Side.US)
       onHide(e)
     } else if (cardNumber === 3) {
-      // 
-
       setAirReplacementsPanelShow(true)
 
       if (controller.usHandContainsCard(3)) {

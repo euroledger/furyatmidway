@@ -19,7 +19,6 @@ function japanSetUpHandler() {
     GlobalGameState.currentCarrier++
     GlobalGameState.currentCarrierDivision = GlobalGameState.currentCarrier <= 1 ? 1 : 2
   } else {
-    console.log("QUACK 1")
     GlobalGameState.gamePhase = GlobalGameState.PHASE.JAPAN_CARD_DRAW
     GlobalInit.controller.drawJapanCards(3, true)
     GlobalGameState.jpCardsDrawn = true

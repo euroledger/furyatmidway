@@ -310,6 +310,12 @@ function loadAirUnits(airUnitMap) {
     if (airUnit.counterData._aircraftUnit._moved) {
       globalAirUnit.aircraftUnit.moved = true
     }
+
+    // QUACK FOR TESTING ONLY
+    if (airUnit.counterData._name === "Hornet-F4F4-1" || airUnit.counterData._name === "Hornet-F4F4-2") {
+      globalAirUnit.aircraftUnit.steps = 1
+      globalAirUnit.image = "/images/aircounters/hornet-f4f-back.png"
+    }
   }
 }
 

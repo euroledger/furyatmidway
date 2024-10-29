@@ -109,13 +109,10 @@ export function TowedCVFooters({ controller, towedCVSelected }) {
     return
   }
 
-  console.log("towedCVSelected=", towedCVSelected)
   let carrierUnit = controller.getCarrier(towedCVSelected)
   carrierUnit.towed = true
 
   const message1 = "CV Selected: "
-
-  const msg = "Target Determined For Air Attack:"
   return (
     <>
       <div

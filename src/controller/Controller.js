@@ -166,6 +166,26 @@ export default class Controller {
     return units
   }
 
+  getAllReducedUnitsForSide(side) {
+    const units = this.getAllAirUnits(side)
+
+    const reducedUnits = units.filter(
+      (unit) => unit.aircraftUnit.steps === 1 && unit.carrier !== GlobalUnitsModel.Carrier.MIDWAY
+    )
+    return reducedUnits
+  }
+
+  getAllEliminatedUnits(side) {
+    let box =
+      side === GlobalUnitsModel.Side.US ? GlobalUnitsModel.AirBox.US_ELIMINATED : GlobalUnitsModel.AirBox.JP_ELIMINATED
+    const units = this.getAllAirUnits(side)
+    console.log("UNITS=", units)
+    const eliminatedAirUnits = units.filter(
+      (unit) => this.getAirUnitLocation(unit.name).boxName === box && unit.carrier !== GlobalUnitsModel.Carrier.MIDWAY
+    )
+    return eliminatedAirUnits
+  }
+
   getAllUnitsOnJapaneseFlightDecks(fighters) {
     const airUnits = Array.from(this.counters.values())
     const defenders = airUnits.filter(
@@ -281,8 +301,6 @@ export default class Controller {
 
       return x
     })
-
-
 
     if (side === GlobalUnitsModel.Side.US) {
       // get all units for each strike box, any there
@@ -721,7 +739,7 @@ export default class Controller {
   }
 
   getSunkCarriers(side) {
-    let sunkCarriers = new Array
+    let sunkCarriers = new Array()
     if (side === GlobalUnitsModel.Side.JAPAN) {
       if (this.isSunk(GlobalUnitsModel.Carrier.AKAGI)) {
         sunkCarriers.push(GlobalUnitsModel.Carrier.AKAGI)
@@ -1050,7 +1068,6 @@ export default class Controller {
 
   victoryCheck() {
     // @TODO Will need to take account of CVs which have left the map...
-
 
     if (GlobalGameState.gameTurn !== 3 && GlobalGameState.gameTurn !== 7) {
       return null
@@ -1390,9 +1407,8 @@ export default class Controller {
     if (fleetA.name === "MIDWAY") {
       locationA = Controller.MIDWAY_HEX
     }
-    if (locationA.currentHex === undefined) 
-      return undefined
-    
+    if (locationA.currentHex === undefined) return undefined
+
     let hexA = {
       q: locationA.currentHex.q,
       r: locationA.currentHex.r,

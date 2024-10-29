@@ -1,71 +1,42 @@
-import { React, useEffect, useState, createRef } from "react"
+import { React, useState } from "react"
 import "./cap.css"
-import GlobalGameState from "../model/GlobalGameState"
 import GlobalUnitsModel from "../model/GlobalUnitsModel"
-import { doDamageAllocation } from "../DiceHandler"
+import Button from "react-bootstrap/Button"
+import { moveAirUnitFromEliminatedBox } from "../DiceHandler"
 
-export function AirReplacementsFooters({
+export function AirReplacementsHeaders({
   controller,
-  eliminatedSteps,
-  setEliminatedSteps,
-  cardNumber,
-  setStepsLeft,
-  side // this is the side that played the card
+  setShowCarrierDisplay,
+  setAirReplacementsSelected,
+  setSelectedAirUnit,
 }) {
-  const [elRefs, setElRefs] = useState([])
+  const [reducedAirUnits, setReducedAirUnits] = useState([])
 
-  const msg = "Select a one step to flip to full strength or eliminated air unit to return to hangar"
+  let side = GlobalUnitsModel.Side.JAPAN
+  if (controller.getCardPlayed(3, GlobalUnitsModel.Side.US)) {
+    side = GlobalUnitsModel.Side.US
+  }
 
-  // let unitsInGroup = controller.getAttackingStrikeUnits()
+  const msg = "Select a one step air unit to flip to full strength or eliminated air unit to return to hangar"
+
+  if (reducedAirUnits.length === 0) {
+    const redAirUnits = controller.getAllReducedUnitsForSide(side)
+    setReducedAirUnits(() => redAirUnits)
+  }
+
+  const eliminatedAirUnits = controller.getAllEliminatedUnits(side)
 
   // Get all One Step (reduced) and Eliminated air units
 
   // Display in two boxes
 
-
-  // if user selects an eliminated unit, display all US or Japanese carriers with undamaged flight deck and 
+  // if user selects an eliminated unit, display all US or Japanese carriers with undamaged flight deck and
   // hangar capacity available with button to choose that CV's hangar
-  
-  // Use the carrier display from 
-  const airUnitsTF16Return1 = controller.getAllAirUnitsInBox(GlobalUnitsModel.AirBox.US_TF16_RETURN1)
-  const airUnitsTF16Return2 = controller.getAllAirUnitsInBox(GlobalUnitsModel.AirBox.US_TF16_RETURN2)
-  const airUnitsTF17Return1 = controller.getAllAirUnitsInBox(GlobalUnitsModel.AirBox.US_TF17_RETURN1)
-  const airUnitsTF17Return2 = controller.getAllAirUnitsInBox(GlobalUnitsModel.AirBox.US_TF17_RETURN2)
-
-  const unitsInGroup = airUnitsTF16Return1
-    .concat(airUnitsTF16Return2)
-    .concat(airUnitsTF17Return1)
-    .concat(airUnitsTF17Return2)
-
-  const arrLength = unitsInGroup.length
-  useEffect(() => {
-    // add or remove refs
-    setElRefs((elRefs) =>
-      Array(arrLength)
-        .fill()
-        .map((_, i) => elRefs[i] || createRef())
-    )
-  }, [])
-
-  useEffect(() => {
-    if (GlobalGameState.testStepLossSelection === -1) {
-      return
-    }
-    const myRef = elRefs[GlobalGameState.testStepLossSelection]
-    if (myRef !== undefined && myRef.current !== undefined && myRef.current !== null) {
-      myRef.current.click(myRef.current)
-    }
-  }, [GlobalGameState.testStepLossSelection])
-
-  let totalSteps = 0
 
   const airCounterImage = (airUnit, i) => {
-    totalSteps += airUnit.aircraftUnit.steps
-
     return (
       <div>
         <input
-          ref={elRefs[i]}
           onClick={() => handleClick(airUnit)}
           type="image"
           src={airUnit.image}
@@ -89,35 +60,34 @@ export function AirReplacementsFooters({
       </div>
     )
   }
-  const airCountersTF16Return1 = airUnitsTF16Return1.map((airUnit, i) => {
+  const reducedCounters = reducedAirUnits.map((airUnit, i) => {
     return airCounterImage(airUnit, i)
   })
-  const airCountersTF16Return2 = airUnitsTF16Return2.map((airUnit, i) => {
+  const eliminatedCounters = eliminatedAirUnits.map((airUnit, i) => {
     return airCounterImage(airUnit, i)
   })
-  const airCountersTF17Return1 = airUnitsTF17Return1.map((airUnit, i) => {
-    return airCounterImage(airUnit, i)
-  })
-  const airCountersTF17Return2 = airUnitsTF17Return2.map((airUnit, i) => {
-    return airCounterImage(airUnit, i)
-  })
-
-  setStepsLeft(totalSteps)
-  GlobalGameState.attackingStepsRemaining = totalSteps
 
   const handleClick = (airUnit) => {
-    const hits = cardNumber === 11 ? 2 : 1
+    console.log("AIR UNIT SELECTED:", airUnit)
 
-    if (eliminatedSteps === hits) {
+    // if this unit has 1 step -> flip to full strength
+    if (airUnit.aircraftUnit.steps === 1) {
+      airUnit.aircraftUnit.steps = 2
+      const newImage = airUnit.image.replace("back", "front")
+      airUnit.image = newImage
+      setAirReplacementsSelected(true)
       return
     }
 
-    doDamageAllocation(controller, airUnit)
-    setEliminatedSteps(() => eliminatedSteps + 1)
-    GlobalGameState.updateGlobalState()
+    // if this unit has 0 steps -> set to 1 step and display the eligible carriers in which to place into hangar
+    if (eliminatedAirUnits.includes(airUnit)) {
+      const newImage = airUnit.image.replace("front", "back")
+      airUnit.image = newImage
+      setSelectedAirUnit(airUnit)
+      setShowCarrierDisplay(() => true)
+    }
   }
 
-  const hitsToAllocate = 1
   return (
     <>
       <div>
@@ -169,7 +139,7 @@ export function AirReplacementsFooters({
                   margin: "5px",
                 }}
               >
-                TF16 RETURN 1 BOX
+                REDUCED AIR UNITS BOX
               </p>
               <div
                 style={{
@@ -177,7 +147,7 @@ export function AirReplacementsFooters({
                   flexWrap: "wrap",
                 }}
               >
-                {airCountersTF16Return1}
+                {reducedCounters}
               </div>
             </div>
             <div
@@ -201,7 +171,7 @@ export function AirReplacementsFooters({
                   margin: "5px",
                 }}
               >
-                TF16 RETURN 2 BOX
+                ELIMINATED AIR UNITS BOX
               </p>
               <div
                 style={{
@@ -209,77 +179,7 @@ export function AirReplacementsFooters({
                   flexWrap: "wrap",
                 }}
               >
-                {airCountersTF16Return2}
-              </div>
-            </div>
-          </div>
-          <div
-            style={{
-              display: "table-row",
-              height: "25px",
-            }}
-          ></div>
-          <div
-            style={{
-              display: "table-row",
-              height: "100px",
-            }}
-          >
-            <div
-              style={{
-                width: "48%",
-                display: "table-cell",
-                borderRadius: "3px",
-                border: "1px solid white",
-                marginRight: "5px",
-              }}
-            >
-              <p
-                style={{
-                  margin: "5px",
-                }}
-              >
-                TF17 RETURN 1 BOX
-              </p>
-              <div
-                style={{
-                  display: "flex",
-                  flexWrap: "wrap",
-                }}
-              >
-                {airCountersTF17Return1}
-              </div>
-            </div>
-            <div
-              style={{
-                width: "10px",
-                display: "table-cell",
-              }}
-            ></div>
-            <div
-              style={{
-                width: "50",
-
-                marginLeft: "5px",
-                borderRadius: "3px",
-                border: "1px solid white",
-                display: "table-cell",
-              }}
-            >
-             <p
-                style={{
-                  margin: "5px",
-                }}
-              >
-                TF17 RETURN 2 BOX
-              </p>
-              <div
-                style={{
-                  display: "flex",
-                  flexWrap: "wrap",
-                }}
-              >
-                {airCountersTF17Return2}
+                {eliminatedCounters}
               </div>
             </div>
           </div>
@@ -296,49 +196,159 @@ export function AirReplacementsFooters({
             marginLeft: "10px",
           }}
         >
-          (click on air unit to eliminate a step)
-        </p>
-      </div>
-      <div>
-        <p
-          style={{
-            display: "flex",
-            marginTop: "50px",
-            justifyContent: "center",
-            alignItems: "center",
-            color: "white",
-          }}
-        >
-          Steps Eliminated: &nbsp;<strong>{eliminatedSteps}</strong>&nbsp;
+          (click on air unit to flip or restore)
         </p>
       </div>
     </>
   )
 }
 
-export function AirReplacementsFooters({ eliminatedSteps }) {
-  const show = eliminatedSteps === 1 // card is 10
+export function AirReplacementsFooters({
+  controller,
+  showCarrierDisplay,
+  setAirReplacementsSelected,
+  selectedAirUnit,
+  airReplacementsSelected,
+  setAirUnitUpdate,
+}) {
+  console.log("SELECTED AIR UNIT=", selectedAirUnit)
+  let side = GlobalUnitsModel.Side.JAPAN
+  if (controller.getCardPlayed(3, GlobalUnitsModel.Side.US)) {
+    side = GlobalUnitsModel.Side.US
+  }
+  let selectedCV
 
-  return (
-    <>
-      {show && (
+  const japanCVs = [
+    GlobalUnitsModel.Carrier.AKAGI,
+    GlobalUnitsModel.Carrier.KAGA,
+    GlobalUnitsModel.Carrier.HIRYU,
+    GlobalUnitsModel.Carrier.SORYU,
+  ]
+  const handleClick = (cv) => {
+    console.log("CV Selected = ", cv)
+    setAirReplacementsSelected(true)
+
+    selectedCV = cv
+    // move the air unit from eliminated box to the hangar of the given cv
+  }
+  let availableCVImages = []
+
+  const createImage = (cv) => {
+    let image = "/images/fleetcounters/yorktown.jpg"
+    if (cv === GlobalUnitsModel.Carrier.ENTERPRISE) {
+      image = "/images/fleetcounters/enterprise.jpg"
+    } else if (cv === GlobalUnitsModel.Carrier.HORNET) {
+      image = "/images/fleetcounters/hornet.jpg"
+    } else if (cv === GlobalUnitsModel.Carrier.AKAGI) {
+      image = "/images/fleetcounters/akagi.jpg"
+    } else if (cv === GlobalUnitsModel.Carrier.KAGA) {
+      image = "/images/fleetcounters/kaga.jpg"
+    } else if (cv === GlobalUnitsModel.Carrier.HIRYU) {
+      image = "/images/fleetcounters/hiryu.jpg"
+    } else if (cv === GlobalUnitsModel.Carrier.HORNET) {
+      image = "/images/fleetcounters/soryu.jpg"
+    }
+
+    return (
+      <>
+        <div>
+          <img
+            src={image}
+            style={{
+              width: "100px",
+              height: "200px",
+              marginLeft: "40px",
+              marginRight: "40px",
+            }}
+          ></img>
+        </div>
         <div
           style={{
-            marginTop: "10px",
-            marginLeft: "-28px",
+            marginLeft: "53px",
+            marginTop: "20px",
           }}
         >
-          <p
+          <Button disabled={availableCVImages.length <= 1} onClick={() => handleClick(cv)}>
+            {cv}
+          </Button>
+        </div>
+      </>
+    )
+  }
+
+  if (side === GlobalUnitsModel.Side.US) {
+    const usCVs = [
+      GlobalUnitsModel.Carrier.ENTERPRISE,
+      GlobalUnitsModel.Carrier.YORKTOWN,
+      GlobalUnitsModel.Carrier.HORNET,
+    ]
+    const availableUSCVs = usCVs.filter(
+      (carrier) => !controller.isSunk(carrier) && controller.isHangarAvailable(carrier)
+    )
+    availableCVImages = availableUSCVs.map((cv, idx) => {
+      return (
+        <>
+          <div>{createImage(cv)}</div>
+        </>
+      )
+    })
+    if (availableUSCVs.length === 1) {
+      selectedCV = availableUSCVs[0]
+    }
+  } else {
+    const availableJapanCVs = japanCVs.filter(
+      (carrier) => !controller.isSunk(carrier) && controller.isHangarAvailable(carrier)
+    )
+    availableCVImages = availableJapanCVs.map((cv, idx) => {
+      return (
+        <>
+          <div>{createImage(cv)}</div>
+        </>
+      )
+    })
+    if (availableJapanCVs.length === 1) {
+      selectedCV = availableJapanCVs[0]
+    }
+  }
+
+  if (selectedCV && showCarrierDisplay && !airReplacementsSelected) {
+    moveAirUnitFromEliminatedBox(controller, side, selectedCV, selectedAirUnit, setAirUnitUpdate)
+    setAirReplacementsSelected(true)
+  }
+  return (
+    <>
+      {showCarrierDisplay && (
+        <>
+          <div
             style={{
-              display: "flex",
-              justifyContent: "center",
-              alignItems: "center",
-              color: "white",
+              marginTop: "10px",
+              marginLeft: "-28px",
             }}
           >
-            All Done!
-          </p>
-        </div>
+            <p
+              style={{
+                display: "flex",
+                justifyContent: "center",
+                alignItems: "center",
+                color: "white",
+              }}
+            >
+              {availableCVImages}
+            </p>
+          </div>
+          {selectedCV && (
+            <p
+              style={{
+                display: "flex",
+                justifyContent: "center",
+                alignItems: "center",
+                color: "white",
+              }}
+            >
+              CV Hangar for replacement step =&nbsp;<strong>{selectedCV}</strong>&nbsp;
+            </p>
+          )}
+        </>
       )}
     </>
   )
