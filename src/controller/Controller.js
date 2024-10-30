@@ -150,6 +150,21 @@ export default class Controller {
     return airCounters
   }
 
+  getAllAirUnitsInReturn1Boxes(side) {
+    const airUnits = Array.from(this.counters.values())
+    const defenders = airUnits.filter((unit) => unit.constructor.name === "AirUnit" && unit.side === side)
+
+    let units = new Array()
+    for (const unit of defenders) {
+      const location = this.getAirUnitLocation(unit.name)
+      unit.location = location
+      if (location.boxName.includes("RETURNING (1)")) {
+        units.push(unit)
+      }
+    }
+    return units
+  }
+
   getAllCAPDefendersInCAPReturnBoxes(side) {
     const airUnits = Array.from(this.counters.values())
     const defenders = airUnits.filter((unit) => unit.constructor.name === "AirUnit" && unit.side === side)
@@ -273,8 +288,6 @@ export default class Controller {
     if (location.boxName.includes("STRIKE")) {
       loc = unit.launchedFrom
     }
-    // console.log("Air Unit", name, "launched from", launchedFrom)
-
     return this.getCarrierForAirBox(loc)
   }
   getStrikeBoxes(name, side) {
@@ -767,6 +780,35 @@ export default class Controller {
     return sunkCarriers
   }
 
+  // get carriers with damage 2 (eligible for DMCV)
+  getDamagedCarriers(side) {
+    let damagedCarriers = new Array()
+    if (side === GlobalUnitsModel.Side.JAPAN) {
+      if (this.getCarrierHits(GlobalUnitsModel.Carrier.AKAGI) == 2) {
+        damagedCarriers.push(GlobalUnitsModel.Carrier.AKAGI)
+      }
+      if (this.getCarrierHits(GlobalUnitsModel.Carrier.KAGA) == 2) {
+        damagedCarriers.push(GlobalUnitsModel.Carrier.KAGA)
+      }
+      if (this.getCarrierHits(GlobalUnitsModel.Carrier.HIRYU) == 2) {
+        damagedCarriers.push(GlobalUnitsModel.Carrier.HIRYU)
+      }
+      if (this.getCarrierHits(GlobalUnitsModel.Carrier.SORYU) == 2) {
+        damagedCarriers.push(GlobalUnitsModel.Carrier.SORYU)
+      }
+    } else {
+      if (this.getCarrierHits(GlobalUnitsModel.Carrier.ENTERPRISE) == 2) {
+        damagedCarriers.push(GlobalUnitsModel.Carrier.ENTERPRISE)
+      }
+      if (this.getCarrierHits(GlobalUnitsModel.Carrier.HORNET) == 2) {
+        damagedCarriers.push(GlobalUnitsModel.Carrier.HORNET)
+      }
+      if (this.getCarrierHits(GlobalUnitsModel.Carrier.YORKTOWN) == 2) {
+        damagedCarriers.push(GlobalUnitsModel.Carrier.YORKTOWN)
+      }
+    }
+    return damagedCarriers
+  }
   getTargetForAttack() {
     if (GlobalGameState.taskForceTarget === GlobalUnitsModel.TaskForce.TASK_FORCE_17) {
       if (this.isSunk(GlobalUnitsModel.Carrier.YORKTOWN)) {

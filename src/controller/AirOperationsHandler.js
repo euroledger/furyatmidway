@@ -572,6 +572,26 @@ export async function moveAirUnitToReturnBox(controller, strikeGroup, unit, side
   })
 }
 
+export async function moveOrphanedAirUnitsInReturn1Boxes(side) {
+  console.log("TEST RETURN 1 ORPHANED UNITS")
+  const unitsReturning = GlobalInit.controller.getAllAirUnitsInReturn1Boxes(side)
+  for (const unit of unitsReturning) {
+    await delay(1)
+    const parentCarrier = GlobalInit.controller.getCarrierForAirUnit(unit.name)
+  
+    console.log("POOOO parentCarrier=", parentCarrier)
+    let destinationsArray
+    if (side === GlobalUnitsModel.Side.JAPAN) {
+      destinationsArray = getValidJapanDestinationsRETURN1(GlobalInit.controller, parentCarrier, side)
+    } else {
+      destinationsArray = getValidUSDestinationsRETURN1(GlobalInit.controller, parentCarrier, side)
+    }
+    if (destinationsArray.length === 0) {
+      GlobalGameState.orphanedAirUnits.push(unit)
+      moveAirUnitToEliminatedBox(GlobalInit.controller, unit)
+    }
+  }
+}
 export async function moveOrphanedCAPUnitsToEliminatedBox(side) {
   const capUnitsReturning = GlobalInit.controller.getAllCAPDefendersInCAPReturnBoxes(side)
   for (const unit of capUnitsReturning) {

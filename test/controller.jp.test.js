@@ -124,22 +124,22 @@ describe("Controller tests", () => {
 
   test("Can filter box names by carrier", () => {
     let boxes = controller.getBoxesForJapaneseCarrier(GlobalUnitsModel.Carrier.AKAGI, true)
-    expect(boxes.length).toEqual(6)
+    expect(boxes.length).toEqual(7)
     boxes = controller.getBoxesForJapaneseCarrier(GlobalUnitsModel.Carrier.KAGA, true)
-    expect(boxes.length).toEqual(6)
+    expect(boxes.length).toEqual(7)
     boxes = controller.getBoxesForJapaneseCarrier(GlobalUnitsModel.Carrier.HIRYU, true)
-    expect(boxes.length).toEqual(6)
+    expect(boxes.length).toEqual(7)
     boxes = controller.getBoxesForJapaneseCarrier(GlobalUnitsModel.Carrier.SORYU, true)
-    expect(boxes.length).toEqual(6)
+    expect(boxes.length).toEqual(7)
 
     boxes = controller.getBoxesForJapaneseCarrier(GlobalUnitsModel.Carrier.AKAGI, false)
-    expect(boxes.length).toEqual(3)
+    expect(boxes.length).toEqual(4)
     boxes = controller.getBoxesForJapaneseCarrier(GlobalUnitsModel.Carrier.KAGA, false)
-    expect(boxes.length).toEqual(3)
+    expect(boxes.length).toEqual(4)
     boxes = controller.getBoxesForJapaneseCarrier(GlobalUnitsModel.Carrier.HIRYU, false)
-    expect(boxes.length).toEqual(3)
+    expect(boxes.length).toEqual(4)
     boxes = controller.getBoxesForJapaneseCarrier(GlobalUnitsModel.Carrier.SORYU, false)
-    expect(boxes.length).toEqual(3)
+    expect(boxes.length).toEqual(4)
   })
 
   test("Get the carrier for an air unit", () => {

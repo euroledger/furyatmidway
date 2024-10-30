@@ -3,7 +3,7 @@ import Button from "react-bootstrap/Button"
 import GlobalUnitsModel from "../model/GlobalUnitsModel"
 import GlobalGameState from "../model/GlobalGameState"
 
-export function TowedCVHeaders({ controller, setTowedCVSelected }) {
+export function DMCVCarrierSelectionPanelHeaders({ controller, setDMCVCarrierSelected, side }) {
   let usEnterprise = {
     image: "/images/fleetcounters/enterprise.jpg",
     name: GlobalUnitsModel.Carrier.ENTERPRISE,
@@ -24,6 +24,33 @@ export function TowedCVHeaders({ controller, setTowedCVSelected }) {
     width: "100px",
     marginLeft: "3px",
   }
+  let jpAkagi = {
+    image: "/images/fleetcounters/akagi.jpg",
+    name: GlobalUnitsModel.Carrier.AKAGI,
+    buttonStr: "Akagi",
+    width: "100px",
+  }
+  let jpkaga = {
+    image: "/images/fleetcounters/kaga.jpg",
+    name: GlobalUnitsModel.Carrier.KAGA,
+    buttonStr: "Kaga",
+    width: "100px",
+    marginLeft: "3px",
+  }
+  let jpHiryu = {
+    image: "/images/fleetcounters/hiryu.jpg",
+    name: GlobalUnitsModel.Carrier.HIRYU,
+    buttonStr: "Hiryu",
+    width: "100px",
+    marginLeft: "3px",
+  }
+  let jpSoryu = {
+    image: "/images/fleetcounters/soryu.jpg",
+    name: GlobalUnitsModel.Carrier.SORYU,
+    buttonStr: "Soryu",
+    width: "100px",
+    marginLeft: "3px",
+  }
 
   const createImage = (cv) => {
     let carrier = usYorktown
@@ -31,8 +58,15 @@ export function TowedCVHeaders({ controller, setTowedCVSelected }) {
       carrier = usEnterprise
     } else if (cv === GlobalUnitsModel.Carrier.HORNET) {
       carrier = usHornet
+    } else if (cv === GlobalUnitsModel.Carrier.AKAGI) {
+      carrier = jpAkagi
+    } else if (cv === GlobalUnitsModel.Carrier.KAGA) {
+      carrier = jpkaga
+    } else if (cv === GlobalUnitsModel.Carrier.HIRYU) {
+      carrier = jpHiryu
+    } else if (cv === GlobalUnitsModel.Carrier.SORYU) {
+      carrier = jpSoryu
     }
-
     return (
       <>
         <div>
@@ -41,30 +75,32 @@ export function TowedCVHeaders({ controller, setTowedCVSelected }) {
             style={{
               width: carrier.width,
               height: "200px",
-              marginLeft: "40px",
-              marginRight: "40px",
+              marginLeft: "10px",
+              // marginRight: "40px",
             }}
           ></img>
-        </div>
-        <div
-          style={{
-            marginLeft: "43px",
-            marginTop: "20px",
-          }}
-        >
-          <Button onClick={() => handleClick(cv)}>{cv}</Button>
+          <div
+            style={{
+              marginLeft: "10px",
+              marginTop: "15px",
+              display: "flex",
+              justifyContent: "center",
+              alignItems: "center",
+              color: "white",
+            }}
+          >
+            <Button onClick={() => handleClick(cv)}>{cv}</Button>
+          </div>
         </div>
       </>
     )
   }
 
-  const usCVsSunk = controller.getSunkCarriers(GlobalUnitsModel.Side.US)
-
+  const usDamagedCarriers = controller.getDamagedCarriers(side)
   const handleClick = (cv) => {
-    console.log("CV Selected = ", cv)
-    setTowedCVSelected(cv)
+    setDMCVCarrierSelected(cv)
   }
-  const sunkCVImages = usCVsSunk.map((cv, idx) => {
+  const damagedCVImages = usDamagedCarriers.map((cv, idx) => {
     return (
       <>
         <div>{createImage(cv)}</div>
@@ -86,7 +122,7 @@ export function TowedCVHeaders({ controller, setTowedCVSelected }) {
           color: "white",
         }}
       >
-        <p>Choose CV (lost in combat) to tow to Friendly Port:</p>
+        <p>Choose damaged CV to Assign to DMCV:</p>
       </div>
       <div
         style={{
@@ -97,19 +133,22 @@ export function TowedCVHeaders({ controller, setTowedCVSelected }) {
           marginTop: "50px",
         }}
       >
-        {sunkCVImages}
+        {damagedCVImages}
       </div>
     </div>
   )
 }
 
-export function TowedCVFooters({ controller, towedCVSelected }) {
-  if (towedCVSelected == "") {
+export function DMCVCarrierSelectionPanelFooters({ controller, DMCVCarrierSelected, side }) {
+  if (DMCVCarrierSelected == "") {
     return
   }
 
-  let carrierUnit = controller.getCarrier(towedCVSelected)
+  let carrierUnit = controller.getCarrier(DMCVCarrierSelected)
   carrierUnit.towed = true
+
+  carrierUnit.taskForce =
+    side === GlobalUnitsModel.Side.JAPAN ? GlobalUnitsModel.TaskForce.JAPAN_DMCV : GlobalUnitsModel.TaskForce.US_DMCV
 
   const message1 = "CV Selected: "
   return (
@@ -128,7 +167,7 @@ export function TowedCVFooters({ controller, towedCVSelected }) {
             color: "white",
           }}
         >
-          {message1} &nbsp;<strong>{towedCVSelected}</strong>&nbsp; <br></br>
+          {message1} &nbsp;<strong>{DMCVCarrierSelected}</strong>&nbsp; <br></br>
         </p>
         <p
           style={{
@@ -138,7 +177,7 @@ export function TowedCVFooters({ controller, towedCVSelected }) {
             color: "white",
           }}
         >
-          The Japanese player does not receive a VP for this CV.
+          DMCV Created For {side}
         </p>
       </div>
     </>

@@ -14,7 +14,9 @@ export default class GlobalGameState {
     CARD_PLAY: "Possible Card Play",
     JAPAN_MIDWAY: "Japan Midway Attack Declaration",
     US_FLEET_MOVEMENT_PLANNING: "US Fleet Movement Planning",
+    US_DMCV_FLEET_MOVEMENT_PLANNING: "US DMCV Fleet Movement Planning",
     JAPAN_FLEET_MOVEMENT: "IJN Fleet Movement",
+    JAPAN_DMCV_FLEET_MOVEMENT_PLANNING: "IJN DMCV Fleet Movement",
     MIDWAY_ATTACK: "Midway Attack Phase",
     US_FLEET_MOVEMENT: "US Fleet Movement",
     AIR_SEARCH: "Search Phase",
@@ -137,6 +139,11 @@ export default class GlobalGameState {
   static usFleetMoved = false
   static jpFleetPlaced = false
   static jpFleetMoved = false
+
+  static jpDMCVFleetPlaced = false
+  static usDMCVFleetPlaced = false
+  static jpDMCVFleetMoved = false
+  static usDMCVFleetMoved = false
 
   static phaseCompleted = false
 

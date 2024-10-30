@@ -429,8 +429,8 @@ function StrikeCounter({ setStrikeGroupPopup, currentUSHex, currentJapanHex, cou
     }
   }
 
-  // if (counterData.name === "JP-SG2") {
-  //   console.log("JP-SG2 position -> left:", position.left, "top:", position.top, "currentHex", position.currentHex)
+  // if (counterData.name === "US-SG2") {
+  //   console.log("US-SG2 position -> left:", position.left, "top:", position.top, "currentHex", position.currentHex)
   // }
   let disp = "block"
 

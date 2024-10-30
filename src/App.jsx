@@ -50,7 +50,7 @@ import { usCSFStartHexes, japanAF1StartHexesNoMidway, japanAF1StartHexesMidway }
 import YesNoDialog from "./components/dialogs/YesNoDialog"
 import { saveGameState } from "./SaveLoadGame"
 import loadHandler from "./LoadHandler"
-import { allHexesWithinDistance } from "./components/HexUtils"
+import { allHexesWithinDistance, removeHexFromRegion } from "./components/HexUtils"
 import DicePanel from "./components/dialogs/DicePanel"
 import LargeDicePanel from "./components/dialogs/LargeDicePanel"
 import AttackDicePanel from "./components/dialogs/AttackDicePanel"
@@ -63,6 +63,7 @@ import { TargetHeaders, TargetFooters } from "./attackscreens/TargetPanel"
 import { AttackTargetHeaders, AttackTargetFooters } from "./attackscreens/AttackTargetPanel"
 import { CAPHeaders, CAPFooters } from "./attackscreens/CAPPanel"
 import { DamageHeaders, DamageFooters } from "./attackscreens/DamageAllocationPanel"
+import { DMCVCarrierSelectionPanelHeaders, DMCVCarrierSelectionPanelFooters } from "./attackscreens/DMCVCarrierSelectionPanel"
 import { TowedCVHeaders, TowedCVFooters } from "./attackscreens/TowedCVPanel"
 import { StrikeLostDamageHeaders, StrikeLostDamageFooters } from "./attackscreens/StrikeLostDamagePanel"
 import {
@@ -164,6 +165,8 @@ export function App() {
   const [strikeLostPanelShow, setStrikeLostPanelShow] = useState(false)
   const [carrierPlanesDitchPanelShow, setCarrierPlanesDitchPanelShow] = useState(false)
   const [towedToFriendlyPortPanelShow, setTowedToFriendlyPortPanelShow] = useState(false)
+  const [dmcvCarrierSelectionPanelShow, setDmcvCarrierSelectionPanelShow] = useState(false)
+
   const [airReplacementsPanelShow, setAirReplacementsPanelShow] = useState(false)
 
   const [endOfTurnSummaryShow, setEndOfTurnSummaryShow] = useState(false)
@@ -179,10 +182,11 @@ export function App() {
   const [showCarrierDisplay, setShowCarrierDisplay] = useState(false)
   const [airReplacementsSelected, setAirReplacementsSelected] = useState(false)
   const [towedCVSelected, setTowedCVSelected] = useState("")
+  const [DMCVCarrierSelected, setDMCVCarrierSelected] = useState("")
+
   const [fightersPresent, setFightersPresent] = useState(true)
 
   const [selectedAirUnit, setSelectedAirUnit] = useState()
-
 
   const [airUnitUpdate, setAirUnitUpdate] = useState({
     unit: {},
@@ -414,14 +418,77 @@ export function App() {
   }
 
   const setUsFleetRegions = () => {
-    GlobalGameState.phaseCompleted = true // may just want to skip any fleet movement (leave fleet where it is)
-    const csfLocation = GlobalInit.controller.getFleetLocation("CSF", GlobalUnitsModel.Side.US)
-    const usRegion = allHexesWithinDistance(csfLocation.currentHex, 2, true)
-    setUSMapRegions(usRegion)
-    setFleetMoveAlertShow(true)
+    if (GlobalGameState.gamePhase === GlobalGameState.PHASE.US_FLEET_MOVEMENT_PLANNING) {
+      console.log("DOING THIS BAAAAAAD SNOT")
+      GlobalGameState.phaseCompleted = true // may just want to skip any fleet movement (leave fleet where it is)
+      const csfLocation = GlobalInit.controller.getFleetLocation("CSF", GlobalUnitsModel.Side.US)
+      const usRegion = allHexesWithinDistance(csfLocation.currentHex, 2, true)
+
+      const ijn1AFLocation = GlobalInit.controller.getFleetLocation("1AF", GlobalUnitsModel.Side.JAPAN)
+
+      // remove hex with 1AF unless night (turn 4), as surface engagements prohibited during day turns
+      if (GlobalGameState.gameTurn !== 4 && ijn1AFLocation !== undefined) {
+        const regionMinusIJNFleet = removeHexFromRegion(usRegion, ijn1AFLocation.currentHex)
+        setUSMapRegions(regionMinusIJNFleet)
+      } else {
+        setUSMapRegions(usRegion)
+      }
+      setFleetMoveAlertShow(true)
+    } else if (GlobalGameState.gamePhase === GlobalGameState.PHASE.US_DMCV_FLEET_MOVEMENT_PLANNING) {
+      // if (GlobalGameState.usDMCVFleetPlaced) {
+      //   const dmcvLocation = GlobalInit.controller.getFleetLocation("US-DMCV", GlobalUnitsModel.Side.US)
+      //   const usRegion = allHexesWithinDistance(dmcvLocation.currentHex, 1, true)
+      //   setUSMapRegions(usRegion)
+      // } else {
+      //   const region = new Array()
+      //   // initial placement - must be in same hex as CSF
+      //   const csfLocation = GlobalInit.controller.getFleetLocation("CSF", GlobalUnitsModel.Side.US)
+      //   region.push(csfLocation.currentHex)
+      //   setUSMapRegions(region)
+      // }
+      // if DMCV not placed eligible zone is one hex from CSF
+      // if DMCV is placed eligible zone is one hex from DMCV
+      console.log("US DMCV COOL SHITE")
+      if (GlobalGameState.usDMCVFleetPlaced) {
+        const dmcvLocation = GlobalInit.controller.getFleetLocation("US-DMCV", GlobalUnitsModel.Side.US)
+        const usRegion = allHexesWithinDistance(dmcvLocation.currentHex, 1, true)
+        setUSMapRegions(usRegion)
+      } else {
+        const csfLocation = GlobalInit.controller.getFleetLocation("CSF", GlobalUnitsModel.Side.US)
+        const usRegion = allHexesWithinDistance(csfLocation.currentHex, 1, true)
+        setUSMapRegions(usRegion)
+      }
+    }
   }
 
   const setJapanFleetRegions = () => {
+    if (GlobalGameState.gamePhase === GlobalGameState.PHASE.JAPAN_DMCV_FLEET_MOVEMENT_PLANNING) {
+      // if (GlobalGameState.jpDMCVFleetPlaced) {
+      //   const dmcvLocation = GlobalInit.controller.getFleetLocation("IJN-DMCV", GlobalUnitsModel.Side.JAPAN)
+      //   const jpRegion = allHexesWithinDistance(dmcvLocation.currentHex, 1, true)
+      //   setJapanMapRegions(jpRegion)
+      // } else {
+      //   const region = new Array()
+      //   // initial placement - must be in same hex as 1AF
+      //   const af1Location = GlobalInit.controller.getFleetLocation("1AF", GlobalUnitsModel.Side.JAPAN)
+      //   region.push(af1Location.currentHex)
+      //   setJapanMapRegions(region)
+      // }
+
+      // if DMCV not placed eligible zone is one hex from 1AF
+      // if DMCV is placed eligible zone is one hex from DMCV
+      if (GlobalGameState.jpDMCVFleetPlaced) {
+        const dmcvLocation = GlobalInit.controller.getFleetLocation("IJN-DMCV", GlobalUnitsModel.Side.JAPAN)
+        const jpRegion = allHexesWithinDistance(dmcvLocation.currentHex, 1, true)
+        setJapanMapRegions(jpRegion)
+      } else {
+        const af1Location = GlobalInit.controller.getFleetLocation("1AF", GlobalUnitsModel.Side.JAPAN)
+        const jpRegion = allHexesWithinDistance(af1Location.currentHex, 1, true)
+        setJapanMapRegions(jpRegion)
+      }
+
+      return
+    }
     if (GlobalGameState.gamePhase === GlobalGameState.PHASE.JAPAN_FLEET_MOVEMENT && GlobalGameState.gameTurn === 1) {
       if (GlobalGameState.midwayAttackDeclaration === true) {
         setJapanMapRegions(japanAF1StartHexesMidway)
@@ -431,7 +498,15 @@ export function App() {
     } else {
       const af1Location = GlobalInit.controller.getFleetLocation("1AF", GlobalUnitsModel.Side.JAPAN)
       const jpRegion = allHexesWithinDistance(af1Location.currentHex, 2, true)
-      setJapanMapRegions(jpRegion)
+      const csfLocation = GlobalInit.controller.getFleetLocation("CSF", GlobalUnitsModel.Side.US)
+
+      if (GlobalGameState.gameTurn !== 4 && csfLocation !== undefined) {
+        // remove hex with CSF unless night (turn 4), as surface engagements prohibited during day turns
+        const regionMinusCSFFleet = removeHexFromRegion(jpRegion, csfLocation.currentHex)
+        setJapanMapRegions(regionMinusCSFFleet)
+      } else {
+        setJapanMapRegions(jpRegion)
+      }
     }
     setFleetMoveAlertShow(true)
   }
@@ -521,6 +596,7 @@ export function App() {
       setEnabledUSBoxes,
       setInitiativePanelShow,
       setUsFleetRegions,
+      setJapanFleetRegions,
       setMidwayNoAttackAlertShow,
       setFleetUnitUpdate,
       setSearchValues,
@@ -1093,12 +1169,32 @@ export function App() {
     </>
   )
 
+  const dmcvSide = GlobalGameState.gamePhase === GlobalGameState.PHASE.JAPAN_DMCV_FLEET_MOVEMENT_PLANNING ? GlobalUnitsModel.Side.JAPAN : GlobalUnitsModel.Side.US
+
+  const dmcvSelectionHeaders = (
+    <>
+      <DMCVCarrierSelectionPanelHeaders
+        controller={GlobalInit.controller}
+        setDMCVCarrierSelected={setDMCVCarrierSelected}
+        side={dmcvSide}
+      ></DMCVCarrierSelectionPanelHeaders>
+    </>
+  )
+  const dmcvSelectionFooters = (
+    <>
+      <DMCVCarrierSelectionPanelFooters
+        controller={GlobalInit.controller}
+        DMCVCarrierSelected={DMCVCarrierSelected}
+        side={dmcvSide}
+      ></DMCVCarrierSelectionPanelFooters>
+    </>
+  )
+
   const towedCVHeaders = (
     <>
       <TowedCVHeaders controller={GlobalInit.controller} setTowedCVSelected={setTowedCVSelected}></TowedCVHeaders>
     </>
   )
-
   const towedCVFooters = (
     <>
       <TowedCVFooters controller={GlobalInit.controller} towedCVSelected={towedCVSelected}></TowedCVFooters>
@@ -1304,8 +1400,8 @@ export function App() {
   // console.log("GlobalUnitsModel.usStrikeGroups=", GlobalUnitsModel.usStrikeGroups)
   function doInitiativeRoll(roll0, roll1) {
     // for testing QUACK
-    doIntiativeRoll(GlobalInit.controller, 6, 1, true) // JAPAN initiative
-    // doIntiativeRoll(GlobalInit.controller, 1, 6, true) // US initiative
+    // doIntiativeRoll(GlobalInit.controller, 6, 1, true) // JAPAN initiative
+    doIntiativeRoll(GlobalInit.controller, 1, 6, true) // US initiative
 
     // doIntiativeRoll(GlobalInit.controller, roll0, roll1)
     GlobalGameState.updateGlobalState()
@@ -1922,6 +2018,24 @@ export function App() {
         disabled={true}
         closeButtonDisabled={closeDamageButtonDisabled}
       ></LargeDicePanel>
+        <LargeDicePanel
+        numDice={0}
+        show={!testClicked && dmcvCarrierSelectionPanelShow}
+        headerText="DMCV Carrier Selection"
+        headers={dmcvSelectionHeaders}
+        footers={dmcvSelectionFooters}
+        width={74}
+        showDice={false}
+        margin={0}
+        onHide={(e) => {
+          setDmcvCarrierSelectionPanelShow(false)
+          // sendDamageEvent(eliminatedSteps)
+          // @TODO send DMCV Carrier Selection Event
+          nextAction(e)
+        }}
+        disabled={true}
+        closeButtonDisabled={!DMCVCarrierSelected}
+      ></LargeDicePanel>
       <LargeDicePanel
         numDice={0}
         show={!testClicked && airReplacementsPanelShow}
@@ -2005,6 +2119,7 @@ export function App() {
                   damageMarkerUpdate,
                   setAlertShow,
                   showZones,
+                  setDmcvCarrierSelectionPanelShow,
                   USMapRegions,
                   setUSMapRegions,
                   japanMapRegions,

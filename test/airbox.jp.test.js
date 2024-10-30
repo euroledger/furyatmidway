@@ -178,8 +178,8 @@ describe("Japan Air Box tests", () => {
     controller.addAirUnitToBox(GlobalUnitsModel.AirBox.JP_CD2_RETURN1, 2, haf1)
     controller.addAirUnitToBox(GlobalUnitsModel.AirBox.JP_CD2_RETURN1, 4, haf2)
     slots = controller.getAllFreeZonesInBox(GlobalUnitsModel.AirBox.JP_CD2_RETURN1)
-    expect(slots.length).toEqual(4)
-    expect(slots).toEqual([0, 1, 3, 5])
+    expect(slots.length).toEqual(7)
+    expect(slots).toEqual([0, 1, 3, 5, 6, 7, 8])
   })
 
   test("getJapanEnabledAirBoxes returns correct zones for various game states", () => {

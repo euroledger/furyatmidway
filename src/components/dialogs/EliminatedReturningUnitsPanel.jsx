@@ -99,7 +99,7 @@ function EliminatedReturningUnits(props) {
               color: "white",
             }}
           >
-            <p>Eliminated CAP Air Units (No Available Carrier to Return to):</p>
+            <p>Eliminated Air Units (No Available Carrier to Return to):</p>
           </div>
           <div
             style={{

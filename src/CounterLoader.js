@@ -5,7 +5,6 @@ import AircraftUnit from "./model/AircraftUnit"
 import FleetUnit from "./components/buttons/mapobjects/FleetUnit"
 import StrikeGroupUnit from "./components/buttons/mapobjects/StrikeGroupUnit"
 import DamageSunk from "./components/buttons/mapobjects/DamageSunk"
-import GlobalGameState from "./model/GlobalGameState"
 
 function loadCounters(controller) {
   let counters = new Map()
@@ -25,6 +24,24 @@ function loadCounters(controller) {
       position,
       { x: 50, y: 68 }, // offsets
       "/images/fleetcounters/1AF.png",
+      "2.5%",
+      GlobalUnitsModel.Side.JAPAN
+    )
+  )
+
+  position = {
+    hexCoords: {},
+    left: 270,
+    top: 119,
+  }
+  counters.set(
+    "IJN-DMCV",
+    new BaseUnit(
+      "IJN-DMCV",
+      "Japanese DMCV",
+      position,
+      { x: -116, y: 68 }, // offsets
+      "/images/fleetcounters/Japan-DMCV.png",
       "2.5%",
       GlobalUnitsModel.Side.JAPAN
     )
@@ -103,6 +120,23 @@ function loadCounters(controller) {
       GlobalUnitsModel.Side.US
     )
   )
+  position = {
+    hexCoords: {},
+    left: 700,
+    top: 119,
+  }
+  counters.set(
+    "US-DMCV",
+    new BaseUnit(
+      "US-DMCV",
+      "US DMCV",
+      position,
+      { x: -98, y: 98 }, // offsets
+      "/images/fleetcounters/US-DMCV.png",
+      "2.5%",
+      GlobalUnitsModel.Side.US
+    )
+  )
 
   position = {
     hexCoords: {},
@@ -117,6 +151,24 @@ function loadCounters(controller) {
       position,
       { x: -200, y: 99 }, // offsets
       "/images/fleetcounters/1AF.png",
+      "2.5%",
+      GlobalUnitsModel.Side.JAPAN
+    )
+  )
+
+  position = {
+    hexCoords: {},
+    left: 902,
+    top: 117,
+  }
+  counters.set(
+    "IJN-DMCV-USMAP",
+    new BaseUnit(
+      "IJN-DMCV-USMAP",
+      "Japanese DMCV (US Map)",
+      position,
+      { x: 50, y: 68 }, // offsets
+      "/images/fleetcounters/Japan-DMCV.png",
       "2.5%",
       GlobalUnitsModel.Side.JAPAN
     )

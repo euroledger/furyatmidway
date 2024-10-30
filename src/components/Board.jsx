@@ -9,6 +9,7 @@ import AOPOffsets from "./draganddrop/AopBoxOffsets"
 import MIFOffsets from "./draganddrop/MIFBoxOffsets"
 import MGTOffsets from "./draganddrop/MGTBoxOffsets"
 import FleetCounter from "./buttons/mapobjects/FleetCounter"
+import DMCVFleetCounter from "./buttons/mapobjects/DMCVFleetCounter"
 import AirCounters from "./buttons/mapobjects/AirCounters"
 import StrikeCounters from "./buttons/mapobjects/StrikeCounters"
 import JapanAirBoxOffsets from "./draganddrop/JapanAirBoxOffsets"
@@ -100,6 +101,7 @@ function Board({ scale, USMapRegions, japanMapRegions, japanStrikePanelEnabled, 
       setZIndex({ ...zProps, us: zProps[side] + increment })
     }
   }
+
 
   return (
     <>
@@ -247,6 +249,40 @@ function Board({ scale, USMapRegions, japanMapRegions, japanStrikePanelEnabled, 
           enabled={true}
           side={GlobalUnitsModel.Side.US}
         ></FleetCounter>
+        <DMCVFleetCounter
+          currentHex={currentJapanHex}
+          currentMouseHex={currentMouseHex}
+          setCurrentMouseHex={setCurrentMouseHex}
+          id="IJN-DMCV"
+          counterData={GlobalInit.counters.get("IJN-DMCV")}
+          setCurrentJapanHex={setCurrentJapanHex}
+          setCurrentUSHex={setCurrentUSHex}
+          jpRegions={japanMapRegions}
+          enabled={
+            (GlobalInit.controller.getDamagedCarriers(GlobalUnitsModel.Side.JAPAN).length > 0 &&
+              GlobalGameState.gamePhase === GlobalGameState.PHASE.JAPAN_DMCV_FLEET_MOVEMENT_PLANNING &&
+              GlobalGameState.jpDMCVFleetPlaced === false) ||
+            GlobalGameState.jpDMCVFleetPlaced === true
+          }
+          side={GlobalUnitsModel.Side.JAPAN}
+        ></DMCVFleetCounter>
+        <DMCVFleetCounter
+          currentHex={currentUSHex}
+          currentMouseHex={currentMouseHex}
+          setCurrentMouseHex={setCurrentMouseHex}
+          id="US-DMCV"
+          counterData={GlobalInit.counters.get("US-DMCV")}
+          setCurrentJapanHex={setCurrentJapanHex}
+          setCurrentUSHex={setCurrentUSHex}
+          usRegions={USMapRegions}
+          enabled={
+            (GlobalInit.controller.getDamagedCarriers(GlobalUnitsModel.Side.US).length > 0 &&
+              GlobalGameState.gamePhase === GlobalGameState.PHASE.US_DMCV_FLEET_MOVEMENT_PLANNING &&
+              GlobalGameState.usDMCVFleetPlaced === false) ||
+            GlobalGameState.usDMCVFleetPlaced === true
+          }
+          side={GlobalUnitsModel.Side.US}
+        ></DMCVFleetCounter>
 
         <AirCounters
           controller={GlobalInit.controller}

@@ -100,7 +100,7 @@ async function setNextStateFollowingCardPlay({
       GlobalGameState.gamePhase = GlobalGameState.PHASE.END_OF_TURN
       setEndOfTurnSummaryShow(true)
       break
-      
+
     case 5:
       // Naval Bombardment
       setMidwayDialogShow(true)
@@ -205,16 +205,34 @@ function setupUSAirHandler() {
   GlobalGameState.phaseCompleted = false
 }
 
+function dmcvState(side) {
+  if (side === GlobalUnitsModel.Side.US) {
+    return (
+      (GlobalInit.controller.getDamagedCarriers(side).length > 0 && GlobalGameState.usDMCVFleetPlaced === false) ||
+      GlobalGameState.usDMCVFleetPlaced === true
+    )
+  }
+  return (
+    (GlobalInit.controller.getDamagedCarriers(side).length > 0 && GlobalGameState.jpDMCVFleetPlaced === false) ||
+    GlobalGameState.jpDMCVFleetPlaced === true
+  )
+}
 function midwayDeclarationHandler({ setUsFleetRegions }) {
-  GlobalGameState.gamePhase = GlobalGameState.PHASE.US_FLEET_MOVEMENT_PLANNING
-  setUsFleetRegions()
-  GlobalGameState.usFleetMoved = false
-
-  GlobalGameState.phaseCompleted = true
+  if (dmcvState(GlobalUnitsModel.Side.US) && GlobalGameState.gamePhase === GlobalGameState.PHASE.JAPAN_MIDWAY) {
+    console.log("DOING SOME DMCV funcky shit")
+    GlobalGameState.gamePhase = GlobalGameState.PHASE.US_DMCV_FLEET_MOVEMENT_PLANNING
+    GlobalGameState.usDMCVFleetMoved = false
+    GlobalGameState.phaseCompleted = true // placing DMCV is not mandatory
+    setUsFleetRegions()
+  } else {
+    GlobalGameState.gamePhase = GlobalGameState.PHASE.US_FLEET_MOVEMENT_PLANNING
+    GlobalGameState.usFleetMoved = false
+    setUsFleetRegions()
+    GlobalGameState.phaseCompleted = true
+  }
 }
 
-function usFleetMovementPlanningHandler({ setUSMapRegions, setJapanMapRegions, setJpAlertShow }) {
-  console.log("END OF US Fleet Movement Phase")
+function goToIJNFleetMovement({ setUSMapRegions, setJapanMapRegions, setJpAlertShow }) {
   GlobalGameState.gamePhase = GlobalGameState.PHASE.JAPAN_FLEET_MOVEMENT
   setUSMapRegions([])
   // if this is not turn 1 derive japan regions from position of fleet
@@ -235,9 +253,50 @@ function usFleetMovementPlanningHandler({ setUSMapRegions, setJapanMapRegions, s
   setJpAlertShow(true)
   GlobalGameState.phaseCompleted = false
 }
+function usDMCVPlanningHandler({ setUsFleetRegions }) {
+  GlobalGameState.gamePhase = GlobalGameState.PHASE.US_FLEET_MOVEMENT_PLANNING
+  GlobalGameState.usFleetMoved = false
+  setUsFleetRegions()
+  GlobalGameState.phaseCompleted = true
+}
 
-function japanFleetMovementHandler({ setMidwayNoAttackAlertShow, setJapanMapRegions, setFleetUnitUpdate }) {
-  console.log("END OF Japan Fleet Movement Phase")
+function japanDMCVPlanningHandler({ setUSMapRegions, setJapanMapRegions, setJpAlertShow }) {
+  goToIJNFleetMovement({ setUSMapRegions, setJapanMapRegions, setJpAlertShow })
+
+  // if DMCV placed but not moved stay in this state otherwise move on
+  // if (GlobalGameState.jpDMCVFleetPlaced && !GlobalGameState.jpDMCVFleetMoved) {
+  //   console.log("MORE IJN...")
+  //   setJapanFleetRegions()
+  // } else {
+  // goToMidwayAttackOrUSFleetMovement({ setMidwayNoAttackAlertShow, setJapanMapRegions, setFleetUnitUpdate })
+  // }
+}
+function usFleetMovementPlanningHandler({ setJapanFleetRegions, setJapanMapRegions, setUSMapRegions, setJpAlertShow }) {
+  console.log("setJapanFleetRegions=", setJapanFleetRegions)
+
+  console.log("END OF US Fleet Movement PLANNING Phase")
+  // if (
+  //   dmcvState(GlobalUnitsModel.Side.US) &&
+  //   GlobalGameState.gamePhase === GlobalGameState.PHASE.US_FLEET_MOVEMENT_PLANNING
+  // ) {
+  //   console.log("DOING SOME DMCV funcky shit")
+  //   GlobalGameState.gamePhase = GlobalGameState.PHASE.US_DMCV_FLEET_MOVEMENT_PLANNING
+  //   GlobalGameState.usDMCVFleetMoved = false
+  //   GlobalGameState.phaseCompleted = true // placing DMCV is not mandatory
+  //   setUsFleetRegions()
+  // } else {
+  //   goToIJNFleetMovement({ setUSMapRegions, setJapanMapRegions, setJpAlertShow })
+  // }
+
+  goToJapanDMCVMovement({
+    setJapanFleetRegions,
+    setJapanMapRegions,
+    setUSMapRegions,
+    setJpAlertShow,
+  })
+}
+
+function goToMidwayAttackOrUSFleetMovement({ setMidwayNoAttackAlertShow, setJapanMapRegions, setFleetUnitUpdate }) {
   if (!GlobalGameState.midwayAttackDeclaration) {
     setMidwayNoAttackAlertShow(true)
     GlobalGameState.gamePhase = GlobalGameState.PHASE.US_FLEET_MOVEMENT
@@ -257,6 +316,21 @@ function japanFleetMovementHandler({ setMidwayNoAttackAlertShow, setJapanMapRegi
   GlobalGameState.jpFleetPlaced = true
   const update = createMapUpdateForFleet(GlobalInit.controller, "1AF", GlobalUnitsModel.Side.JAPAN)
   setFleetUnitUpdate(update)
+}
+
+function goToJapanDMCVMovement({ setJapanFleetRegions, setJapanMapRegions, setUSMapRegions, setJpAlertShow }) {
+  console.log("END OF US Fleet Movement Phase")
+  if (
+    dmcvState(GlobalUnitsModel.Side.JAPAN) &&
+    GlobalGameState.gamePhase === GlobalGameState.PHASE.US_FLEET_MOVEMENT_PLANNING
+  ) {
+    GlobalGameState.gamePhase = GlobalGameState.PHASE.JAPAN_DMCV_FLEET_MOVEMENT_PLANNING
+    GlobalGameState.jpDMCVFleetMoved = false
+    GlobalGameState.phaseCompleted = true // placing DMCV is not mandatory
+    setJapanFleetRegions()
+  } else {
+    goToIJNFleetMovement({ setUSMapRegions, setJapanMapRegions, setJpAlertShow })
+  }
 }
 
 function calcAirOpsPoints({ setSearchValues, setSearchResults, setSearchValuesAlertShow }) {
@@ -396,6 +470,7 @@ export async function endOfAirOperation(side, capAirUnits, setAirUnitUpdate, set
       : GlobalUnitsModel.Side.US
 
   await moveOrphanedCAPUnitsToEliminatedBox(sideBeingAttacked)
+  await moveOrphanedAirUnitsInReturn1Boxes(sideBeingAttacked)
 
   if (GlobalGameState.orphanedAirUnits.length > 0) {
     setEliminatedUnitsPanelShow(true)
@@ -433,6 +508,7 @@ export default async function handleAction({
   setEnabledUSBoxes,
   setInitiativePanelShow,
   setUsFleetRegions,
+  setJapanFleetRegions,
   setMidwayNoAttackAlertShow,
   setFleetUnitUpdate,
   setSearchValues,
@@ -515,10 +591,27 @@ export default async function handleAction({
     })
   } else if (GlobalGameState.gamePhase === GlobalGameState.PHASE.JAPAN_MIDWAY) {
     midwayDeclarationHandler({ setUsFleetRegions })
+  } else if (GlobalGameState.gamePhase === GlobalGameState.PHASE.US_DMCV_FLEET_MOVEMENT_PLANNING) {
+    usDMCVPlanningHandler({ setUsFleetRegions })
+  } else if (GlobalGameState.gamePhase === GlobalGameState.PHASE.JAPAN_DMCV_FLEET_MOVEMENT_PLANNING) {
+    japanDMCVPlanningHandler({ setUSMapRegions, setJapanMapRegions, setJpAlertShow })
   } else if (GlobalGameState.gamePhase === GlobalGameState.PHASE.US_FLEET_MOVEMENT_PLANNING) {
-    usFleetMovementPlanningHandler({ setUSMapRegions, setJapanMapRegions, setJpAlertShow })
+    usFleetMovementPlanningHandler({
+      setJapanFleetRegions,
+      setJapanMapRegions,
+      setUSMapRegions,
+      setJpAlertShow
+    })
   } else if (GlobalGameState.gamePhase === GlobalGameState.PHASE.JAPAN_FLEET_MOVEMENT) {
-    japanFleetMovementHandler({ setMidwayNoAttackAlertShow, setJapanMapRegions, setFleetUnitUpdate })
+    console.log("setJapanFleetRegions=", setJapanFleetRegions)
+    // goToJapanDMCVMovement({
+    //   setMidwayNoAttackAlertShow,
+    //   setJapanFleetRegions,
+    //   setJapanMapRegions,
+    //   setFleetUnitUpdate,
+    // })
+    goToMidwayAttackOrUSFleetMovement({ setMidwayNoAttackAlertShow, setJapanMapRegions, setFleetUnitUpdate })
+
     if (GlobalGameState.midwayAttackDeclaration) {
       GlobalGameState.midwayAirOp = 1
       GlobalGameState.airOpJapan = 1
@@ -835,8 +928,8 @@ export default async function handleAction({
   } else if (GlobalGameState.gamePhase === GlobalGameState.PHASE.END_OF_TURN) {
     // START OF NEW TURN
     GlobalGameState.gameTurn++
-    GlobalGameState.airOpJapan=0
-    GlobalGameState.airOpUS=0
+    GlobalGameState.airOpJapan = 0
+    GlobalGameState.airOpUS = 0
     if (GlobalInit.controller.japanHandContainsCard(6)) {
       setCardNumber(() => 6)
       GlobalGameState.gamePhase = GlobalGameState.PHASE.CARD_PLAY

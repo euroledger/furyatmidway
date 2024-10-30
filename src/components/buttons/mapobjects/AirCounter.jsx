@@ -5,7 +5,11 @@ import GlobalUnitsModel from "../../../model/GlobalUnitsModel"
 import GlobalGameState from "../../../model/GlobalGameState"
 import { BoardContext } from "../../../App"
 import "./counter.css"
-import { setValidDestinationBoxes, moveOrphanedCAPUnitsToEliminatedBox } from "../../../controller/AirOperationsHandler"
+import {
+  setValidDestinationBoxes,
+  moveOrphanedCAPUnitsToEliminatedBox,
+  moveOrphanedAirUnitsInReturn1Boxes,
+} from "../../../controller/AirOperationsHandler"
 
 function AirCounter({ getAirBox, setAirBox, counterData, side }) {
   const {
@@ -251,7 +255,7 @@ function AirCounter({ getAirBox, setAirBox, counterData, side }) {
       left: offsets.left + "%",
       top: offsets.top - 0.2 + "%",
     })
-   
+
     // moveOrphanedCAPUnitsToEliminatedBox(counterData.side)
 
     if (
@@ -291,9 +295,12 @@ function AirCounter({ getAirBox, setAirBox, counterData, side }) {
     setAirBox({})
   }
 
-  const setBoxes = (counterData, box) => {
+  const setBoxes = async (counterData, box) => {
     if (box !== undefined && box.includes("CAP RETURNING")) {
-      moveOrphanedCAPUnitsToEliminatedBox(counterData.side)
+      await moveOrphanedCAPUnitsToEliminatedBox(counterData.side)
+    }
+    if (box !== undefined && box.includes("RETURNING (1)")) {
+      await moveOrphanedAirUnitsInReturn1Boxes(counterData.side)
     }
     const destBoxes = controller.getValidAirUnitDestinations(counterData.name)
     if (counterData.side === GlobalUnitsModel.Side.JAPAN) {

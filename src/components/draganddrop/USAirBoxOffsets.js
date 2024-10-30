@@ -2,15 +2,6 @@ import GlobalUnitsModel from "../../model/GlobalUnitsModel"
 
 const USAirBoxOffsets = [
   {
-    name: GlobalUnitsModel.AirBox.US_ATTACK_BOX_1,
-    offsets: [
-      {
-        left: 35,
-        top: 50,
-      },
-    ],
-  },
-  {
     name: GlobalUnitsModel.AirBox.US_TF16_CAP,
     taskForce: GlobalUnitsModel.TaskForce.TASK_FORCE_16,
     carriers: [GlobalUnitsModel.Carrier.ENTERPRISE, GlobalUnitsModel.Carrier.HORNET],
@@ -177,6 +168,17 @@ const USAirBoxOffsets = [
     ],
   },
   {
+    name: GlobalUnitsModel.AirBox.US_ENTERPRISE_DMCV,
+    taskForce: GlobalUnitsModel.TaskForce.US_DMCV,
+    carriers: [GlobalUnitsModel.Carrier.ENTERPRISE],
+    offsets: [
+      {
+        left: 53.6,
+        top: 82.0
+      },
+    ],
+  },
+  {
     name: GlobalUnitsModel.AirBox.US_HORNET_HANGAR,
     taskForce: GlobalUnitsModel.TaskForce.TASK_FORCE_16,
     carriers: [GlobalUnitsModel.Carrier.HORNET],
@@ -215,6 +217,17 @@ const USAirBoxOffsets = [
       {
         left: 62.0,
         top: 85.0,
+      },
+    ],
+  },
+  {
+    name: GlobalUnitsModel.AirBox.US_HORNET_DMCV,
+    taskForce: GlobalUnitsModel.TaskForce.US_DMCV,
+    carriers: [GlobalUnitsModel.Carrier.HORNET],
+    offsets: [
+      {
+        left: 60.1,
+        top: 82.0
       },
     ],
   },
@@ -365,6 +378,17 @@ const USAirBoxOffsets = [
       {
         left: 77.6,
         top: 85.0,
+      },
+    ],
+  },
+  {
+    name: GlobalUnitsModel.AirBox.US_YORKTOWN_DMCV,
+    taskForce: GlobalUnitsModel.TaskForce.US_DMCV,
+    carriers: [GlobalUnitsModel.Carrier.YORKTOWN],
+    offsets: [
+      {
+        left: 75.7,
+        top: 82.0
       },
     ],
   },

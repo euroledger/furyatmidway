@@ -69,6 +69,17 @@ const JapanAirBoxOffsets = [
     ],
   },
   {
+    name: GlobalUnitsModel.AirBox.JP_AKAGI_DMCV,
+    taskForce: GlobalUnitsModel.TaskForce.JAPAN_DMCV,
+    carriers: [GlobalUnitsModel.Carrier.AKAGI],
+    offsets: [
+      {
+        left: 14.0,
+        top: 82.5,
+      },
+    ],
+  },
+  {
     name: GlobalUnitsModel.AirBox.JP_CD1_CAP_RETURN,
     taskForce: GlobalUnitsModel.TaskForce.CARRIER_DIV_1,
     carriers: [GlobalUnitsModel.Carrier.AKAGI, GlobalUnitsModel.Carrier.KAGA],
@@ -120,7 +131,7 @@ const JapanAirBoxOffsets = [
         left: 10.0,
         top: 80.0,
       },
-        {
+      {
         left: 6.5,
         top: 85.8,
       },
@@ -219,6 +230,18 @@ const JapanAirBoxOffsets = [
       },
     ],
   },
+  {
+    name: GlobalUnitsModel.AirBox.JP_KAGA_DMCV,
+    taskForce: GlobalUnitsModel.TaskForce.JAPAN_DMCV,
+    carriers: [GlobalUnitsModel.Carrier.KAGA],
+    offsets: [
+      {
+        left: 20.4,
+        top: 82.5,
+      },
+     
+    ],
+  },
 
   // CAR DIV 2
   {
@@ -287,6 +310,17 @@ const JapanAirBoxOffsets = [
     ],
   },
   {
+    name: GlobalUnitsModel.AirBox.JP_HIRYU_DMCV,
+    taskForce: GlobalUnitsModel.TaskForce.JAPAN_DMCV,
+    carriers: [GlobalUnitsModel.Carrier.HIRYU],
+    offsets: [
+      {
+        left: 32.8,
+        top: 82.5,
+      },
+    ],
+  },
+  {
     name: GlobalUnitsModel.AirBox.JP_CD2_CAP_RETURN,
     taskForce: GlobalUnitsModel.TaskForce.CARRIER_DIV_2,
     carriers: [GlobalUnitsModel.Carrier.HIRYU, GlobalUnitsModel.Carrier.SORYU],
@@ -316,27 +350,39 @@ const JapanAirBoxOffsets = [
     offsets: [
       {
         left: 26.3,
-        top: 81.0,
+        top: 80.0,
       },
       {
         left: 28.2,
-        top: 83.9,
+        top: 82.9,
       },
       {
         left: 26.3,
-        top: 83.9,
+        top: 82.9,
       },
       {
         left: 28.2,
-        top: 81.0,
+        top: 80.0,
       },
       {
         left: 30.1,
-        top: 83.9,
+        top: 82.9,
       },
       {
         left: 30.1,
-        top: 81.0,
+        top: 80.0,
+      },
+      {
+        left: 28.2,
+        top: 85.8,
+      },
+      {
+        left: 30.1,
+        top: 85.8,
+      },
+      {
+        left: 26.3,
+        top: 85.8,
       },
     ],
   },
@@ -368,6 +414,18 @@ const JapanAirBoxOffsets = [
       {
         left: 30.11,
         top: 90.0,
+      },
+      {
+        left: 26.31,
+        top: 95.8,
+      },
+      {
+        left: 28.21,
+        top: 95.8,
+      },
+      {
+        left: 30.11,
+        top: 95.8,
       },
     ],
   },
@@ -417,6 +475,17 @@ const JapanAirBoxOffsets = [
     ],
   },
   {
+    name: GlobalUnitsModel.AirBox.JP_SORYU_DMCV,
+    taskForce: GlobalUnitsModel.TaskForce.CARRIER_DIV_2,
+    carriers: [GlobalUnitsModel.Carrier.SORYU],
+    offsets: [
+      {
+        left: 39.2,
+        top: 82.5,
+      },
+    ],
+  },
+  {
     name: GlobalUnitsModel.AirBox.JP_STRIKE_BOX_0,
     offsets: [
       {
@@ -430,7 +499,8 @@ const JapanAirBoxOffsets = [
       {
         left: 49.8,
         top: 64.0,
-      },  {
+      },
+      {
         left: 51.8,
         top: 64.0,
       },
@@ -445,7 +515,8 @@ const JapanAirBoxOffsets = [
       {
         left: 57.8,
         top: 64.0,
-      },  {
+      },
+      {
         left: 59.8,
         top: 64.0,
       },
@@ -465,7 +536,8 @@ const JapanAirBoxOffsets = [
       {
         left: 49.8,
         top: 68.5,
-      },  {
+      },
+      {
         left: 51.8,
         top: 68.5,
       },
@@ -480,7 +552,8 @@ const JapanAirBoxOffsets = [
       {
         left: 57.8,
         top: 68.5,
-      },  {
+      },
+      {
         left: 59.8,
         top: 68.5,
       },
@@ -500,7 +573,8 @@ const JapanAirBoxOffsets = [
       {
         left: 49.8,
         top: 72.8,
-      },  {
+      },
+      {
         left: 51.8,
         top: 72.8,
       },
@@ -515,7 +589,8 @@ const JapanAirBoxOffsets = [
       {
         left: 57.8,
         top: 72.8,
-      },  {
+      },
+      {
         left: 59.8,
         top: 72.8,
       },
@@ -535,7 +610,8 @@ const JapanAirBoxOffsets = [
       {
         left: 49.8,
         top: 77.1,
-      },  {
+      },
+      {
         left: 51.8,
         top: 77.1,
       },
@@ -550,7 +626,8 @@ const JapanAirBoxOffsets = [
       {
         left: 57.8,
         top: 77.1,
-      },  {
+      },
+      {
         left: 59.8,
         top: 77.1,
       },
@@ -570,7 +647,8 @@ const JapanAirBoxOffsets = [
       {
         left: 49.8,
         top: 81.4,
-      },  {
+      },
+      {
         left: 51.8,
         top: 81.4,
       },
@@ -585,7 +663,8 @@ const JapanAirBoxOffsets = [
       {
         left: 57.8,
         top: 81.4,
-      },  {
+      },
+      {
         left: 59.8,
         top: 81.4,
       },
@@ -605,7 +684,8 @@ const JapanAirBoxOffsets = [
       {
         left: 49.8,
         top: 85.8,
-      },  {
+      },
+      {
         left: 51.8,
         top: 85.8,
       },
@@ -620,7 +700,8 @@ const JapanAirBoxOffsets = [
       {
         left: 57.8,
         top: 85.8,
-      },  {
+      },
+      {
         left: 59.8,
         top: 85.8,
       },
@@ -640,7 +721,8 @@ const JapanAirBoxOffsets = [
       {
         left: 49.8,
         top: 90.1,
-      },  {
+      },
+      {
         left: 51.8,
         top: 90.1,
       },
@@ -655,13 +737,13 @@ const JapanAirBoxOffsets = [
       {
         left: 57.8,
         top: 90.1,
-      },  {
+      },
+      {
         left: 59.8,
         top: 90.1,
       },
     ],
   },
-  
 ]
 
 export default JapanAirBoxOffsets

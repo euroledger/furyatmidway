@@ -107,7 +107,7 @@ export const getAllHexes = () => {
   for (let q = 1; q < 10; q++) {
     for (let r = -3; r < 7; r++) {
       if (coordsOnMap(q, r)) {
-        allHexes.push({ q, r})
+        allHexes.push({ q, r })
       }
     }
   }
@@ -127,6 +127,10 @@ export const allHexesWithinDistance = (hex, distance, excludeMidway) => {
     }
   }
   return region
+}
+
+export const removeHexFromRegion = (region, hex) => {
+  return region.filter((h) => h.q !== hex.q || h.r !== hex.r)
 }
 
 export const isHexInRegion = (hex, region) => {
@@ -150,4 +154,3 @@ export const hexesInTwoRegions = (region1, region2) => {
   }
   return hexes
 }
-
