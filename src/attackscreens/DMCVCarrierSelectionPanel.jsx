@@ -139,17 +139,22 @@ export function DMCVCarrierSelectionPanelHeaders({ controller, setDMCVCarrierSel
   )
 }
 
-export function DMCVCarrierSelectionPanelFooters({ controller, DMCVCarrierSelected, side }) {
+export function DMCVCarrierSelectionPanelFooters({ controller, DMCVCarrierSelected, side, doDMCVShipMarkerUpdate }) {
   if (DMCVCarrierSelected == "") {
     return
   }
-
   let carrierUnit = controller.getCarrier(DMCVCarrierSelected)
+
+  if (!carrierUnit.towed) {
+    doDMCVShipMarkerUpdate()
+  }
+
   carrierUnit.towed = true
 
   carrierUnit.taskForce =
     side === GlobalUnitsModel.Side.JAPAN ? GlobalUnitsModel.TaskForce.JAPAN_DMCV : GlobalUnitsModel.TaskForce.US_DMCV
 
+  
   const message1 = "CV Selected: "
   return (
     <>

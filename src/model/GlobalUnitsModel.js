@@ -112,6 +112,9 @@ export default class GlobalUnitsModel {
   static damageMarkers = new Array()
   static sunkMarkers = new Array()
 
+  static jpDMCVShipMarker = undefined
+  static usDMCVShipMarker = undefined
+
   static jpStrikeGroups = new Map()
   static usStrikeGroups = new Map()
 

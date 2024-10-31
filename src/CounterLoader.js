@@ -120,23 +120,50 @@ function loadCounters(controller) {
       GlobalUnitsModel.Side.US
     )
   )
+
   position = {
     hexCoords: {},
-    left: 700,
-    top: 119,
+    left: 750,
+    top: 117,
   }
+
+
   counters.set(
     "US-DMCV",
     new BaseUnit(
       "US-DMCV",
-      "US DMCV",
+      "US Damaged Carrier Fleet",
       position,
-      { x: -98, y: 98 }, // offsets
+      { x: -148, y: 98 }, // offsets
       "/images/fleetcounters/US-DMCV.png",
       "2.5%",
       GlobalUnitsModel.Side.US
     )
   )
+  position = {
+    hexCoords: {},
+    left: 250,
+    top: 117,
+  }
+
+  counters.set(
+    "US-DMCV-JPMAP",
+    new BaseUnit(
+      "US-DMCV-JPMAP",
+      "US Damaged Carrier Fleet (Japan Map)",
+      position,
+      { x: -94, y: 70 }, // offsets
+      "/images/fleetcounters/US-DMCV.png",
+      "2.5%",
+      GlobalUnitsModel.Side.US
+    )
+  )
+
+  position = {
+    hexCoords: {},
+    left: 700,
+    top: 119,
+  }
 
   position = {
     hexCoords: {},
@@ -158,7 +185,7 @@ function loadCounters(controller) {
 
   position = {
     hexCoords: {},
-    left: 902,
+    left: 850,
     top: 117,
   }
   counters.set(
@@ -1195,6 +1222,10 @@ function loadMarkers() {
     let marker = new DamageSunk("SUNK" + i, sunkImage, "2.1%", null)
     GlobalUnitsModel.sunkMarkers.push(marker)
   }
+
+  GlobalUnitsModel.jpDMCVShipMarker = { name: "JP-DMCV-MARKER", image: "/images/markers/japan-dmcv.png", width: "2.1%"}
+  GlobalUnitsModel.usDMCVShipMarker = { name: "US-DMCV-MARKER", image: "/images/markers/us-dmcv.png", width: "2.1%"}
+
 }
 function loadFleetUnits() {
   for (const unit of japanFleetUnits) {

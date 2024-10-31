@@ -11,7 +11,7 @@ import {
   moveOrphanedCAPUnitsToEliminatedBox,
   resetStrikeGroups,
 } from "./controller/AirOperationsHandler"
-import { getNumEscortFighterSteps } from "./DiceHandler"
+import { delay, getNumEscortFighterSteps } from "./DiceHandler"
 import { allHexesWithinDistance } from "./components/HexUtils"
 
 function japanSetUpHandler() {
@@ -272,8 +272,6 @@ function japanDMCVPlanningHandler({ setUSMapRegions, setJapanMapRegions, setJpAl
   // }
 }
 function usFleetMovementPlanningHandler({ setJapanFleetRegions, setJapanMapRegions, setUSMapRegions, setJpAlertShow }) {
-  console.log("setJapanFleetRegions=", setJapanFleetRegions)
-
   console.log("END OF US Fleet Movement PLANNING Phase")
   // if (
   //   dmcvState(GlobalUnitsModel.Side.US) &&
@@ -314,6 +312,8 @@ function goToMidwayAttackOrUSFleetMovement({ setMidwayNoAttackAlertShow, setJapa
 
   GlobalGameState.phaseCompleted = true
   GlobalGameState.jpFleetPlaced = true
+
+  console.log("QUACK 100")
   const update = createMapUpdateForFleet(GlobalInit.controller, "1AF", GlobalUnitsModel.Side.JAPAN)
   setFleetUnitUpdate(update)
 }
@@ -327,6 +327,7 @@ function goToJapanDMCVMovement({ setJapanFleetRegions, setJapanMapRegions, setUS
     GlobalGameState.gamePhase = GlobalGameState.PHASE.JAPAN_DMCV_FLEET_MOVEMENT_PLANNING
     GlobalGameState.jpDMCVFleetMoved = false
     GlobalGameState.phaseCompleted = true // placing DMCV is not mandatory
+    setUSMapRegions([])
     setJapanFleetRegions()
   } else {
     goToIJNFleetMovement({ setUSMapRegions, setJapanMapRegions, setJpAlertShow })
@@ -386,16 +387,27 @@ export function displayAttackTargetPanel(controller) {
   return true
 }
 
-function usFleetMovementHandler({
+async function usFleetMovementHandler({
   setFleetUnitUpdate,
   setCardNumber,
   setSearchValues,
   setSearchResults,
   setSearchValuesAlertShow,
 }) {
-  const update = createMapUpdateForFleet(GlobalInit.controller, "CSF", GlobalUnitsModel.Side.US)
-  setFleetUnitUpdate(update)
+
+  console.log("QUACK 200")
+
   console.log("usFleetMovementHandler...")
+
+  const update1 = createMapUpdateForFleet(GlobalInit.controller, "CSF", GlobalUnitsModel.Side.US)
+  const update2 = createMapUpdateForFleet(GlobalInit.controller, "US-DMCV", GlobalUnitsModel.Side.US)
+
+  setFleetUnitUpdate(update1)
+
+  console.log("SEND UPDATE=", update2)
+  await delay(1)
+  setFleetUnitUpdate(update2)
+
   if (GlobalInit.controller.usHandContainsCard(7)) {
     setCardNumber(() => 7)
     GlobalGameState.gamePhase = GlobalGameState.PHASE.CARD_PLAY
@@ -603,7 +615,6 @@ export default async function handleAction({
       setJpAlertShow
     })
   } else if (GlobalGameState.gamePhase === GlobalGameState.PHASE.JAPAN_FLEET_MOVEMENT) {
-    console.log("setJapanFleetRegions=", setJapanFleetRegions)
     // goToJapanDMCVMovement({
     //   setMidwayNoAttackAlertShow,
     //   setJapanFleetRegions,

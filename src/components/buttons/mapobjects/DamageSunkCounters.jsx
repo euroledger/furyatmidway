@@ -7,8 +7,6 @@ import GlobalUnitsModel from "../../../model/GlobalUnitsModel"
 function DamageSunkCounters({ counterData }) {
   const { damageMarkerUpdate } = useContext(BoardContext)
 
-  const counters = Array.from(counterData.values())
-
   let markers = GlobalUnitsModel.damageMarkers
 
   markers = markers.concat(GlobalUnitsModel.sunkMarkers)

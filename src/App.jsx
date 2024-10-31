@@ -43,6 +43,7 @@ import {
   sendMidwayDamageUpdates,
   doMidwayDamage,
   autoAllocateMidwayDamage,
+  sendDMCVUpdate,
 } from "./DiceHandler"
 import { determineAllUnitsDeployedForCarrier } from "./controller/AirUnitSetupHandler"
 
@@ -213,6 +214,13 @@ export function App() {
   })
 
   const [damageMarkerUpdate, setDamageMarkerUpdate] = useState({
+    name: "",
+    box: "",
+    index: -1,
+    side: "",
+  })
+
+  const [dmcvShipMarkerUpdate, setDmcvShipMarkerUpdate] = useState({
     name: "",
     box: "",
     index: -1,
@@ -435,20 +443,6 @@ export function App() {
       }
       setFleetMoveAlertShow(true)
     } else if (GlobalGameState.gamePhase === GlobalGameState.PHASE.US_DMCV_FLEET_MOVEMENT_PLANNING) {
-      // if (GlobalGameState.usDMCVFleetPlaced) {
-      //   const dmcvLocation = GlobalInit.controller.getFleetLocation("US-DMCV", GlobalUnitsModel.Side.US)
-      //   const usRegion = allHexesWithinDistance(dmcvLocation.currentHex, 1, true)
-      //   setUSMapRegions(usRegion)
-      // } else {
-      //   const region = new Array()
-      //   // initial placement - must be in same hex as CSF
-      //   const csfLocation = GlobalInit.controller.getFleetLocation("CSF", GlobalUnitsModel.Side.US)
-      //   region.push(csfLocation.currentHex)
-      //   setUSMapRegions(region)
-      // }
-      // if DMCV not placed eligible zone is one hex from CSF
-      // if DMCV is placed eligible zone is one hex from DMCV
-      console.log("US DMCV COOL SHITE")
       if (GlobalGameState.usDMCVFleetPlaced) {
         const dmcvLocation = GlobalInit.controller.getFleetLocation("US-DMCV", GlobalUnitsModel.Side.US)
         const usRegion = allHexesWithinDistance(dmcvLocation.currentHex, 1, true)
@@ -463,18 +457,6 @@ export function App() {
 
   const setJapanFleetRegions = () => {
     if (GlobalGameState.gamePhase === GlobalGameState.PHASE.JAPAN_DMCV_FLEET_MOVEMENT_PLANNING) {
-      // if (GlobalGameState.jpDMCVFleetPlaced) {
-      //   const dmcvLocation = GlobalInit.controller.getFleetLocation("IJN-DMCV", GlobalUnitsModel.Side.JAPAN)
-      //   const jpRegion = allHexesWithinDistance(dmcvLocation.currentHex, 1, true)
-      //   setJapanMapRegions(jpRegion)
-      // } else {
-      //   const region = new Array()
-      //   // initial placement - must be in same hex as 1AF
-      //   const af1Location = GlobalInit.controller.getFleetLocation("1AF", GlobalUnitsModel.Side.JAPAN)
-      //   region.push(af1Location.currentHex)
-      //   setJapanMapRegions(region)
-      // }
-
       // if DMCV not placed eligible zone is one hex from 1AF
       // if DMCV is placed eligible zone is one hex from DMCV
       if (GlobalGameState.jpDMCVFleetPlaced) {
@@ -486,7 +468,6 @@ export function App() {
         const jpRegion = allHexesWithinDistance(af1Location.currentHex, 1, true)
         setJapanMapRegions(jpRegion)
       }
-
       return
     }
     if (GlobalGameState.gamePhase === GlobalGameState.PHASE.JAPAN_FLEET_MOVEMENT && GlobalGameState.gameTurn === 1) {
@@ -1186,6 +1167,7 @@ export function App() {
         controller={GlobalInit.controller}
         DMCVCarrierSelected={DMCVCarrierSelected}
         side={dmcvSide}
+        doDMCVShipMarkerUpdate={doDMCVShipMarkerUpdate}
       ></DMCVCarrierSelectionPanelFooters>
     </>
   )
@@ -1432,6 +1414,20 @@ export function App() {
     const box = doMidwayDamage(GlobalInit.controller)
 
     sendMidwayDamageUpdates(GlobalInit.controller, box, setDamageMarkerUpdate)
+  }
+
+  function doDMCVShipMarkerUpdate() {
+    console.log("In doDMCVShipMarkerUpdate()....->")
+    // pass this in to the DMCV Panel Footer
+
+    // call sendDMCVUpdate in DiceHandler
+    sendDMCVUpdate(GlobalInit.controller, DMCVCarrierSelected, setDmcvShipMarkerUpdate, dmcvSide)
+
+    // needs controller, carrier, setDmcvShipMarkerUpdate, side
+    // carrier is DMCVCarrierSelected
+    // setDmcvShipMarkerUpdate can be passed in
+    // side is dmcvSide
+
   }
 
   function doCriticalHit() {
@@ -2117,6 +2113,7 @@ export function App() {
                   fleetUnitUpdate,
                   strikeGroupUpdate,
                   damageMarkerUpdate,
+                  dmcvShipMarkerUpdate,
                   setAlertShow,
                   showZones,
                   setDmcvCarrierSelectionPanelShow,

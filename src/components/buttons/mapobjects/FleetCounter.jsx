@@ -72,7 +72,7 @@ function FleetCounter({
   ) {
     hex = fleetUnitUpdate.position.currentHex
 
-    // console.log("I am", fleetUnitUpdate.name, "side:", side, "-> FLEET UNIT UPDATE, move to", hex.row + ",", hex.col)
+    console.log("I am", fleetUnitUpdate.name, "side:", side, "-> FLEET UNIT UPDATE, move to", hex.row + ",", hex.col)
     setPosition({
       initial: false,
       left: hex.x + counterData.position.left + counterData.offsets.x,
@@ -177,6 +177,10 @@ function FleetCounter({
 
   //  if (side !== GlobalGameState.sideWithInitiative) {
   //   return <></>
+  // }
+
+  // if (counterData.name === "CSF-JPMAP") {
+  //   console.log("FLEET POSITION:", counterData.name, "POSITION left=", position.left, "POSITION top=", position.top)
   // }
   return (
     <div>

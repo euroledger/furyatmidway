@@ -255,6 +255,10 @@ export function createMapUpdateForFleet(controller, name, side) {
     otherName = "CSF-JPMAP"
   } else if (name === "1AF") {
     otherName = "1AF-USMAP"
+  } else if (name === "IJN-DMCV") {
+    otherName = "IJN-DMCV-USMAP"
+  } else if (name === "US-DMCV") {
+    otherName = "US-DMCV-JPMAP"
   }
   return createFleetUpdate(otherName, location.currentHex.q, location.currentHex.r)
 }

@@ -24,6 +24,10 @@ function DMCVFleetCounter({
   const { setIsMoveable, setDmcvCarrierSelectionPanelShow } = useContext(BoardContext)
   const { controller, onDrag, onStop, fleetUnitUpdate, setUSMapRegions } = useContext(BoardContext)
 
+  const [smallOffset, setSmallOffset] = useState({
+    x: 0,
+    y: 0,
+  })
   const [position, setPosition] = useState({
     initial: true,
     left: counterData.position.left,
@@ -38,20 +42,6 @@ function DMCVFleetCounter({
   const [fleetsAtLocation, setFleetsAtLocation] = useState([])
   const [hexw, setHexw] = useState(currentMouseHex)
 
-  const setUsDMCVRegions = () => {
-    // if DMCV is on the map, region it can move to is all hexes within 1 hex of its current location
-    if (GlobalGameState.usDMCVFleetPlaced && !GlobalGameState.usDMCVFleetMoved) {
-      const dmcvLocation = controller.getFleetLocation("US-DMCV", GlobalUnitsModel.Side.US)
-      const usRegion = allHexesWithinDistance(dmcvLocation.currentHex, 1, true)
-      setUSMapRegions(usRegion)
-    } else {
-      const region = new Array()
-      // initial placement - must be in same hex as CSF
-      const csfLocation = controller.getFleetLocation("CSF", GlobalUnitsModel.Side.US)
-      region.push(csfLocation.currentHex)
-      setUSMapRegions(region)
-    }
-  }
   function setStrikeGroupPopup(side, show, hex) {
     if (show === false || hex === undefined) {
       setShowPopup(false)
@@ -76,15 +66,45 @@ function DMCVFleetCounter({
   }
   let hex = {}
   if (fleetUnitUpdate) {
-    hex = fleetUnitUpdate.position.currentHex
+    // hex = fleetUnitUpdate.position.currentHex
+    // if (fleetUnitUpdate &&counterData.name === "US-DMCV-JPMAP" && hex !== undefined ) {
+    //   console.log("position.currentHex.q=",position.currentHex.q, "hex.q=", hex.q)
+    //   console.log("position.currentHex.r=",position.currentHex.r, "hex.r=", hex.r)
+    // }
+    // else {
+    //   console.log("POSITION=", fleetUnitUpdate.position)
+    // }
   }
+  let arse = false
 
-  // This code for the fleet unit updates (incl. game loads)
-  if (
+  if (fleetUnitUpdate && counterData.name === "US-DMCV-JPMAP" && fleetUnitUpdate.position.currentHex!=undefined ) {
+    hex = fleetUnitUpdate.position.currentHex
+
+    console.log("position.currentHex.q=", position.currentHex.q)
+    console.log("hex.q=", hex.q)
+    
+
+    console.log("hex.q=", hex.q)
+    arse =
     fleetUnitUpdate &&
     counterData.name === fleetUnitUpdate.name &&
     (position.currentHex.q !== hex.q || position.currentHex.r !== hex.r)
-  ) {
+    console.log("counterData.name === fleetUnitUpdate.name=>", counterData.name === fleetUnitUpdate.name)
+    console.log("ARSE =", arse)
+    console.log(
+      "position.currentHex.q !== hex.q || position.currentHex.r !== hex.r =>",
+      position.currentHex.q !== hex.q || position.currentHex.r !== hex.r
+    )
+    console.log("position.currentHex.q=",position.currentHex.q, "hex.q=", hex.q)
+    console.log("position.currentHex.r=",position.currentHex.r, "hex.r=", hex.r)
+
+  }
+  // This code for the fleet unit updates (incl. game loads)
+  // console.log("counterData.name=", counterData.name, "fleetUnitUpdate.name=",fleetUnitUpdate.name)
+
+ 
+  if (arse) {
+    console.log("YIPPEEE")
     hex = fleetUnitUpdate.position.currentHex
 
     let smallOffset = {
@@ -239,6 +259,10 @@ function DMCVFleetCounter({
 
   //  if (side !== GlobalGameState.sideWithInitiative) {
   //   return <></>
+  // }
+
+  // if (counterData.name === "US-DMCV-JPMAP") {
+  //   console.log("FLEET POSITION:", counterData.name, "POSITION left=", position.left, "POSITION top=", position.top)
   // }
   return (
     <div>

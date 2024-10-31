@@ -512,6 +512,25 @@ export async function sendMidwayDamageUpdates(controller, box, setDamageMarkerUp
   controller.setMarkerLocation(marker.name, boxName, box)
 }
 
+export async function sendDMCVUpdate(controller, carrier, setDmcvShipMarkerUpdate, side) {
+  // place a DMCV marker on the carrier display of any carrier assigned to
+  // a DMCV fleet
+
+  const boxName = controller.getAirBoxForNamedShip(
+    side,
+    carrier,
+    "DMCV"
+  )
+  const sideStr = side === GlobalUnitsModel.Side.JAPAN ? "JP" : "US"
+  const markerName= `${sideStr}-DMCV-MARKER`
+  let dmcvMarkerUpdate = {
+    name: markerName,
+    box: boxName,
+    index: 0,
+    side,
+  }
+  setDmcvShipMarkerUpdate(dmcvMarkerUpdate)
+}
 export async function sendDamageUpdates(controller, damage, setDamageMarkerUpdate) {
   // damage has two fields, bow and stern
 

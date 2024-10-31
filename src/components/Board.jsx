@@ -21,6 +21,7 @@ import GlobalGameState from "../model/GlobalGameState"
 import StrikePanel from "./dialogs/StrikePanel"
 import GlobalUnitsModel from "../model/GlobalUnitsModel"
 import DamageSunkCounters from "./buttons/mapobjects/DamageSunkCounters"
+import DMCVShipMarker from "./buttons/mapobjects/DMCVShipMarker"
 
 function Board({ scale, USMapRegions, japanMapRegions, japanStrikePanelEnabled, usStrikePanelEnabled }) {
   let zProps = { us: 0, japan: 0 }
@@ -102,7 +103,6 @@ function Board({ scale, USMapRegions, japanMapRegions, japanStrikePanelEnabled, 
     }
   }
 
-
   return (
     <>
       <div>
@@ -175,21 +175,7 @@ function Board({ scale, USMapRegions, japanMapRegions, japanStrikePanelEnabled, 
           initialPosition={initialMGFPosition}
           getZone={getMGFZone}
         />
-        <FleetCounter
-          currentHex={currentJapanHex}
-          currentMouseHex={currentMouseHex}
-          setCurrentMouseHex={setCurrentMouseHex}
-          id="1AF"
-          counterData={GlobalInit.counters.get("1AF")}
-          setCurrentJapanHex={setCurrentJapanHex}
-          setCurrentUSHex={setCurrentUSHex}
-          jpRegions={japanMapRegions}
-          enabled={
-            GlobalGameState.gamePhase === GlobalGameState.PHASE.JAPAN_FLEET_MOVEMENT ||
-            GlobalGameState.jpFleetPlaced === true
-          }
-          side={GlobalUnitsModel.Side.JAPAN}
-        ></FleetCounter>
+
         <FleetCounter
           currentHex={currentJapanHex}
           currentMouseHex={currentMouseHex}
@@ -225,6 +211,21 @@ function Board({ scale, USMapRegions, japanMapRegions, japanStrikePanelEnabled, 
           setCurrentJapanHex={setCurrentJapanHex}
           setCurrentUSHex={setCurrentUSHex}
           enabled={true}
+          side={GlobalUnitsModel.Side.JAPAN}
+        ></FleetCounter>
+        <FleetCounter
+          currentHex={currentJapanHex}
+          currentMouseHex={currentMouseHex}
+          setCurrentMouseHex={setCurrentMouseHex}
+          id="1AF"
+          counterData={GlobalInit.counters.get("1AF")}
+          setCurrentJapanHex={setCurrentJapanHex}
+          setCurrentUSHex={setCurrentUSHex}
+          jpRegions={japanMapRegions}
+          enabled={
+            GlobalGameState.gamePhase === GlobalGameState.PHASE.JAPAN_FLEET_MOVEMENT ||
+            GlobalGameState.jpFleetPlaced === true
+          }
           side={GlobalUnitsModel.Side.JAPAN}
         ></FleetCounter>
         <FleetCounter
@@ -267,6 +268,17 @@ function Board({ scale, USMapRegions, japanMapRegions, japanStrikePanelEnabled, 
           side={GlobalUnitsModel.Side.JAPAN}
         ></DMCVFleetCounter>
         <DMCVFleetCounter
+          currentHex={currentJapanHex}
+          currentMouseHex={currentUSHex}
+          setCurrentMouseHex={setCurrentMouseHex}
+          id="IJN-DMCV-USMAP"
+          counterData={GlobalInit.counters.get("IJN-DMCV-USMAP")}
+          setCurrentJapanHex={setCurrentJapanHex}
+          setCurrentUSHex={setCurrentUSHex}
+          enabled={true}
+          side={GlobalUnitsModel.Side.US}
+        ></DMCVFleetCounter>
+        <DMCVFleetCounter
           currentHex={currentUSHex}
           currentMouseHex={currentMouseHex}
           setCurrentMouseHex={setCurrentMouseHex}
@@ -283,7 +295,17 @@ function Board({ scale, USMapRegions, japanMapRegions, japanStrikePanelEnabled, 
           }
           side={GlobalUnitsModel.Side.US}
         ></DMCVFleetCounter>
-
+        <DMCVFleetCounter
+          currentHex={currentUSHex}
+          currentMouseHex={currentMouseHex}
+          setCurrentMouseHex={setCurrentMouseHex}
+          id="US-DMCV-JPMAP"
+          counterData={GlobalInit.counters.get("US-DMCV-JPMAP")}
+          setCurrentJapanHex={setCurrentJapanHex}
+          setCurrentUSHex={setCurrentUSHex}
+          enabled={true}
+          side={GlobalUnitsModel.Side.JAPAN}
+        ></DMCVFleetCounter>
         <AirCounters
           controller={GlobalInit.controller}
           counterData={GlobalInit.counters}
@@ -299,6 +321,9 @@ function Board({ scale, USMapRegions, japanMapRegions, japanStrikePanelEnabled, 
           counterData={GlobalInit.counters}
         ></StrikeCounters>
         <DamageSunkCounters counterData={GlobalInit.counters}></DamageSunkCounters>
+
+        <DMCVShipMarker counterData={GlobalUnitsModel.jpDMCVShipMarker}></DMCVShipMarker>
+        <DMCVShipMarker counterData={GlobalUnitsModel.usDMCVShipMarker}></DMCVShipMarker>
 
         <JapanCarrierDropZones handleDragEnter={handleAirBoxDragEnter}></JapanCarrierDropZones>
         <USCarrierDropZones handleDragEnter={handleUSAirBoxDragEnter}></USCarrierDropZones>
