@@ -112,7 +112,6 @@ function createFleetUpdates(fleetMap) {
       },
     }
     updates.push(update)
-  
   }
   return updates
 }
@@ -136,6 +135,21 @@ function createStrikeGroupUpdates(strikeGroupMap) {
   }
   return updates
 }
+
+function createDMCVMarkerUpdates(controller, side, carrierName) {
+  const boxName = controller.getAirBoxForNamedShip(side, carrierName, "DMCV")
+
+  const sideStr = side === GlobalUnitsModel.Side.JAPAN ? "JP" : "US"
+  const markerName= `${sideStr}-DMCV-MARKER`
+  let dmcvMarkerUpdate = {
+    name: markerName,
+    box: boxName,
+    index: 0,
+    side,
+  }
+  return dmcvMarkerUpdate
+}
+
 function createsDamageUpdates(controller, damage, side, carrierName) {
   const boxName = controller.getAirBoxForNamedShip(side, carrierName, "FLIGHT_DECK")
 
@@ -239,6 +253,22 @@ function createDamageUpdatesMidway(controller) {
   return markers
 }
 
+function createDMCVUpdates(controller, fleetUnitsMap) {
+  let fleetUpdates = new Array()
+  for (const key of fleetUnitsMap.keys()) {
+    let updates
+    const carrier = fleetUnitsMap.get(key)
+
+    if (carrier._dmcv) {
+      updates = createDMCVMarkerUpdates(controller, carrier._side, carrier._name)
+    }
+
+    if (updates !== undefined) {
+      fleetUpdates.push(updates)
+    }
+  }
+  return fleetUpdates
+}
 function createDamageMarkerUpdates(controller, fleetUnitsMap) {
   let fleetUpdates = new Array()
   for (const key of fleetUnitsMap.keys()) {
@@ -316,9 +346,9 @@ function loadAirUnits(airUnitMap) {
     //   globalAirUnit.aircraftUnit.steps = 1
     //   globalAirUnit.image = "/images/aircounters/hornet-f4f-back.png"
     // }
-    GlobalGameState.usDMCVFleetPlaced=false
-    GlobalGameState.jpDMCVFleetPlaced=false
-
+    // GlobalGameState.usDMCVFleetPlaced=false
+    // GlobalGameState.jpDMCVFleetPlaced=false
+    GlobalGameState.usDMCVCarrier = GlobalUnitsModel.Carrier.ENTERPRISE
   }
 }
 
@@ -352,6 +382,8 @@ function loadJapanFleetUnits(loadedMap) {
     carrier.hits = loadedFleetUnit._hits
     carrier.bowDamaged = loadedFleetUnit._bowDamaged
     carrier.sternDamaged = loadedFleetUnit._sternDamaged
+    carrier.towed = loadedFleetUnit._towed
+    carrier.dmcv = loadedFleetUnit._dmcv
     GlobalUnitsModel.jpFleetUnits.set(key, carrier)
   }
 }
@@ -363,6 +395,8 @@ function loadUSFleetUnits(loadedMap) {
     carrier.hits = loadedFleetUnit._hits
     carrier.bowDamaged = loadedFleetUnit._bowDamaged
     carrier.sternDamaged = loadedFleetUnit._sternDamaged
+    carrier.towed = loadedFleetUnit._towed
+    carrier.dmcv = loadedFleetUnit._dmcv
     GlobalUnitsModel.usFleetUnits.set(key, carrier)
   }
 }
@@ -436,6 +470,15 @@ export function loadGameStateForId(controller, gameId) {
     usDamageMarkerUpdates = createDamageMarkerUpdates(controller, usFleetUnitsMap)
   }
 
+  let jpDMCVMarkerUpdates = new Array()
+  let usDMCVMarkerUpdates = new Array()
+  if (jpFleetUnitsMap !== undefined) {
+    jpDMCVMarkerUpdates = createDMCVUpdates(controller, jpFleetUnitsMap)
+  }
+  if (usFleetUnitsMap !== undefined) {
+    usDMCVMarkerUpdates = createDMCVUpdates(controller, usFleetUnitsMap)
+  }
+
   const usCardText = gameDetails.uscards
   const jpCardText = gameDetails.jpcards
 
@@ -481,6 +524,8 @@ export function loadGameStateForId(controller, gameId) {
     usStrikeUpdates,
     jpDamageMarkerUpdates,
     usDamageMarkerUpdates,
+    jpDMCVMarkerUpdates,
+    usDMCVMarkerUpdates,
     logItems,
   }
 }

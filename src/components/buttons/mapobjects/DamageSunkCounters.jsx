@@ -5,6 +5,7 @@ import DamageSunkCounter from "./DamageSunkCounter"
 import GlobalUnitsModel from "../../../model/GlobalUnitsModel"
 
 function DamageSunkCounters({ counterData }) {
+  
   const { damageMarkerUpdate } = useContext(BoardContext)
 
   let markers = GlobalUnitsModel.damageMarkers

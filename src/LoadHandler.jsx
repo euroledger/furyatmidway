@@ -15,6 +15,7 @@ async function loadHandler({
   setFleetUnitUpdate,
   setStrikeGroupUpdate,
   setDamageMarkerUpdate,
+  setDmcvShipMarkerUpdate,
   loadState,
   id,
   setLoading,
@@ -30,13 +31,14 @@ async function loadHandler({
     usStrikeUpdates,
     jpDamageMarkerUpdates,
     usDamageMarkerUpdates,
+    jpDMCVMarkerUpdates,
+    usDMCVMarkerUpdates,
     logItems,
   } = loadGameStateForId(controller, id)
   for (const update of airUpdates) {
     await delay(2)
     setAirUnitUpdate(update)
     await delay(2)
-
   }
 
   for (const update of usfleetUpdates) {
@@ -60,14 +62,13 @@ async function loadHandler({
     await delay(1)
   }
 
- 
   for (const updateArray of jpDamageMarkerUpdates) {
     for (let update of updateArray) {
       if (update === null) {
         continue
       }
       setDamageMarkerUpdate(update)
-      await delay(1)  
+      await delay(1)
     }
   }
 
@@ -77,9 +78,18 @@ async function loadHandler({
         continue
       }
       setDamageMarkerUpdate(update)
-      await delay(1)  
+      await delay(1)
     }
   }
+  for (const update of jpDMCVMarkerUpdates) {
+    setDmcvShipMarkerUpdate(update)
+    await delay(1)
+  }
+  for (const update of usDMCVMarkerUpdates) {
+    setDmcvShipMarkerUpdate(update)
+    await delay(1)
+  }
+  
   GlobalGameState.logItems = new Array()
   for (let item of logItems.values()) {
     GlobalGameState.log(item)

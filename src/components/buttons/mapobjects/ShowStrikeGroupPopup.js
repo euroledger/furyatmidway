@@ -1,5 +1,5 @@
 export default function setStrikeGroupPopup(side, show, hex) {
-    if (show === false || hex === undefined) {
+  if (show === false || hex === undefined) {
       setShowPopup(false)
       return
     }

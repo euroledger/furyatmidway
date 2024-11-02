@@ -10,8 +10,8 @@ function DMCVShipMarker({ counterData }) {
   const { dmcvShipMarkerUpdate } = useContext(BoardContext)
 
   const [position, setPosition] = useState({
-    left: "",
-    top: "",
+    left: -100,
+    top: -100,
   })
 
   if (dmcvShipMarkerUpdate.box === "") {

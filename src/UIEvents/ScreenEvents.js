@@ -3,6 +3,8 @@ import Controller from "../controller/Controller"
 
 
 export function targetSelectionButtonClick(controller, target) {
+  console.log("QUACK 400")
+
     GlobalGameState.taskForceTarget = target
 
     controller.viewEventHandler({

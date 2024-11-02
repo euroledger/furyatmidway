@@ -112,7 +112,7 @@ function loadCounters(controller) {
     "CSF-JPMAP",
     new BaseUnit(
       "CSF-JPMAP",
-      "US Carrier Strike Force (Japan Map)",
+      "CSF: US Carrier Strike Force",
       position,
       { x: -55, y: 70 }, // offsets
       "/images/fleetcounters/CSF.png",
@@ -123,8 +123,8 @@ function loadCounters(controller) {
 
   position = {
     hexCoords: {},
-    left: 750,
-    top: 117,
+    left: 810,
+    top: 119,
   }
 
 
@@ -134,7 +134,7 @@ function loadCounters(controller) {
       "US-DMCV",
       "US Damaged Carrier Fleet",
       position,
-      { x: -148, y: 98 }, // offsets
+      { x: -208, y: 98 }, // offsets
       "/images/fleetcounters/US-DMCV.png",
       "2.5%",
       GlobalUnitsModel.Side.US
@@ -142,17 +142,17 @@ function loadCounters(controller) {
   )
   position = {
     hexCoords: {},
-    left: 250,
-    top: 117,
+    left: 320,
+    top: 119,
   }
 
   counters.set(
     "US-DMCV-JPMAP",
     new BaseUnit(
       "US-DMCV-JPMAP",
-      "US Damaged Carrier Fleet (Japan Map)",
+      "DMCV: US Damaged Carrier Fleet",
       position,
-      { x: -94, y: 70 }, // offsets
+      { x: -164, y: 70 }, // offsets
       "/images/fleetcounters/US-DMCV.png",
       "2.5%",
       GlobalUnitsModel.Side.US
@@ -194,7 +194,7 @@ function loadCounters(controller) {
       "IJN-DMCV-USMAP",
       "Japanese DMCV (US Map)",
       position,
-      { x: 50, y: 68 }, // offsets
+      { x: -247, y: 102 }, // offsets
       "/images/fleetcounters/Japan-DMCV.png",
       "2.5%",
       GlobalUnitsModel.Side.JAPAN

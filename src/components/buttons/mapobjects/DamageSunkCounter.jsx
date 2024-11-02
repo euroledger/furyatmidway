@@ -7,8 +7,8 @@ import "./counter.css"
 
 function DamageSunkCounter({ counterData, markerUpdate }) {
   const [position, setPosition] = useState({
-    left: "",
-    top: "",
+    left: -100,
+    top: -100,
   })
 
   if (markerUpdate.box === "") {

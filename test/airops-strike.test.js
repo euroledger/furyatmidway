@@ -5,6 +5,7 @@ import { createFleetMove } from "./TestUtils"
 import HexCommand from "../src/commands/HexCommand"
 import GlobalGameState from "../src/model/GlobalGameState"
 import { calcAirOpsPointsMidway } from "../src/GameStateHandler"
+import { setUpAirAttack } from "../src/controller/AirAttackHandler"
 
 describe("Strike Group tests", () => {
   let controller
@@ -20,6 +21,9 @@ describe("Strike Group tests", () => {
     createFleetMove(controller, 7, 1, "CSF", GlobalUnitsModel.Side.US) // G-4
     createFleetMove(controller, 7, 2, "1AF", GlobalUnitsModel.Side.JAPAN) // G-5
     createFleetMove(controller, 7, 2, "1AF-USMAP", GlobalUnitsModel.Side.US) // G-5
+    createFleetMove(controller, 7, 0, "US-DMCV-JPMAP", GlobalUnitsModel.Side.JAPAN) // G-3
+    createFleetMove(controller, 7, -1, "CSF-JPMAP", GlobalUnitsModel.Side.JAPAN) // G-2
+
 
     ef1 = counters.get("Enterprise-F4F4-1")
     ef2 = counters.get("Enterprise-F4F4-2")
@@ -648,4 +652,155 @@ describe("Strike Group tests", () => {
     expect(isAirAttackTriggered).toEqual(true)
   })
 
+  test("Start of Air Operations: Test if any IJN Stike Groups in same hex as Fleets", () => {
+
+    // modify this to test multiple fleets in the same hex
+    let counterData = counters.get(hdb.name)
+
+    controller.viewEventHandler({
+      type: Controller.EventTypes.AIR_UNIT_MOVE,
+      data: {
+        name: GlobalUnitsModel.AirBox.JP_STRIKE_BOX_0,
+        counterData,
+        index: 0,
+        side: GlobalUnitsModel.Side.JAPAN,
+        loading: false,
+      },
+    })
+
+    let strikeGroup = GlobalUnitsModel.jpStrikeGroups.get(GlobalUnitsModel.AirBox.JP_STRIKE_BOX_0)
+    let unitsInGroup = controller.getAirUnitsInStrikeGroups(strikeGroup.box)
+    expect(unitsInGroup.length).toEqual(1)
+
+    counterData = counters.get(htb.name)
+
+    controller.viewEventHandler({
+      type: Controller.EventTypes.AIR_UNIT_MOVE,
+      data: {
+        name: GlobalUnitsModel.AirBox.JP_STRIKE_BOX_0,
+        counterData,
+        index: 1,
+        side: GlobalUnitsModel.Side.JAPAN,
+        loading: false,
+      },
+    })
+
+    strikeGroup = GlobalUnitsModel.jpStrikeGroups.get(GlobalUnitsModel.AirBox.JP_STRIKE_BOX_0)
+    unitsInGroup = controller.getAirUnitsInStrikeGroups(strikeGroup.box)
+    expect(unitsInGroup.length).toEqual(2)
+
+    let strikeCounter = {
+      name: "JP-SG1",
+      longName: "Strike Group 1",
+      position: {},
+      image: "/images/aircounters/jpStrike1.png",
+      width: "2.1%",
+      box: GlobalUnitsModel.AirBox.JP_STRIKE_BOX_0,
+      side: GlobalUnitsModel.Side.JAPAN,
+    }
+
+    //  Strike Group moves onto map - test location, moved etc.
+    controller.viewEventHandler({
+      type: Controller.EventTypes.STRIKE_GROUP_MOVE,
+      data: {
+        initial: true,
+        counterData: strikeCounter,
+        from: HexCommand.OFFBOARD,
+        to: {
+          currentHex: {
+            col: 1,
+            q: 7,
+            r: -2,
+            row: "G",
+            side: "jp",
+            x: 120,
+            y: 200,
+          },
+        },
+        side: GlobalUnitsModel.Side.JAPAN,
+        loading: false,
+      },
+    })
+
+    let location = controller.getStrikeGroupLocation("JP-SG1", GlobalUnitsModel.Side.JAPAN)
+    expect(location.currentHex.row).toEqual("G")
+    expect(location.currentHex.col).toEqual(1)
+
+    counterData = counters.get(sdb.name)
+
+    controller.viewEventHandler({
+      type: Controller.EventTypes.AIR_UNIT_MOVE,
+      data: {
+        name: GlobalUnitsModel.AirBox.JP_STRIKE_BOX_1,
+        counterData,
+        index: 0,
+        side: GlobalUnitsModel.Side.JAPAN,
+        loading: false,
+      },
+    })
+
+    strikeGroup = GlobalUnitsModel.jpStrikeGroups.get(GlobalUnitsModel.AirBox.JP_STRIKE_BOX_1)
+    unitsInGroup = controller.getAirUnitsInStrikeGroups(strikeGroup.box)
+    expect(unitsInGroup.length).toEqual(1)
+
+    counterData = counters.get(stb.name)
+
+    controller.viewEventHandler({
+      type: Controller.EventTypes.AIR_UNIT_MOVE,
+      data: {
+        name: GlobalUnitsModel.AirBox.JP_STRIKE_BOX_1,
+        counterData,
+        index: 1,
+        side: GlobalUnitsModel.Side.JAPAN,
+        loading: false,
+      },
+    })
+
+    strikeGroup = GlobalUnitsModel.jpStrikeGroups.get(GlobalUnitsModel.AirBox.JP_STRIKE_BOX_1)
+    unitsInGroup = controller.getAirUnitsInStrikeGroups(strikeGroup.box)
+    expect(unitsInGroup.length).toEqual(2)
+
+    strikeCounter = {
+      name: "JP-SG2",
+      longName: "Strike Group 2",
+      position: {},
+      image: "/images/aircounters/jpStrike2.png",
+      width: "2.1%",
+      box: GlobalUnitsModel.AirBox.JP_STRIKE_BOX_1,
+      side: GlobalUnitsModel.Side.JAPAN,
+    }
+
+    //  Strike Group moves onto map - test location, moved etc.
+    controller.viewEventHandler({
+      type: Controller.EventTypes.STRIKE_GROUP_MOVE,
+      data: {
+        initial: true,
+        counterData: strikeCounter,
+        from: HexCommand.OFFBOARD,
+        to: {
+          currentHex: {
+            col: 6,
+            q: 7,
+            r: 3,
+            row: "G",
+            side: "jp",
+            x: 120,
+            y: 200,
+          },
+        },
+        side: GlobalUnitsModel.Side.JAPAN,
+        loading: false,
+      },
+    })
+
+    location = controller.getStrikeGroupLocation("JP-SG2", GlobalUnitsModel.Side.JAPAN)
+    expect(location.currentHex.row).toEqual("G")
+    expect(location.currentHex.col).toEqual(6)
+    
+    // MOVE US DMCV Fleet into hex occupied by JP-SG1 and US CSF Fleet into hex occupied by JP-SG2
+    createFleetMove(controller, 7, -2, "US-DMCV-JPMAP", GlobalUnitsModel.Side.JAPAN) // G-3
+    createFleetMove(controller, 7, 3, "CSF-JPMAP", GlobalUnitsModel.Side.JAPAN) // G-2
+    const groups = GlobalUnitsModel.jpStrikeGroups
+
+  })
 })

@@ -810,6 +810,12 @@ export default class Controller {
     return damagedCarriers
   }
   getTargetForAttack() {
+    if (
+      GlobalGameState.taskForceTarget === GlobalUnitsModel.TaskForce.JAPAN_DMCV ||
+      GlobalGameState.taskForceTarget === GlobalUnitsModel.TaskForce.US_DMCV
+    ) {
+      return GlobalGameState.currentCarrierAttackTarget
+    }
     if (GlobalGameState.taskForceTarget === GlobalUnitsModel.TaskForce.TASK_FORCE_17) {
       if (this.isSunk(GlobalUnitsModel.Carrier.YORKTOWN)) {
         return null
@@ -1026,7 +1032,6 @@ export default class Controller {
       return strikeGroups.length > 0
     }
     const fleets = this.getAllFleetsInLocation(location, side, true)
-
     return fleets.length > 0 && strikeGroups.length > 0
   }
 
@@ -1305,7 +1310,7 @@ export default class Controller {
   getCarrierSternDamaged(name) {
     const side = GlobalUnitsModel.carrierSideMap.get(name)
     if (side === GlobalUnitsModel.Side.JAPAN) {
-      const carrier = GlobalUnitsModel.jpFleetUnits.get(name)
+      const carrier =  GlobalUnitsModel.jpFleetUnits.get(name)
       return carrier.sternDamaged
     } else {
       const carrier = GlobalUnitsModel.usFleetUnits.get(name)

@@ -260,6 +260,9 @@ export function createMapUpdateForFleet(controller, name, side) {
   } else if (name === "US-DMCV") {
     otherName = "US-DMCV-JPMAP"
   }
+  if (location === undefined) {
+    return null
+  }
   return createFleetUpdate(otherName, location.currentHex.q, location.currentHex.r)
 }
 

@@ -2,7 +2,7 @@ import GlobalGameState from "../model/GlobalGameState"
 import COMMAND_TYPE from "../commands/COMMAND_TYPE"
 import HexCommand from "../commands/HexCommand"
 import GlobalUnitsModel from "../model/GlobalUnitsModel"
-
+import { setUpAirAttack } from "./AirAttackHandler"
 class ViewEventStrikeGroupMoveHandler {
   constructor(controller) {
     this.controller = controller
@@ -38,34 +38,10 @@ class ViewEventStrikeGroupMoveHandler {
       }
 
       if (this.controller.checkForAirAttack(to, side)) {
-        this.controller.setAirOpAttacked(counterData)
-
-        if (GlobalGameState.gamePhase === GlobalGameState.PHASE.MIDWAY_ATTACK) {
-          if (this.controller.japanHandContainsCard(9)) {
-            GlobalGameState.gamePhase = GlobalGameState.PHASE.CARD_PLAY
-            setCardNumber(() => 9)
-          } else {
-            GlobalGameState.gamePhase = GlobalGameState.PHASE.CAP_INTERCEPTION
-          }
-          GlobalGameState.taskForceTarget = GlobalUnitsModel.TaskForce.MIDWAY
-        } else {
-          if (this.controller.japanHandContainsCard(11)) {
-            GlobalGameState.gamePhase = GlobalGameState.PHASE.CARD_PLAY
-            setCardNumber(() => 11)
-          } else {
-            GlobalGameState.gamePhase = GlobalGameState.PHASE.TARGET_DETERMINATION
-          }
-        }
-
-        // @TODO we may need a global state reset function that
-        // gets invoked before each air strike move
-        this.controller.resetTargetMap()
-        GlobalGameState.carrierTarget1 = ""
-        GlobalGameState.carrierTarget2 = ""
-        counterData.attacked = true
-        GlobalGameState.attackingStrikeGroup = counterData
+        setUpAirAttack(this.controller, to, counterData)
       }
     } else {
+      console.trace()
       counterData.moved = moved
       counterData.attacked = attacked
     }

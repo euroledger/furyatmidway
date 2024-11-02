@@ -2,7 +2,7 @@ import { React } from "react"
 import GlobalUnitsModel from "../model/GlobalUnitsModel"
 import GlobalGameState from "../model/GlobalGameState"
 
-export function AAAHeaders({numDice}) {
+export function AAAHeaders({ numDice }) {
   const diceMsg = `Roll ${numDice} dice. Each "1" rolled is a hit`
 
   let tfUnderAttack
@@ -36,8 +36,19 @@ export function AAAHeaders({numDice}) {
       name: GlobalUnitsModel.TaskForce.MIDWAY,
       width: "200px",
     }
+  } else if (GlobalGameState.taskForceTarget === GlobalUnitsModel.TaskForce.US_DMCV) {
+    tfUnderAttack = {
+      image: "/images/fleetcounters/US-DMCV.png",
+      name: GlobalUnitsModel.TaskForce.US_DMCV,
+      width: "200px",
+    }
+  } else if (GlobalGameState.taskForceTarget === GlobalUnitsModel.TaskForce.JAPAN_DMCV) {
+    tfUnderAttack = {
+      image: "/images/fleetcounters/Japan-DMCV.png",
+      name: GlobalUnitsModel.TaskForce.JAPAN_DMCV,
+      width: "200px",
+    }
   }
-
   const msg = `TF Under Attack:`
 
   return (

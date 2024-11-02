@@ -102,7 +102,6 @@ function Board({ scale, USMapRegions, japanMapRegions, japanStrikePanelEnabled, 
       setZIndex({ ...zProps, us: zProps[side] + increment })
     }
   }
-
   return (
     <>
       <div>

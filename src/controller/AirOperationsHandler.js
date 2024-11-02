@@ -511,24 +511,30 @@ export async function resetStrikeGroups(controller, side, setStrikeGroupUpdate) 
         currentHex: HexCommand.OFFBOARD,
       },
       moved: strikeGroup.moved,
-      attacked: true
+      attacked: false
     }
     setStrikeGroupUpdate(update)
     
+    await delay(1)
     strikeGroup.airOpAttacked = undefined
     strikeGroup.airOpMoved = undefined
     strikeGroup.gameTurnMoved = undefined
     strikeGroup.moved = false
     strikeGroup.attacked = false
+
+    // strikeGroup.setAttacked(false)
     strikeGroup.position = strikeGroup.initialPosition
     strikeGroup.location = GlobalUnitsModel.AirBox.OFFBOARD
-
-    // console.log("strikeGroup=", strikeGroup)
 
     controller.setStrikeGroupLocation(strikeGroup.name, GlobalUnitsModel.AirBox.OFFBOARD, side)
     controller.removeStrikeGroupFromLocation(strikeGroup.name, side)
     controller.addAirUnitToBox(GlobalUnitsModel.AirBox.OFFBOARD, 0, strikeGroup)
     index++
+
+    setStrikeGroupUpdate({
+      name: "",
+      position: {},
+    }) // reset
 
    
   }
@@ -573,14 +579,11 @@ export async function moveAirUnitToReturnBox(controller, strikeGroup, unit, side
 }
 
 export async function moveOrphanedAirUnitsInReturn1Boxes(side) {
-  console.log("TEST RETURN 1 ORPHANED UNITS")
   const unitsReturning = GlobalInit.controller.getAllAirUnitsInReturn1Boxes(side)
   for (const unit of unitsReturning) {
     await delay(1)
     const parentCarrier = GlobalInit.controller.getCarrierForAirUnit(unit.name)
-  
-    console.log("POOOO parentCarrier=", parentCarrier)
-    let destinationsArray
+      let destinationsArray
     if (side === GlobalUnitsModel.Side.JAPAN) {
       destinationsArray = getValidJapanDestinationsRETURN1(GlobalInit.controller, parentCarrier, side)
     } else {

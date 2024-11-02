@@ -9,6 +9,7 @@ import {
   moveCAPtoReturnBox,
   setStrikeGroupAirUnitsToNotMoved,
   moveOrphanedCAPUnitsToEliminatedBox,
+  moveOrphanedAirUnitsInReturn1Boxes,
   resetStrikeGroups,
 } from "./controller/AirOperationsHandler"
 import { delay, getNumEscortFighterSteps } from "./DiceHandler"
@@ -294,10 +295,13 @@ function usFleetMovementPlanningHandler({ setJapanFleetRegions, setJapanMapRegio
   })
 }
 
-function goToMidwayAttackOrUSFleetMovement({ setMidwayNoAttackAlertShow, setJapanMapRegions, setFleetUnitUpdate }) {
+async function goToMidwayAttackOrUSFleetMovement({
+  setMidwayNoAttackAlertShow,
+  setJapanMapRegions,
+  setFleetUnitUpdate,
+}) {
   if (!GlobalGameState.midwayAttackDeclaration) {
     setMidwayNoAttackAlertShow(true)
-    GlobalGameState.gamePhase = GlobalGameState.PHASE.US_FLEET_MOVEMENT
   } else {
     console.log("BEGIN MIDWAY ATTACK...")
     GlobalGameState.gamePhase = GlobalGameState.PHASE.MIDWAY_ATTACK
@@ -313,9 +317,23 @@ function goToMidwayAttackOrUSFleetMovement({ setMidwayNoAttackAlertShow, setJapa
   GlobalGameState.phaseCompleted = true
   GlobalGameState.jpFleetPlaced = true
 
-  console.log("QUACK 100")
-  const update = createMapUpdateForFleet(GlobalInit.controller, "1AF", GlobalUnitsModel.Side.JAPAN)
-  setFleetUnitUpdate(update)
+  // const update = createMapUpdateForFleet(GlobalInit.controller, "1AF", GlobalUnitsModel.Side.JAPAN)
+  // if (update !== null) {
+  //   setFleetUnitUpdate(update)
+  // }
+
+  const update1 = createMapUpdateForFleet(GlobalInit.controller, "1AF", GlobalUnitsModel.Side.JAPAN)
+  const update2 = createMapUpdateForFleet(GlobalInit.controller, "IJN-DMCV", GlobalUnitsModel.Side.JAPAN)
+
+  if (update1 !== null) {
+    setFleetUnitUpdate(update1)
+  }
+
+  console.log("SEND UPDATE=", update2)
+  await delay(1)
+  if (update2 !== null) {
+    setFleetUnitUpdate(update2)
+  }
 }
 
 function goToJapanDMCVMovement({ setJapanFleetRegions, setJapanMapRegions, setUSMapRegions, setJpAlertShow }) {
@@ -361,6 +379,13 @@ export function calcAirOpsPointsMidway(distanceFromFleetToMidway) {
 
 export function displayAttackTargetPanel(controller) {
   if (
+    GlobalGameState.taskForceTarget === GlobalUnitsModel.TaskForce.JAPAN_DMCV ||
+    GlobalGameState.taskForceTarget === GlobalUnitsModel.TaskForce.US_DMCV
+  ) {
+    return false
+  }
+
+  if (
     GlobalGameState.taskForceTarget === GlobalUnitsModel.TaskForce.TASK_FORCE_17 ||
     GlobalGameState.taskForceTarget === GlobalUnitsModel.TaskForce.MIDWAY
   ) {
@@ -394,20 +419,16 @@ async function usFleetMovementHandler({
   setSearchResults,
   setSearchValuesAlertShow,
 }) {
-
-  console.log("QUACK 200")
-
-  console.log("usFleetMovementHandler...")
-
   const update1 = createMapUpdateForFleet(GlobalInit.controller, "CSF", GlobalUnitsModel.Side.US)
   const update2 = createMapUpdateForFleet(GlobalInit.controller, "US-DMCV", GlobalUnitsModel.Side.US)
 
-  setFleetUnitUpdate(update1)
-
-  console.log("SEND UPDATE=", update2)
+  if (update1 !== null) {
+    setFleetUnitUpdate(update1)
+  }
   await delay(1)
-  setFleetUnitUpdate(update2)
-
+  if (update2 !== null) {
+    setFleetUnitUpdate(update2)
+  }
   if (GlobalInit.controller.usHandContainsCard(7)) {
     setCardNumber(() => 7)
     GlobalGameState.gamePhase = GlobalGameState.PHASE.CARD_PLAY
@@ -612,7 +633,7 @@ export default async function handleAction({
       setJapanFleetRegions,
       setJapanMapRegions,
       setUSMapRegions,
-      setJpAlertShow
+      setJpAlertShow,
     })
   } else if (GlobalGameState.gamePhase === GlobalGameState.PHASE.JAPAN_FLEET_MOVEMENT) {
     // goToJapanDMCVMovement({
@@ -665,6 +686,20 @@ export default async function handleAction({
     }
     GlobalGameState.updateGlobalState()
     return
+  } else if (GlobalGameState.gamePhase === GlobalGameState.PHASE.FLEET_TARGET_SELECTION) {
+    // if fleet target is DMCV (or MIF) - go straight to AAA
+
+    console.log("GlobalGameState.fleetTarget=", GlobalGameState.fleetTarget)
+    if (GlobalGameState.fleetTarget.includes("DMCV")) {
+      if (GlobalInit.controller.japanHandContainsCard(11)) {
+        GlobalGameState.gamePhase = GlobalGameState.PHASE.CARD_PLAY
+        setCardNumber(() => 11)
+      } else {
+        GlobalGameState.gamePhase = GlobalGameState.PHASE.ANTI_AIRCRAFT_FIRE
+      }
+    } else {
+      GlobalGameState.gamePhase = GlobalGameState.PHASE.TARGET_DETERMINATION
+    }
   } else if (GlobalGameState.gamePhase === GlobalGameState.PHASE.TARGET_DETERMINATION) {
     console.log("STATE CHANGE TARGET => CAP")
     if (

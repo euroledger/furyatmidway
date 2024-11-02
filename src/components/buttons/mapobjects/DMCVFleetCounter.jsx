@@ -65,53 +65,25 @@ function DMCVFleetCounter({
     setCurrentMouseHex({})
   }
   let hex = {}
+  // This code for the fleet unit updates (incl. game loads)
+  // console.log("counterData.name=", counterData.name, "fleetUnitUpdate.name=",fleetUnitUpdate.name)
   if (fleetUnitUpdate) {
-    // hex = fleetUnitUpdate.position.currentHex
-    // if (fleetUnitUpdate &&counterData.name === "US-DMCV-JPMAP" && hex !== undefined ) {
-    //   console.log("position.currentHex.q=",position.currentHex.q, "hex.q=", hex.q)
-    //   console.log("position.currentHex.r=",position.currentHex.r, "hex.r=", hex.r)
-    // }
-    // else {
-    //   console.log("POSITION=", fleetUnitUpdate.position)
-    // }
-  }
-  let arse = false
-
-  if (fleetUnitUpdate && counterData.name === "US-DMCV-JPMAP" && fleetUnitUpdate.position.currentHex!=undefined ) {
     hex = fleetUnitUpdate.position.currentHex
+  }
 
-    console.log("position.currentHex.q=", position.currentHex.q)
-    console.log("hex.q=", hex.q)
-    
-
-    console.log("hex.q=", hex.q)
-    arse =
+  // This code for the test mode fleet unit updates (and game loads and moving fleets on opponent's map)
+  if (
     fleetUnitUpdate &&
     counterData.name === fleetUnitUpdate.name &&
     (position.currentHex.q !== hex.q || position.currentHex.r !== hex.r)
-    console.log("counterData.name === fleetUnitUpdate.name=>", counterData.name === fleetUnitUpdate.name)
-    console.log("ARSE =", arse)
-    console.log(
-      "position.currentHex.q !== hex.q || position.currentHex.r !== hex.r =>",
-      position.currentHex.q !== hex.q || position.currentHex.r !== hex.r
-    )
-    console.log("position.currentHex.q=",position.currentHex.q, "hex.q=", hex.q)
-    console.log("position.currentHex.r=",position.currentHex.r, "hex.r=", hex.r)
-
-  }
-  // This code for the fleet unit updates (incl. game loads)
-  // console.log("counterData.name=", counterData.name, "fleetUnitUpdate.name=",fleetUnitUpdate.name)
-
- 
-  if (arse) {
-    console.log("YIPPEEE")
-    hex = fleetUnitUpdate.position.currentHex
+  ) {
+     hex = fleetUnitUpdate.position.currentHex
 
     let smallOffset = {
       x: 0,
       y: 0,
     }
-    console.log("I am", fleetUnitUpdate.name, "side:", side, "-> FLEET UNIT UPDATE, move to", hex.row + ",", hex.col)
+    // console.log("I am", fleetUnitUpdate.name, "side:", side, "-> FLEET UNIT UPDATE, move to", hex.row + ",", hex.col)
     if (side === GlobalUnitsModel.Side.US) {
       const csfLocation = controller.getFleetLocation("CSF", GlobalUnitsModel.Side.US)
       if (distanceBetweenHexes(csfLocation.currentHex, hex) === 0) {
@@ -227,6 +199,8 @@ function DMCVFleetCounter({
   }
 
   const handleMouseEnter = () => {
+      console.log("FLEET POSITION:", counterData.name, "POSITION left=", position.left, "POSITION top=", position.top)
+    
     setIsMoveable(true)
     const location = controller.getFleetLocation(counterData.name, side)
     setStrikeGroupPopup(side, true, location)
@@ -261,9 +235,7 @@ function DMCVFleetCounter({
   //   return <></>
   // }
 
-  // if (counterData.name === "US-DMCV-JPMAP") {
-  //   console.log("FLEET POSITION:", counterData.name, "POSITION left=", position.left, "POSITION top=", position.top)
-  // }
+
   return (
     <div>
       {enabled && (

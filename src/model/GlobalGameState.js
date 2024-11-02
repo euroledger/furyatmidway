@@ -35,7 +35,8 @@ export default class GlobalGameState {
     ESCORT_DAMAGE_ALLOCATION: "Escort Damage Allocation Phase",
     AAA_DAMAGE_ALLOCATION: "AAA Fire Damage Allocation Phase",
     ANTI_AIRCRAFT_FIRE: "Anti-Aircraft (AAA) Fire Phase",
-    ATTACK_TARGET_SELECTION: "Target Selection"
+    ATTACK_TARGET_SELECTION: "Carrier Target Selection",
+    FLEET_TARGET_SELECTION:"Fleet Target Selection"
   }
 
   static nextActionButtonDisabled=false
@@ -88,6 +89,10 @@ export default class GlobalGameState {
 
   static taskForceTarget = ""
   static currentCarrierAttackTarget=""
+  static fleetTarget = ""
+
+  static jpDMCVCarrier = undefined
+  static usDMCVCarrier = undefined
 
   static attackingStrikeGroup= undefined
 

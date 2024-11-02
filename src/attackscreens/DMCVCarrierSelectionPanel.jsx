@@ -145,11 +145,17 @@ export function DMCVCarrierSelectionPanelFooters({ controller, DMCVCarrierSelect
   }
   let carrierUnit = controller.getCarrier(DMCVCarrierSelected)
 
-  if (!carrierUnit.towed) {
+  if (!carrierUnit.dmcv) {
     doDMCVShipMarkerUpdate()
   }
 
-  carrierUnit.towed = true
+  if (side === GlobalUnitsModel.Side.US) {
+      GlobalGameState.usDMCVCarrier = carrierUnit.name
+  } else {
+      GlobalGameState.jpDMCVCarrier = carrierUnit.name
+  }
+  
+  carrierUnit.dmcv = true
 
   carrierUnit.taskForce =
     side === GlobalUnitsModel.Side.JAPAN ? GlobalUnitsModel.TaskForce.JAPAN_DMCV : GlobalUnitsModel.TaskForce.US_DMCV

@@ -8,6 +8,7 @@ export default class FleetUnit extends BaseUnit {
     this.bowDamaged = false
     this.sternDamaged = false
     this.towed = false
+    this.dmcv = false
   }
 
   get isSunk() {
@@ -18,10 +19,16 @@ export default class FleetUnit extends BaseUnit {
 
   set hits(h) {
     this._hits = h
-
-    // add function param bow or stern for flight deck damage
   }
 
+  set dmcv (d) {
+    this._dmcv = d
+  }
+
+  get dmcv() {
+    return this._dmcv
+  }
+  
   set towed (t) {
     this._towed = t
   }

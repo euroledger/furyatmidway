@@ -61,10 +61,14 @@ import EliminatedReturningUnits from "./components/dialogs/EliminatedReturningUn
 import CardAlertPanel from "./components/dialogs/CardAlertPanel"
 import { AirOpsHeaders, AirOpsFooters } from "./attackscreens/AirOpsDataPanels"
 import { TargetHeaders, TargetFooters } from "./attackscreens/TargetPanel"
+import { FleetTargetHeaders, FleetTargetFooters } from "./attackscreens/FleetTargetPanel"
 import { AttackTargetHeaders, AttackTargetFooters } from "./attackscreens/AttackTargetPanel"
 import { CAPHeaders, CAPFooters } from "./attackscreens/CAPPanel"
 import { DamageHeaders, DamageFooters } from "./attackscreens/DamageAllocationPanel"
-import { DMCVCarrierSelectionPanelHeaders, DMCVCarrierSelectionPanelFooters } from "./attackscreens/DMCVCarrierSelectionPanel"
+import {
+  DMCVCarrierSelectionPanelHeaders,
+  DMCVCarrierSelectionPanelFooters,
+} from "./attackscreens/DMCVCarrierSelectionPanel"
 import { TowedCVHeaders, TowedCVFooters } from "./attackscreens/TowedCVPanel"
 import { StrikeLostDamageHeaders, StrikeLostDamageFooters } from "./attackscreens/StrikeLostDamagePanel"
 import {
@@ -148,6 +152,8 @@ export function App() {
   const [gameStateShow, setGameStateShow] = useState(false)
   const [initiativePanelShow, setInitiativePanelShow] = useState(false)
   const [targetPanelShow, setTargetPanelShow] = useState(false)
+
+  const [fleetTargetSelectionPanelShow, setFleetTargetSelectionPanelShow] = useState(false)
 
   const [cardDicePanelShow5, setCardDicePanelShow5] = useState(false)
   const [cardDicePanelShow7, setCardDicePanelShow7] = useState(false)
@@ -270,14 +276,20 @@ export function App() {
 
   useEffect(() => {
     if (GlobalGameState.gamePhase === GlobalGameState.PHASE.TARGET_DETERMINATION) {
-      // @TODO CHECK IF JAPANESE PLAYER HOLDS CARD 11
-      // ("US STRIKE LOST")
-      // Will want to display an alert to ask if the player wants to play this card
       setTargetDetermined(false)
       setTargetSelected(false)
       setTargetPanelShow(true)
       GlobalGameState.dieRolls = []
       GlobalGameState.capHits = undefined
+    }
+  }, [GlobalGameState.gamePhase])
+
+  useEffect(() => {
+    if (GlobalGameState.gamePhase === GlobalGameState.PHASE.FLEET_TARGET_SELECTION) {
+      setTargetDetermined(false)
+      setTargetSelected(false)
+      GlobalGameState.taskForceTarget = ""
+      setFleetTargetSelectionPanelShow(true)
     }
   }, [GlobalGameState.gamePhase])
 
@@ -427,7 +439,6 @@ export function App() {
 
   const setUsFleetRegions = () => {
     if (GlobalGameState.gamePhase === GlobalGameState.PHASE.US_FLEET_MOVEMENT_PLANNING) {
-      console.log("DOING THIS BAAAAAAD SNOT")
       GlobalGameState.phaseCompleted = true // may just want to skip any fleet movement (leave fleet where it is)
       const csfLocation = GlobalInit.controller.getFleetLocation("CSF", GlobalUnitsModel.Side.US)
       const usRegion = allHexesWithinDistance(csfLocation.currentHex, 2, true)
@@ -739,7 +750,7 @@ export function App() {
       return
     }
     if (GlobalGameState.gamePhase === GlobalGameState.PHASE.US_FLEET_MOVEMENT) {
-      GlobalGameState.nextActionButtonDisabled = false
+      // GlobalGameState.nextActionButtonDisabled = false
       return
     }
     if (GlobalGameState.gamePhase === GlobalGameState.PHASE.JAPAN_FLEET_MOVEMENT && GlobalGameState.jpFleetPlaced) {
@@ -760,6 +771,7 @@ export function App() {
     let endOfAirOps = false
     if (GlobalGameState.gamePhase !== GlobalGameState.PHASE.MIDWAY_ATTACK) {
       endOfAirOps = await endOfMyAirOperation(GlobalGameState.sideWithInitiative, setAirUnitUpdate)
+      console.log("endOfAirOps=",endOfAirOps)
     } else {
       // @TODO Can have midway strike in first air op
       // need code to do this
@@ -787,7 +799,8 @@ export function App() {
       GlobalGameState.gamePhase === GlobalGameState.PHASE.JAPAN_SETUP ||
       GlobalGameState.gamePhase === GlobalGameState.PHASE.JAPAN_CARD_DRAW ||
       GlobalGameState.gamePhase === GlobalGameState.PHASE.JAPAN_MIDWAY ||
-      GlobalGameState.gamePhase === GlobalGameState.PHASE.JAPAN_FLEET_MOVEMENT ||
+      GlobalGameState.gaFmePhase === GlobalGameState.PHASE.JAPAN_FLEET_MOVEMENT ||
+      GlobalGameState.gamePhase === GlobalGameState.PHASE.JAPAN_DMCV_FLEET_MOVEMENT_PLANNING ||
       GlobalGameState.gamePhase === GlobalGameState.PHASE.MIDWAY_ATTACK ||
       (GlobalGameState.gamePhase === GlobalGameState.PHASE.AIR_OPERATIONS &&
         GlobalGameState.sideWithInitiative === GlobalUnitsModel.Side.JAPAN)
@@ -1035,6 +1048,7 @@ export function App() {
       setFleetUnitUpdate,
       setStrikeGroupUpdate,
       setDamageMarkerUpdate,
+      setDmcvShipMarkerUpdate,
       loadState,
       id,
       setLoading,
@@ -1099,6 +1113,22 @@ export function App() {
     </>
   )
 
+  const fleetTargetHeaders = (
+    <>
+      <FleetTargetHeaders
+        controller={GlobalInit.controller}
+        setTargetSelected={setTargetSelected}
+        setTargetDetermined={setTargetDetermined}
+      ></FleetTargetHeaders>
+    </>
+  )
+
+  const fleetTargetFooters = (
+    <>
+      <FleetTargetFooters show={targetDetermined}></FleetTargetFooters>
+    </>
+  )
+
   const attackTargetHeaders = (
     <>
       <AttackTargetHeaders
@@ -1150,7 +1180,10 @@ export function App() {
     </>
   )
 
-  const dmcvSide = GlobalGameState.gamePhase === GlobalGameState.PHASE.JAPAN_DMCV_FLEET_MOVEMENT_PLANNING ? GlobalUnitsModel.Side.JAPAN : GlobalUnitsModel.Side.US
+  const dmcvSide =
+    GlobalGameState.gamePhase === GlobalGameState.PHASE.JAPAN_DMCV_FLEET_MOVEMENT_PLANNING
+      ? GlobalUnitsModel.Side.JAPAN
+      : GlobalUnitsModel.Side.US
 
   const dmcvSelectionHeaders = (
     <>
@@ -1382,8 +1415,8 @@ export function App() {
   // console.log("GlobalUnitsModel.usStrikeGroups=", GlobalUnitsModel.usStrikeGroups)
   function doInitiativeRoll(roll0, roll1) {
     // for testing QUACK
-    // doIntiativeRoll(GlobalInit.controller, 6, 1, true) // JAPAN initiative
-    doIntiativeRoll(GlobalInit.controller, 1, 6, true) // US initiative
+    doIntiativeRoll(GlobalInit.controller, 6, 1, true) // JAPAN initiative
+    // doIntiativeRoll(GlobalInit.controller, 1, 6, true) // US initiative
 
     // doIntiativeRoll(GlobalInit.controller, roll0, roll1)
     GlobalGameState.updateGlobalState()
@@ -1427,7 +1460,6 @@ export function App() {
     // carrier is DMCVCarrierSelected
     // setDmcvShipMarkerUpdate can be passed in
     // side is dmcvSide
-
   }
 
   function doCriticalHit() {
@@ -1702,6 +1734,23 @@ export function App() {
           nextAction(e)
         }}
         doRoll={doTargetSelectionRoll}
+        disabled={true}
+      ></DicePanel>
+      <DicePanel
+        show={!testClicked && fleetTargetSelectionPanelShow}
+        headerText="Fleet Target Selection"
+        headers={fleetTargetHeaders}
+        footers={fleetTargetFooters}
+        showDice={false}
+        numDice={0}
+        width={30}
+        margin={315}
+        closeButtonDisabled={!targetSelected}
+        onHide={(e) => {
+          console.log("HIDE DA PANEL!")
+          setFleetTargetSelectionPanelShow(false)
+          nextAction(e)
+        }}
         disabled={true}
       ></DicePanel>
       <DicePanel
@@ -2014,7 +2063,7 @@ export function App() {
         disabled={true}
         closeButtonDisabled={closeDamageButtonDisabled}
       ></LargeDicePanel>
-        <LargeDicePanel
+      <LargeDicePanel
         numDice={0}
         show={!testClicked && dmcvCarrierSelectionPanelShow}
         headerText="DMCV Carrier Selection"
