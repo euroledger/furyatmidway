@@ -422,7 +422,7 @@ export function autoAllocateDamage(controller, theHits) {
       for (let unit of airUnits) {
         moveAirUnitToEliminatedBox(controller, unit)
         GlobalGameState.eliminatedAirUnits.push(unit)
-      }
+      }   
     }
   }
   GlobalGameState.damageThisAttack = damage
@@ -527,8 +527,10 @@ export async function sendDMCVUpdate(controller, carrier, setDmcvShipMarkerUpdat
     name: markerName,
     box: boxName,
     index: 0,
+    carrier,
     side,
   }
+  console.log("Send DMCV Update carrier=", carrier)
   setDmcvShipMarkerUpdate(dmcvMarkerUpdate)
 }
 export async function sendDamageUpdates(controller, damage, setDamageMarkerUpdate) {

@@ -771,7 +771,6 @@ export function App() {
     let endOfAirOps = false
     if (GlobalGameState.gamePhase !== GlobalGameState.PHASE.MIDWAY_ATTACK) {
       endOfAirOps = await endOfMyAirOperation(GlobalGameState.sideWithInitiative, setAirUnitUpdate)
-      console.log("endOfAirOps=",endOfAirOps)
     } else {
       // @TODO Can have midway strike in first air op
       // need code to do this
@@ -1451,15 +1450,7 @@ export function App() {
 
   function doDMCVShipMarkerUpdate() {
     console.log("In doDMCVShipMarkerUpdate()....->")
-    // pass this in to the DMCV Panel Footer
-
-    // call sendDMCVUpdate in DiceHandler
     sendDMCVUpdate(GlobalInit.controller, DMCVCarrierSelected, setDmcvShipMarkerUpdate, dmcvSide)
-
-    // needs controller, carrier, setDmcvShipMarkerUpdate, side
-    // carrier is DMCVCarrierSelected
-    // setDmcvShipMarkerUpdate can be passed in
-    // side is dmcvSide
   }
 
   function doCriticalHit() {
@@ -1910,6 +1901,7 @@ export function App() {
         diceButtonDisabled={carrieDamageDiceButtonDisabled}
         closeButtonDisabled={!carrieDamageDiceButtonDisabled}
         setDamageMarkerUpdate={setDamageMarkerUpdate}
+        setDmcvShipMarkerUpdate={setDmcvShipMarkerUpdate}
         disabled={false}
       ></CarrierDamageDicePanel>
       <MidwayDamageDicePanel
@@ -1991,6 +1983,8 @@ export function App() {
         doRoll={doCardRoll}
         disabled={true}
       ></DicePanel>
+
+        {/*TODO -> new dice panel here for damage control  */}
 
       <DicePanel
         numDice={1}

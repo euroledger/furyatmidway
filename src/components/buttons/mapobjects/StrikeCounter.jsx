@@ -125,7 +125,6 @@ function StrikeCounter({ setStrikeGroupPopup, currentUSHex, currentJapanHex, cou
     to = { currentHex: hex }
     const loading = strikeGroupUpdate.loading === false ? false : true
 
-    console.log("EVENT HERE QUACK 2")
     controller.viewEventHandler({
       type: Controller.EventTypes.STRIKE_GROUP_MOVE,
       data: {

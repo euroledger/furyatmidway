@@ -5,6 +5,7 @@ import JapanAirBoxOffsets from "../../draganddrop/JapanAirBoxOffsets"
 import USAirBoxOffsets from "../../draganddrop/USAirBoxOffsets"
 import "../../board.css"
 import "./counter.css"
+import GlobalInit from "../../../model/GlobalInit"
 
 function DMCVShipMarker({ counterData }) {
   const { dmcvShipMarkerUpdate } = useContext(BoardContext)
@@ -29,14 +30,17 @@ function DMCVShipMarker({ counterData }) {
   const offsets = airZones.offsets[dmcvShipMarkerUpdate.index]
 
   if (counterData.name === dmcvShipMarkerUpdate.name && position.left !== offsets.left + "%") {
-    // console.log("I am ", counterData.name, " -> MARKER UPDATE = ", dmcvShipMarkerUpdate, "offsets=", offsets)
+    console.log("I am ", counterData.name, " -> MARKER UPDATE = ", dmcvShipMarkerUpdate, "offsets=", offsets)
 
     setPosition(() => ({
       left: offsets.left + "%",
       top: offsets.top - 0.2 + "%",
     }))
   }
-
+  let disp="block"
+  if (dmcvShipMarkerUpdate.carrier !== undefined && GlobalInit.controller.isSunk(dmcvShipMarkerUpdate.carrier)) {
+    disp="none"
+  }
   return (
     <div>
       <input
@@ -49,6 +53,7 @@ function DMCVShipMarker({ counterData }) {
           left: position.left,
           top: position.top,
           zIndex: 100,
+          display: disp
         }}
         id="marker"
       />

@@ -6,7 +6,7 @@ import GlobalGameState from "../../../model/GlobalGameState"
 import { BoardContext } from "../../../App"
 import StrikeGroupPopUp from "./StrikeGroupPopUp"
 import GlobalUnitsModel from "../../../model/GlobalUnitsModel"
-import { allHexesWithinDistance, distanceBetweenHexes } from "../../HexUtils"
+import { distanceBetweenHexes } from "../../HexUtils"
 
 function DMCVFleetCounter({
   id,
@@ -32,7 +32,7 @@ function DMCVFleetCounter({
     initial: true,
     left: counterData.position.left,
     top: counterData.position.top,
-    currentHex: {},
+    currentHex: HexCommand.OFFBOARD,
   })
 
   const [showPopup, setShowPopup] = useState(false)
@@ -64,64 +64,107 @@ function DMCVFleetCounter({
 
     setCurrentMouseHex({})
   }
+
+  function resetPosition() {
+    setPosition({
+      left: counterData.position.left,
+      top: counterData.position.top,
+      currentHex: HexCommand.OFFBOARD,
+    })
+  }
   let hex = {}
   // This code for the fleet unit updates (incl. game loads)
   // console.log("counterData.name=", counterData.name, "fleetUnitUpdate.name=",fleetUnitUpdate.name)
-  if (fleetUnitUpdate) {
+  if (fleetUnitUpdate && fleetUnitUpdate.position.currentHex !== HexCommand.OFFBOARD) {
     hex = fleetUnitUpdate.position.currentHex
   }
 
-  // This code for the test mode fleet unit updates (and game loads and moving fleets on opponent's map)
-  if (
-    fleetUnitUpdate &&
-    counterData.name === fleetUnitUpdate.name &&
-    (position.currentHex.q !== hex.q || position.currentHex.r !== hex.r)
-  ) {
-     hex = fleetUnitUpdate.position.currentHex
+  if (fleetUnitUpdate && fleetUnitUpdate.position.currentHex === HexCommand.OFFBOARD) {
+    if (position.currentHex !== HexCommand.OFFBOARD) {
+      resetPosition()
+      const to = HexCommand.OFFBOARD
+      const from = position.currentHex
+      controller.viewEventHandler({
+        type: Controller.EventTypes.FLEET_SETUP,
+        data: {
+          initial: false,
+          id: counterData.name,
+          from,
+          to,
+          side,
+          loading: false,
+        },
+      })
+    }
+  } else {
+    // This code for the test mode fleet unit updates (and game loads and moving fleets on opponent's map)
+    if (
+      fleetUnitUpdate &&
+      counterData.name === fleetUnitUpdate.name &&
+      (position.currentHex.q !== hex.q || position.currentHex.r !== hex.r)
+    ) {
+      hex = fleetUnitUpdate.position.currentHex
 
-    let smallOffset = {
-      x: 0,
-      y: 0,
-    }
-    // console.log("I am", fleetUnitUpdate.name, "side:", side, "-> FLEET UNIT UPDATE, move to", hex.row + ",", hex.col)
-    if (side === GlobalUnitsModel.Side.US) {
-      const csfLocation = controller.getFleetLocation("CSF", GlobalUnitsModel.Side.US)
-      if (distanceBetweenHexes(csfLocation.currentHex, hex) === 0) {
-        smallOffset.x = 7
-        smallOffset.y = 7
+      let smallOffset = {
+        x: 0,
+        y: 0,
       }
-    } else {
-      const af1Location = controller.getFleetLocation("1AF", GlobalUnitsModel.Side.JAPAN)
-      if (distanceBetweenHexes(af1Location.currentHex, hex) === 0) {
-        smallOffset.x = 7
-        smallOffset.y = 7
+      // console.log("I am", fleetUnitUpdate.name, "side:", side, "-> FLEET UNIT UPDATE, move to", hex.row + ",", hex.col)
+      if (side === GlobalUnitsModel.Side.US) {
+        const csfLocation = controller.getFleetLocation("CSF", GlobalUnitsModel.Side.US)
+        if (distanceBetweenHexes(csfLocation.currentHex, hex) === 0) {
+          smallOffset.x = +7
+          smallOffset.y = +7
+        }
+        const jpDmcvLocation = controller.getFleetLocation("1AF-USMAP", GlobalUnitsModel.Side.US)
+        if (distanceBetweenHexes(jpDmcvLocation.currentHex, hex) === 0) {
+          smallOffset.x = +7
+          smallOffset.y = +7
+        }
+      } else {
+        const af1Location = controller.getFleetLocation("1AF", GlobalUnitsModel.Side.JAPAN)
+        if (distanceBetweenHexes(af1Location.currentHex, hex) === 0) {
+          smallOffset.x += 7
+          smallOffset.y += 7
+        }
+        const usDmcvLocation = controller.getFleetLocation("CSF-JPMAP", GlobalUnitsModel.Side.JAPAN)
+        if (distanceBetweenHexes(usDmcvLocation.currentHex, hex) === 0) {
+          smallOffset.x += 7
+          smallOffset.y += 7
+        } else {
+          // if (smallOffset.x === 7) {
+            smallOffset.x = 0
+            smallOffset.y = 0
+          // }
+        }
+        setSmallOffset(smallOffset)
       }
-    }
-    setPosition({
-      initial: false,
-      left: hex.x + counterData.position.left + counterData.offsets.x + smallOffset.x,
-      top: hex.y + counterData.position.top + counterData.offsets.y - smallOffset.y,
-      currentHex: hex,
-    })
+      setPosition({
+        initial: false,
+        left: hex.x + counterData.position.left + counterData.offsets.x + smallOffset.x,
+        top: hex.y + counterData.position.top + counterData.offsets.y - smallOffset.y,
+        currentHex: hex,
+      })
 
-    let from = {
-      currentHex: position.currentHex,
+      let from = {
+        currentHex: position.currentHex,
+      }
+      let to = { currentHex: hex }
+      if (position.initial) {
+        from = HexCommand.OFFBOARD
+      }
+      controller.viewEventHandler({
+        type: Controller.EventTypes.FLEET_SETUP,
+        data: {
+          initial: position.initial,
+          id: counterData.name,
+          from,
+          to,
+          side,
+          loading: true,
+        },
+      })
     }
-    let to = { currentHex: hex }
-    if (position.initial) {
-      from = HexCommand.OFFBOARD
-    }
-    controller.viewEventHandler({
-      type: Controller.EventTypes.FLEET_SETUP,
-      data: {
-        initial: position.initial,
-        id: counterData.name,
-        from,
-        to,
-        side,
-        loading: true,
-      },
-    })
   }
 
   const handleDrop = (event) => {
@@ -167,8 +210,20 @@ function DMCVFleetCounter({
     if (distanceBetweenHexes(af1Location.currentHex, hex) === 0) {
       smallOffset.x = 7
       smallOffset.y = 7
+    } 
+    const usDmcvLocation = controller.getFleetLocation("CSF-JPMAP", GlobalUnitsModel.Side.JAPAN)
+    if (distanceBetweenHexes(usDmcvLocation.currentHex, hex) === 0) {
+      smallOffset.x = 7
+      smallOffset.y = 7
+    } else {
+      // if (smallOffset.x === 7) {
+        smallOffset.x = 0
+        smallOffset.y = 0
+      // }
     }
+    console.log(counterData.name, "=> bollocks smallOffset=", smallOffset)
 
+    setSmallOffset(smallOffset)
     // console.log(
     //   `Fleet Unit ${counterData.name} moves to q:${hex.q}, r:${hex.r} => x:${currentHex.x},y:${currentHex.y}, row: ${currentHex.row}, col: ${currentHex.col}`
     // )
@@ -199,8 +254,6 @@ function DMCVFleetCounter({
   }
 
   const handleMouseEnter = () => {
-      console.log("FLEET POSITION:", counterData.name, "POSITION left=", position.left, "POSITION top=", position.top)
-    
     setIsMoveable(true)
     const location = controller.getFleetLocation(counterData.name, side)
     setStrikeGroupPopup(side, true, location)
@@ -234,7 +287,6 @@ function DMCVFleetCounter({
   //  if (side !== GlobalGameState.sideWithInitiative) {
   //   return <></>
   // }
-
 
   return (
     <div>

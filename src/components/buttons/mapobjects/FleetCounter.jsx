@@ -60,7 +60,12 @@ function FleetCounter({
     setCurrentMouseHex({})
   }
   let hex = {}
+
+  
   if (fleetUnitUpdate) {
+    if (fleetUnitUpdate.position.currentHex === HexCommand.OFFBOARD && !fleetUnitUpdate.name.includes("DMCV")) {
+      return
+    }
     hex = fleetUnitUpdate.position.currentHex
   }
 
@@ -161,6 +166,10 @@ function FleetCounter({
     setIsMoveable(false)
     setStrikeGroupPopup(side, false)
   }
+
+  const handleClick = () => {
+    
+  }
   const handleDragEnter = () => {
     const location = controller.getFleetLocation(counterData.name, side)
 
@@ -198,7 +207,7 @@ function FleetCounter({
           onMouseEnter={handleMouseEnter}
           onMouseLeave={handleMouseLeave}
           onDragEnd={handleDrop}
-          // onClick={handleClick}
+          onClick={handleClick}
         />
       )}
       {showPopup && (

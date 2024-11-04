@@ -3,7 +3,9 @@ import { React, useState } from "react"
 import Modal from "react-bootstrap/Modal"
 import Button from "react-bootstrap/Button"
 import GlobalGameState from "../../model/GlobalGameState"
+import GlobalUnitsModel from "../../model/GlobalUnitsModel"
 import { SingleCarrier } from "../../attackscreens/SingleCarrier"
+import { sendDMCVUpdate } from "../../DiceHandler"
 
 import Die from "./Die"
 import { autoAllocateDamage, sendDamageUpdates } from "../../DiceHandler"
@@ -61,6 +63,7 @@ function CarrierDamageDicePanel(props) {
     closeButtonStr,
     closeButtonCallback,
     setDamageMarkerUpdate,
+    setDmcvShipMarkerUpdate,
     ...rest
   } = props
   const button1Ref = useRef(null)
@@ -107,6 +110,19 @@ function CarrierDamageDicePanel(props) {
     const damage = autoAllocateDamage(controller)
     GlobalGameState.carrierAttackHits = 0
     sendDamageUpdates(controller, damage, setDamageMarkerUpdate)
+    if (damage.sunk) {
+      const sideBeingAttacked =
+        GlobalGameState.sideWithInitiative === GlobalUnitsModel.Side.US
+          ? GlobalUnitsModel.Side.JAPAN
+          : GlobalUnitsModel.Side.US
+      console.log("BETTER SEND THAT DMCV UPDATE")
+      sendDMCVUpdate(
+        controller,
+        GlobalGameState.currentCarrierAttackTarget,
+        setDmcvShipMarkerUpdate,
+        sideBeingAttacked
+      )
+    }
   } else if (GlobalGameState.carrierAttackHits === 0) {
     showDicePanel = false
   }

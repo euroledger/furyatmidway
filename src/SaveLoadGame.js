@@ -95,6 +95,9 @@ function createFleetUpdates(fleetMap) {
     const cHex = fleetMap.get(key).currentHex
 
     // calculate hex coords from grid coords q,r -> x.y
+    if (cHex === undefined) {
+      continue
+    }
     const h = {
       q: cHex.q,
       r: cHex.r,
@@ -346,9 +349,9 @@ function loadAirUnits(airUnitMap) {
     //   globalAirUnit.aircraftUnit.steps = 1
     //   globalAirUnit.image = "/images/aircounters/hornet-f4f-back.png"
     // }
-    // GlobalGameState.usDMCVFleetPlaced=false
-    // GlobalGameState.jpDMCVFleetPlaced=false
-    GlobalGameState.usDMCVCarrier = GlobalUnitsModel.Carrier.ENTERPRISE
+    GlobalGameState.usDMCVFleetPlaced=false
+    GlobalGameState.jpDMCVFleetPlaced=false
+    // GlobalGameState.usDMCVCarrier = GlobalUnitsModel.Carrier.ENTERPRISE
   }
 }
 

@@ -14,7 +14,12 @@ export function setUpAirAttack(controller, location, strikeGroup) {
   const side = GlobalGameState.sideWithInitiative
   const fleets = controller.getAllFleetsInLocation(location, side, true)
   if (fleets.length >= 2) {
-    GlobalGameState.gamePhase = GlobalGameState.PHASE.FLEET_TARGET_SELECTION
+    if (controller.japanHandContainsCard(11)) {
+      GlobalGameState.gamePhase = GlobalGameState.PHASE.CARD_PLAY
+      setCardNumber(() => 11)
+    } else {
+      GlobalGameState.gamePhase = GlobalGameState.PHASE.FLEET_TARGET_SELECTION
+    }
   } else {
     controller.setAirOpAttacked(strikeGroup)
 
@@ -25,8 +30,6 @@ export function setUpAirAttack(controller, location, strikeGroup) {
       } else {
         GlobalGameState.gamePhase = GlobalGameState.PHASE.CAP_INTERCEPTION
       }
-      console.log("QUACK 200")
-
       GlobalGameState.taskForceTarget = GlobalUnitsModel.TaskForce.MIDWAY
     } else {
       if (controller.japanHandContainsCard(11)) {

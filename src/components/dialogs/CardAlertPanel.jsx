@@ -53,13 +53,26 @@ function CardAlertPanel(props) {
       setTowedToFriendlyPortPanelShow(true)
       controller.setCardPlayed(1, GlobalUnitsModel.Side.US)
       onHide(e)
-    } else if (cardNumber === 3) {
-      setAirReplacementsPanelShow(true)
 
-      if (controller.usHandContainsCard(3)) {
-        controller.setCardPlayed(5, GlobalUnitsModel.Side.US)
+    } else  if (cardNumber === 2) {
+      // setAirReplacementsPanelShow(true)
+
+      // @TODO new screen setDamageControlPanelShow(true)
+
+
+      if (controller.usHandContainsCard(2)) {
+        controller.setCardPlayed(2, GlobalUnitsModel.Side.US)
       } else {
-        controller.setCardPlayed(5, GlobalUnitsModel.Side.JAPAN)
+        controller.setCardPlayed(2, GlobalUnitsModel.Side.JAPAN)
+      }
+      onHide(e)
+    }  
+    else if (cardNumber === 3) {
+      setAirReplacementsPanelShow(true)
+      if (controller.usHandContainsCard(3)) {
+        controller.setCardPlayed(3, GlobalUnitsModel.Side.US)
+      } else {
+        controller.setCardPlayed(3, GlobalUnitsModel.Side.JAPAN)
       }
       onHide(e)
     

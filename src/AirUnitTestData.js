@@ -4,6 +4,7 @@ import GlobalInit from "./model/GlobalInit"
 import GlobalGameState from "./model/GlobalGameState"
 import { flatHexToPixel, convertCoords } from "./components/HexUtils"
 import { faL } from "@fortawesome/free-solid-svg-icons"
+import HexCommand from "./commands/HexCommand"
 
 export const airUnitDataJapan = [
   {
@@ -247,6 +248,9 @@ export function calcStrikeDataUS(unit) {
   return update
 }
 
+export function createRemoveFleetUpdate(controller, name, side) {
+  return HexCommand.OFFBOARD
+}
 export function createMapUpdateForFleet(controller, name, side) {
   const location = controller.getFleetLocation(name, side)
 
