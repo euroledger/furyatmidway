@@ -1,9 +1,12 @@
-import { React, useState, useRef, useEffect } from "react"
+import { React, useState } from "react"
 import Button from "react-bootstrap/Button"
 import GlobalUnitsModel from "../model/GlobalUnitsModel"
 import GlobalGameState from "../model/GlobalGameState"
+import { sendRemoveDamageMarkerUpdate } from "../DiceHandler"
 
-export function DamageControlPanelHeaders({ controller, setDMCVCarrierSelected, side }) {
+export function DamageControlPanelHeaders({ controller, setDamagedCV, damagedCV, side, setDamageMarkerUpdate }) {
+  const [japanDamageDone, setJapanDamageDone] = useState(false)
+
   let usEnterprise = {
     image: "/images/fleetcounters/enterprise.jpg",
     name: GlobalUnitsModel.Carrier.ENTERPRISE,
@@ -52,8 +55,10 @@ export function DamageControlPanelHeaders({ controller, setDMCVCarrierSelected, 
     marginLeft: "3px",
   }
 
-  const createImage = (cv) => {
+  const createImage = (cv, damageBow, damageStern) => {
     let carrier = usYorktown
+    const damageMarker = "/images/markers/damage.png"
+
     if (cv === GlobalUnitsModel.Carrier.ENTERPRISE) {
       carrier = usEnterprise
     } else if (cv === GlobalUnitsModel.Carrier.HORNET) {
@@ -69,7 +74,11 @@ export function DamageControlPanelHeaders({ controller, setDMCVCarrierSelected, 
     }
     return (
       <>
-        <div>
+        <div
+          style={{
+            position: "relative",
+          }}
+        >
           <img
             src={carrier.image}
             style={{
@@ -79,35 +88,110 @@ export function DamageControlPanelHeaders({ controller, setDMCVCarrierSelected, 
               // marginRight: "40px",
             }}
           ></img>
+          {damageBow && (
+            <div
+              style={{
+                position: "absolute",
+                top: "28px",
+                left: "40px",
+              }}
+            >
+              <img
+                style={{
+                  width: "40px",
+                  height: "40px",
+                }}
+                src={damageMarker}
+              ></img>
+            </div>
+          )}
+          {damageStern && (
+            <div
+              style={{
+                position: "absolute",
+                top: "90px",
+                left: "40px",
+              }}
+            >
+              <img
+                style={{
+                  width: "40px",
+                  height: "40px",
+                }}
+                src={damageMarker}
+              ></img>
+            </div>
+          )}
           <div
             style={{
               marginLeft: "10px",
               marginTop: "15px",
               display: "flex",
+              position: "relative",
               justifyContent: "center",
               alignItems: "center",
               color: "white",
             }}
           >
-            <Button onClick={() => handleClick(cv)}>{cv}</Button>
+            <Button disabled={damagedCV !== ""} onClick={() => handleClick(cv)}>
+              {cv}
+            </Button>
           </div>
         </div>
       </>
     )
   }
+  function removeDamageFromCV(cv) {
+    setDamagedCV(cv)
 
-  const usDamagedCarriers = controller.getDamagedCarriers(side)
-  const handleClick = (cv) => {
-    setDMCVCarrierSelected(cv)
+    // Either bow or stern or both damaged
+    // if bow use that, if stern use that, if both it doesn't matter so use bow
+
+    const carrier = controller.getCarrier(cv)
+    const boxIndex = controller.getCarrierBowDamaged(cv) ? 0 : 1
+    const boxName = controller.getAirBoxForNamedShip(side, carrier.name, "FLIGHT_DECK")
+
+    carrier.hits -= 1
+    if (controller.getCarrierBowDamaged(cv)) {
+      controller.setCarrierBowDamaged(cv, false)
+    } else if (controller.getCarrierSternDamaged(cv)) {
+      controller.setCarrierSternDamaged(cv, false)
+    }
+    
+    sendRemoveDamageMarkerUpdate(controller, carrier, boxName, boxIndex, setDamageMarkerUpdate, side)
   }
-  const damagedCVImages = usDamagedCarriers.map((cv, idx) => {
+
+  let damagedCarriers = controller.getDamagedCarriers(side)
+  if (side === GlobalUnitsModel.Side.US && damagedCarriers.length === 1 && damagedCV === "") {
+    removeDamageFromCV(damagedCarriers[0])
+  }
+
+  if (side === GlobalUnitsModel.Side.JAPAN && damagedCV !== "" && GlobalGameState.dieRolls[0] <= 3 && !japanDamageDone) {
+    removeDamageFromCV(damagedCV)
+    setJapanDamageDone(true)  
+  }
+
+  const handleClick = (cv) => {
+    if (side === GlobalUnitsModel.Side.US) {
+      removeDamageFromCV(cv)
+    } else {
+      setDamagedCV(cv)
+    }
+  }
+
+  const disabled = damagedCarriers.length <= 1
+  const damagedCVImages = damagedCarriers.map((cv, idx) => {
+    const carrierSternDamaged = controller.getCarrierSternDamaged(cv)
+    const carrierBowDamaged = controller.getCarrierBowDamaged(cv)
+
     return (
       <>
-        <div>{createImage(cv)}</div>
+        <div>{createImage(cv, carrierBowDamaged, carrierSternDamaged, disabled)}</div>
       </>
     )
   })
 
+  let msg = side === GlobalUnitsModel.Side.US ? "" : "(Successful on roll of 1-3 for Japan)"
   return (
     <div
       style={{
@@ -122,7 +206,17 @@ export function DamageControlPanelHeaders({ controller, setDMCVCarrierSelected, 
           color: "white",
         }}
       >
-        <p>Choose damaged CV to Assign to DMCV:</p>
+        <p>Choose damaged CV from which to remove one hit:</p>
+      </div>
+      <div
+        style={{
+          display: "flex",
+          justifyContent: "center",
+          alignItems: "center",
+          color: "white",
+        }}
+      >
+        <p>{msg}</p>
       </div>
       <div
         style={{
@@ -139,29 +233,12 @@ export function DamageControlPanelHeaders({ controller, setDMCVCarrierSelected, 
   )
 }
 
-export function DamageControlPanelFooters({ controller, DMCVCarrierSelected, side, doDMCVShipMarkerUpdate }) {
-  if (DMCVCarrierSelected == "") {
+export function DamageControlPanelFooters({ damagedCV, side }) {
+  if (damagedCV === "" || GlobalGameState.dieRolls.length === 0 || side === GlobalUnitsModel.Side.US) {
     return
   }
-  let carrierUnit = controller.getCarrier(DMCVCarrierSelected)
 
-  if (!carrierUnit.dmcv) {
-    doDMCVShipMarkerUpdate()
-  }
-
-  if (side === GlobalUnitsModel.Side.US) {
-      GlobalGameState.usDMCVCarrier = carrierUnit.name
-  } else {
-      GlobalGameState.jpDMCVCarrier = carrierUnit.name
-  }
-  
-  carrierUnit.dmcv = true
-
-  carrierUnit.taskForce =
-    side === GlobalUnitsModel.Side.JAPAN ? GlobalUnitsModel.TaskForce.JAPAN_DMCV : GlobalUnitsModel.TaskForce.US_DMCV
-
-  
-  const message1 = "CV Selected: "
+  const message1 = GlobalGameState.dieRolls[0] <= 3 ? "Die Roll Successful!" : "Die Roll Unsuccessful!"
   return (
     <>
       <div
@@ -178,17 +255,7 @@ export function DamageControlPanelFooters({ controller, DMCVCarrierSelected, sid
             color: "white",
           }}
         >
-          {message1} &nbsp;<strong>{DMCVCarrierSelected}</strong>&nbsp; <br></br>
-        </p>
-        <p
-          style={{
-            display: "flex",
-            justifyContent: "center",
-            alignItems: "center",
-            color: "white",
-          }}
-        >
-          DMCV Created For {side}
+          {message1}
         </p>
       </div>
     </>

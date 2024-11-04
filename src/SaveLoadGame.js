@@ -503,7 +503,9 @@ export function loadGameStateForId(controller, gameId) {
   }
 
   // QUACK REMOVE ONE CARD AND REPLACE IT WITH ANOTHER
-  GlobalInit.controller.replaceCardWithOtherCard(8, 3, GlobalUnitsModel.Side.US)
+  GlobalInit.controller.replaceCardWithOtherCard(2, 7, GlobalUnitsModel.Side.US)
+  GlobalInit.controller.replaceCardWithOtherCard(6, 2, GlobalUnitsModel.Side.JAPAN)
+
   // GlobalInit.controller.setCardPlayed(8, GlobalUnitsModel.Side.US)
   // GlobalInit.controller.drawUSCards(3, false, [1])
 

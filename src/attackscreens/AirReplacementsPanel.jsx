@@ -19,7 +19,7 @@ export function AirReplacementsHeaders({
 
   const msg = "Select a one step air unit to flip to full strength or eliminated air unit to return to hangar"
 
-  if (reducedAirUnits.length === 0) {
+  if (reducedAirUnits.length === 0 && controller.getAllReducedUnitsForSide(side) > 0) {
     const redAirUnits = controller.getAllReducedUnitsForSide(side)
     setReducedAirUnits(() => redAirUnits)
   }
@@ -68,8 +68,6 @@ export function AirReplacementsHeaders({
   })
 
   const handleClick = (airUnit) => {
-    console.log("AIR UNIT SELECTED:", airUnit)
-
     // if this unit has 1 step -> flip to full strength
     if (airUnit.aircraftUnit.steps === 1) {
       airUnit.aircraftUnit.steps = 2
@@ -275,6 +273,7 @@ export function AirReplacementsFooters({
       </>
     )
   }
+  let msg = ""
 
   if (side === GlobalUnitsModel.Side.US) {
     const usCVs = [
@@ -285,6 +284,10 @@ export function AirReplacementsFooters({
     const availableUSCVs = usCVs.filter(
       (carrier) => !controller.isSunk(carrier) && controller.isHangarAvailable(carrier)
     )
+    if (availableUSCVs.length === 0) {
+      msg = "No carriers available to receive replacements"
+      setAirReplacementsSelected(true)
+    }
     availableCVImages = availableUSCVs.map((cv, idx) => {
       return (
         <>
@@ -299,6 +302,10 @@ export function AirReplacementsFooters({
     const availableJapanCVs = japanCVs.filter(
       (carrier) => !controller.isSunk(carrier) && controller.isHangarAvailable(carrier)
     )
+    if (availableJapanCVs.length === 0) {
+      msg = "No carriers available to receive replacements"
+      setAirReplacementsSelected(true)
+    }
     availableCVImages = availableJapanCVs.map((cv, idx) => {
       return (
         <>
@@ -334,6 +341,7 @@ export function AirReplacementsFooters({
               }}
             >
               {availableCVImages}
+              {msg}
             </p>
           </div>
           {selectedCV && (

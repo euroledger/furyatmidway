@@ -179,7 +179,7 @@ export default class BoxModels {
     // This maps the name of an air unit to its location (ie box name, index)
     this.airUnitLocationMap = new Map()
 
-    // map of damage -> box 
+    // map of damage -> box
     this.damageMarkerMap = new Map()
   }
 
@@ -227,6 +227,14 @@ export default class BoxModels {
     return this.damageMarkerMap.get(markerName)
   }
 
+  getMarkerNameForBox(boxName, boxIndex) {
+    const foundMarker = Array.from(this.damageMarkerMap.entries()).find(
+      ([key, value]) => value.boxName.boxName === boxName && value.boxName.boxIndex === boxIndex
+    )
+
+    return foundMarker[0]
+  }
+
   removeAirUnitFromBox = (boxName, index) => {
     const box = this.boxMap.get(boxName)
     if (!box) {
@@ -236,7 +244,6 @@ export default class BoxModels {
   }
 
   getAllAirUnitsInBox = (boxName) => {
-
     const box = this.boxMap.get(boxName)
     if (!box) {
       return null

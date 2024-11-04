@@ -1009,6 +1009,10 @@ export default class Controller {
     this.boxModel.setMarkerLocation(markerName, { boxName, boxIndex })
   }
 
+  getMarkerNameForBox = (boxName, boxIndex) => {
+    return this.boxModel.getMarkerNameForBox(boxName, boxIndex)
+  }
+
   getMarkerLocation = (markerName) => {
     return this.boxModel.getMarkerLocation(markerName)
   }
@@ -1268,14 +1272,16 @@ export default class Controller {
       this.setCarrierSternDamaged(name)
     }
   }
-  setCarrierBowDamaged(name) {
+  setCarrierBowDamaged(name, damaged) {
+    let d = damaged ?? true
+
     const side = GlobalUnitsModel.carrierSideMap.get(name)
     if (side === GlobalUnitsModel.Side.JAPAN) {
       const carrier = GlobalUnitsModel.jpFleetUnits.get(name)
-      carrier.bowDamaged = true
+      carrier.bowDamaged = d
     } else {
       const carrier = GlobalUnitsModel.usFleetUnits.get(name)
-      carrier.bowDamaged = true
+      carrier.bowDamaged = d
     }
   }
 
@@ -1293,17 +1299,18 @@ export default class Controller {
     }
   }
 
-  setCarrierSternDamaged(name) {
+  setCarrierSternDamaged(name, damaged) {
+    let d = damaged ?? true
     if (name === GlobalUnitsModel.Carrier.MIDWAY) {
       return false
     }
     const side = GlobalUnitsModel.carrierSideMap.get(name)
     if (side === GlobalUnitsModel.Side.JAPAN) {
       const carrier = GlobalUnitsModel.jpFleetUnits.get(name)
-      carrier.sternDamaged = true
+      carrier.sternDamaged = d
     } else {
       const carrier = GlobalUnitsModel.usFleetUnits.get(name)
-      carrier.sternDamaged = true
+      carrier.sternDamaged = d
     }
   }
 

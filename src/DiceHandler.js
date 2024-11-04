@@ -5,6 +5,13 @@ import GlobalUnitsModel from "./model/GlobalUnitsModel"
 import GlobalInit from "./model/GlobalInit"
 import USAirBoxOffsets from "./components/draganddrop/USAirBoxOffsets"
 import JapanAirBoxOffsets from "./components/draganddrop/JapanAirBoxOffsets"
+import HexCommand from "./commands/HexCommand"
+
+
+export function doCVDamageControl(roll) {
+  let theRoll = roll ?? randomDice(1)
+  GlobalGameState.dieRolls = [theRoll] 
+}
 
 export function doNavalBombardmentRoll(controller, roll) {
   let theRoll = roll ?? randomDice(1)
@@ -510,6 +517,22 @@ export async function sendMidwayDamageUpdates(controller, box, setDamageMarkerUp
   }
   setDamageMarkerUpdate(markerUpdate)
   controller.setMarkerLocation(marker.name, boxName, box)
+}
+
+export async function sendRemoveDamageMarkerUpdate(controller, carrier, boxName, boxIndex, setDamageMarkerUpdate, side) {
+  // remove a damage marker from the given carrier
+
+  const name = controller.getMarkerNameForBox(boxName, boxIndex)
+
+  console.log("MARKER NAME=", name)
+  let markerUpdate = {
+    name,
+    box: HexCommand.OFFBOARD,
+    index: 0,
+    side,
+  }
+  setDamageMarkerUpdate(markerUpdate)
+  controller.setMarkerLocation(name, boxName, 0)
 }
 
 export async function sendDMCVUpdate(controller, carrier, setDmcvShipMarkerUpdate, side) {

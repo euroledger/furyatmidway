@@ -78,7 +78,6 @@ async function setNextStateFollowingCardPlay({
   capAirUnits,
   setEliminatedUnitsPanelShow,
 }) {
-  console.log("DOING CARD PLAY. card number=", cardNumber)
   switch (cardNumber) {
     case -1:
       GlobalGameState.gamePhase = GlobalGameState.PHASE.CAP_INTERCEPTION
@@ -1010,18 +1009,20 @@ export default async function handleAction({
       if (GlobalInit.controller.usHandContainsCard(1)) {
         setCardNumber(() => 1)
         GlobalGameState.gamePhase = GlobalGameState.PHASE.CARD_PLAY
+        return
       }
       if (GlobalInit.controller.usHandContainsCard(2) || GlobalInit.controller.japanHandContainsCard(2)) {
         setCardNumber(() => 2)
         GlobalGameState.gamePhase = GlobalGameState.PHASE.CARD_PLAY
+        return
       }
       if (GlobalInit.controller.usHandContainsCard(3) || GlobalInit.controller.japanHandContainsCard(3)) {
         setCardNumber(() => 3)
         GlobalGameState.gamePhase = GlobalGameState.PHASE.CARD_PLAY
-      } else {
-        GlobalGameState.gamePhase = GlobalGameState.PHASE.END_OF_TURN
-        setEndOfTurnSummaryShow(true)
+        return
       }
+      GlobalGameState.gamePhase = GlobalGameState.PHASE.END_OF_TURN
+      setEndOfTurnSummaryShow(true)
     } else {
       GlobalGameState.gamePhase = GlobalGameState.PHASE.INITIATIVE_DETERMINATION
     }

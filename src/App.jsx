@@ -21,6 +21,7 @@ import { allCards } from "./CardLoader"
 import {
   doIntiativeRoll,
   doNavalBombardmentRoll,
+  doCVDamageControl,
   doTroubledReconnaissanceRoll,
   doSelectionRoll,
   doCAP,
@@ -75,7 +76,7 @@ import {
   CarrierPlanesDitchDamageHeaders,
   CarrierPlanesDitchDamageFooters,
 } from "./attackscreens/CarrierPlanesDitchDamagePanel"
-
+import { DamageControlPanelHeaders, DamageControlPanelFooters } from "./attackscreens/DamageControlPanel"
 import { EndOfTurnSummaryHeaders, EndOfTurnSummaryFooters } from "./attackscreens/EndOfTurnSummaryPanel"
 import { EscortHeaders, EscortFooters } from "./attackscreens/EscortPanel"
 import { AAAHeaders, AAAFooters } from "./attackscreens/AAAPanel"
@@ -173,7 +174,7 @@ export function App() {
   const [carrierPlanesDitchPanelShow, setCarrierPlanesDitchPanelShow] = useState(false)
   const [towedToFriendlyPortPanelShow, setTowedToFriendlyPortPanelShow] = useState(false)
   const [dmcvCarrierSelectionPanelShow, setDmcvCarrierSelectionPanelShow] = useState(false)
-
+  const [damageControlPanelShow, setDamageControlPanelShow] = useState(false)
   const [airReplacementsPanelShow, setAirReplacementsPanelShow] = useState(false)
 
   const [endOfTurnSummaryShow, setEndOfTurnSummaryShow] = useState(false)
@@ -190,6 +191,8 @@ export function App() {
   const [airReplacementsSelected, setAirReplacementsSelected] = useState(false)
   const [towedCVSelected, setTowedCVSelected] = useState("")
   const [DMCVCarrierSelected, setDMCVCarrierSelected] = useState("")
+
+  const [damagedCV, setDamagedCV] = useState("")
 
   const [fightersPresent, setFightersPresent] = useState(true)
 
@@ -327,6 +330,9 @@ export function App() {
   useEffect(() => {
     if (GlobalGameState.gamePhase === GlobalGameState.PHASE.CARD_PLAY) {
       setEliminatedSteps(0)
+      if (cardNumber === 2) {
+        setDamagedCV("")
+      }
       if (cardNumber !== 0 && cardNumber !== -1) {
         setCardAlertPanelShow(true)
       } else {
@@ -1204,6 +1210,31 @@ export function App() {
     </>
   )
 
+  const jpPlayedCard2 = GlobalInit.controller.getCardPlayed(2, GlobalUnitsModel.Side.JAPAN)
+  const damageControlSide = jpPlayedCard2 ? GlobalUnitsModel.Side.JAPAN : GlobalUnitsModel.Side.US
+
+  const damageControlHeaders = (
+    <>
+      <DamageControlPanelHeaders
+        controller={GlobalInit.controller}
+        setDamagedCV={setDamagedCV}
+        setDamageMarkerUpdate={setDamageMarkerUpdate}
+        damagedCV={damagedCV}
+        side={damageControlSide}
+      ></DamageControlPanelHeaders>
+    </>
+  )
+  const damageControlFooters = (
+    <>
+      <DamageControlPanelFooters
+        controller={GlobalInit.controller}
+        DMCVCarrierSelected={DMCVCarrierSelected}
+        side={damageControlSide}
+        doDMCVShipMarkerUpdate={doDMCVShipMarkerUpdate}
+      ></DamageControlPanelFooters>
+    </>
+  )
+
   const towedCVHeaders = (
     <>
       <TowedCVHeaders controller={GlobalInit.controller} setTowedCVSelected={setTowedCVSelected}></TowedCVHeaders>
@@ -1404,6 +1435,10 @@ export function App() {
     })
   }
 
+  function doDamageControl(roll) {
+    doCVDamageControl(roll)
+  }
+
   function doCardRoll(roll) {
     if (cardNumber === 5) {
       doNavalBombardmentRoll(GlobalInit.controller, roll)
@@ -1449,12 +1484,14 @@ export function App() {
   }
 
   function doDMCVShipMarkerUpdate() {
-    console.log("In doDMCVShipMarkerUpdate()....->")
+    sendDMCVUpdate(GlobalInit.controller, DMCVCarrierSelected, setDmcvShipMarkerUpdate, dmcvSide)
+  }
+
+  function doDamageMarkerUpdate() {
     sendDMCVUpdate(GlobalInit.controller, DMCVCarrierSelected, setDmcvShipMarkerUpdate, dmcvSide)
   }
 
   function doCriticalHit() {
-    console.log("DO CRITICAL HIT...")
     let damage = autoAllocateDamage(GlobalInit.controller, 1)
     sendDamageUpdates(GlobalInit.controller, damage, setDamageMarkerUpdate)
 
@@ -1959,6 +1996,7 @@ export function App() {
         setCarrierPlanesDitchPanelShow={setCarrierPlanesDitchPanelShow}
         setTowedToFriendlyPortPanelShow={setTowedToFriendlyPortPanelShow}
         setAirReplacementsPanelShow={setAirReplacementsPanelShow}
+        setDamageControlPanelShow={setDamageControlPanelShow}
         setAttackResolved={setAttackResolved}
         onHide={(e) => {
           setCardAlertPanelShow(false)
@@ -1983,9 +2021,6 @@ export function App() {
         doRoll={doCardRoll}
         disabled={true}
       ></DicePanel>
-
-        {/*TODO -> new dice panel here for damage control  */}
-
       <DicePanel
         numDice={1}
         show={!testClicked && cardDicePanelShow7}
@@ -2002,6 +2037,26 @@ export function App() {
           setCardDicePanelShow7(false)
         }}
         doRoll={doCardRoll}
+        disabled={true}
+      ></DicePanel>
+      <DicePanel
+        numDice={damageControlSide === GlobalUnitsModel.Side.JAPAN ? 1 : 0}
+        show={!testClicked && damageControlPanelShow}
+        headerText="Damage Control"
+        headers={damageControlHeaders}
+        footers={damageControlFooters}
+        width={30}
+        showDice={damageControlSide === GlobalUnitsModel.Side.JAPAN}
+        margin={350}
+        diceButtonDisabled={
+          (damagedCV === "" && GlobalGameState.dieRolls.length === 0) || GlobalGameState.dieRolls.length > 0
+        }
+        closeButtonDisabled={damagedCV === ""}
+        onHide={(e) => {
+          setDamageControlPanelShow(false)
+          nextAction(e)
+        }}
+        doRoll={doDamageControl}
         disabled={true}
       ></DicePanel>
       <LargeDicePanel

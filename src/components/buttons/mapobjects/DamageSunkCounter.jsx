@@ -4,6 +4,7 @@ import JapanAirBoxOffsets from "../../draganddrop/JapanAirBoxOffsets"
 import USAirBoxOffsets from "../../draganddrop/USAirBoxOffsets"
 import "../../board.css"
 import "./counter.css"
+import HexCommand from "../../../commands/HexCommand"
 
 function DamageSunkCounter({ counterData, markerUpdate }) {
   const [position, setPosition] = useState({
@@ -15,24 +16,28 @@ function DamageSunkCounter({ counterData, markerUpdate }) {
     return
   }
 
+  if (counterData.name === markerUpdate.name) {
+    if (markerUpdate.box === HexCommand.OFFBOARD)  {
+      return
+    }
+    const airZones =
+      markerUpdate.side === GlobalUnitsModel.Side.JAPAN
+        ? JapanAirBoxOffsets.find((o) => o.name === markerUpdate.box)
+        : USAirBoxOffsets.find((o) => o.name === markerUpdate.box)
 
-  const airZones =
-    markerUpdate.side === GlobalUnitsModel.Side.JAPAN
-      ? JapanAirBoxOffsets.find((o) => o.name === markerUpdate.box)
-      : USAirBoxOffsets.find((o) => o.name === markerUpdate.box)
+    if (!airZones) {
+      return
+    }
+    const offsets = airZones.offsets[markerUpdate.index]
 
-  if (!airZones) {
-    return
-  }
-  const offsets = airZones.offsets[markerUpdate.index]
+    if (position.left !== offsets.left + "%") {
+      // console.log("I am ", counterData.name, " -> MARKER UPDATE = ", markerUpdate, "offsets=", offsets)
 
-  if (counterData.name === markerUpdate.name && position.left !== offsets.left  + "%") {
-    // console.log("I am ", counterData.name, " -> MARKER UPDATE = ", markerUpdate, "offsets=", offsets)
-
-    setPosition(() => ({
-      left: offsets.left + "%",
-      top: offsets.top - 0.2 + "%",
-    }))
+      setPosition(() => ({
+        left: offsets.left + "%",
+        top: offsets.top - 0.2 + "%",
+      }))
+    }
   }
 
   return (
@@ -46,7 +51,7 @@ function DamageSunkCounter({ counterData, markerUpdate }) {
           width: counterData.width,
           left: position.left,
           top: position.top,
-          zIndex: 100
+          zIndex: 100,
         }}
         id="marker"
       />

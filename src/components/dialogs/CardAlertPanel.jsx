@@ -26,6 +26,7 @@ function CardAlertPanel(props) {
     nextAction,
     setAttackResolved,
     setAirReplacementsPanelShow,
+    setDamageControlPanelShow,
     ...rest
   } = props
   const [buttonPressed, setButtonPressed] = useState(false)
@@ -55,11 +56,7 @@ function CardAlertPanel(props) {
       onHide(e)
 
     } else  if (cardNumber === 2) {
-      // setAirReplacementsPanelShow(true)
-
-      // @TODO new screen setDamageControlPanelShow(true)
-
-
+      setDamageControlPanelShow(true)
       if (controller.usHandContainsCard(2)) {
         controller.setCardPlayed(2, GlobalUnitsModel.Side.US)
       } else {

@@ -41,7 +41,6 @@ class ViewEventStrikeGroupMoveHandler {
         setUpAirAttack(this.controller, to, counterData)
       }
     } else {
-      console.trace()
       counterData.moved = moved
       counterData.attacked = attacked
     }
