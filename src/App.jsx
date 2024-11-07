@@ -22,6 +22,7 @@ import {
   doIntiativeRoll,
   doNavalBombardmentRoll,
   doCVDamageControl,
+  doSubmarineDamageRoll,
   doTroubledReconnaissanceRoll,
   doSelectionRoll,
   doCAP,
@@ -66,6 +67,7 @@ import { FleetTargetHeaders, FleetTargetFooters } from "./attackscreens/FleetTar
 import { AttackTargetHeaders, AttackTargetFooters } from "./attackscreens/AttackTargetPanel"
 import { CAPHeaders, CAPFooters } from "./attackscreens/CAPPanel"
 import { DamageHeaders, DamageFooters } from "./attackscreens/DamageAllocationPanel"
+import SubmarineAlertPanel from "./components/dialogs/SubmarineAlertPanel"
 import {
   DMCVCarrierSelectionPanelHeaders,
   DMCVCarrierSelectionPanelFooters,
@@ -77,6 +79,7 @@ import {
   CarrierPlanesDitchDamageFooters,
 } from "./attackscreens/CarrierPlanesDitchDamagePanel"
 import { DamageControlPanelHeaders, DamageControlPanelFooters } from "./attackscreens/DamageControlPanel"
+import { SubmarineDamagePanelHeaders, SubmarineDamagePanelFooters } from "./attackscreens/SubmarineDamagePanel"
 import { EndOfTurnSummaryHeaders, EndOfTurnSummaryFooters } from "./attackscreens/EndOfTurnSummaryPanel"
 import { EscortHeaders, EscortFooters } from "./attackscreens/EscortPanel"
 import { AAAHeaders, AAAFooters } from "./attackscreens/AAAPanel"
@@ -175,6 +178,9 @@ export function App() {
   const [towedToFriendlyPortPanelShow, setTowedToFriendlyPortPanelShow] = useState(false)
   const [dmcvCarrierSelectionPanelShow, setDmcvCarrierSelectionPanelShow] = useState(false)
   const [damageControlPanelShow, setDamageControlPanelShow] = useState(false)
+  const [submarineDamagePanelShow, setSubmarineDamagePanelShow] = useState(false)
+  const [submarineAlertPanelShow, setSubmarineAlertPanelShow] = useState(false)
+
   const [airReplacementsPanelShow, setAirReplacementsPanelShow] = useState(false)
 
   const [endOfTurnSummaryShow, setEndOfTurnSummaryShow] = useState(false)
@@ -182,6 +188,8 @@ export function App() {
   const [cardAlertPanelShow, setCardAlertPanelShow] = useState(false)
   const [escortPanelShow, setEscortPanelShow] = useState(false)
   const [aaaPanelShow, setAaaPanelShow] = useState(false)
+
+  const [damageDone, setDamageDone] = useState(false)
 
   const [capAirUnits, setCapAirUnits] = useState([])
   const [capSteps, setCapSteps] = useState(0)
@@ -569,6 +577,28 @@ export function App() {
       } else {
         setUsStrikePanelEnabled(true)
         setJapanStrikePanelEnabled(false)
+      }
+    } else if (GlobalGameState.gamePhase === GlobalGameState.PHASE.US_DMCV_FLEET_MOVEMENT_PLANNING) {
+      if (GlobalGameState.usDMCVFleetPlaced) {
+        const dmcvLocation = GlobalInit.controller.getFleetLocation("US-DMCV", GlobalUnitsModel.Side.US)
+        const usRegion = allHexesWithinDistance(dmcvLocation.currentHex, 1, true)
+        setUSMapRegions(usRegion)
+      } else {
+        const csfLocation = GlobalInit.controller.getFleetLocation("CSF", GlobalUnitsModel.Side.US)
+        const usRegion = allHexesWithinDistance(csfLocation.currentHex, 1, true)
+        setUSMapRegions(usRegion)
+      }
+    } else  if (GlobalGameState.gamePhase === GlobalGameState.PHASE.JAPAN_DMCV_FLEET_MOVEMENT_PLANNING) {
+      // if DMCV not placed eligible zone is one hex from 1AF
+      // if DMCV is placed eligible zone is one hex from DMCV
+      if (GlobalGameState.jpDMCVFleetPlaced) {
+        const dmcvLocation = GlobalInit.controller.getFleetLocation("IJN-DMCV", GlobalUnitsModel.Side.JAPAN)
+        const jpRegion = allHexesWithinDistance(dmcvLocation.currentHex, 1, true)
+        setJapanMapRegions(jpRegion)
+      } else {
+        const af1Location = GlobalInit.controller.getFleetLocation("1AF", GlobalUnitsModel.Side.JAPAN)
+        const jpRegion = allHexesWithinDistance(af1Location.currentHex, 1, true)
+        setJapanMapRegions(jpRegion)
       }
     }
     // If we don't do this, a drag and drop move fires a fleet update and the fleet does not move
@@ -1213,6 +1243,33 @@ export function App() {
   const jpPlayedCard2 = GlobalInit.controller.getCardPlayed(2, GlobalUnitsModel.Side.JAPAN)
   const damageControlSide = jpPlayedCard2 ? GlobalUnitsModel.Side.JAPAN : GlobalUnitsModel.Side.US
 
+  const jpPlayedCard4 = GlobalInit.controller.getCardPlayed(4, GlobalUnitsModel.Side.JAPAN)
+  const submarineControlSide = jpPlayedCard4 ? GlobalUnitsModel.Side.JAPAN : GlobalUnitsModel.Side.US
+  const submarineHeaders = (
+    <>
+      <SubmarineDamagePanelHeaders
+        controller={GlobalInit.controller}
+        setDamagedCV={setDamagedCV}
+        setDamageMarkerUpdate={setDamageMarkerUpdate}
+        damagedCV={damagedCV}
+        side={submarineControlSide}
+        damageDone={damageDone}
+      ></SubmarineDamagePanelHeaders>
+    </>
+  )
+  const submarineFooters = (
+    <>
+      <SubmarineDamagePanelFooters
+        controller={GlobalInit.controller}
+        setDamageMarkerUpdate={setDamageMarkerUpdate}
+        setDmcvShipMarkerUpdate={setDmcvShipMarkerUpdate}
+        damagedCV={damagedCV}
+        side={submarineControlSide}
+        damageDone={damageDone}
+        setDamageDone={setDamageDone}
+      ></SubmarineDamagePanelFooters>
+    </>
+  )
   const damageControlHeaders = (
     <>
       <DamageControlPanelHeaders
@@ -1435,6 +1492,10 @@ export function App() {
     })
   }
 
+  function doSubmarine(roll) {
+    doSubmarineDamageRoll(roll)
+  }
+
   function doDamageControl(roll) {
     doCVDamageControl(roll)
   }
@@ -1449,10 +1510,10 @@ export function App() {
   // console.log("GlobalUnitsModel.usStrikeGroups=", GlobalUnitsModel.usStrikeGroups)
   function doInitiativeRoll(roll0, roll1) {
     // for testing QUACK
-    doIntiativeRoll(GlobalInit.controller, 6, 1, true) // JAPAN initiative
+    // doIntiativeRoll(GlobalInit.controller, 6, 1, true) // JAPAN initiative
     // doIntiativeRoll(GlobalInit.controller, 1, 6, true) // US initiative
 
-    // doIntiativeRoll(GlobalInit.controller, roll0, roll1)
+    doIntiativeRoll(GlobalInit.controller, roll0, roll1)
     GlobalGameState.updateGlobalState()
   }
 
@@ -1980,6 +2041,24 @@ export function App() {
         closeButtonDisabled={false}
         disabled={false}
       ></EliminatedReturningUnits>
+      <SubmarineAlertPanel
+         show={!testClicked && submarineAlertPanelShow}
+         controller={GlobalInit.controller}
+         headerText={"Submarine"}
+         setShowCardFooter={setShowCardFooter}
+         cardNumber={cardNumber}
+         setTowedCVSelected={setTowedCVSelected}
+         towedCV={towedCVSelected}
+         margin={0}
+         setSubmarineDamagePanelShow={setSubmarineDamagePanelShow}
+         setSubmarineAlertPanelShow={setSubmarineAlertPanelShow}
+         onHide={(e) => {
+          setSubmarineAlertPanelShow(false)
+         }}
+         nextAction={nextAction}
+         width={30}
+ 
+      ></SubmarineAlertPanel>
       <CardAlertPanel
         show={!testClicked && cardAlertPanelShow}
         controller={GlobalInit.controller}
@@ -1998,6 +2077,8 @@ export function App() {
         setAirReplacementsPanelShow={setAirReplacementsPanelShow}
         setDamageControlPanelShow={setDamageControlPanelShow}
         setAttackResolved={setAttackResolved}
+        setSubmarineAlertPanelShow={setSubmarineAlertPanelShow}
+        setSubmarineDamagePanelShow={setSubmarineDamagePanelShow}
         onHide={(e) => {
           setCardAlertPanelShow(false)
         }}
@@ -2057,6 +2138,26 @@ export function App() {
           nextAction(e)
         }}
         doRoll={doDamageControl}
+        disabled={true}
+      ></DicePanel>
+      <DicePanel
+        numDice={1}
+        show={!testClicked && submarineDamagePanelShow}
+        headerText="Submarine"
+        headers={submarineHeaders}
+        footers={submarineFooters}
+        width={30}
+        showDice={true}
+        margin={350}
+        diceButtonDisabled={
+          (damagedCV === "" && GlobalGameState.dieRolls.length === 0) || GlobalGameState.dieRolls.length > 0
+        }
+        closeButtonDisabled={damagedCV === "" || GlobalGameState.dieRolls.length === 0 || !damageDone}
+        onHide={(e) => {
+          setSubmarineDamagePanelShow(false)
+          nextAction(e)
+        }}
+        doRoll={doSubmarine}
         disabled={true}
       ></DicePanel>
       <LargeDicePanel
@@ -2224,6 +2325,7 @@ export function App() {
                   setEnabledUSBoxes,
                   setEnabledJapanBoxes,
                   setIsMoveable,
+                  towedCVSelected,
                   loading,
                 }}
               >

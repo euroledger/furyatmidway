@@ -1,0 +1,66 @@
+import React, { useEffect, useContext, useState } from "react"
+import "./button.css"
+import GlobalUnitsModel from "../../model/GlobalUnitsModel"
+import { BoardContext } from "../../App"
+
+function TowedBox() {
+  const { towedCVSelected } = useContext(BoardContext)
+  let pos
+
+  switch (towedCVSelected) {
+    case GlobalUnitsModel.Carrier.ENTERPRISE:
+      pos = { left: "54.8%", top: "75%" }
+      break
+    case GlobalUnitsModel.Carrier.HORNET:
+      pos = { left: "61.2%", top: "75%" }
+      break
+    case GlobalUnitsModel.Carrier.YORKTOWN:
+      pos = { left: "76.9%", top: "75%" }
+      break
+    default:
+      pos = { left: -1000, top: -1000 }
+  }
+  const [position, setPosition] = useState(pos)
+
+  useEffect(() => {
+    setPosition({
+      left: pos.left,
+      top: pos.top,
+    })
+  }, [towedCVSelected])
+  return (
+    <>
+      <div
+        style={{
+          background: "#cc0000",
+          // background: "red",
+
+          color: "white",
+          borderRadius: "40px",
+          borderStyle: "solid",
+          borderWidth: "1px",
+          //   width: "140px",
+          height: "25px",
+          //   borderRadius: "3px",
+          //   border: "3px solid black",
+          position: "absolute",
+          //   background: "rgba(92, 131, 228, 0.6)",
+          //   color: "white",
+          display: "flex",
+          justifyContent: "center",
+          alignItems: "center",
+          paddingTop: "13px",
+          paddingLeft: "5px",
+          paddingRight: "5px",
+          left: position.left,
+          top: position.top,
+          borderColor: "white",
+        }}
+      >
+        <p style={{ fontSize: "12px" }}>towed</p>
+      </div>
+    </>
+  )
+}
+
+export default TowedBox

@@ -122,6 +122,9 @@ export default class GlobalUnitsModel {
 
   static cards = new Array()
 
+  static jpCardsPlayed = new Array()
+  static usCardsPlayed = new Array()
+
   static jpCards = new Array()
   static usCards = new Array()
 

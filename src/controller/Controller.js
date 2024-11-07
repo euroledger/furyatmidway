@@ -439,8 +439,8 @@ export default class Controller {
     return carrier.taskForce
   }
 
-  getAllCarriersForSide(side) {
-    const fleetUnits =
+  getAllCarriersForSide(side, excludeSunk) {
+    let fleetUnits =
       side === GlobalUnitsModel.Side.JAPAN
         ? Array.from(GlobalUnitsModel.jpFleetUnits.values())
         : Array.from(GlobalUnitsModel.usFleetUnits.values())
@@ -451,6 +451,9 @@ export default class Controller {
     const distance = this.numHexesBetweenFleets({ name: "CSF", side }, { name: "MIDWAY" })
     if (distance <= 2) {
       return fleetUnits
+    }
+    if (excludeSunk === true) {
+      fleetUnits = fleetUnits.filter((n) => !this.isSunk(n.name))
     }
     return fleetUnits.filter((n) => n.name.toUpperCase() != "MIDWAY")
   }
@@ -809,6 +812,56 @@ export default class Controller {
     }
     return damagedCarriers
   }
+
+  getDamagedCarriersOneOrTwoHits(side) {
+    let damagedCarriers = new Array()
+    if (side === GlobalUnitsModel.Side.JAPAN) {
+      if (
+        this.getCarrierHits(GlobalUnitsModel.Carrier.AKAGI) == 1 ||
+        this.getCarrierHits(GlobalUnitsModel.Carrier.AKAGI) == 2
+      ) {
+        damagedCarriers.push(GlobalUnitsModel.Carrier.AKAGI)
+      }
+      if (
+        this.getCarrierHits(GlobalUnitsModel.Carrier.KAGA) == 1 ||
+        this.getCarrierHits(GlobalUnitsModel.Carrier.KAGA) == 2
+      ) {
+        damagedCarriers.push(GlobalUnitsModel.Carrier.KAGA)
+      }
+      if (
+        this.getCarrierHits(GlobalUnitsModel.Carrier.HIRYU) == 1 ||
+        this.getCarrierHits(GlobalUnitsModel.Carrier.HIRYU) == 2
+      ) {
+        damagedCarriers.push(GlobalUnitsModel.Carrier.HIRYU)
+      }
+      if (
+        this.getCarrierHits(GlobalUnitsModel.Carrier.SORYU) == 1 ||
+        this.getCarrierHits(GlobalUnitsModel.Carrier.SORYU) == 2
+      ) {
+        damagedCarriers.push(GlobalUnitsModel.Carrier.SORYU)
+      }
+    } else {
+      if (
+        this.getCarrierHits(GlobalUnitsModel.Carrier.ENTERPRISE) == 1 ||
+        this.getCarrierHits(GlobalUnitsModel.Carrier.ENTERPRISE) == 2
+      ) {
+        damagedCarriers.push(GlobalUnitsModel.Carrier.ENTERPRISE)
+      }
+      if (
+        this.getCarrierHits(GlobalUnitsModel.Carrier.HORNET) == 1 ||
+        this.getCarrierHits(GlobalUnitsModel.Carrier.HORNET) == 2
+      ) {
+        damagedCarriers.push(GlobalUnitsModel.Carrier.HORNET)
+      }
+      if (
+        this.getCarrierHits(GlobalUnitsModel.Carrier.YORKTOWN) == 1 ||
+        this.getCarrierHits(GlobalUnitsModel.Carrier.YORKTOWN) == 2
+      ) {
+        damagedCarriers.push(GlobalUnitsModel.Carrier.YORKTOWN)
+      }
+    }
+    return damagedCarriers
+  }
   getTargetForAttack() {
     if (
       GlobalGameState.taskForceTarget === GlobalUnitsModel.TaskForce.JAPAN_DMCV ||
@@ -1161,7 +1214,7 @@ export default class Controller {
     }
     return null
   }
-  isSunk(name) {
+  isSunk(name, countTowedAsSunk) {
     if (name === GlobalUnitsModel.Carrier.MIDWAY) {
       return this.isMidwayBaseDestroyed()
     }
@@ -1172,6 +1225,9 @@ export default class Controller {
       return carrier.hits >= 3
     } else {
       const carrier = GlobalUnitsModel.usFleetUnits.get(name)
+      if (countTowedAsSunk) {
+        return carrier.hits >= 3
+      }
       return carrier.hits >= 3 && !carrier.towed
     }
   }
@@ -1317,7 +1373,7 @@ export default class Controller {
   getCarrierSternDamaged(name) {
     const side = GlobalUnitsModel.carrierSideMap.get(name)
     if (side === GlobalUnitsModel.Side.JAPAN) {
-      const carrier =  GlobalUnitsModel.jpFleetUnits.get(name)
+      const carrier = GlobalUnitsModel.jpFleetUnits.get(name)
       return carrier.sternDamaged
     } else {
       const carrier = GlobalUnitsModel.usFleetUnits.get(name)

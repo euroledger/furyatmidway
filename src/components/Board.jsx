@@ -22,6 +22,7 @@ import StrikePanel from "./dialogs/StrikePanel"
 import GlobalUnitsModel from "../model/GlobalUnitsModel"
 import DamageSunkCounters from "./buttons/mapobjects/DamageSunkCounters"
 import DMCVShipMarker from "./buttons/mapobjects/DMCVShipMarker"
+import TowedBox from "./buttons/TowedBox"
 
 function Board({ scale, USMapRegions, japanMapRegions, japanStrikePanelEnabled, usStrikePanelEnabled }) {
   let zProps = { us: 0, japan: 0 }
@@ -150,6 +151,7 @@ function Board({ scale, USMapRegions, japanMapRegions, japanStrikePanelEnabled, 
           zIndex={zIndex}
           incrementZIndex={incrementZIndex}
         />
+
         <AOPMarkerButton
           image="/images/markers/usaop.png"
           side="us"
@@ -166,6 +168,7 @@ function Board({ scale, USMapRegions, japanMapRegions, japanStrikePanelEnabled, 
           initialPosition={initialMIFPosition}
           getZone={getMIFZone}
         />
+        <TowedBox></TowedBox>
         <div>
           <DragAndDrop handleDragEnter={handleMGFDragEnter} zones={MGTOffsets}></DragAndDrop>
         </div>
@@ -320,7 +323,6 @@ function Board({ scale, USMapRegions, japanMapRegions, japanStrikePanelEnabled, 
           counterData={GlobalInit.counters}
         ></StrikeCounters>
         <DamageSunkCounters counterData={GlobalInit.counters}></DamageSunkCounters>
-
         <DMCVShipMarker counterData={GlobalUnitsModel.jpDMCVShipMarker}></DMCVShipMarker>
         <DMCVShipMarker counterData={GlobalUnitsModel.usDMCVShipMarker}></DMCVShipMarker>
 

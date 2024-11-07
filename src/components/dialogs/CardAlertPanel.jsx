@@ -27,6 +27,8 @@ function CardAlertPanel(props) {
     setAttackResolved,
     setAirReplacementsPanelShow,
     setDamageControlPanelShow,
+    setSubmarineAlertPanelShow,
+    setSubmarineDamagePanelShow,
     ...rest
   } = props
   const [buttonPressed, setButtonPressed] = useState(false)
@@ -54,8 +56,7 @@ function CardAlertPanel(props) {
       setTowedToFriendlyPortPanelShow(true)
       controller.setCardPlayed(1, GlobalUnitsModel.Side.US)
       onHide(e)
-
-    } else  if (cardNumber === 2) {
+    } else if (cardNumber === 2) {
       setDamageControlPanelShow(true)
       if (controller.usHandContainsCard(2)) {
         controller.setCardPlayed(2, GlobalUnitsModel.Side.US)
@@ -63,8 +64,7 @@ function CardAlertPanel(props) {
         controller.setCardPlayed(2, GlobalUnitsModel.Side.JAPAN)
       }
       onHide(e)
-    }  
-    else if (cardNumber === 3) {
+    } else if (cardNumber === 3) {
       setAirReplacementsPanelShow(true)
       if (controller.usHandContainsCard(3)) {
         controller.setCardPlayed(3, GlobalUnitsModel.Side.US)
@@ -72,7 +72,25 @@ function CardAlertPanel(props) {
         controller.setCardPlayed(3, GlobalUnitsModel.Side.JAPAN)
       }
       onHide(e)
-    
+    } else if (cardNumber === 4) {
+      if (controller.usHandContainsCard(4)) {
+        controller.setCardPlayed(4, GlobalUnitsModel.Side.US)
+      } else {
+        controller.setCardPlayed(4, GlobalUnitsModel.Side.JAPAN)
+      }
+
+      // if towed to friendly port has been played, go to SubmarainAlertPanel
+      // otherwise straight to SubmarineDamagePanel
+      if (
+        controller.getCardPlayed(1, GlobalUnitsModel.Side.US) ||
+        controller.getCardPlayed(1, GlobalUnitsModel.Side.JAPAN)
+      ) {
+        console.log("SET SUB ALERT PANEL....")
+        setSubmarineAlertPanelShow(true)
+      } else {
+        setSubmarineDamagePanelShow(true)
+      }
+      onHide(e)
     } else if (cardNumber === 5) {
       setCardDicePanelShow5(true)
       controller.setCardPlayed(5, GlobalUnitsModel.Side.JAPAN)
@@ -89,7 +107,7 @@ function CardAlertPanel(props) {
       setShowCardFooter(() => true)
     } else if (cardNumber === 10) {
       setCarrierPlanesDitchPanelShow(true)
-      controller.setCardPlayed(10, GlobalUnitsModel.Side.US)
+      controller.setCardPlayed(10, GlobalUnitsModel.Side.JAPAN)
       onHide(e)
     } else if (cardNumber === 11) {
       setStrikeLostPanelShow(true)
@@ -100,10 +118,10 @@ function CardAlertPanel(props) {
       setShowCardFooter(() => true)
       // onHide(e)
     } else if (cardNumber === 13) {
-      setAttackResolved(()=>false)
+      setAttackResolved(() => false)
       controller.setCardPlayed(13, GlobalUnitsModel.Side.JAPAN)
       setShowCardFooter(() => true)
-    }else {
+    } else {
       setShowCardFooter(() => true)
       // nextAction()
     }
@@ -141,6 +159,9 @@ function CardAlertPanel(props) {
     myBigMargin = margin
   }
 
+  const jpCard = controller.japanHandContainsCard(cardNumber)
+  let image = jpCard ? "/images/japanflag.jpg" : "/images/usaflag.jpg"
+
   return (
     <Modal
       {...rest}
@@ -150,18 +171,51 @@ function CardAlertPanel(props) {
       centered
     >
       <Modal.Header
-        className="text-center"
+        // className="text-center"
         style={{
+          background: `${bg}`,
+          color: "white",
+        }}
+      >
+        <div
+          style={{
+            float: "left",
+            width: "20%",
+          }}
+        >
+          <img
+            style={{
+              width: "60px",
+              height: "40px",
+            }}
+            src={image}
+          ></img>
+        </div>
+        <div
+          style={{
+            float: "left",
+            width: "60%",
+            textAlign: "center",
+          }}
+        >
+          <h4>{headerText}</h4>
+        </div>
+        <div
+          style={{
+            float: "left",
+            width: "20%",
+            textAlign: "right",
+          }}
+        ></div>
+        {/* <div>TEXT</div>
+      <div  style={{
           display: "flex",
           justifyContent: "center",
           alignItems: "center",
           background: `${bg}`,
           color: "white",
-        }}
-      >
-        <p className="text-center">
-          <h4>{headerText}</h4>
-        </p>
+        }}> <p className="text-center">
+        </p></div> */}
       </Modal.Header>
       <Modal.Body style={{ background: `${bg}`, color: "black" }}>
         <div style={{ marginLeft: "28px" }}>

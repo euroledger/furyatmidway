@@ -115,17 +115,19 @@ export function EndOfTurnSummaryHeaders({ controller }) {
               Automatic Victory {winner} !!
             </p>
           )}
-          <p
-            style={{
-              display: "flex",
-              marginTop: "50px",
-              justifyContent: "center",
-              alignItems: "center",
-              color: "white",
-            }}
-          >
-            Click "Close" to begin next turn...
-          </p>
+          {!winner && (
+            <p
+              style={{
+                display: "flex",
+                marginTop: "50px",
+                justifyContent: "center",
+                alignItems: "center",
+                color: "white",
+              }}
+            >
+              Click "Close" to begin next turn...
+            </p>
+          )}
         </div>
 
         <div></div>

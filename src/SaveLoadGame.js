@@ -41,8 +41,11 @@ export function saveGameState(controller, gameId) {
   // console.log("+++++++++++++++++++ SAVING SOMETHING WRONG: ", airText)
   const usStrikeText = JSON.stringify(Array.from(GlobalUnitsModel.usStrikeGroups.entries()))
 
-  const jpCardText = JSON.stringify(GlobalUnitsModel.jpCards)
+  const jpCardText = JSON.stringify(GlobalUnitsModel.jpCards) 
   const usCardText = JSON.stringify(GlobalUnitsModel.usCards)
+  
+  const jpCardsPlayedText = JSON.stringify(GlobalUnitsModel.jpCardsPlayed) 
+  const usCardsPlayedText = JSON.stringify(GlobalUnitsModel.usCardsPlayed)
   const cardText = JSON.stringify(GlobalUnitsModel.cards)
 
   // console.log(jpCardText)
@@ -81,6 +84,8 @@ export function saveGameState(controller, gameId) {
     jpcards: jpCardText,
     uscards: usCardText,
     cards: cardText,
+    jpcardsplayed: jpCardsPlayedText,
+    uscardsplayed: usCardsPlayedText,
     usFleetMap: usFleetText,
     jpFleetMap: jpFleetText,
     log: logItems,
@@ -349,8 +354,8 @@ function loadAirUnits(airUnitMap) {
     //   globalAirUnit.aircraftUnit.steps = 1
     //   globalAirUnit.image = "/images/aircounters/hornet-f4f-back.png"
     // }
-    GlobalGameState.usDMCVFleetPlaced=false
-    GlobalGameState.jpDMCVFleetPlaced=false
+    // GlobalGameState.usDMCVFleetPlaced=false
+    // GlobalGameState.jpDMCVFleetPlaced=false
     // GlobalGameState.usDMCVCarrier = GlobalUnitsModel.Carrier.ENTERPRISE
   }
 }
@@ -485,6 +490,10 @@ export function loadGameStateForId(controller, gameId) {
   const usCardText = gameDetails.uscards
   const jpCardText = gameDetails.jpcards
 
+  const usCardsPlayedText = gameDetails.uscardsplayed
+  const jpCardsPlayedText = gameDetails.jpcardsplayed
+
+
   const cardText = gameDetails.cards
 
   // TODO reload draw deck
@@ -497,14 +506,24 @@ export function loadGameStateForId(controller, gameId) {
 
   GlobalUnitsModel.usCards = JSON.parse(usCardText)
 
+  if (jpCardsPlayedText !== undefined) {
+    GlobalUnitsModel.jpCardsPlayed = JSON.parse(jpCardsPlayedText)
+  }
+
+  if (usCardsPlayedText !== undefined) {
+    GlobalUnitsModel.usCardsPlayed = JSON.parse(usCardsPlayedText)
+  }
+
   if (cardText !== undefined) {
     // QUACK should be able to remove this check, just there for legacy loads
     GlobalUnitsModel.cards = JSON.parse(cardText)
   }
 
   // QUACK REMOVE ONE CARD AND REPLACE IT WITH ANOTHER
-  GlobalInit.controller.replaceCardWithOtherCard(2, 7, GlobalUnitsModel.Side.US)
-  GlobalInit.controller.replaceCardWithOtherCard(6, 2, GlobalUnitsModel.Side.JAPAN)
+  GlobalInit.controller.replaceCardWithOtherCard(4, 1, GlobalUnitsModel.Side.US)
+  GlobalInit.controller.replaceCardWithOtherCard(2, 4, GlobalUnitsModel.Side.JAPAN)
+  GlobalGameState.midwayControl=GlobalUnitsModel.Side.US
+  // ------------------------------------------------------
 
   // GlobalInit.controller.setCardPlayed(8, GlobalUnitsModel.Side.US)
   // GlobalInit.controller.drawUSCards(3, false, [1])
@@ -556,10 +575,17 @@ export function loadGameState(controller) {
 
   const usCardText = localStorage.getItem("uscards")
   const jpCardText = localStorage.getItem("jpcards")
+  
+  const usCardsPlayedText = localStorage.getItem("uscardsplayed")
+  const jpCardsPlayedText = localStorage.getItem("jpcardsplayed")
+
   const cardText = localStorage.getItem("cards")
 
   GlobalUnitsModel.jpCards = JSON.parse(jpCardText)
   GlobalUnitsModel.usCards = JSON.parse(usCardText)
+  
+  GlobalUnitsModel.jpCardsPlayed = JSON.parse(jpCardsPlayedText)
+  GlobalUnitsModel.usCardsPlayed = JSON.parse(usCardsPlayedText)
   GlobalUnitsModel.cards = JSON.parse(cardText)
 
   const items = localStorage.getItem("log")

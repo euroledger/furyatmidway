@@ -118,22 +118,18 @@ export default class CardModel {
 
     if (side === GlobalUnitsModel.Side.JAPAN) {
       GlobalUnitsModel.jpCards = GlobalUnitsModel.jpCards.filter((card) => card._number !== cardNum)
+      GlobalUnitsModel.jpCardsPlayed.push(cardNum)
     } else {
       GlobalUnitsModel.usCards = GlobalUnitsModel.usCards.filter((card) => card._number !== cardNum)
+      GlobalUnitsModel.usCardsPlayed.push(cardNum)
     }
   }
 
   getCardPlayed(cardNum, side) {
-    const cardInDeck = GlobalUnitsModel.cards.find((card) => card._number === cardNum)
-
-    let cardInHand
-
     if (side === GlobalUnitsModel.Side.JAPAN) {
-      cardInHand = GlobalUnitsModel.jpCards.find((card) => card._number === cardNum)
+      return GlobalUnitsModel.jpCardsPlayed.includes(cardNum)
     } else {
-      cardInHand = GlobalUnitsModel.usCards.find((card) => card._number === cardNum)
+      return GlobalUnitsModel.usCardsPlayed.includes(cardNum)
     }
-
-    return cardInDeck === undefined && cardInHand === undefined
   }
 }

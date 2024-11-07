@@ -76,6 +76,7 @@ async function setNextStateFollowingCardPlay({
   setEndOfAirOpAlertShow,
   setEndOfTurnSummaryShow,
   capAirUnits,
+  setFleetUnitUpdate,
   setEliminatedUnitsPanelShow,
 }) {
   switch (cardNumber) {
@@ -93,6 +94,8 @@ async function setNextStateFollowingCardPlay({
         setCardNumber(() => 2)
       } else if (GlobalInit.controller.usHandContainsCard(3) || GlobalInit.controller.japanHandContainsCard(3)) {
         setCardNumber(() => 3)
+      } else if (GlobalInit.controller.usHandContainsCard(4) || GlobalInit.controller.japanHandContainsCard(4)) {
+        setCardNumber(() => 4)
       } else {
         GlobalGameState.gamePhase = GlobalGameState.PHASE.END_OF_TURN
         setEndOfTurnSummaryShow(true)
@@ -102,6 +105,8 @@ async function setNextStateFollowingCardPlay({
     case 2:
       if (GlobalInit.controller.usHandContainsCard(3) || GlobalInit.controller.japanHandContainsCard(3)) {
         setCardNumber(() => 3)
+      } else if (GlobalInit.controller.usHandContainsCard(4) || GlobalInit.controller.japanHandContainsCard(4)) {
+        setCardNumber(() => 4)
       } else {
         GlobalGameState.gamePhase = GlobalGameState.PHASE.END_OF_TURN
         setEndOfTurnSummaryShow(true)
@@ -109,10 +114,29 @@ async function setNextStateFollowingCardPlay({
       break
 
     case 3:
+      if (GlobalInit.controller.usHandContainsCard(4) || GlobalInit.controller.japanHandContainsCard(4)) {
+        setCardNumber(() => 4)
+      } else {
+        GlobalGameState.gamePhase = GlobalGameState.PHASE.END_OF_TURN
+        setEndOfTurnSummaryShow(true)
+      }
+      break
+
+    case 4:
+
+      console.log("FINISHED CARD 4")
+      // if playing this card has resulted in a DMCV carrier being sunk, need to remove
+      // the DMCV Fleet from the map
+      const carrier = GlobalInit.controller.getCarrier(GlobalGameState.currentCarrierAttackTarget)
+      console.log("CARRIER =", carrier)
+      if (carrier.dmcv && GlobalInit.controller.isSunk(carrier.name)) {
+        console.log("REMOVE DMCV FLEET!!!!!!!!!!")
+        await removeDMCVFleetForCarrier(carrier.side, setFleetUnitUpdate)
+      }
+
       GlobalGameState.gamePhase = GlobalGameState.PHASE.END_OF_TURN
       setEndOfTurnSummaryShow(true)
       break
-
     case 5:
       // Naval Bombardment
       setMidwayDialogShow(true)
@@ -446,10 +470,21 @@ async function removeDMCVFleetForCarrier(side, setFleetUnitUpdate) {
     update1.name = "IJN-DMCV-USMAP"
     update2.name = "IJN-DMCV"
   }
+  update1.initial = false
+  update2.initial = false
+
+
+  console.log("DMCV UPDATE 1=", update1)
+  console.log("DMCV UPDATE 2=", update2)
 
   setFleetUnitUpdate(update1)
   await delay(1)
   setFleetUnitUpdate(update2)
+  await delay(1)
+  setFleetUnitUpdate({
+    name: "",
+    position: {},
+  }) // reset to avoid updates causing problems for other markers
 }
 
 async function usFleetMovementHandler({
@@ -579,7 +614,6 @@ export default async function handleAction({
   setEndOfAirOpAlertShow,
   setEnabledJapanBoxes,
   setEnabledUSBoxes,
-  setInitiativePanelShow,
   setUsFleetRegions,
   setJapanFleetRegions,
   setMidwayNoAttackAlertShow,
@@ -589,7 +623,6 @@ export default async function handleAction({
   setSearchValuesAlertShow,
   setJapanStrikePanelEnabled,
   setUsStrikePanelEnabled,
-  sideWithInitiative,
   capSteps,
   capAirUnits,
   setAirUnitUpdate,
@@ -660,6 +693,7 @@ export default async function handleAction({
       setAirUnitUpdate,
       setStrikeGroupUpdate,
       setEndOfAirOpAlertShow,
+      setFleetUnitUpdate,
       setEndOfTurnSummaryShow,
     })
   } else if (GlobalGameState.gamePhase === GlobalGameState.PHASE.JAPAN_MIDWAY) {
@@ -964,6 +998,11 @@ export default async function handleAction({
           : GlobalUnitsModel.Side.US
       if (carrier.dmcv && GlobalInit.controller.isSunk(carrierName)) {
         await removeDMCVFleetForCarrier(sideBeingAttacked, setFleetUnitUpdate)
+        await delay(1)
+        setFleetUnitUpdate({
+          name: "",
+          position: {},
+        }) // reset to avoid updates causing problems for other markers
       }
       if (GlobalGameState.carrierTarget2 !== "" && GlobalGameState.carrierTarget2 !== undefined) {
         GlobalGameState.gamePhase = GlobalGameState.PHASE.AIR_ATTACK_2
@@ -1018,6 +1057,11 @@ export default async function handleAction({
       }
       if (GlobalInit.controller.usHandContainsCard(3) || GlobalInit.controller.japanHandContainsCard(3)) {
         setCardNumber(() => 3)
+        GlobalGameState.gamePhase = GlobalGameState.PHASE.CARD_PLAY
+        return
+      }
+      if (GlobalInit.controller.usHandContainsCard(4) || GlobalInit.controller.japanHandContainsCard(4)) {
+        setCardNumber(() => 4)
         GlobalGameState.gamePhase = GlobalGameState.PHASE.CARD_PLAY
         return
       }

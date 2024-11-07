@@ -8,6 +8,11 @@ import JapanAirBoxOffsets from "./components/draganddrop/JapanAirBoxOffsets"
 import HexCommand from "./commands/HexCommand"
 
 
+export function doSubmarineDamageRoll(roll) {
+  let theRoll = roll ?? randomDice(1)
+  GlobalGameState.dieRolls = [theRoll]
+}
+
 export function doCVDamageControl(roll) {
   let theRoll = roll ?? randomDice(1)
   GlobalGameState.dieRolls = [theRoll] 
@@ -358,8 +363,10 @@ export function autoAllocateMidwayDamage(controller) {
 }
 
 export function autoAllocateDamage(controller, theHits) {
-  const hits = theHits ?? GlobalGameState.carrierAttackHits
   const carrier = GlobalGameState.currentCarrierAttackTarget
+
+  const currentCarrierHits = controller.getCarrierHits(carrier)
+  const hits = theHits ?? GlobalGameState.carrierAttackHits
 
   // this just holds damage allocated in this attack
   let damage = {
@@ -369,7 +376,8 @@ export function autoAllocateDamage(controller, theHits) {
   }
   if (hits === 0) return damage
 
-  const currentCarrierHits = controller.getCarrierHits(carrier)
+  // const currentCarrierHits = controller.getCarrierHits(carrier)
+  // console.log(">>> CARRIER=", carrier, "HITS=", currentCarrierHits)
 
   if (hits == 1) {
     if (!controller.getCarrierBowDamaged(carrier)) {
@@ -391,6 +399,7 @@ export function autoAllocateDamage(controller, theHits) {
     }
     controller.setCarrierHits(carrier, Math.min(3, currentCarrierHits + hits))
     if (controller.getCarrierHits(carrier) >= 3) {
+      console.log("--------------------> SUNK!!!!!!!!!!!!!")
       damage.sunk = true
    
       if (GlobalGameState.sideWithInitiative === GlobalUnitsModel.US) {
@@ -439,6 +448,7 @@ export function autoAllocateDamage(controller, theHits) {
 }
 
 export function doCarrierDamageRolls(controller, testRoll) {
+  // testRolls also used by Submarine card panel to choose bow or stern of carrier
   // this just holds damage allocated in this attack
   let damage = {
     bow: false,
@@ -456,6 +466,7 @@ export function doCarrierDamageRolls(controller, testRoll) {
 
 
   // Undamaged Carrier
+
   if (roll < 4) {
     damage.bow = true
 
@@ -481,8 +492,6 @@ export function doCarrierDamageRolls(controller, testRoll) {
   GlobalGameState.carrierDamageRoll = roll
   GlobalGameState.damageThisAttack = damage
 
-  
-  // }
   return damage
 }
 export function delay(ms) {
@@ -538,6 +547,7 @@ export async function sendRemoveDamageMarkerUpdate(controller, carrier, boxName,
 export async function sendDMCVUpdate(controller, carrier, setDmcvShipMarkerUpdate, side) {
   // place a DMCV marker on the carrier display of any carrier assigned to
   // a DMCV fleet
+  const carrierUnit = controller.getCarrier(carrier)
 
   const boxName = controller.getAirBoxForNamedShip(
     side,
@@ -606,6 +616,7 @@ export async function sendDamageUpdates(controller, damage, setDamageMarkerUpdat
     controller.setMarkerLocation(marker2.name, boxName, 1)
   } else {
     if (damage.bow) {
+      console.log("BOW DAMAGED")
       let marker = GlobalInit.controller.getNextAvailableMarker("DAMAGED")
       GlobalGameState.nextAvailableDamageMarker++
 
@@ -615,6 +626,8 @@ export async function sendDamageUpdates(controller, damage, setDamageMarkerUpdat
         index: 0,
         side: sideBeingAttacked,
       }
+
+      console.log("SEND UPDATE =>",markerUpdate)
       setDamageMarkerUpdate(markerUpdate)
       controller.setMarkerLocation(marker.name, boxName, 0)
     }
@@ -720,8 +733,8 @@ export function doAttackFireRolls(controller, testRolls) {
     GlobalGameState.carrierAttackHitsThisAttack = hits
 
     // QUACK REMOVE TEESTING ONLY
-    GlobalGameState.carrierAttackHits = 2
-    GlobalGameState.carrierAttackHitsThisAttack = 2
+    GlobalGameState.carrierAttackHits = 1
+    GlobalGameState.carrierAttackHitsThisAttack = 1
   }
   return hits
 }
@@ -994,8 +1007,6 @@ export function moveAirUnitToEliminatedBox(controller, airUnit) {
 }
 export function moveAirUnitFromEliminatedBox(controller, side, carrierName, airUnit, setAirUnitUpdate) {
   let update = {}
-
-  console.log("MOVE AIR UNIT:", airUnit)
   const boxName = controller.getAirBoxForNamedShip(side, carrierName, "HANGAR")
 
   const index = controller.getFirstAvailableZone(boxName)

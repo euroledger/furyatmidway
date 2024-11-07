@@ -22,7 +22,7 @@ function DMCVFleetCounter({
   setCurrentJapanHex,
 }) {
   const { setIsMoveable, setDmcvCarrierSelectionPanelShow } = useContext(BoardContext)
-  const { controller, onDrag, onStop, fleetUnitUpdate, setUSMapRegions } = useContext(BoardContext)
+  const { controller, fleetUnitUpdate } = useContext(BoardContext)
 
   const [smallOffset, setSmallOffset] = useState({
     x: 0,
@@ -73,13 +73,18 @@ function DMCVFleetCounter({
     })
   }
   let hex = {}
+
   // This code for the fleet unit updates (incl. game loads)
   // console.log("counterData.name=", counterData.name, "fleetUnitUpdate.name=",fleetUnitUpdate.name)
   if (fleetUnitUpdate && fleetUnitUpdate.position.currentHex !== HexCommand.OFFBOARD) {
     hex = fleetUnitUpdate.position.currentHex
   }
 
-  if (fleetUnitUpdate && fleetUnitUpdate.position.currentHex === HexCommand.OFFBOARD) {
+  if (
+    fleetUnitUpdate &&
+    counterData.name === fleetUnitUpdate.name &&
+    fleetUnitUpdate.position.currentHex === HexCommand.OFFBOARD
+  ) {
     if (position.currentHex !== HexCommand.OFFBOARD) {
       resetPosition()
       const to = HexCommand.OFFBOARD
@@ -133,12 +138,13 @@ function DMCVFleetCounter({
           smallOffset.y += 7
         } else {
           // if (smallOffset.x === 7) {
-            smallOffset.x = 0
-            smallOffset.y = 0
+          smallOffset.x = 0
+          smallOffset.y = 0
           // }
         }
         setSmallOffset(smallOffset)
       }
+
       setPosition({
         initial: false,
         left: hex.x + counterData.position.left + counterData.offsets.x + smallOffset.x,
@@ -210,18 +216,17 @@ function DMCVFleetCounter({
     if (distanceBetweenHexes(af1Location.currentHex, hex) === 0) {
       smallOffset.x = 7
       smallOffset.y = 7
-    } 
+    }
     const usDmcvLocation = controller.getFleetLocation("CSF-JPMAP", GlobalUnitsModel.Side.JAPAN)
     if (distanceBetweenHexes(usDmcvLocation.currentHex, hex) === 0) {
       smallOffset.x = 7
       smallOffset.y = 7
     } else {
       // if (smallOffset.x === 7) {
-        smallOffset.x = 0
-        smallOffset.y = 0
+      smallOffset.x = 0
+      smallOffset.y = 0
       // }
     }
-    console.log(counterData.name, "=> bollocks smallOffset=", smallOffset)
 
     setSmallOffset(smallOffset)
     // console.log(
@@ -286,6 +291,10 @@ function DMCVFleetCounter({
 
   //  if (side !== GlobalGameState.sideWithInitiative) {
   //   return <></>
+  // }
+
+  // if (counterData.name === "US-DMCV") {
+  //   console.log("FLEET POSITION:", counterData.name, "POSITION=", position.currentHex)
   // }
 
   return (

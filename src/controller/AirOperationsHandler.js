@@ -587,7 +587,7 @@ export async function moveOrphanedAirUnitsInReturn1Boxes(side) {
     if (side === GlobalUnitsModel.Side.JAPAN) {
       destinationsArray = getValidJapanDestinationsRETURN1(GlobalInit.controller, parentCarrier, side)
     } else {
-      destinationsArray = getValidUSDestinationsRETURN1(GlobalInit.controller, parentCarrier, side)
+      destinationsArray = getValidUSDestinationsRETURN1(GlobalInit.controller, unit.name, parentCarrier, side)
     }
     if (destinationsArray.length === 0) {
       GlobalGameState.orphanedAirUnits.push(unit)

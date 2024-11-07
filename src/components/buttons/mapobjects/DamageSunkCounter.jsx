@@ -8,8 +8,8 @@ import HexCommand from "../../../commands/HexCommand"
 
 function DamageSunkCounter({ counterData, markerUpdate }) {
   const [position, setPosition] = useState({
-    left: -100,
-    top: -100,
+    left: -10000,
+    top: -10000,
   })
 
   if (markerUpdate.box === "") {
