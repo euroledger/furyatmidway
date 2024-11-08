@@ -9,7 +9,7 @@ class CarrierDamageCommand extends Command {
   execute() {}
 
   toString() {
-    return `${this.commandType} ${this.side} Damage: ${this.damage}`
+    return `${this.commandType} ${this.side} Damages Carrier ${this.damage}`
   }
 }
 

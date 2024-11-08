@@ -3,6 +3,7 @@ import SelectTargetCommand from "../commands/SelectTargetCommand"
 import COMMAND_TYPE from "../commands/COMMAND_TYPE"
 import SelectCapDamageCommand from "../commands/SelectCapDamageCommand"
 import SelectCarrierTargetsCommand from "../commands/SelectCarrierTargetsCommand"
+import AssignDMCVCarrierCommand from "../commands/AssignDMCVCarrierCommand"
 
 class ViewEventSelectionHandler {
   constructor(controller) {
@@ -37,6 +38,13 @@ class ViewEventSelectionHandler {
       carrier2Attackers
     )
 
+    GlobalGameState.log(`${command.toString()}`)
+  }
+
+  handleSelectDMCVCarrierEvent(event) {
+    const { side, carrier } = event.data
+
+    let command = new AssignDMCVCarrierCommand(COMMAND_TYPE.ASSIGN_DMCV_CARRIER, side, carrier)
     GlobalGameState.log(`${command.toString()}`)
   }
 }

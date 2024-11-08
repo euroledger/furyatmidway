@@ -27,6 +27,7 @@ export default class Controller {
     TARGET_SELECTION_ROLL: "Target Selection Roll",
     TARGET_SELECTION: "Target Selection",
     SELECT_CAP_UNITS: "Select CAP Units",
+    ASSIGN_DMCV_CARRIER: "Assign Carrier to DMCV Fleet",
     ALLOCATE_DAMAGE: "Damage Allocation",
     ESCORT_ATTACK_ROLL: "Escort Counterattack Roll",
     CAP_INTERCEPTION_ROLL: "CAP Interception Roll",
@@ -34,6 +35,7 @@ export default class Controller {
     CARRIER_TARGET_SELECTION: "Carrier Targets Selection",
     ATTACK_RESOLUTION_ROLL: "Attack Resolution Roll",
     CARRIER_DAMAGE: "Carrier Damage Allocation",
+    SUBMARINE_ATTACK_ROLL: "Submarine Attack Roll",
     MIDWAY_DAMAGE: "Midway Damage Allocation",
     CARD_PLAY: "Play Event Card",
     NAVAL_BOMBARDMENT_ROLL: "Naval Bombardment Roll",
@@ -1690,6 +1692,7 @@ export default class Controller {
         break
 
       case Controller.EventTypes.CARRIER_DAMAGE:
+      case Controller.EventTypes.SUBMARINE_ATTACK_ROLL:
         this.damageHandler.handleCarrierDamageEvent(event)
         break
 
@@ -1731,6 +1734,10 @@ export default class Controller {
 
       case Controller.EventTypes.SELECT_CAP_UNITS:
         this.capHandler.handleCapSelectionEvent(event)
+        break
+
+      case Controller.EventTypes.ASSIGN_DMCV_CARRIER:
+        this.selectionEventHandler.handleSelectDMCVCarrierEvent(event)
         break
 
       case Controller.EventTypes.CARD_PLAY:

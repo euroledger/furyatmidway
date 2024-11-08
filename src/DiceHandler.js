@@ -171,35 +171,6 @@ export function carrierDamageRollNeeded(controller) {
   return true
 }
 
-export function sendMarkerEvent(controller, sunkdamaged, side, carrier, bowstern) {
-  if (sunkdamaged === "DAMAGED") {
-    if (bowstern === "BOW") {
-      controller.viewEventHandler({
-        type: Controller.EventTypes.SET_DAMAGE_BOW_MARKER,
-        data: {
-          side,
-          carrier,
-        },
-      })
-    } else {
-      controller.viewEventHandler({
-        type: Controller.EventTypes.SET_DAMAGE_STERN_MARKER,
-        data: {
-          side,
-          carrier,
-        },
-      })
-    }
-  } else {
-    controller.viewEventHandler({
-      type: Controller.EventTypes.SET_SUNK_MARKER,
-      data: {
-        side,
-        carrier,
-      },
-    })
-  }
-}
 export function doMidwayDamage(controller, testRoll) {
   if (GlobalGameState.totalMidwayHits >= 3) {
     return -1
@@ -353,6 +324,7 @@ export function autoAllocateMidwayDamage(controller) {
     GlobalGameState.SearchValue.US_MIDWAY = 0 // base destroyed
     // All units in hangar to eliminated box
   }
+
   GlobalGameState.damageThisAttack = damage
   if (GlobalGameState.midwayHits > 0) {
     doCarrierDamageEvent(GlobalInit.controller)
@@ -399,7 +371,6 @@ export function autoAllocateDamage(controller, theHits) {
     }
     controller.setCarrierHits(carrier, Math.min(3, currentCarrierHits + hits))
     if (controller.getCarrierHits(carrier) >= 3) {
-      console.log("--------------------> SUNK!!!!!!!!!!!!!")
       damage.sunk = true
    
       if (GlobalGameState.sideWithInitiative === GlobalUnitsModel.US) {
@@ -441,9 +412,9 @@ export function autoAllocateDamage(controller, theHits) {
       }   
     }
   }
+  console.log("AUTO ALLOCATE DAMAGE, damage->", damage)
+
   GlobalGameState.damageThisAttack = damage
-
-
   return damage
 }
 
@@ -733,8 +704,8 @@ export function doAttackFireRolls(controller, testRolls) {
     GlobalGameState.carrierAttackHitsThisAttack = hits
 
     // QUACK REMOVE TEESTING ONLY
-    GlobalGameState.carrierAttackHits = 1
-    GlobalGameState.carrierAttackHitsThisAttack = 1
+    GlobalGameState.carrierAttackHits = 2
+    GlobalGameState.carrierAttackHitsThisAttack = 2
   }
   return hits
 }
@@ -808,6 +779,16 @@ export function getNumEscortFighterSteps(controller) {
     steps += unit.aircraftUnit.steps
   }
   return steps
+}
+
+export function doDMCVSelectionEvent(controller, selectedDMCVCarrier, side) {
+  controller.viewEventHandler({
+    type: Controller.EventTypes.ASSIGN_DMCV_CARRIER,
+    data: {
+      side,
+      carrier: selectedDMCVCarrier
+    },
+  })
 }
 export function doCAPEvent(controller, capAirUnits) {
   const sideBeingAttacked =

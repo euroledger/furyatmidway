@@ -2,7 +2,8 @@ import { React, useState } from "react"
 import Button from "react-bootstrap/Button"
 import GlobalUnitsModel from "../model/GlobalUnitsModel"
 import GlobalGameState from "../model/GlobalGameState"
-import { sendDamageUpdates, doCarrierDamageRolls } from "../DiceHandler"
+import Controller from "../controller/Controller"
+import { sendDamageUpdates, doCarrierDamageRolls, autoAllocateDamage, sendDMCVUpdate } from "../DiceHandler"
 
 export function SubmarineDamagePanelHeaders({ controller, setDamagedCV, damagedCV, side, damageDone }) {
   let usEnterprise = {
@@ -307,6 +308,7 @@ export function SubmarineDamagePanelFooters({
   setDamageMarkerUpdate,
   setDamageDone,
   damageDone,
+  setDmcvShipMarkerUpdate
 }) {
   if (damagedCV === "" || GlobalGameState.dieRolls.length === 0) {
     if (damageDone) {
@@ -316,9 +318,41 @@ export function SubmarineDamagePanelFooters({
   }
 
   const doAutoDamage = () => {
-    console.log("DO AUTO DAMAGE...")
-    GlobalGameState.carrierAttackHits = 1 // this causes firing in the CarrierDamagePanel
+    GlobalGameState.carrierAttackHits = 0 // this causes NON firing in the CarrierDamagePanel
     GlobalGameState.sideWithInitiative = side
+
+    // ---- THIS IS DUPLICATE CODE, SEE CarrierDamageDicePanel NEEDS REFACRING QUACK TODO ---
+    const damage = autoAllocateDamage(controller, 1)
+    sendDamageUpdates(controller, damage, setDamageMarkerUpdate)
+    if (damage.sunk) {
+      const sideBeingAttacked =
+        side === GlobalUnitsModel.Side.US ? GlobalUnitsModel.Side.JAPAN : GlobalUnitsModel.Side.US
+
+      sendDMCVUpdate(controller, GlobalGameState.currentCarrierAttackTarget, setDmcvShipMarkerUpdate, sideBeingAttacked)
+    }
+    // ---- END ---
+
+    // this logs the die roll
+    controller.viewEventHandler({
+      type: Controller.EventTypes.SUBMARINE_ATTACK_ROLL,
+      data: {
+        target: GlobalGameState.currentCarrierAttackTarget,
+        side,
+        roll: GlobalGameState.dieRolls[0],
+        damage: GlobalGameState.damageThisAttack,
+      },
+    })
+
+    // this logs the damage
+    // controller.viewEventHandler({
+    //   type: Controller.EventTypes.SUBMARINE_ATTACK_ROLL,
+    //   data: {
+    //     target: GlobalGameState.currentCarrierAttackTarget,
+    //     side,
+    //     roll: undefined,
+    //     damage: GlobalGameState.damageThisAttack,
+    //   },
+    // })
   }
 
   const allocateDamage = (box) => {
@@ -332,6 +366,16 @@ export function SubmarineDamagePanelFooters({
     }
     setDamageDone(true)
     sendDamageUpdates(controller, damage, setDamageMarkerUpdate)
+
+    controller.viewEventHandler({
+      type: Controller.EventTypes.SUBMARINE_ATTACK_ROLL,
+      data: {
+        target: GlobalGameState.currentCarrierAttackTarget,
+        side,
+        roll: GlobalGameState.dieRolls[0],
+        damage: GlobalGameState.damageThisAttack,
+      },
+    })
   }
   // QUACK FOR TESTING ONLY
   GlobalGameState.dieRolls = [1]

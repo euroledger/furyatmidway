@@ -51,11 +51,20 @@ function getValidJapanDestinationsRETURN1OtherTF(controller, name, side) {
   }
   return destinationsArray
 }
-export function getValidUSDestinationsCAP(controller, parentCarrier, side) {
+export function getValidUSDestinationsCAP(controller, parentCarrier, side, name) {
+  const location = controller.getAirUnitLocation(name)
+
+  console.log("AIR UNIT", name, "LOCATION=", location)
+
   // This is returning CAP, must always go to same TF
   // and we check flight deck not hangar
+
+  // rather than use parent carrier, determine TF from current location (ie which CAP Box)
+  
   let destinationsArray = new Array()
-  const thisTF = controller.getTaskForceForCarrier(parentCarrier, side)
+
+  const thisTF = controller.getTaskForceForAirBox(location.boxName)
+  // const thisTF = controller.getTaskForceForCarrier(parentCarrier, side)
   const carriersInTF = controller.getAllCarriersInTaskForce(thisTF, side)
 
   for (const carrier of carriersInTF) {
@@ -693,7 +702,7 @@ export function doCap(controller, name, side) {
     const parentCarrier = controller.getCarrierForAirUnit(name)
     let destinationsArray = new Array()
     if (side === GlobalUnitsModel.Side.US) {
-      destinationsArray = getValidUSDestinationsCAP(controller, parentCarrier, side)
+      destinationsArray = getValidUSDestinationsCAP(controller, parentCarrier, side, name)
     } else {
       destinationsArray = getValidJapanDestinationsCAP(controller, parentCarrier, side)
     }

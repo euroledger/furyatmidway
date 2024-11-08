@@ -109,6 +109,9 @@ function FleetCounter({
     const hex = { q: currentHex.q, r: currentHex.r }
 
     if (side === "US") {
+      if (GlobalGameState.gamePhase !== GlobalGameState.PHASE.US_FLEET_MOVEMENT_PLANNING) {
+        return
+      }
       let isThere = usRegions && usRegions.find((h) => h.q === hex.q && h.r === hex.r)
       if (!isThere) {
         return
@@ -118,6 +121,9 @@ function FleetCounter({
         GlobalGameState.phaseCompleted = true
       }
     } else {
+      if (GlobalGameState.gamePhase !== GlobalGameState.PHASE.JAPAN_FLEET_MOVEMENT) {
+        return
+      }
       let isThere = jpRegions && jpRegions.find((h) => h.q === hex.q && h.r === hex.r)
       if (!isThere) {
         return

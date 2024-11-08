@@ -422,7 +422,7 @@ function StrikeCounter({ setStrikeGroupPopup, currentUSHex, currentJapanHex, cou
     if (GlobalGameState.gamePhase === GlobalGameState.PHASE.AIR_OPERATIONS) {
       setIsMoveable(true)
       const sg = controller.getStrikeGroupForBox(side, counterData.box)
-      console.log("SG", sg)
+      console.log("SG", sg, "side=", side)
       if (!sg.attacked) {
         if (side === GlobalUnitsModel.Side.JAPAN) {
           setJapanRegions()

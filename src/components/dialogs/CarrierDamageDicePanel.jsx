@@ -115,7 +115,6 @@ function CarrierDamageDicePanel(props) {
         GlobalGameState.sideWithInitiative === GlobalUnitsModel.Side.US
           ? GlobalUnitsModel.Side.JAPAN
           : GlobalUnitsModel.Side.US
-      console.log("BETTER SEND THAT DMCV UPDATE")
       sendDMCVUpdate(
         controller,
         GlobalGameState.currentCarrierAttackTarget,

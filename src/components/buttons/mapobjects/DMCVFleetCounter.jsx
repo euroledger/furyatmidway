@@ -89,17 +89,22 @@ function DMCVFleetCounter({
       resetPosition()
       const to = HexCommand.OFFBOARD
       const from = position.currentHex
-      controller.viewEventHandler({
-        type: Controller.EventTypes.FLEET_SETUP,
-        data: {
-          initial: false,
-          id: counterData.name,
-          from,
-          to,
-          side,
-          loading: false,
-        },
-      })
+
+      // No need to log JPMAP or USMAP removal of DMCV Fleet
+      if (!counterData.name.includes("MAP")) {
+        controller.viewEventHandler({
+          type: Controller.EventTypes.FLEET_SETUP,
+          data: {
+            initial: false,
+            id: counterData.name,
+            from,
+            to,
+            side,
+            loading: false,
+          },
+        })
+      }
+    
     }
   } else {
     // This code for the test mode fleet unit updates (and game loads and moving fleets on opponent's map)
@@ -181,6 +186,9 @@ function DMCVFleetCounter({
       y: 0,
     }
     if (side === "US") {
+      if (GlobalGameState.gamePhase !== GlobalGameState.PHASE.US_DMCV_FLEET_MOVEMENT_PLANNING) {
+        return
+      }
       let isThere = usRegions && usRegions.find((h) => h.q === hex.q && h.r === hex.r)
       if (!isThere) {
         return
@@ -199,6 +207,9 @@ function DMCVFleetCounter({
         smallOffset.y = 7
       }
     } else {
+      if (GlobalGameState.gamePhase !== GlobalGameState.PHASE.JAPAN_DMCV_FLEET_MOVEMENT_PLANNING) {
+        return
+      }
       let isThere = jpRegions && jpRegions.find((h) => h.q === hex.q && h.r === hex.r)
       if (!isThere) {
         return

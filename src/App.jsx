@@ -29,6 +29,7 @@ import {
   getNumEscortFighterSteps,
   doDamageAllocation,
   doCAPEvent,
+  doDMCVSelectionEvent,
   doDamageEvent,
   doEscortEvent,
   doAAAEvent,
@@ -1481,7 +1482,14 @@ export function App() {
 
   const cardEventHandler = (cardNumber) => {
     const title = allCards[cardNumber - 1].title
-    const side = allCards[cardNumber - 1].side // @TODO can be BOTH
+    let side = allCards[cardNumber - 1].side // @TODO can be BOTH
+
+    const jpPlayedCard4 = GlobalInit.controller.getCardPlayed(4, GlobalUnitsModel.Side.JAPAN)
+
+    // Decide on BOTH card play
+    if (cardNumber === 4) {
+      side = jpPlayedCard4 ? GlobalUnitsModel.Side.JAPAN : GlobalUnitsModel.Side.US
+    }
     GlobalInit.controller.viewEventHandler({
       type: Controller.EventTypes.CARD_PLAY,
       data: {
@@ -1511,9 +1519,9 @@ export function App() {
   function doInitiativeRoll(roll0, roll1) {
     // for testing QUACK
     // doIntiativeRoll(GlobalInit.controller, 6, 1, true) // JAPAN initiative
-    // doIntiativeRoll(GlobalInit.controller, 1, 6, true) // US initiative
+    doIntiativeRoll(GlobalInit.controller, 1, 6, true) // US initiative
 
-    doIntiativeRoll(GlobalInit.controller, roll0, roll1)
+    // doIntiativeRoll(GlobalInit.controller, roll0, roll1)
     GlobalGameState.updateGlobalState()
   }
 
@@ -1584,6 +1592,10 @@ export function App() {
     setCarrierHits(() => hits)
     GlobalGameState.dieRolls = []
     GlobalGameState.carrierHitsDetermined = true
+  }
+
+  function sendDMCVSelectionEvent() {
+    doDMCVSelectionEvent(GlobalInit.controller, DMCVCarrierSelected, dmcvSide)
   }
 
   function sendCapEvent() {
@@ -2226,8 +2238,10 @@ export function App() {
           setDmcvCarrierSelectionPanelShow(false)
           // sendDamageEvent(eliminatedSteps)
           // @TODO send DMCV Carrier Selection Event
+          sendDMCVSelectionEvent()
           nextAction(e)
         }}
+        
         disabled={true}
         closeButtonDisabled={!DMCVCarrierSelected}
       ></LargeDicePanel>

@@ -520,8 +520,9 @@ export function loadGameStateForId(controller, gameId) {
   }
 
   // QUACK REMOVE ONE CARD AND REPLACE IT WITH ANOTHER
-  GlobalInit.controller.replaceCardWithOtherCard(4, 1, GlobalUnitsModel.Side.US)
-  GlobalInit.controller.replaceCardWithOtherCard(2, 4, GlobalUnitsModel.Side.JAPAN)
+    GlobalInit.controller.replaceCardWithOtherCard(4, 9, GlobalUnitsModel.Side.JAPAN)
+
+  GlobalInit.controller.replaceCardWithOtherCard(5, 4, GlobalUnitsModel.Side.US)
   GlobalGameState.midwayControl=GlobalUnitsModel.Side.US
   // ------------------------------------------------------
 
