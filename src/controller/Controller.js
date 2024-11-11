@@ -1076,6 +1076,29 @@ export default class Controller {
     return this.boxModel.getAirUnitLocation(airUnitName)
   }
 
+  opposingFleetsInSameHex() {
+    const csfLocation = this.getFleetLocation("CSF", GlobalUnitsModel.Side.US)
+    const usDMCVLocation = this.getFleetLocation("US-DMCV", GlobalUnitsModel.Side.US)
+  
+    let numFleetsInSameHexAsCSF = 1,
+      numFleetsInSameHexAsUSDMCV = 1
+    let fleetsInSameHexAsCSF = new Array(),
+      fleetsInSameHexAsUSDMCV = new Array()
+  
+    if (csfLocation !== undefined) {
+      console.log("CHECK CSF LOCATION=", csfLocation)
+      fleetsInSameHexAsCSF = this.getAllFleetsInLocation(csfLocation, GlobalUnitsModel.Side.US, false)
+    }
+    if (usDMCVLocation) {
+      fleetsInSameHexAsUSDMCV = this.getAllFleetsInLocation(usDMCVLocation, GlobalUnitsModel.Side.US, false)
+    }
+  
+    numFleetsInSameHexAsCSF = fleetsInSameHexAsCSF.length
+    numFleetsInSameHexAsUSDMCV = fleetsInSameHexAsUSDMCV.length
+
+    return { numFleetsInSameHexAsCSF, numFleetsInSameHexAsUSDMCV }
+  }
+
   getStrikeGroupForBox(side, box) {
     if (side === GlobalUnitsModel.Side.US) {
       const sg = GlobalUnitsModel.usStrikeGroups.get(box)
@@ -1474,6 +1497,10 @@ export default class Controller {
 
   getCardPlayed(cardNum, side) {
     return this.cardModel.getCardPlayed(cardNum, side)
+  }
+
+  getNumberFleetsOnMap() {
+    return this.mapModel.getNumberFleetsOnMap()
   }
 
   setFleetUnitLocation(id, location, side) {

@@ -108,7 +108,6 @@ export function EventCardFooter({ cardNumber, showCardFooter, setShowDice, doCri
     )
   }
   if (cardNumber === 13) {
-    console.log("attackResolved=", attackResolved)
     setShowDice(false)
     // Add additional damage to just attacked carrier
     let airMsg = "Additional Hit Added to " + GlobalGameState.currentCarrierAttackTarget

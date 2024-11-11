@@ -41,8 +41,8 @@ export function selectUSDefendingCAPUnits(controller, stateObject ) {
 
   setFightersPresent(() => fighters)
 
-  console.log("CAP Selection - air Units =", selectedCapUnits)
-  console.log("CAP Selection - number of Steps =", steps)
-  console.log("CAP Selection - fighters present =", fighters)
+  // console.log("CAP Selection - air Units =", selectedCapUnits)
+  // console.log("CAP Selection - number of Steps =", steps)
+  // console.log("CAP Selection - fighters present =", fighters)
   return { steps, selectedCapUnits, fighters }
 }

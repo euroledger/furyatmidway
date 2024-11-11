@@ -1,4 +1,5 @@
 import GlobalUnitsModel from "./GlobalUnitsModel"
+import HexCommand from "../commands/HexCommand"
 
 export default class CardModel {
   // data structures for objects on US and Japan Maps
@@ -15,9 +16,6 @@ export default class CardModel {
     }
   }
   locationsEqual(locationA, locationB) {
-    // if (locationA === null || locationA=== undefined || locationB === null || locationB === undefined) {
-    //   return false
-    // }
     if (locationA.currentHex === undefined || locationB.currentHex === undefined) {
       return false
     }
@@ -33,18 +31,16 @@ export default class CardModel {
     const fleetLocations = new Map(
       [...mapMap].filter(([k, v]) => !k.includes("SG") && this.locationsEqual(v, location))
     )
-
     for (let fleetUnit of fleetLocations.keys()) {
       const counter = counters.get(fleetUnit)
       if (filterOutOtherSide === true) {
         if (counter.side !== side) {
           fleets.push(counters.get(fleetUnit))
-        } 
+        }
       } else {
         fleets.push(counters.get(fleetUnit))
       }
     }
-
     return fleets
   }
 
@@ -53,7 +49,7 @@ export default class CardModel {
       return this.jpMap.delete(name)
     } else {
       return this.usMap.delete(name)
-    } 
+    }
   }
   getAllStrikeGroupsInLocation(location, side) {
     let strikeGroups = new Array()
@@ -91,6 +87,33 @@ export default class CardModel {
       return this.usMap.get(id)
     }
   }
+
+  getNumberFleetsOnMap() {
+    let numFleets = 0
+
+    // add 2 for each fleet on the board (one for each map)
+    const csfLocation = this.getFleetLocation("CSF", GlobalUnitsModel.Side.US)
+    if (csfLocation && csfLocation.currentHex !==  HexCommand.OFFBOARD) {
+      numFleets +=2
+    }
+    const usDMCVLocation = this.getFleetLocation("US-DMCV", GlobalUnitsModel.Side.US)
+    if (usDMCVLocation && csfLocation.currentHex !==  HexCommand.OFFBOARD) {
+      numFleets +=2
+    }
+    const af1Location = this.getFleetLocation("1AF-USMAP", GlobalUnitsModel.Side.US)
+    if (af1Location && af1Location.currentHex !==  HexCommand.OFFBOARD) {
+      numFleets +=2
+    }
+    const jpDMCVLocation = this.getFleetLocation("IJN-DMCV-USMAP", GlobalUnitsModel.Side.US)
+    if (jpDMCVLocation && jpDMCVLocation.currentHex !==  HexCommand.OFFBOARD) {
+      numFleets +=2
+    }
+    // QUACK @TODO
+    // const mifLocation = this.getFleetLocation("MIF", GlobalUnitsModel.Side.JAPAN)
+
+    return numFleets
+  }
+
   getFleetLocation(id, side) {
     if (side === GlobalUnitsModel.Side.JAPAN) {
       return this.jpMap.get(id)

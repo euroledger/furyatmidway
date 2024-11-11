@@ -54,8 +54,6 @@ function getValidJapanDestinationsRETURN1OtherTF(controller, name, side) {
 export function getValidUSDestinationsCAP(controller, parentCarrier, side, name) {
   const location = controller.getAirUnitLocation(name)
 
-  console.log("AIR UNIT", name, "LOCATION=", location)
-
   // This is returning CAP, must always go to same TF
   // and we check flight deck not hangar
 
@@ -425,7 +423,7 @@ export function doCapReturn(controller, name, side) {
   const parentCarrier = controller.getCarrierForAirUnit(name)
   let destinationsArray = new Array()
   if (side === GlobalUnitsModel.Side.US) {
-    destinationsArray = getValidUSDestinationsCAP(controller, parentCarrier, side)
+    destinationsArray = getValidUSDestinationsCAP(controller, parentCarrier, side, name)
   } else {
     destinationsArray = getValidJapanDestinationsCAP(controller, parentCarrier, side)
   }
@@ -614,7 +612,7 @@ export async function moveOrphanedCAPUnitsToEliminatedBox(side) {
     if (side === GlobalUnitsModel.Side.JAPAN) {
       destinationsArray = getValidJapanDestinationsCAP(GlobalInit.controller, parentCarrier, side)
     } else {
-      destinationsArray = getValidUSDestinationsCAP(GlobalInit.controller, parentCarrier, side)
+      destinationsArray = getValidUSDestinationsCAP(GlobalInit.controller, parentCarrier, side, unit.name)
     }
     if (destinationsArray.length === 0) {
       GlobalGameState.orphanedAirUnits.push(unit)

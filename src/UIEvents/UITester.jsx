@@ -131,7 +131,6 @@ async function moveJapanStrikeGroup(strikeGroup, setStrikeGroupUpdate, q, r) {
 
 async function doTargetSelection(defendingSide) {
   if (GlobalGameState.gamePhase !== GlobalGameState.PHASE.TARGET_DETERMINATION) {
-    console.log("BARK!!!!!! CANNOT DO TARGET SELECTION, game phase=", GlobalGameState.gamePhase)
     return
   }
 

@@ -23,10 +23,7 @@ class ViewEventCarrierDamageHandler {
     if (roll !== undefined) {
       let command = new DiceCommand(event.type, null, null, roll, side, null, target)
       GlobalGameState.log(`${command.toString()}`)
-    } else {
-      console.log("POO ARSE damage=", damage)
-
-    }
+    } 
 
     if (damage.sunk) {
       let command = new CarrierDamageCommand(COMMAND_TYPE.CARRIER_SUNK, side, target)

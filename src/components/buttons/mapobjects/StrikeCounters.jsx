@@ -63,12 +63,7 @@ function StrikeCounters({
     }
     const groups = controller.getAllStrikeGroupsInLocation(hex, strikeGroupUnit.side)
     index = groups.length
-    // if (GlobalGameState.gamePhase=== GlobalGameState.PHASE.US_FLEET_MOVEMENT_PLANNING || 
-    //   GlobalGameState.gamePhase=== GlobalGameState.PHASE.US_DMCV_FLEET_MOVEMENT_PLANNING ||
-    //   GlobalGameState.gamePhase=== GlobalGameState.PHASE.JAPAN_DMCV_FLEET_MOVEMENT_PLANNING ||
-    //   GlobalGameState.gamePhase=== GlobalGameState.PHASE.JAPAN_FLEET_MOVEMENT) {
-    //   return
-    // }
+
     return (
       <StrikeCounter
         setStrikeGroupPopup={setStrikeGroupPopup}

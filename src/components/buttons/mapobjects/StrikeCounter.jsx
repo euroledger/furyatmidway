@@ -63,7 +63,6 @@ function StrikeCounter({ setStrikeGroupPopup, currentUSHex, currentJapanHex, cou
       top: hex.y + 220,
       currentHex: hex,
     })
-    console.log("\tname: ", counterData.name, "=>NEW POSITION=", position)
   }
   // STRIKE GROUP UPDATE CODE
   let hex = {}
@@ -179,7 +178,6 @@ function StrikeCounter({ setStrikeGroupPopup, currentUSHex, currentJapanHex, cou
         // strike group must return to "RETURN 2" space
         // @TODO move SG counter offboard and mark Strike Units as moved
         // Set SG to attacked - will trigger units to be moved to return 2
-        console.log("NO ATTACK POSSIBLE, SG units to RETURN 2")
         counterData.attacked = true
       } else {
         if (locationOfEnemyCarrier !== undefined) {
@@ -278,7 +276,6 @@ function StrikeCounter({ setStrikeGroupPopup, currentUSHex, currentJapanHex, cou
         // strike group must return to "RETURN 2" space
         // @TODO move SG counter offboard and mark Strike Units as moved
         // Set SG to attacked - will trigger units to be moved to return 2
-        console.log("NO ATTACK POSSIBLE, SG units to RETURN 2")
         counterData.attacked = true
       } else {
         if (locationOfEnemyCarrier !== undefined) {
@@ -422,7 +419,6 @@ function StrikeCounter({ setStrikeGroupPopup, currentUSHex, currentJapanHex, cou
     if (GlobalGameState.gamePhase === GlobalGameState.PHASE.AIR_OPERATIONS) {
       setIsMoveable(true)
       const sg = controller.getStrikeGroupForBox(side, counterData.box)
-      console.log("SG", sg, "side=", side)
       if (!sg.attacked) {
         if (side === GlobalUnitsModel.Side.JAPAN) {
           setJapanRegions()

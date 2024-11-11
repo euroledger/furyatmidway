@@ -61,7 +61,6 @@ export function TowedCVHeaders({ controller, setTowedCVSelected }) {
   const usCVsSunk = controller.getSunkCarriers(GlobalUnitsModel.Side.US)
 
   const handleClick = (cv) => {
-    console.log("CV Selected = ", cv)
     setTowedCVSelected(cv)
   }
   const sunkCVImages = usCVsSunk.map((cv, idx) => {

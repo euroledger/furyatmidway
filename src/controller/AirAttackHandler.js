@@ -4,15 +4,13 @@ import GlobalGameState from "../model/GlobalGameState"
 import GlobalUnitsModel from "../model/GlobalUnitsModel"
 
 export function setUpAirAttack(controller, location, strikeGroup) {
-  // @TODO if this is an attack on a DMCV skip to FLEET_TARGET_SELECTION
-  // (new state). In that state, there will be a screen for multiple fleets
-  // in the same location.
-
-  // if not multiple fleets in the same location, skip to AAA fire.
-
   // create a separate function for attacks on DMCV
   const side = GlobalGameState.sideWithInitiative
   const fleets = controller.getAllFleetsInLocation(location, side, true)
+
+  // @TODO QUACK
+  // There can never be two fleets in same location during air operations
+  // this can be taken out in due course
   if (fleets.length >= 2) {
     if (controller.japanHandContainsCard(11)) {
       GlobalGameState.gamePhase = GlobalGameState.PHASE.CARD_PLAY

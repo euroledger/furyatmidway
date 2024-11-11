@@ -1,4 +1,4 @@
-import { distanceBetweenHexes, isMidwayHex, allHexesWithinDistance } from "../src/components/HexUtils"
+import { distanceBetweenHexes, isMidwayHex, allHexesWithinDistance, interveningHexes } from "../src/components/HexUtils"
 
 const MIDWAY_HEX = {
   q: 6,
@@ -85,3 +85,41 @@ test("Generate regions within certain distance of hex", () => {
   ])
   expect(region.includes(MIDWAY_HEX)).toBe(false)
 })
+
+test("Find intervening hexes on Two Hex Path", () => {
+  
+  // A2 -> C3 only one intervening hex (B3)
+
+  let hex1 = {
+    q: 1,
+    r: 2,
+  } // Hex A, 2
+
+  let hex2 = {
+    q: 3,
+    r: 2,
+  } // Hex C, 3
+
+  let ih = interveningHexes(hex1, hex2)
+
+  expect(ih.length).toEqual(1) // should be (2,2) -> [B,3]
+  expect(ih[0].q).toEqual(2)
+  expect(ih[0].r).toEqual(2)
+
+  // A2 -> C2 two intervening hexes (B-2 and B-3)
+
+  hex2 = {
+    q: 3,
+    r: 1,
+  } // Hex C, 3
+
+  ih = interveningHexes(hex1, hex2)
+  expect(ih.length).toEqual(2) // should be (2,2) -> [B,3] and (2,1) [B,2]
+  expect(ih[0].q).toEqual(2)
+  expect(ih[0].r).toEqual(1)
+
+  expect(ih[1].q).toEqual(2)
+  expect(ih[1].r).toEqual(2)
+
+})
+

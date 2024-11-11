@@ -38,4 +38,28 @@ describe("Controller tests", () => {
     const usmaps = controller.getUSFleetLocations()
     expect(usmaps.size).toEqual(1)
   })
+
+  test("Determine Number of Fleets in Same Hex", () => {
+    createFleetMove(controller, 5, -1, "CSF", GlobalUnitsModel.Side.US) // E-1
+    createFleetMove(controller, 5, 1, "1AF-USMAP", GlobalUnitsModel.Side.US) // E-3
+
+    const numFleetsOnMap = controller.getNumberFleetsOnMap()
+    expect(numFleetsOnMap).toEqual(4)
+
+    let csfLocation = controller.getFleetLocation("CSF", GlobalUnitsModel.Side.US)
+
+    let fleetsInSameHexAsCSF = controller.getAllFleetsInLocation(csfLocation, GlobalUnitsModel.Side.US, false)    
+    expect(fleetsInSameHexAsCSF.length).toEqual(1)
+
+    const previousPosition = new Map()
+    previousPosition.set("")
+    // Both fleets move to C-2
+    createFleetMove(controller, 3, 1, "CSF", GlobalUnitsModel.Side.US) // E-1
+    createFleetMove(controller, 3, 1, "1AF-USMAP", GlobalUnitsModel.Side.US) // E-3
+
+    csfLocation = controller.getFleetLocation("CSF", GlobalUnitsModel.Side.US)
+    fleetsInSameHexAsCSF = controller.getAllFleetsInLocation(csfLocation, GlobalUnitsModel.Side.US, false)    
+    expect(fleetsInSameHexAsCSF.length).toEqual(2)
+
+  })
 })

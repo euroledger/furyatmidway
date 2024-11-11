@@ -41,10 +41,10 @@ export function saveGameState(controller, gameId) {
   // console.log("+++++++++++++++++++ SAVING SOMETHING WRONG: ", airText)
   const usStrikeText = JSON.stringify(Array.from(GlobalUnitsModel.usStrikeGroups.entries()))
 
-  const jpCardText = JSON.stringify(GlobalUnitsModel.jpCards) 
+  const jpCardText = JSON.stringify(GlobalUnitsModel.jpCards)
   const usCardText = JSON.stringify(GlobalUnitsModel.usCards)
-  
-  const jpCardsPlayedText = JSON.stringify(GlobalUnitsModel.jpCardsPlayed) 
+
+  const jpCardsPlayedText = JSON.stringify(GlobalUnitsModel.jpCardsPlayed)
   const usCardsPlayedText = JSON.stringify(GlobalUnitsModel.usCardsPlayed)
   const cardText = JSON.stringify(GlobalUnitsModel.cards)
 
@@ -148,7 +148,7 @@ function createDMCVMarkerUpdates(controller, side, carrierName) {
   const boxName = controller.getAirBoxForNamedShip(side, carrierName, "DMCV")
 
   const sideStr = side === GlobalUnitsModel.Side.JAPAN ? "JP" : "US"
-  const markerName= `${sideStr}-DMCV-MARKER`
+  const markerName = `${sideStr}-DMCV-MARKER`
   let dmcvMarkerUpdate = {
     name: markerName,
     box: boxName,
@@ -354,8 +354,10 @@ function loadAirUnits(airUnitMap) {
     //   globalAirUnit.aircraftUnit.steps = 1
     //   globalAirUnit.image = "/images/aircounters/hornet-f4f-back.png"
     // }
-    // GlobalGameState.usDMCVFleetPlaced=false
-    // GlobalGameState.jpDMCVFleetPlaced=false
+    // GlobalGameState.usDMCVFleetPlaced = false
+    // GlobalGameState.jpDMCVFleetPlaced = false
+    GlobalGameState.fleetSpeed = 2
+    GlobalGameState.dmcvFleetSpeed = 1
     // GlobalGameState.usDMCVCarrier = GlobalUnitsModel.Carrier.ENTERPRISE
   }
 }
@@ -493,7 +495,6 @@ export function loadGameStateForId(controller, gameId) {
   const usCardsPlayedText = gameDetails.uscardsplayed
   const jpCardsPlayedText = gameDetails.jpcardsplayed
 
-
   const cardText = gameDetails.cards
 
   // TODO reload draw deck
@@ -520,10 +521,10 @@ export function loadGameStateForId(controller, gameId) {
   }
 
   // QUACK REMOVE ONE CARD AND REPLACE IT WITH ANOTHER
-    GlobalInit.controller.replaceCardWithOtherCard(4, 9, GlobalUnitsModel.Side.JAPAN)
+  GlobalInit.controller.replaceCardWithOtherCard(4, 9, GlobalUnitsModel.Side.JAPAN)
 
   GlobalInit.controller.replaceCardWithOtherCard(5, 4, GlobalUnitsModel.Side.US)
-  GlobalGameState.midwayControl=GlobalUnitsModel.Side.US
+  GlobalGameState.midwayControl = GlobalUnitsModel.Side.US
   // ------------------------------------------------------
 
   // GlobalInit.controller.setCardPlayed(8, GlobalUnitsModel.Side.US)
@@ -576,7 +577,7 @@ export function loadGameState(controller) {
 
   const usCardText = localStorage.getItem("uscards")
   const jpCardText = localStorage.getItem("jpcards")
-  
+
   const usCardsPlayedText = localStorage.getItem("uscardsplayed")
   const jpCardsPlayedText = localStorage.getItem("jpcardsplayed")
 
@@ -584,7 +585,7 @@ export function loadGameState(controller) {
 
   GlobalUnitsModel.jpCards = JSON.parse(jpCardText)
   GlobalUnitsModel.usCards = JSON.parse(usCardText)
-  
+
   GlobalUnitsModel.jpCardsPlayed = JSON.parse(jpCardsPlayedText)
   GlobalUnitsModel.usCardsPlayed = JSON.parse(usCardsPlayedText)
   GlobalUnitsModel.cards = JSON.parse(cardText)

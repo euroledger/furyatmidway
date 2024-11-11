@@ -373,7 +373,7 @@ export function autoAllocateDamage(controller, theHits) {
     if (controller.getCarrierHits(carrier) >= 3) {
       damage.sunk = true
    
-      if (GlobalGameState.sideWithInitiative === GlobalUnitsModel.US) {
+      if (GlobalGameState.sideWithInitiative === GlobalUnitsModel.Side.US) {
         GlobalGameState.japanCVsSunk++
       } else {
         GlobalGameState.usCVsSunk++
@@ -412,8 +412,6 @@ export function autoAllocateDamage(controller, theHits) {
       }   
     }
   }
-  console.log("AUTO ALLOCATE DAMAGE, damage->", damage)
-
   GlobalGameState.damageThisAttack = damage
   return damage
 }
@@ -504,7 +502,6 @@ export async function sendRemoveDamageMarkerUpdate(controller, carrier, boxName,
 
   const name = controller.getMarkerNameForBox(boxName, boxIndex)
 
-  console.log("MARKER NAME=", name)
   let markerUpdate = {
     name,
     box: HexCommand.OFFBOARD,
@@ -534,7 +531,6 @@ export async function sendDMCVUpdate(controller, carrier, setDmcvShipMarkerUpdat
     carrier,
     side,
   }
-  console.log("Send DMCV Update carrier=", carrier)
   setDmcvShipMarkerUpdate(dmcvMarkerUpdate)
 }
 export async function sendDamageUpdates(controller, damage, setDamageMarkerUpdate) {
@@ -587,7 +583,6 @@ export async function sendDamageUpdates(controller, damage, setDamageMarkerUpdat
     controller.setMarkerLocation(marker2.name, boxName, 1)
   } else {
     if (damage.bow) {
-      console.log("BOW DAMAGED")
       let marker = GlobalInit.controller.getNextAvailableMarker("DAMAGED")
       GlobalGameState.nextAvailableDamageMarker++
 
@@ -597,8 +592,6 @@ export async function sendDamageUpdates(controller, damage, setDamageMarkerUpdat
         index: 0,
         side: sideBeingAttacked,
       }
-
-      console.log("SEND UPDATE =>",markerUpdate)
       setDamageMarkerUpdate(markerUpdate)
       controller.setMarkerLocation(marker.name, boxName, 0)
     }
@@ -944,7 +937,7 @@ export function doCAP(controller, capAirUnits, fightersPresent, testRolls) {
 
   let drm = fightersPresent ? 0 : 1
 
-  if (GlobalGameState.sideWithInitiative === GlobalUnitsModel.US) {
+  if (GlobalGameState.sideWithInitiative === GlobalUnitsModel.Side.US) {
     drm += GlobalGameState.elitePilots ? 1: 0
   }
 

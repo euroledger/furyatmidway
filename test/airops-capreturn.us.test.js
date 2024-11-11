@@ -63,7 +63,8 @@ describe("Air Operations tests with Preset air unit locations", () => {
     let destinations = getValidUSDestinationsCAP(
       controller,
       GlobalUnitsModel.Carrier.ENTERPRISE,
-      GlobalUnitsModel.Side.US
+      GlobalUnitsModel.Side.US,
+      ef1.name
     )
 
     // Note US Air Units are not required to land on parent carrier, any carrier
@@ -81,7 +82,8 @@ describe("Air Operations tests with Preset air unit locations", () => {
     let destinations = getValidUSDestinationsCAP(
       controller,
       GlobalUnitsModel.Carrier.ENTERPRISE,
-      GlobalUnitsModel.Side.US
+      GlobalUnitsModel.Side.US,
+      ef1.name
     )
 
     expect(destinations.length).toEqual(2)
@@ -96,7 +98,8 @@ describe("Air Operations tests with Preset air unit locations", () => {
     let destinations = getValidUSDestinationsCAP(
       controller,
       GlobalUnitsModel.Carrier.ENTERPRISE,
-      GlobalUnitsModel.Side.US
+      GlobalUnitsModel.Side.US,
+      ef1.name
     )
 
     expect(destinations.length).toEqual(1)
@@ -115,7 +118,8 @@ describe("Air Operations tests with Preset air unit locations", () => {
     let destinations = getValidUSDestinationsCAP(
       controller,
       GlobalUnitsModel.Carrier.ENTERPRISE,
-      GlobalUnitsModel.Side.US
+      GlobalUnitsModel.Side.US,
+      ef1.name
     )
 
     expect(destinations.length).toEqual(2)
@@ -135,7 +139,8 @@ describe("Air Operations tests with Preset air unit locations", () => {
     let destinations = getValidUSDestinationsCAP(
       controller,
       GlobalUnitsModel.Carrier.ENTERPRISE,
-      GlobalUnitsModel.Side.US
+      GlobalUnitsModel.Side.US,
+      ef1.name
     )
 
     expect(destinations.length).toEqual(0)
@@ -147,7 +152,8 @@ describe("Air Operations tests with Preset air unit locations", () => {
     let destinations = getValidUSDestinationsCAP(
       controller,
       GlobalUnitsModel.Carrier.ENTERPRISE,
-      GlobalUnitsModel.Side.US
+      GlobalUnitsModel.Side.US,
+      ef1.name
     )
 
     expect(destinations.length).toEqual(3)
@@ -177,7 +183,8 @@ describe("Air Operations tests with Preset air unit locations", () => {
     let destinations = getValidUSDestinationsCAP(
       controller,
       GlobalUnitsModel.Carrier.YORKTOWN,
-      GlobalUnitsModel.Side.US
+      GlobalUnitsModel.Side.US,
+      yf1.name
     )
     expect(destinations.length).toEqual(2)
 
@@ -191,7 +198,8 @@ describe("Air Operations tests with Preset air unit locations", () => {
     let destinations = getValidUSDestinationsCAP(
       controller,
       GlobalUnitsModel.Carrier.MIDWAY,
-      GlobalUnitsModel.Side.US
+      GlobalUnitsModel.Side.US,
+      mf1.name
     )
     expect(destinations.length).toEqual(2)
 

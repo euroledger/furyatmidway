@@ -94,9 +94,6 @@ export const coordsOnMap = (q, r) => {
   const q1 = bounds[q - 1][0]
   const r1 = bounds[q - 1][1]
 
-  // console.log("q, r = ", q,r)
-  // console.log("q1, r1 = ", q1,r1)
-
   if (r < q1 || r > r1) {
     return false
   }
@@ -112,6 +109,21 @@ export const getAllHexes = () => {
     }
   }
   return allHexes
+}
+
+// only works for range 2 (for now)
+export const interveningHexes= (hexA, hexB) => {
+  const hexes = getAllHexes()
+
+  let result = new Array()
+  for (let h of hexes) {
+    const d1 = distanceBetweenHexes(h, hexA)
+    const d2 = distanceBetweenHexes(h, hexB)
+    if (d1 == 1 && d2 == 1) {
+      result.push(h)
+    }
+  }
+  return result
 }
 
 export const allHexesWithinDistance = (hex, distance, excludeMidway) => {

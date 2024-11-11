@@ -16,9 +16,10 @@ export default class GlobalGameState {
     US_FLEET_MOVEMENT_PLANNING: "US Fleet Movement Planning",
     US_DMCV_FLEET_MOVEMENT_PLANNING: "US DMCV Fleet Movement Planning",
     JAPAN_FLEET_MOVEMENT: "IJN Fleet Movement",
-    JAPAN_DMCV_FLEET_MOVEMENT_PLANNING: "IJN DMCV Fleet Movement",
+    JAPAN_DMCV_FLEET_MOVEMENT: "IJN DMCV Fleet Movement",
     MIDWAY_ATTACK: "Midway Attack Phase",
     US_FLEET_MOVEMENT: "US Fleet Movement",
+    RETREAT_US_FLEET: "Check Fleets in Same Hex",
     AIR_SEARCH: "Search Phase",
     INITIATIVE_DETERMINATION: "Initiative Determination",
     AIR_OPERATIONS: "Air Operations Phase",
@@ -161,6 +162,7 @@ export default class GlobalGameState {
     this.stateHandler();
   }
 
+  static retreatFleet = undefined
   static loading = false
 
   static log = (message) => {
@@ -200,6 +202,10 @@ export default class GlobalGameState {
   static nextAvailableDamageMarker = 0
   static nextAvailableSunkMarker = 0
   
+
+  static fleetSpeed = 2
+  static dmcvFleetSpeed = 1
+
   static SearchValue = {
     JP_AF: 6,
     US_CSF: 7,

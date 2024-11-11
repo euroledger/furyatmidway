@@ -97,7 +97,7 @@ import UITester from "./UIEvents/UITester"
 import UITesterHeadless from "./UIEvents/UITesterHeadless"
 
 import { getJapanEnabledAirBoxes, getUSEnabledAirBoxes } from "./AirBoxZoneHandler"
-import handleAction, { calcAirOpsPointsMidway } from "./GameStateHandler"
+import handleAction, { calcAirOpsPointsMidway, checkFleetsInSameHex } from "./GameStateHandler"
 import { setStrikeGroupAirUnitsToNotMoved } from "./controller/AirOperationsHandler"
 
 export default App
@@ -206,6 +206,8 @@ export function App() {
   const [fightersPresent, setFightersPresent] = useState(true)
 
   const [selectedAirUnit, setSelectedAirUnit] = useState()
+
+  const [previousPosition, setPreviousPosition] = useState(new Map())
 
   const [airUnitUpdate, setAirUnitUpdate] = useState({
     unit: {},
@@ -445,6 +447,24 @@ export function App() {
     }
   }, [GlobalGameState.gamePhase])
 
+  useEffect(() => {
+    if (
+      GlobalGameState.gamePhase === GlobalGameState.PHASE.US_FLEET_MOVEMENT_PLANNING ||
+      GlobalGameState.gamePhase === GlobalGameState.PHASE.US_DMCV_FLEET_MOVEMENT_PLANNING ||
+      GlobalGameState.gamePhase === GlobalGameState.PHASE.JAPAN_FLEET_MOVEMENT ||
+      GlobalGameState.gamePhase === GlobalGameState.PHASE.JAPAN_DMCV_FLEET_MOVEMENT
+    ) {
+      setDMCVCarrierSelected(() => "")
+      if (GlobalGameState.gameTurn === 4) {
+        GlobalGameState.fleetSpeed = 4
+        GlobalGameState.dmcvFleetSpeed = 2
+      } else {
+        GlobalGameState.fleetSpeed = 2
+        GlobalGameState.dmcvFleetSpeed = 1
+      }
+    }
+  }, [GlobalGameState.gamePhase])
+
   const onDrag = () => {
     setIsMoveable(true)
   }
@@ -456,44 +476,58 @@ export function App() {
     if (GlobalGameState.gamePhase === GlobalGameState.PHASE.US_FLEET_MOVEMENT_PLANNING) {
       GlobalGameState.phaseCompleted = true // may just want to skip any fleet movement (leave fleet where it is)
       const csfLocation = GlobalInit.controller.getFleetLocation("CSF", GlobalUnitsModel.Side.US)
-      const usRegion = allHexesWithinDistance(csfLocation.currentHex, 2, true)
+      let regionsMinusAllFleets = allHexesWithinDistance(csfLocation.currentHex, GlobalGameState.fleetSpeed, true)
 
-      const ijn1AFLocation = GlobalInit.controller.getFleetLocation("1AF", GlobalUnitsModel.Side.JAPAN)
-
-      // remove hex with 1AF unless night (turn 4), as surface engagements prohibited during day turns
-      if (GlobalGameState.gameTurn !== 4 && ijn1AFLocation !== undefined) {
-        const regionMinusIJNFleet = removeHexFromRegion(usRegion, ijn1AFLocation.currentHex)
-        setUSMapRegions(regionMinusIJNFleet)
+      // remove hex with 1AF & IJN DMCV unless night (turn 4), as surface engagements prohibited during day turns
+      if (GlobalGameState.gameTurn !== 4) {
+        // const ijn1AFLocation = GlobalInit.controller.getFleetLocation("1AF", GlobalUnitsModel.Side.JAPAN)
+        // if (ijn1AFLocation !== undefined) {
+        //   regionsMinusAllFleets = removeHexFromRegion(regionsMinusAllFleets, ijn1AFLocation.currentHex)
+        // }
+        // const ijn1DMCVLocation = GlobalInit.controller.getFleetLocation("IJN-DMCV", GlobalUnitsModel.Side.JAPAN)
+        // if (ijn1DMCVLocation !== undefined) {
+        //   regionsMinusAllFleets = removeHexFromRegion(regionsMinusAllFleets, ijn1DMCVLocation.currentHex)
+        // }
+        const usDMCVLocation = GlobalInit.controller.getFleetLocation("US-DMCV", GlobalUnitsModel.Side.US)
+        if (usDMCVLocation !== undefined) {
+          regionsMinusAllFleets = removeHexFromRegion(regionsMinusAllFleets, usDMCVLocation.currentHex)
+        }
+        setUSMapRegions(regionsMinusAllFleets)
       } else {
         setUSMapRegions(usRegion)
       }
       setFleetMoveAlertShow(true)
     } else if (GlobalGameState.gamePhase === GlobalGameState.PHASE.US_DMCV_FLEET_MOVEMENT_PLANNING) {
+      let usRegion
+      const csfLocation = GlobalInit.controller.getFleetLocation("CSF", GlobalUnitsModel.Side.US)
       if (GlobalGameState.usDMCVFleetPlaced) {
         const dmcvLocation = GlobalInit.controller.getFleetLocation("US-DMCV", GlobalUnitsModel.Side.US)
-        const usRegion = allHexesWithinDistance(dmcvLocation.currentHex, 1, true)
-        setUSMapRegions(usRegion)
+        usRegion = allHexesWithinDistance(dmcvLocation.currentHex, GlobalGameState.dmcvFleetSpeed, true)
       } else {
-        const csfLocation = GlobalInit.controller.getFleetLocation("CSF", GlobalUnitsModel.Side.US)
-        const usRegion = allHexesWithinDistance(csfLocation.currentHex, 1, true)
-        setUSMapRegions(usRegion)
+        usRegion = allHexesWithinDistance(csfLocation.currentHex, GlobalGameState.dmcvFleetSpeed, true)
       }
+      // // DMCV fleet cannot move to same hex as JP 1AF Fleet
+      // const af1Location = GlobalInit.controller.getFleetLocation("1AF", GlobalUnitsModel.Side.JAPAN)
+      // usRegion = removeHexFromRegion(usRegion, af1Location.currentHex)
+      // DMCV fleet cannot move to same hex as US CSF Fleet
+      usRegion = removeHexFromRegion(usRegion, csfLocation.currentHex)
+      setUSMapRegions(usRegion)
     }
   }
 
   const setJapanFleetRegions = () => {
-    if (GlobalGameState.gamePhase === GlobalGameState.PHASE.JAPAN_DMCV_FLEET_MOVEMENT_PLANNING) {
-      // if DMCV not placed eligible zone is one hex from 1AF
-      // if DMCV is placed eligible zone is one hex from DMCV
+    if (GlobalGameState.gamePhase === GlobalGameState.PHASE.JAPAN_DMCV_FLEET_MOVEMENT) {
+      let jpRegion
+      const af1Location = GlobalInit.controller.getFleetLocation("1AF", GlobalUnitsModel.Side.JAPAN)
       if (GlobalGameState.jpDMCVFleetPlaced) {
         const dmcvLocation = GlobalInit.controller.getFleetLocation("IJN-DMCV", GlobalUnitsModel.Side.JAPAN)
-        const jpRegion = allHexesWithinDistance(dmcvLocation.currentHex, 1, true)
-        setJapanMapRegions(jpRegion)
+        jpRegion = allHexesWithinDistance(dmcvLocation.currentHex, GlobalGameState.dmcvFleetSpeed, true)
       } else {
-        const af1Location = GlobalInit.controller.getFleetLocation("1AF", GlobalUnitsModel.Side.JAPAN)
-        const jpRegion = allHexesWithinDistance(af1Location.currentHex, 1, true)
-        setJapanMapRegions(jpRegion)
+        jpRegion = allHexesWithinDistance(af1Location.currentHex, GlobalGameState.dmcvFleetSpeed, true)
       }
+      // DMCV fleet cannot move to same hex as IJN 1AF Fleet
+      jpRegion = removeHexFromRegion(jpRegion, af1Location.currentHex)
+      setJapanMapRegions(jpRegion)
       return
     }
     if (GlobalGameState.gamePhase === GlobalGameState.PHASE.JAPAN_FLEET_MOVEMENT && GlobalGameState.gameTurn === 1) {
@@ -504,16 +538,14 @@ export function App() {
       }
     } else {
       const af1Location = GlobalInit.controller.getFleetLocation("1AF", GlobalUnitsModel.Side.JAPAN)
-      const jpRegion = allHexesWithinDistance(af1Location.currentHex, 2, true)
-      const csfLocation = GlobalInit.controller.getFleetLocation("CSF", GlobalUnitsModel.Side.US)
+      let regionsMinusAllFleets = allHexesWithinDistance(af1Location.currentHex, GlobalGameState.fleetSpeed, true)
 
-      if (GlobalGameState.gameTurn !== 4 && csfLocation !== undefined) {
-        // remove hex with CSF unless night (turn 4), as surface engagements prohibited during day turns
-        const regionMinusCSFFleet = removeHexFromRegion(jpRegion, csfLocation.currentHex)
-        setJapanMapRegions(regionMinusCSFFleet)
-      } else {
-        setJapanMapRegions(jpRegion)
-      }
+      // const ijn1DMCVLocation = GlobalInit.controller.getFleetLocation("IJN-DMCV", GlobalUnitsModel.Side.JAPAN)
+      // if (ijn1DMCVLocation !== undefined) {
+      //   regionsMinusAllFleets = removeHexFromRegion(regionsMinusAllFleets, ijn1DMCVLocation.currentHex)
+      // }
+
+      setJapanMapRegions(regionsMinusAllFleets)
     }
     setFleetMoveAlertShow(true)
   }
@@ -580,27 +612,33 @@ export function App() {
         setJapanStrikePanelEnabled(false)
       }
     } else if (GlobalGameState.gamePhase === GlobalGameState.PHASE.US_DMCV_FLEET_MOVEMENT_PLANNING) {
+      let usRegion
+      const csfLocation = GlobalInit.controller.getFleetLocation("CSF", GlobalUnitsModel.Side.US)
       if (GlobalGameState.usDMCVFleetPlaced) {
         const dmcvLocation = GlobalInit.controller.getFleetLocation("US-DMCV", GlobalUnitsModel.Side.US)
-        const usRegion = allHexesWithinDistance(dmcvLocation.currentHex, 1, true)
-        setUSMapRegions(usRegion)
+        usRegion = allHexesWithinDistance(dmcvLocation.currentHex, GlobalGameState.dmcvFleetSpeed, true)
       } else {
-        const csfLocation = GlobalInit.controller.getFleetLocation("CSF", GlobalUnitsModel.Side.US)
-        const usRegion = allHexesWithinDistance(csfLocation.currentHex, 1, true)
-        setUSMapRegions(usRegion)
+        usRegion = allHexesWithinDistance(csfLocation.currentHex, GlobalGameState.dmcvFleetSpeed, true)
       }
-    } else  if (GlobalGameState.gamePhase === GlobalGameState.PHASE.JAPAN_DMCV_FLEET_MOVEMENT_PLANNING) {
-      // if DMCV not placed eligible zone is one hex from 1AF
-      // if DMCV is placed eligible zone is one hex from DMCV
+      // DMCV fleet cannot move to same hex as JP 1AF Fleet NOT TRUE (it can't stay there!)
+      // const af1Location = GlobalInit.controller.getFleetLocation("1AF", GlobalUnitsModel.Side.JAPAN)
+      // usRegion = removeHexFromRegion(usRegion, af1Location.currentHex)
+
+      // DMCV fleet cannot move to same hex as US CSF Fleet
+      usRegion = removeHexFromRegion(usRegion, csfLocation.currentHex)
+      setUSMapRegions(usRegion)
+    } else if (GlobalGameState.gamePhase === GlobalGameState.PHASE.JAPAN_DMCV_FLEET_MOVEMENT) {
+      let jpRegion
+      const af1Location = GlobalInit.controller.getFleetLocation("1AF", GlobalUnitsModel.Side.JAPAN)
       if (GlobalGameState.jpDMCVFleetPlaced) {
         const dmcvLocation = GlobalInit.controller.getFleetLocation("IJN-DMCV", GlobalUnitsModel.Side.JAPAN)
-        const jpRegion = allHexesWithinDistance(dmcvLocation.currentHex, 1, true)
-        setJapanMapRegions(jpRegion)
+        jpRegion = allHexesWithinDistance(dmcvLocation.currentHex, GlobalGameState.dmcvFleetSpeed, true)
       } else {
-        const af1Location = GlobalInit.controller.getFleetLocation("1AF", GlobalUnitsModel.Side.JAPAN)
-        const jpRegion = allHexesWithinDistance(af1Location.currentHex, 1, true)
-        setJapanMapRegions(jpRegion)
+        jpRegion = allHexesWithinDistance(af1Location.currentHex, GlobalGameState.dmcvFleetSpeed, true)
       }
+      // DMCV fleet cannot move to same hex as IJN 1AF Fleet
+      jpRegion = removeHexFromRegion(jpRegion, af1Location.currentHex)
+      setJapanMapRegions(jpRegion)
     }
     // If we don't do this, a drag and drop move fires a fleet update and the fleet does not move
     setFleetUnitUpdate(undefined)
@@ -642,6 +680,8 @@ export function App() {
       setCardNumber,
       setMidwayDialogShow,
       setEndOfTurnSummaryShow,
+      setPreviousPosition,
+      previousPosition,
     })
   }
 
@@ -836,7 +876,7 @@ export function App() {
       GlobalGameState.gamePhase === GlobalGameState.PHASE.JAPAN_CARD_DRAW ||
       GlobalGameState.gamePhase === GlobalGameState.PHASE.JAPAN_MIDWAY ||
       GlobalGameState.gaFmePhase === GlobalGameState.PHASE.JAPAN_FLEET_MOVEMENT ||
-      GlobalGameState.gamePhase === GlobalGameState.PHASE.JAPAN_DMCV_FLEET_MOVEMENT_PLANNING ||
+      GlobalGameState.gamePhase === GlobalGameState.PHASE.JAPAN_DMCV_FLEET_MOVEMENT ||
       GlobalGameState.gamePhase === GlobalGameState.PHASE.MIDWAY_ATTACK ||
       (GlobalGameState.gamePhase === GlobalGameState.PHASE.AIR_OPERATIONS &&
         GlobalGameState.sideWithInitiative === GlobalUnitsModel.Side.JAPAN)
@@ -886,8 +926,9 @@ export function App() {
                   GlobalGameState.usCardsDrawn = true
                   if (GlobalGameState.gamePhase === GlobalGameState.PHASE.US_DRAWS_ONE_CARD) {
                     GlobalInit.controller.drawUSCards(1, false)
-                    setMidwayDialogShow(true)
-                    GlobalGameState.gamePhase = GlobalGameState.PHASE.JAPAN_MIDWAY
+                    // setMidwayDialogShow(true)
+                    // GlobalGameState.gamePhase = GlobalGameState.PHASE.JAPAN_MIDWAY
+                    nextAction(e)
                   }
                   if (GlobalGameState.gamePhase === GlobalGameState.PHASE.US_CARD_DRAW) {
                     nextAction(e)
@@ -1217,7 +1258,7 @@ export function App() {
   )
 
   const dmcvSide =
-    GlobalGameState.gamePhase === GlobalGameState.PHASE.JAPAN_DMCV_FLEET_MOVEMENT_PLANNING
+    GlobalGameState.gamePhase === GlobalGameState.PHASE.JAPAN_DMCV_FLEET_MOVEMENT
       ? GlobalUnitsModel.Side.JAPAN
       : GlobalUnitsModel.Side.US
 
@@ -1226,6 +1267,7 @@ export function App() {
       <DMCVCarrierSelectionPanelHeaders
         controller={GlobalInit.controller}
         setDMCVCarrierSelected={setDMCVCarrierSelected}
+        DMCVCarrierSelected={DMCVCarrierSelected}
         side={dmcvSide}
       ></DMCVCarrierSelectionPanelHeaders>
     </>
@@ -1236,6 +1278,7 @@ export function App() {
         controller={GlobalInit.controller}
         DMCVCarrierSelected={DMCVCarrierSelected}
         side={dmcvSide}
+        setDMCVCarrierSelected={setDMCVCarrierSelected}
         doDMCVShipMarkerUpdate={doDMCVShipMarkerUpdate}
       ></DMCVCarrierSelectionPanelFooters>
     </>
@@ -1848,7 +1891,6 @@ export function App() {
         margin={315}
         closeButtonDisabled={!targetSelected}
         onHide={(e) => {
-          console.log("HIDE DA PANEL!")
           setFleetTargetSelectionPanelShow(false)
           nextAction(e)
         }}
@@ -2054,22 +2096,21 @@ export function App() {
         disabled={false}
       ></EliminatedReturningUnits>
       <SubmarineAlertPanel
-         show={!testClicked && submarineAlertPanelShow}
-         controller={GlobalInit.controller}
-         headerText={"Submarine"}
-         setShowCardFooter={setShowCardFooter}
-         cardNumber={cardNumber}
-         setTowedCVSelected={setTowedCVSelected}
-         towedCV={towedCVSelected}
-         margin={0}
-         setSubmarineDamagePanelShow={setSubmarineDamagePanelShow}
-         setSubmarineAlertPanelShow={setSubmarineAlertPanelShow}
-         onHide={(e) => {
+        show={!testClicked && submarineAlertPanelShow}
+        controller={GlobalInit.controller}
+        headerText={"Submarine"}
+        setShowCardFooter={setShowCardFooter}
+        cardNumber={cardNumber}
+        setTowedCVSelected={setTowedCVSelected}
+        towedCV={towedCVSelected}
+        margin={0}
+        setSubmarineDamagePanelShow={setSubmarineDamagePanelShow}
+        setSubmarineAlertPanelShow={setSubmarineAlertPanelShow}
+        onHide={(e) => {
           setSubmarineAlertPanelShow(false)
-         }}
-         nextAction={nextAction}
-         width={30}
- 
+        }}
+        nextAction={nextAction}
+        width={30}
       ></SubmarineAlertPanel>
       <CardAlertPanel
         show={!testClicked && cardAlertPanelShow}
@@ -2241,7 +2282,6 @@ export function App() {
           sendDMCVSelectionEvent()
           nextAction(e)
         }}
-        
         disabled={true}
         closeButtonDisabled={!DMCVCarrierSelected}
       ></LargeDicePanel>
@@ -2349,6 +2389,8 @@ export function App() {
                   japanMapRegions={japanMapRegions}
                   japanStrikePanelEnabled={japanStrikePanelEnabled}
                   usStrikePanelEnabled={usStrikePanelEnabled}
+                  setPreviousPosition={setPreviousPosition}
+                  previousPosition={previousPosition}
                 />
               </BoardContext.Provider>
             </TransformComponent>

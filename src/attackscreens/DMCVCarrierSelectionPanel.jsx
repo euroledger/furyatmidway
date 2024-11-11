@@ -3,7 +3,7 @@ import Button from "react-bootstrap/Button"
 import GlobalUnitsModel from "../model/GlobalUnitsModel"
 import GlobalGameState from "../model/GlobalGameState"
 
-export function DMCVCarrierSelectionPanelHeaders({ controller, setDMCVCarrierSelected, side }) {
+export function DMCVCarrierSelectionPanelHeaders({ controller, DMCVCarrierSelected, setDMCVCarrierSelected, side }) {
   let usEnterprise = {
     image: "/images/fleetcounters/enterprise.jpg",
     name: GlobalUnitsModel.Carrier.ENTERPRISE,
@@ -67,6 +67,7 @@ export function DMCVCarrierSelectionPanelHeaders({ controller, setDMCVCarrierSel
     } else if (cv === GlobalUnitsModel.Carrier.SORYU) {
       carrier = jpSoryu
     }
+
     return (
       <>
         <div>
@@ -89,7 +90,9 @@ export function DMCVCarrierSelectionPanelHeaders({ controller, setDMCVCarrierSel
               color: "white",
             }}
           >
-            <Button onClick={() => handleClick(cv)}>{cv}</Button>
+            <Button disabled={DMCVCarrierSelected !== ""} onClick={() => handleClick(cv)}>
+              {cv}
+            </Button>
           </div>
         </div>
       </>
@@ -139,7 +142,7 @@ export function DMCVCarrierSelectionPanelHeaders({ controller, setDMCVCarrierSel
   )
 }
 
-export function DMCVCarrierSelectionPanelFooters({ controller, DMCVCarrierSelected, side, doDMCVShipMarkerUpdate }) {
+export function DMCVCarrierSelectionPanelFooters({ controller, setDMCVCarrierSelected, DMCVCarrierSelected, side, doDMCVShipMarkerUpdate }) {
   if (DMCVCarrierSelected == "") {
     return
   }
@@ -150,17 +153,16 @@ export function DMCVCarrierSelectionPanelFooters({ controller, DMCVCarrierSelect
   }
 
   if (side === GlobalUnitsModel.Side.US) {
-      GlobalGameState.usDMCVCarrier = carrierUnit.name
+    GlobalGameState.usDMCVCarrier = carrierUnit.name
   } else {
-      GlobalGameState.jpDMCVCarrier = carrierUnit.name
+    GlobalGameState.jpDMCVCarrier = carrierUnit.name
   }
-  
+
   carrierUnit.dmcv = true
 
   carrierUnit.taskForce =
     side === GlobalUnitsModel.Side.JAPAN ? GlobalUnitsModel.TaskForce.JAPAN_DMCV : GlobalUnitsModel.TaskForce.US_DMCV
 
-  
   const message1 = "CV Selected: "
   return (
     <>

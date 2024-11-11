@@ -24,7 +24,15 @@ import DamageSunkCounters from "./buttons/mapobjects/DamageSunkCounters"
 import DMCVShipMarker from "./buttons/mapobjects/DMCVShipMarker"
 import TowedBox from "./buttons/TowedBox"
 
-function Board({ scale, USMapRegions, japanMapRegions, japanStrikePanelEnabled, usStrikePanelEnabled }) {
+function Board({
+  scale,
+  USMapRegions,
+  japanMapRegions,
+  japanStrikePanelEnabled,
+  usStrikePanelEnabled,
+  setPreviousPosition,
+  previousPosition,
+}) {
   let zProps = { us: 0, japan: 0 }
   const initialJpAopPosition = { left: 2.7, top: 7 }
   const initialUSAopPosition = { left: 3.5, top: 6.1 }
@@ -189,6 +197,8 @@ function Board({ scale, USMapRegions, japanMapRegions, japanStrikePanelEnabled, 
           jpRegions={japanMapRegions}
           enabled={true}
           side={GlobalUnitsModel.Side.JAPAN}
+          setPreviousPosition={setPreviousPosition}
+          previousPosition={previousPosition}
         ></FleetCounter>
         <FleetCounter
           currentHex={currentUSHex}
@@ -199,6 +209,8 @@ function Board({ scale, USMapRegions, japanMapRegions, japanStrikePanelEnabled, 
           setCurrentJapanHex={setCurrentJapanHex}
           setCurrentUSHex={setCurrentUSHex}
           usRegions={USMapRegions}
+          setPreviousPosition={setPreviousPosition}
+          previousPosition={previousPosition}
           enabled={
             GlobalGameState.gamePhase === GlobalGameState.PHASE.US_SETUP_FLEET || GlobalGameState.usFleetPlaced === true
           }
@@ -214,6 +226,8 @@ function Board({ scale, USMapRegions, japanMapRegions, japanStrikePanelEnabled, 
           setCurrentUSHex={setCurrentUSHex}
           enabled={true}
           side={GlobalUnitsModel.Side.JAPAN}
+          setPreviousPosition={setPreviousPosition}
+          previousPosition={previousPosition}
         ></FleetCounter>
         <FleetCounter
           currentHex={currentJapanHex}
@@ -229,6 +243,8 @@ function Board({ scale, USMapRegions, japanMapRegions, japanStrikePanelEnabled, 
             GlobalGameState.jpFleetPlaced === true
           }
           side={GlobalUnitsModel.Side.JAPAN}
+          setPreviousPosition={setPreviousPosition}
+          previousPosition={previousPosition}
         ></FleetCounter>
         <FleetCounter
           currentHex={currentJapanHex}
@@ -240,6 +256,8 @@ function Board({ scale, USMapRegions, japanMapRegions, japanStrikePanelEnabled, 
           setCurrentJapanHex={setCurrentJapanHex}
           enabled={true}
           side={GlobalUnitsModel.Side.US}
+          setPreviousPosition={setPreviousPosition}
+          previousPosition={previousPosition}
         ></FleetCounter>
         <FleetCounter
           currentHex={currentJapanHex}
@@ -251,6 +269,8 @@ function Board({ scale, USMapRegions, japanMapRegions, japanStrikePanelEnabled, 
           counterData={GlobalInit.counters.get("MIF-USMAP")}
           enabled={true}
           side={GlobalUnitsModel.Side.US}
+          setPreviousPosition={setPreviousPosition}
+          previousPosition={previousPosition}
         ></FleetCounter>
         <DMCVFleetCounter
           currentHex={currentJapanHex}
@@ -263,11 +283,13 @@ function Board({ scale, USMapRegions, japanMapRegions, japanStrikePanelEnabled, 
           jpRegions={japanMapRegions}
           enabled={
             (GlobalInit.controller.getDamagedCarriers(GlobalUnitsModel.Side.JAPAN).length > 0 &&
-              GlobalGameState.gamePhase === GlobalGameState.PHASE.JAPAN_DMCV_FLEET_MOVEMENT_PLANNING &&
+              GlobalGameState.gamePhase === GlobalGameState.PHASE.JAPAN_DMCV_FLEET_MOVEMENT &&
               GlobalGameState.jpDMCVFleetPlaced === false) ||
             GlobalGameState.jpDMCVFleetPlaced === true
           }
           side={GlobalUnitsModel.Side.JAPAN}
+          setPreviousPosition={setPreviousPosition}
+          previousPosition={previousPosition}
         ></DMCVFleetCounter>
         <DMCVFleetCounter
           currentHex={currentJapanHex}
@@ -279,6 +301,8 @@ function Board({ scale, USMapRegions, japanMapRegions, japanStrikePanelEnabled, 
           setCurrentUSHex={setCurrentUSHex}
           enabled={true}
           side={GlobalUnitsModel.Side.US}
+          setPreviousPosition={setPreviousPosition}
+          previousPosition={previousPosition}
         ></DMCVFleetCounter>
         <DMCVFleetCounter
           currentHex={currentUSHex}
@@ -296,6 +320,8 @@ function Board({ scale, USMapRegions, japanMapRegions, japanStrikePanelEnabled, 
             GlobalGameState.usDMCVFleetPlaced === true
           }
           side={GlobalUnitsModel.Side.US}
+          setPreviousPosition={setPreviousPosition}
+          previousPosition={previousPosition}
         ></DMCVFleetCounter>
         <DMCVFleetCounter
           currentHex={currentUSHex}
@@ -307,6 +333,8 @@ function Board({ scale, USMapRegions, japanMapRegions, japanStrikePanelEnabled, 
           setCurrentUSHex={setCurrentUSHex}
           enabled={true}
           side={GlobalUnitsModel.Side.JAPAN}
+          setPreviousPosition={setPreviousPosition}
+          previousPosition={previousPosition}
         ></DMCVFleetCounter>
         <AirCounters
           controller={GlobalInit.controller}

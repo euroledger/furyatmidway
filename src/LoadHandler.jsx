@@ -42,11 +42,11 @@ async function loadHandler({
   }
 
   for (const update of usfleetUpdates) {
-    console.log("US FLEET UPDATE:",update)
     await delay(1)
     setFleetUnitUpdate(update)
     await delay(1)
   }
+  
 
   for (const update of jpfleetUpdates) {
     await delay(1)

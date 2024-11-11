@@ -209,7 +209,6 @@ export function AirReplacementsFooters({
   airReplacementsSelected,
   setAirUnitUpdate,
 }) {
-  console.log("SELECTED AIR UNIT=", selectedAirUnit)
   let side = GlobalUnitsModel.Side.JAPAN
   if (controller.getCardPlayed(3, GlobalUnitsModel.Side.US)) {
     side = GlobalUnitsModel.Side.US
@@ -223,7 +222,6 @@ export function AirReplacementsFooters({
     GlobalUnitsModel.Carrier.SORYU,
   ]
   const handleClick = (cv) => {
-    console.log("CV Selected = ", cv)
     setAirReplacementsSelected(true)
 
     selectedCV = cv

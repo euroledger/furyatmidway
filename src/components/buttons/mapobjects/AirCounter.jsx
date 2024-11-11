@@ -340,7 +340,6 @@ function AirCounter({ getAirBox, setAirBox, counterData, side }) {
   const transform =
     counterData.aircraftUnit.moved || counterData.aircraftUnit.airOpMoved !== undefined ? "rotate(45deg)" : ""
 
-  // console.log(counterData.name, transform)
   const outline = counterData.border ? "3px solid rgb(184,29,29)" : ""
 
   let disp = "block"

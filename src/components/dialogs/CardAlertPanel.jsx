@@ -85,7 +85,6 @@ function CardAlertPanel(props) {
         controller.getCardPlayed(1, GlobalUnitsModel.Side.US) ||
         controller.getCardPlayed(1, GlobalUnitsModel.Side.JAPAN)
       ) {
-        console.log("SET SUB ALERT PANEL....")
         setSubmarineAlertPanelShow(true)
       } else {
         setSubmarineDamagePanelShow(true)

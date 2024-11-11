@@ -44,7 +44,7 @@ function StrikeGroupPopUp({ strikeGroup, fleetUnits, popUpPosition, hex, side })
         position: "absolute",
         left: popUpPosition.x + leftOffset,
         top: popUpPosition.y + topOffset,
-        zIndex: 100,
+        zIndex: 101,
         width: wstr,
         height: "50px",
         background: "white",

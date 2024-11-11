@@ -30,7 +30,7 @@ function DMCVShipMarker({ counterData }) {
   const offsets = airZones.offsets[dmcvShipMarkerUpdate.index]
 
   if (counterData.name === dmcvShipMarkerUpdate.name && position.left !== offsets.left + "%") {
-    console.log("I am ", counterData.name, " -> MARKER UPDATE = ", dmcvShipMarkerUpdate, "offsets=", offsets)
+    // console.log("I am ", counterData.name, " -> MARKER UPDATE = ", dmcvShipMarkerUpdate, "offsets=", offsets)
 
     setPosition(() => ({
       left: offsets.left + "%",
