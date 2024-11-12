@@ -1086,7 +1086,6 @@ export default class Controller {
       fleetsInSameHexAsUSDMCV = new Array()
   
     if (csfLocation !== undefined) {
-      console.log("CHECK CSF LOCATION=", csfLocation)
       fleetsInSameHexAsCSF = this.getAllFleetsInLocation(csfLocation, GlobalUnitsModel.Side.US, false)
     }
     if (usDMCVLocation) {

@@ -478,24 +478,15 @@ export function App() {
       const csfLocation = GlobalInit.controller.getFleetLocation("CSF", GlobalUnitsModel.Side.US)
       let regionsMinusAllFleets = allHexesWithinDistance(csfLocation.currentHex, GlobalGameState.fleetSpeed, true)
 
-      // remove hex with 1AF & IJN DMCV unless night (turn 4), as surface engagements prohibited during day turns
+      // remove hex with IJN DMCV 
       if (GlobalGameState.gameTurn !== 4) {
-        // const ijn1AFLocation = GlobalInit.controller.getFleetLocation("1AF", GlobalUnitsModel.Side.JAPAN)
-        // if (ijn1AFLocation !== undefined) {
-        //   regionsMinusAllFleets = removeHexFromRegion(regionsMinusAllFleets, ijn1AFLocation.currentHex)
-        // }
-        // const ijn1DMCVLocation = GlobalInit.controller.getFleetLocation("IJN-DMCV", GlobalUnitsModel.Side.JAPAN)
-        // if (ijn1DMCVLocation !== undefined) {
-        //   regionsMinusAllFleets = removeHexFromRegion(regionsMinusAllFleets, ijn1DMCVLocation.currentHex)
-        // }
         const usDMCVLocation = GlobalInit.controller.getFleetLocation("US-DMCV", GlobalUnitsModel.Side.US)
         if (usDMCVLocation !== undefined) {
           regionsMinusAllFleets = removeHexFromRegion(regionsMinusAllFleets, usDMCVLocation.currentHex)
         }
-        setUSMapRegions(regionsMinusAllFleets)
-      } else {
-        setUSMapRegions(usRegion)
-      }
+      }   
+      setUSMapRegions(regionsMinusAllFleets)
+
       setFleetMoveAlertShow(true)
     } else if (GlobalGameState.gamePhase === GlobalGameState.PHASE.US_DMCV_FLEET_MOVEMENT_PLANNING) {
       let usRegion
@@ -506,10 +497,6 @@ export function App() {
       } else {
         usRegion = allHexesWithinDistance(csfLocation.currentHex, GlobalGameState.dmcvFleetSpeed, true)
       }
-      // // DMCV fleet cannot move to same hex as JP 1AF Fleet
-      // const af1Location = GlobalInit.controller.getFleetLocation("1AF", GlobalUnitsModel.Side.JAPAN)
-      // usRegion = removeHexFromRegion(usRegion, af1Location.currentHex)
-      // DMCV fleet cannot move to same hex as US CSF Fleet
       usRegion = removeHexFromRegion(usRegion, csfLocation.currentHex)
       setUSMapRegions(usRegion)
     }

@@ -20,6 +20,7 @@ export default class GlobalGameState {
     MIDWAY_ATTACK: "Midway Attack Phase",
     US_FLEET_MOVEMENT: "US Fleet Movement",
     RETREAT_US_FLEET: "Check Fleets in Same Hex",
+    NIGHT_BATTLES: "Surface Sea Battle",
     AIR_SEARCH: "Search Phase",
     INITIATIVE_DETERMINATION: "Initiative Determination",
     AIR_OPERATIONS: "Air Operations Phase",

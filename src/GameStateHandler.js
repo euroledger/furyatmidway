@@ -902,7 +902,12 @@ export default async function handleAction({
 
     const { numFleetsInSameHexAsCSF, numFleetsInSameHexAsUSDMCV } = GlobalInit.controller.opposingFleetsInSameHex()
     if (numFleetsInSameHexAsCSF === 2 || numFleetsInSameHexAsUSDMCV === 2) {
-      GlobalGameState.gamePhase = GlobalGameState.PHASE.RETREAT_US_FLEET
+
+      if (GlobalGameState.gameTurn === 4) {
+        GlobalGameState.gamePhase = GlobalGameState.PHASE.NIGHT_BATTLES
+      } else {
+        GlobalGameState.gamePhase = GlobalGameState.PHASE.RETREAT_US_FLEET
+      }
     } else {
       if (GlobalInit.controller.usHandContainsCard(7)) {
         setCardNumber(() => 7)

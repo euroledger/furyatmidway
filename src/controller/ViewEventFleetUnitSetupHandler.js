@@ -15,6 +15,11 @@ class ViewEventFleetUnitSetupHandler {
 
     this.controller.setFleetUnitLocation(id, to, side)
 
+    
+    if (id.includes("MAP")) {
+      // no need to log fleet movements on the other side's map (for now)
+      return
+    }
     let cmdType = COMMAND_TYPE.MOVE_FLEET_UNIT
     if (initial) {
       cmdType = COMMAND_TYPE.PLACE

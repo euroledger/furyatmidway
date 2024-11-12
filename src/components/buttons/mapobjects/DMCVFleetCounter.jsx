@@ -240,14 +240,19 @@ function DMCVFleetCounter({
         af1 = distanceBetweenHexes(af1Location.currentHex, hex) === 0
       }
       if (af1) {
+        console.log("QUACK 1")
         smallOffset.x = 7
         smallOffset.y = 7
       }
       if (dmcv) {
+        console.log("QUACK 2")
+
         smallOffset.x = 7
         smallOffset.y = 7
       }
       if (!dmcv && !af1) {
+        console.log("QUACK 3")
+
         smallOffset.x = 0
         smallOffset.y = 0
       }
@@ -283,14 +288,20 @@ function DMCVFleetCounter({
         csf = distanceBetweenHexes(csfLocation.currentHex, hex) === 0
       }
       if (csf) {
+        console.log("QUACK 4")
+
         smallOffset.x = -7
         smallOffset.y = -7
       }
       if (dmcv) {
+        console.log("QUACK 5")
+
         smallOffset.x = -7
         smallOffset.y = -7
       }
       if (!dmcv && !csf) {
+        console.log("QUACK 6")
+
         smallOffset.x = 0
         smallOffset.y = 0
       }
