@@ -11,6 +11,7 @@ export function AirReplacementsHeaders({
   setSelectedAirUnit,
 }) {
   const [reducedAirUnits, setReducedAirUnits] = useState([])
+  const [elimSelected, setElimSelected] = useState(false)
 
   let side = GlobalUnitsModel.Side.JAPAN
   if (controller.getCardPlayed(3, GlobalUnitsModel.Side.US)) {
@@ -40,6 +41,7 @@ export function AirReplacementsHeaders({
           onClick={() => handleClick(airUnit)}
           type="image"
           src={airUnit.image}
+          disabled={elimSelected}
           style={{
             width: "40px",
             height: "40px",
@@ -83,6 +85,8 @@ export function AirReplacementsHeaders({
       airUnit.image = newImage
       setSelectedAirUnit(airUnit)
       setShowCarrierDisplay(() => true)
+      setAirReplacementsSelected(false)
+      setElimSelected(true)
     }
   }
 
@@ -209,26 +213,44 @@ export function AirReplacementsFooters({
   airReplacementsSelected,
   setAirUnitUpdate,
 }) {
+  const [selectedCV, setSelectedCV] = useState("")
+
   let side = GlobalUnitsModel.Side.JAPAN
   if (controller.getCardPlayed(3, GlobalUnitsModel.Side.US)) {
     side = GlobalUnitsModel.Side.US
   }
-  let selectedCV
 
-  const japanCVs = [
-    GlobalUnitsModel.Carrier.AKAGI,
-    GlobalUnitsModel.Carrier.KAGA,
-    GlobalUnitsModel.Carrier.HIRYU,
-    GlobalUnitsModel.Carrier.SORYU,
-  ]
   const handleClick = (cv) => {
-    setAirReplacementsSelected(true)
-
-    selectedCV = cv
+    setSelectedCV(cv)
     // move the air unit from eliminated box to the hangar of the given cv
   }
+  let availableUSCVs, availableJapanCVs
   let availableCVImages = []
-
+  if (side === GlobalUnitsModel.Side.US) {
+    const usCVs = [
+      GlobalUnitsModel.Carrier.ENTERPRISE,
+      GlobalUnitsModel.Carrier.YORKTOWN,
+      GlobalUnitsModel.Carrier.HORNET,
+    ]
+    availableUSCVs = usCVs.filter(
+      (carrier) => {
+        return !controller.isSunk(carrier) && controller.isHangarAvailable(carrier)}
+    )
+  } else {
+    const japanCVs = [
+      GlobalUnitsModel.Carrier.AKAGI,
+      GlobalUnitsModel.Carrier.KAGA,
+      GlobalUnitsModel.Carrier.HIRYU,
+      GlobalUnitsModel.Carrier.SORYU,
+    ]
+    availableJapanCVs = japanCVs.filter(
+      (carrier) => !controller.isSunk(carrier) && controller.isHangarAvailable(cv)
+    )
+    if (availableJapanCVs.length === 0) {
+      msg = "No carriers available to receive replacements"
+      setAirReplacementsSelected(true)
+    }
+  }
   const createImage = (cv) => {
     let image = "/images/fleetcounters/yorktown.jpg"
     if (cv === GlobalUnitsModel.Carrier.ENTERPRISE) {
@@ -244,7 +266,12 @@ export function AirReplacementsFooters({
     } else if (cv === GlobalUnitsModel.Carrier.HORNET) {
       image = "/images/fleetcounters/soryu.jpg"
     }
-
+    let buttonDisabled 
+    if (side === GlobalUnitsModel.Side.US) {
+      buttonDisabled= availableUSCVs.length === 0 || selectedCV != ""
+    } else {
+      buttonDisabled= availableJapanCVs.length === 0  || selectedCV != ""
+    }
     return (
       <>
         <div>
@@ -264,7 +291,7 @@ export function AirReplacementsFooters({
             marginTop: "20px",
           }}
         >
-          <Button disabled={availableCVImages.length <= 1} onClick={() => handleClick(cv)}>
+          <Button disabled={buttonDisabled} onClick={() => handleClick(cv)}>
             {cv}
           </Button>
         </div>
@@ -273,52 +300,35 @@ export function AirReplacementsFooters({
   }
   let msg = ""
 
-  if (side === GlobalUnitsModel.Side.US) {
-    const usCVs = [
-      GlobalUnitsModel.Carrier.ENTERPRISE,
-      GlobalUnitsModel.Carrier.YORKTOWN,
-      GlobalUnitsModel.Carrier.HORNET,
-    ]
-    const availableUSCVs = usCVs.filter(
-      (carrier) => !controller.isSunk(carrier) && controller.isHangarAvailable(carrier)
-    )
-    if (availableUSCVs.length === 0) {
-      msg = "No carriers available to receive replacements"
-      setAirReplacementsSelected(true)
-    }
-    availableCVImages = availableUSCVs.map((cv, idx) => {
-      return (
-        <>
-          <div>{createImage(cv)}</div>
-        </>
-      )
-    })
-    if (availableUSCVs.length === 1) {
-      selectedCV = availableUSCVs[0]
-    }
-  } else {
-    const availableJapanCVs = japanCVs.filter(
-      (carrier) => !controller.isSunk(carrier) && controller.isHangarAvailable(carrier)
-    )
-    if (availableJapanCVs.length === 0) {
-      msg = "No carriers available to receive replacements"
-      setAirReplacementsSelected(true)
-    }
-    availableCVImages = availableJapanCVs.map((cv, idx) => {
-      return (
-        <>
-          <div>{createImage(cv)}</div>
-        </>
-      )
-    })
-    if (availableJapanCVs.length === 1) {
-      selectedCV = availableJapanCVs[0]
+  if (!airReplacementsSelected) {
+    if (side === GlobalUnitsModel.Side.US) {
+      availableCVImages = availableUSCVs.map((cv, idx) => {
+        return (
+          <>
+            <div>{createImage(cv)}</div>
+          </>
+        )
+      })
+      if (availableUSCVs.length === 1) {
+        setSelectedCV(availableUSCVs[0])
+      }
+    } else {
+      availableCVImages = availableJapanCVs.map((cv, idx) => {
+        return (
+          <>
+            <div>{createImage(cv)}</div>
+          </>
+        )
+      })
+      if (availableJapanCVs.length === 1) {
+        setSelectedCV(availableJapanCVs[0])
+      }
     }
   }
 
   if (selectedCV && showCarrierDisplay && !airReplacementsSelected) {
-    moveAirUnitFromEliminatedBox(controller, side, selectedCV, selectedAirUnit, setAirUnitUpdate)
     setAirReplacementsSelected(true)
+    moveAirUnitFromEliminatedBox(controller, side, selectedCV, selectedAirUnit, setAirUnitUpdate)
   }
   return (
     <>

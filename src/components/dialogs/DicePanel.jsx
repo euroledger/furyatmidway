@@ -9,7 +9,7 @@ import Die from "./Die"
 import "./modal.css"
 
 function DicePanel(props) {
-  const {
+  let {
     numDice,
     headerText,
     headers,
@@ -51,13 +51,16 @@ function DicePanel(props) {
       }
     }
   }, [GlobalGameState.closePanel])
-  const bg = "#293a4b"
+  const bg = GlobalGameState.gameTurn === 4 ? "black" :"#293a4b"
   const rowClass = `g-${numDice}`
 
   let myBigBollocks = "modal-width" + numDice
   let myBigMargin = 0
 
   let showDicePanel = showDice
+  if (!showDicePanel) {
+    numDice = 0
+  }
 
   if (width) {
     myBigBollocks = `maxWidth: ${width}%`

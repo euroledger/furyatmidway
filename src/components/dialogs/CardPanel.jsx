@@ -1,9 +1,7 @@
 import Modal from "react-bootstrap/Modal"
-import Card from "react-bootstrap/Card"
-import Col from "react-bootstrap/Col"
-import Row from "react-bootstrap/Row"
 import Button from "react-bootstrap/Button"
 import GlobalUnitsModel from "../../model/GlobalUnitsModel"
+import GlobalGameState from "../../model/GlobalGameState"
 import "./modal.css"
 
 function CentredButton() {
@@ -27,7 +25,7 @@ function CardPanel(props) {
       ? GlobalUnitsModel.jpCards.map((c) => c._number)
       : GlobalUnitsModel.usCards.map((c) => c._number)
 
-  const bg = "#293a4b"
+  const bg = GlobalGameState.gameTurn === 4 ? "black" :"#293a4b"
   const header = `${props.side} Hand`
   const sizey = cardArray.length >= 4 ? "xl" : "lg"
 

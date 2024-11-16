@@ -20,7 +20,8 @@ export default class GlobalGameState {
     MIDWAY_ATTACK: "Midway Attack Phase",
     US_FLEET_MOVEMENT: "US Fleet Movement",
     RETREAT_US_FLEET: "Check Fleets in Same Hex",
-    NIGHT_BATTLES: "Surface Sea Battle",
+    NIGHT_BATTLES_1: "Surface Sea Battle CSF",
+    NIGHT_BATTLES_2: "Surface Sea Battle DMCV",
     AIR_SEARCH: "Search Phase",
     INITIATIVE_DETERMINATION: "Initiative Determination",
     AIR_OPERATIONS: "Air Operations Phase",
@@ -72,7 +73,7 @@ export default class GlobalGameState {
     GlobalUnitsModel.Carrier.MIDWAY,
   ]
 
-  static gameTurn = 1;
+  static gameTurn = 1
 
   static currentCarrier = 0
   static currentCarrierDivision = 1
@@ -93,10 +94,10 @@ export default class GlobalGameState {
   static currentCarrierAttackTarget=""
   static fleetTarget = ""
 
-  static jpDMCVCarrier = undefined
-  static usDMCVCarrier = undefined
+  static jpDMCVCarrier = ""
+  static usDMCVCarrier = ""
 
-  static attackingStrikeGroup= undefined
+  static attackingStrikeGroup= ""
 
   static usCVsSunk = 0
   static japanCVsSunk = 0
@@ -128,6 +129,10 @@ export default class GlobalGameState {
   static midwayBox0Damaged = false
   static midwayBox1Damaged = false
   static midwayBox2Damaged = false
+   
+  static jpSeaBattleHits = 0
+  static usSeaBattleHits = 0
+
 
   static turnText = [
     "June 4, 1942 Morning",
@@ -152,6 +157,10 @@ export default class GlobalGameState {
   static jpDMCVFleetMoved = false
   static usDMCVFleetMoved = false
 
+  static mifFleetPlaced = false
+  static mifFleetMoved = false
+
+
   static phaseCompleted = false
 
   static sideWithInitiative = ""
@@ -163,7 +172,7 @@ export default class GlobalGameState {
     this.stateHandler();
   }
 
-  static retreatFleet = undefined
+  static retreatFleet = ""
   static loading = false
 
   static log = (message) => {

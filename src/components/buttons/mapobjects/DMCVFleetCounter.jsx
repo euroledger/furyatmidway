@@ -93,19 +93,17 @@ function DMCVFleetCounter({
       const from = position.currentHex
 
       // No need to log JPMAP or USMAP removal of DMCV Fleet
-      if (!counterData.name.includes("MAP")) {
-        controller.viewEventHandler({
-          type: Controller.EventTypes.FLEET_SETUP,
-          data: {
-            initial: false,
-            id: counterData.name,
-            from,
-            to,
-            side,
-            loading: false,
-          },
-        })
-      }
+      controller.viewEventHandler({
+        type: Controller.EventTypes.FLEET_SETUP,
+        data: {
+          initial: false,
+          id: counterData.name,
+          from,
+          to,
+          side,
+          loading: false,
+        },
+      })
     }
   } else {
     // This code for the test mode fleet unit updates (and game loads and moving fleets on opponent's map)
@@ -135,7 +133,6 @@ function DMCVFleetCounter({
         }
         if (locationDMCV !== undefined) {
           dmcv = distanceBetweenHexes(locationDMCV.currentHex, hex) === 0
-        
         }
         if (af1) {
           smallOffset.x = -7
@@ -157,12 +154,17 @@ function DMCVFleetCounter({
       } else {
         const csfLocation = controller.getFleetLocation("1AF", GlobalUnitsModel.Side.JAPAN)
         const locationDMCV = controller.getFleetLocation("IJN-DMCV", GlobalUnitsModel.Side.JAPAN)
-        let csf, dmcv
+        const locationMIF = controller.getFleetLocation("MIF", GlobalUnitsModel.Side.JAPAN)
+
+        let csf, dmcv, mif
         if (locationDMCV !== undefined) {
           dmcv = distanceBetweenHexes(locationDMCV.currentHex, hex) === 0
         }
         if (csfLocation !== undefined) {
           csf = distanceBetweenHexes(csfLocation.currentHex, hex) === 0
+        }
+        if (locationMIF !== undefined) {
+          mif = distanceBetweenHexes(locationMIF.currentHex, hex) === 0
         }
         if (csf) {
           smallOffset.x = 7
@@ -172,7 +174,11 @@ function DMCVFleetCounter({
           smallOffset.x = 7
           smallOffset.y = 7
         }
-        if (!dmcv && !csf) {
+        if (mif) {
+          smallOffset.x = 7
+          smallOffset.y = 7
+        }
+        if (!dmcv && !csf && !mif) {
           smallOffset.x = 0
           smallOffset.y = 0
         }
@@ -232,27 +238,31 @@ function DMCVFleetCounter({
       }
       const af1Location = controller.getFleetLocation("1AF", GlobalUnitsModel.Side.JAPAN)
       const locationDMCV = controller.getFleetLocation("IJN-DMCV", GlobalUnitsModel.Side.JAPAN)
-      let dmcv, af1
+      const locationMIF = controller.getFleetLocation("MIF", GlobalUnitsModel.Side.JAPAN)
+
+      let dmcv, af1, mif
       if (locationDMCV !== undefined) {
         dmcv = distanceBetweenHexes(locationDMCV.currentHex, hex) === 0
       }
       if (af1Location !== undefined) {
         af1 = distanceBetweenHexes(af1Location.currentHex, hex) === 0
       }
+      if (locationMIF !== undefined) {
+        mif = distanceBetweenHexes(locationMIF.currentHex, hex) === 0
+      }
       if (af1) {
-        console.log("QUACK 1")
         smallOffset.x = 7
         smallOffset.y = 7
       }
       if (dmcv) {
-        console.log("QUACK 2")
-
         smallOffset.x = 7
         smallOffset.y = 7
       }
-      if (!dmcv && !af1) {
-        console.log("QUACK 3")
-
+      if (mif) {
+        smallOffset.x = 7
+        smallOffset.y = 7
+      }
+      if (!dmcv && !af1 && !mif) {
         smallOffset.x = 0
         smallOffset.y = 0
       }
@@ -288,20 +298,14 @@ function DMCVFleetCounter({
         csf = distanceBetweenHexes(csfLocation.currentHex, hex) === 0
       }
       if (csf) {
-        console.log("QUACK 4")
-
         smallOffset.x = -7
         smallOffset.y = -7
       }
       if (dmcv) {
-        console.log("QUACK 5")
-
         smallOffset.x = -7
         smallOffset.y = -7
       }
       if (!dmcv && !csf) {
-        console.log("QUACK 6")
-
         smallOffset.x = 0
         smallOffset.y = 0
       }

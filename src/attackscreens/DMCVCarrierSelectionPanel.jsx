@@ -157,7 +157,6 @@ export function DMCVCarrierSelectionPanelFooters({ controller, setDMCVCarrierSel
   } else {
     GlobalGameState.jpDMCVCarrier = carrierUnit.name
   }
-
   carrierUnit.dmcv = true
 
   carrierUnit.taskForce =

@@ -50,7 +50,12 @@ import {
 } from "./DiceHandler"
 import { determineAllUnitsDeployedForCarrier } from "./controller/AirUnitSetupHandler"
 
-import { usCSFStartHexes, japanAF1StartHexesNoMidway, japanAF1StartHexesMidway } from "./components/MapRegions"
+import {
+  usCSFStartHexes,
+  japanAF1StartHexesNoMidway,
+  japanAF1StartHexesMidway,
+  japanMIFStartHexes,
+} from "./components/MapRegions"
 import YesNoDialog from "./components/dialogs/YesNoDialog"
 import { saveGameState } from "./SaveLoadGame"
 import loadHandler from "./LoadHandler"
@@ -81,6 +86,7 @@ import {
 } from "./attackscreens/CarrierPlanesDitchDamagePanel"
 import { DamageControlPanelHeaders, DamageControlPanelFooters } from "./attackscreens/DamageControlPanel"
 import { SubmarineDamagePanelHeaders, SubmarineDamagePanelFooters } from "./attackscreens/SubmarineDamagePanel"
+import { SeaBattleDamagePanelHeaders, SeaBattleDamagePanelFooters } from "./attackscreens/SeaBattleDamagePanel"
 import { EndOfTurnSummaryHeaders, EndOfTurnSummaryFooters } from "./attackscreens/EndOfTurnSummaryPanel"
 import { EscortHeaders, EscortFooters } from "./attackscreens/EscortPanel"
 import { AAAHeaders, AAAFooters } from "./attackscreens/AAAPanel"
@@ -97,8 +103,9 @@ import UITester from "./UIEvents/UITester"
 import UITesterHeadless from "./UIEvents/UITesterHeadless"
 
 import { getJapanEnabledAirBoxes, getUSEnabledAirBoxes } from "./AirBoxZoneHandler"
-import handleAction, { calcAirOpsPointsMidway, checkFleetsInSameHex } from "./GameStateHandler"
+import handleAction, { calcAirOpsPointsMidway, getFleetsForDMCVSeaBattle } from "./GameStateHandler"
 import { setStrikeGroupAirUnitsToNotMoved } from "./controller/AirOperationsHandler"
+import { SeaBattleFooters, SeaBattleHeaders } from "./attackscreens/SeaBattlePanel"
 
 export default App
 
@@ -156,6 +163,10 @@ export function App() {
 
   const [gameStateShow, setGameStateShow] = useState(false)
   const [initiativePanelShow, setInitiativePanelShow] = useState(false)
+
+  const [seaBattlePanelShow, setSeaBattlePanelShow] = useState(false)
+  const [seaBattleDamagePanelShow, setSeaBattleDamagePanelShow] = useState(false)
+
   const [targetPanelShow, setTargetPanelShow] = useState(false)
 
   const [fleetTargetSelectionPanelShow, setFleetTargetSelectionPanelShow] = useState(false)
@@ -191,6 +202,7 @@ export function App() {
   const [aaaPanelShow, setAaaPanelShow] = useState(false)
 
   const [damageDone, setDamageDone] = useState(false)
+  const [seaBattleDamageDone, setSeaBattleDamageDone] = useState(false)
 
   const [capAirUnits, setCapAirUnits] = useState([])
   const [capSteps, setCapSteps] = useState(0)
@@ -208,6 +220,8 @@ export function App() {
   const [selectedAirUnit, setSelectedAirUnit] = useState()
 
   const [previousPosition, setPreviousPosition] = useState(new Map())
+  const [jpFleet, setJpFleet] = useState("")
+  const [usFleet, setUsFleet] = useState("")
 
   const [airUnitUpdate, setAirUnitUpdate] = useState({
     unit: {},
@@ -259,6 +273,8 @@ export function App() {
 
   const [USMapRegions, setUSMapRegions] = useState([])
   const [japanMapRegions, setJapanMapRegions] = useState([])
+
+  const [japanMIFMapRegions, setJapanMIFMapRegions] = useState([])
 
   // const [sideWithInitiative, setSideWithInitiative] = useState(undefined)
 
@@ -320,6 +336,38 @@ export function App() {
       GlobalGameState.dieRolls = []
       GlobalGameState.sideWithInitiative = undefined
       setInitiativePanelShow(true)
+    }
+  }, [GlobalGameState.gamePhase])
+
+  useEffect(() => {
+    if (
+      GlobalGameState.gamePhase === GlobalGameState.PHASE.NIGHT_BATTLES_1
+    ) {
+      GlobalGameState.dieRolls = []
+      GlobalGameState.jpSeaBattleHits = 0 
+      GlobalGameState.usSeaBattleHits = 0
+      setDamageDone(false)
+      setDamagedCV("")
+      const { numFleetsInSameHexAsCSF } = GlobalInit.controller.opposingFleetsInSameHex()
+      if (numFleetsInSameHexAsCSF == 2) {
+        setSeaBattlePanelShow(true)
+      }
+    }
+  }, [GlobalGameState.gamePhase])
+  useEffect(() => {
+    if (
+      GlobalGameState.gamePhase === GlobalGameState.PHASE.NIGHT_BATTLES_2
+    ) {
+      GlobalGameState.dieRolls = []
+      GlobalGameState.jpSeaBattleHits = 0 
+      GlobalGameState.usSeaBattleHits = 0
+      setDamageDone(false)
+      setDamagedCV("")
+      const { numFleetsInSameHexAsUSDMCV } = GlobalInit.controller.opposingFleetsInSameHex()
+      if (numFleetsInSameHexAsUSDMCV == 2) {
+        getFleetsForDMCVSeaBattle(setJpFleet, setUsFleet)
+        setSeaBattlePanelShow(true)
+      }
     }
   }, [GlobalGameState.gamePhase])
 
@@ -455,13 +503,6 @@ export function App() {
       GlobalGameState.gamePhase === GlobalGameState.PHASE.JAPAN_DMCV_FLEET_MOVEMENT
     ) {
       setDMCVCarrierSelected(() => "")
-      if (GlobalGameState.gameTurn === 4) {
-        GlobalGameState.fleetSpeed = 4
-        GlobalGameState.dmcvFleetSpeed = 2
-      } else {
-        GlobalGameState.fleetSpeed = 2
-        GlobalGameState.dmcvFleetSpeed = 1
-      }
     }
   }, [GlobalGameState.gamePhase])
 
@@ -473,18 +514,25 @@ export function App() {
   }
 
   const setUsFleetRegions = () => {
+    if (GlobalGameState.gameTurn === 4) {
+      GlobalGameState.fleetSpeed = 4
+      GlobalGameState.dmcvFleetSpeed = 2
+    } else {
+      GlobalGameState.fleetSpeed = 2
+      GlobalGameState.dmcvFleetSpeed = 1
+    }
     if (GlobalGameState.gamePhase === GlobalGameState.PHASE.US_FLEET_MOVEMENT_PLANNING) {
       GlobalGameState.phaseCompleted = true // may just want to skip any fleet movement (leave fleet where it is)
       const csfLocation = GlobalInit.controller.getFleetLocation("CSF", GlobalUnitsModel.Side.US)
       let regionsMinusAllFleets = allHexesWithinDistance(csfLocation.currentHex, GlobalGameState.fleetSpeed, true)
 
-      // remove hex with IJN DMCV 
+      // remove hex with IJN DMCV
       if (GlobalGameState.gameTurn !== 4) {
         const usDMCVLocation = GlobalInit.controller.getFleetLocation("US-DMCV", GlobalUnitsModel.Side.US)
         if (usDMCVLocation !== undefined) {
           regionsMinusAllFleets = removeHexFromRegion(regionsMinusAllFleets, usDMCVLocation.currentHex)
         }
-      }   
+      }
       setUSMapRegions(regionsMinusAllFleets)
 
       setFleetMoveAlertShow(true)
@@ -503,17 +551,28 @@ export function App() {
   }
 
   const setJapanFleetRegions = () => {
+    if (GlobalGameState.gameTurn === 4) {
+      GlobalGameState.fleetSpeed = 4
+      GlobalGameState.dmcvFleetSpeed = 2
+    } else {
+      GlobalGameState.fleetSpeed = 2
+      GlobalGameState.dmcvFleetSpeed = 1
+    }
     if (GlobalGameState.gamePhase === GlobalGameState.PHASE.JAPAN_DMCV_FLEET_MOVEMENT) {
       let jpRegion
       const af1Location = GlobalInit.controller.getFleetLocation("1AF", GlobalUnitsModel.Side.JAPAN)
+      const mifLocation = GlobalInit.controller.getFleetLocation("MIF", GlobalUnitsModel.Side.JAPAN)
       if (GlobalGameState.jpDMCVFleetPlaced) {
         const dmcvLocation = GlobalInit.controller.getFleetLocation("IJN-DMCV", GlobalUnitsModel.Side.JAPAN)
         jpRegion = allHexesWithinDistance(dmcvLocation.currentHex, GlobalGameState.dmcvFleetSpeed, true)
       } else {
         jpRegion = allHexesWithinDistance(af1Location.currentHex, GlobalGameState.dmcvFleetSpeed, true)
       }
-      // DMCV fleet cannot move to same hex as IJN 1AF Fleet
+      // DMCV fleet cannot move to same hex as IJN 1AF or MIF Fleets
       jpRegion = removeHexFromRegion(jpRegion, af1Location.currentHex)
+      if (mifLocation !== undefined) {
+        jpRegion = removeHexFromRegion(jpRegion, mifLocation.currentHex)
+      }
       setJapanMapRegions(jpRegion)
       return
     }
@@ -533,6 +592,16 @@ export function App() {
       // }
 
       setJapanMapRegions(regionsMinusAllFleets)
+      const mifLocation = GlobalInit.controller.getFleetLocation("MIF", GlobalUnitsModel.Side.JAPAN)
+      if (mifLocation !== undefined) {
+        regionsMinusAllFleets = allHexesWithinDistance(mifLocation.currentHex, GlobalGameState.dmcvFleetSpeed, true)
+      }
+
+      if (GlobalGameState.gameTurn === 4) {
+        setJapanMIFMapRegions(japanMIFStartHexes)
+      } else {
+        setJapanMIFMapRegions(regionsMinusAllFleets)
+      }
     }
     setFleetMoveAlertShow(true)
   }
@@ -564,15 +633,14 @@ export function App() {
     } else if (GlobalGameState.gamePhase === GlobalGameState.PHASE.JAPAN_FLEET_MOVEMENT) {
       setJapanFleetRegions()
       GlobalGameState.phaseCompleted = GlobalGameState.jpFleetMoved
-      // } else if (GlobalGameState.gamePhase === GlobalGameState.PHASE.MIDWAY_ATTACK) {
-      //   setJapanMapRegions([])
-      //   GlobalGameState.phaseCompleted = true
     } else if (GlobalGameState.gamePhase === GlobalGameState.PHASE.US_FLEET_MOVEMENT) {
       setJapanMapRegions([])
+      setJapanMIFMapRegions([])
 
       GlobalGameState.phaseCompleted = true
     } else if (GlobalGameState.gamePhase === GlobalGameState.PHASE.AIR_SEARCH) {
       setJapanMapRegions([])
+      setJapanMIFMapRegions([])
 
       GlobalGameState.phaseCompleted = true
     } else if (
@@ -617,6 +685,8 @@ export function App() {
     } else if (GlobalGameState.gamePhase === GlobalGameState.PHASE.JAPAN_DMCV_FLEET_MOVEMENT) {
       let jpRegion
       const af1Location = GlobalInit.controller.getFleetLocation("1AF", GlobalUnitsModel.Side.JAPAN)
+      const mifLocation = GlobalInit.controller.getFleetLocation("MIF", GlobalUnitsModel.Side.JAPAN)
+
       if (GlobalGameState.jpDMCVFleetPlaced) {
         const dmcvLocation = GlobalInit.controller.getFleetLocation("IJN-DMCV", GlobalUnitsModel.Side.JAPAN)
         jpRegion = allHexesWithinDistance(dmcvLocation.currentHex, GlobalGameState.dmcvFleetSpeed, true)
@@ -625,6 +695,9 @@ export function App() {
       }
       // DMCV fleet cannot move to same hex as IJN 1AF Fleet
       jpRegion = removeHexFromRegion(jpRegion, af1Location.currentHex)
+      if (GlobalGameState.mifFleetPlaced) {
+        jpRegion = removeHexFromRegion(jpRegion, mifLocation.currentHex)
+      }
       setJapanMapRegions(jpRegion)
     }
     // If we don't do this, a drag and drop move fires a fleet update and the fleet does not move
@@ -644,9 +717,12 @@ export function App() {
       setCSFAlertShow,
       setMidwayDialogShow,
       setJapanMapRegions,
+      setJapanMIFMapRegions,
       setJpAlertShow,
       setEndOfAirOpAlertShow,
       setEnabledJapanBoxes,
+      setUsFleet,
+      setJpFleet,
       setEnabledUSBoxes,
       setInitiativePanelShow,
       setUsFleetRegions,
@@ -817,9 +893,18 @@ export function App() {
       // GlobalGameState.nextActionButtonDisabled = false
       return
     }
-    if (GlobalGameState.gamePhase === GlobalGameState.PHASE.JAPAN_FLEET_MOVEMENT && GlobalGameState.jpFleetPlaced) {
-      GlobalGameState.nextActionButtonDisabled = false
-      return
+    if (GlobalGameState.gamePhase === GlobalGameState.PHASE.JAPAN_FLEET_MOVEMENT) {
+      if (GlobalGameState.gameTurn < 4) {
+        if (GlobalGameState.jpFleetPlaced) {
+          GlobalGameState.nextActionButtonDisabled = false
+          return
+        }
+      } else {
+        if (GlobalGameState.mifFleetPlaced) {
+          GlobalGameState.nextActionButtonDisabled = false
+          return
+        }
+      }
     }
     if (GlobalGameState.phaseCompleted) {
       GlobalGameState.nextActionButtonDisabled = false
@@ -886,7 +971,6 @@ export function App() {
         midwayMsg = "(Second Air Op)"
       }
     }
-
     return (
       <Navbar bg="black" data-bs-theme="dark" fixed="top" className="justify-content-between navbar-fixed-top">
         <Container>
@@ -1448,9 +1532,62 @@ export function App() {
       <AirOpsFooters controller={GlobalInit.controller}></AirOpsFooters>
     </>
   )
+
   const airOpsHeaders = (
     <>
       <AirOpsHeaders></AirOpsHeaders>
+    </>
+  )
+  const showSeaBattleDice = !(jpFleet.includes("DMCV") || usFleet.includes("DMCV"))
+
+  const seaBattleDiceButtonDisabled = !showSeaBattleDice || damageDone
+
+  const seaBattleHeaders = (
+    <>
+      <SeaBattleHeaders showSeaBattleDice={showSeaBattleDice} jpFleet={jpFleet} usFleet={usFleet}></SeaBattleHeaders>
+    </>
+  )
+  const seaBattleFooters = (
+    <>
+      <SeaBattleFooters
+        controller={GlobalInit.controller}
+        jpFleet={jpFleet}
+        usFleet={usFleet}
+        sendDamageUpdates={sendDamageUpdates}
+        setDamageMarkerUpdate={setDamageMarkerUpdate}
+        sendDMCVUpdate={sendDMCVUpdate}
+        setDmcvShipMarkerUpdate={setDmcvShipMarkerUpdate}
+        setDamageDone={setDamageDone}
+        damageDone={damageDone}
+      ></SeaBattleFooters>
+    </>
+  )
+  const seaBattleDamageHeaders = (
+    <>
+      <SeaBattleDamagePanelHeaders
+        controller={GlobalInit.controller}
+        setDamagedCV={setDamagedCV}
+        setDamageMarkerUpdate={setDamageMarkerUpdate}
+        damagedCV={damagedCV}
+        setSeaBattleDamageDone={setSeaBattleDamageDone}
+        seaBattleDamageDone={seaBattleDamageDone}
+        jpFleet={jpFleet}
+      ></SeaBattleDamagePanelHeaders>
+    </>
+  )
+  const seaBattleDamageCloseButtonDisabled = !seaBattleDamageDone
+
+  const seaBattleDamageFooters = (
+    <>
+      <SeaBattleDamagePanelFooters
+        controller={GlobalInit.controller}
+        setDamageMarkerUpdate={setDamageMarkerUpdate}
+        setDmcvShipMarkerUpdate={setDmcvShipMarkerUpdate}
+        damagedCV={damagedCV}
+        side={submarineControlSide}
+        seaBattleDamageDone={seaBattleDamageDone}
+        setSeaBattleDamageDone={setSeaBattleDamageDone}
+      ></SeaBattleDamagePanelFooters>
     </>
   )
 
@@ -1549,9 +1686,11 @@ export function App() {
   function doInitiativeRoll(roll0, roll1) {
     // for testing QUACK
     // doIntiativeRoll(GlobalInit.controller, 6, 1, true) // JAPAN initiative
-    doIntiativeRoll(GlobalInit.controller, 1, 6, true) // US initiative
+    // doIntiativeRoll(GlobalInit.controller, 1, 6, true) // US initiative
 
-    // doIntiativeRoll(GlobalInit.controller, roll0, roll1)
+    // doIntiativeRoll(GlobalInit.controller, 3, 3, true) // tie
+
+    doIntiativeRoll(GlobalInit.controller, roll0, roll1)
     GlobalGameState.updateGlobalState()
   }
 
@@ -1697,8 +1836,11 @@ export function App() {
   let capInterceptionDiceButtonDisabled = capAirUnits.length === 0 || GlobalGameState.dieRolls.length > 0
 
   let airOpsDiceButtonDisabled =
-    GlobalGameState.sideWithInitiative !== undefined && GlobalGameState.sideWithInitiative !== ""
+    GlobalGameState.sideWithInitiative !== undefined &&
+    GlobalGameState.sideWithInitiative !== null &&
+    GlobalGameState.sideWithInitiative !== ""
 
+  // console.log("airOpsDiceButtonDisabled=", airOpsDiceButtonDisabled)
   const escortCloseCallback = () => {
     let capUnits
     if (GlobalGameState.taskForceTarget === GlobalUnitsModel.TaskForce.MIDWAY) {
@@ -1720,6 +1862,12 @@ export function App() {
     setEscortPanelShow(false)
     sendEscortEvent()
     nextAction()
+  }
+  let jpMsg = "Drag the Japanese 1AF Fleet Unit to any hex in the shaded red area of the map"
+
+  if (GlobalGameState.gameTurn >= 4) {
+    jpMsg =
+      "Drag the Japanese 1AF Fleet Unit to any hex in the shaded red area of the map, and Japanese MIF Fleet Unit to any white shaded hex"
   }
   return (
     <>
@@ -1747,7 +1895,7 @@ export function App() {
       </AlertPanel>
       <AlertPanel show={!testClicked && !testyClicked && jpAlertShow} onHide={() => setJpAlertShow(false)}>
         <h4>INFO</h4>
-        <p>Drag the Japanese 1AF Fleet Unit to any hex in the shaded red area of the map.</p>
+        <p>{jpMsg}</p>
       </AlertPanel>
       <AlertPanel
         show={!testClicked && !testyClicked && fleetMoveAlertShow}
@@ -1848,6 +1996,41 @@ export function App() {
         doRoll={doInitiativeRoll}
         diceButtonDisabled={airOpsDiceButtonDisabled}
         closeButtonDisabled={!airOpsDiceButtonDisabled}
+      ></DicePanel>
+      <DicePanel
+        numDice={2}
+        show={!testClicked && !testyClicked && seaBattlePanelShow}
+        headerText="Surface Battle"
+        headers={seaBattleHeaders}
+        footers={seaBattleFooters}
+        showDice={showSeaBattleDice}
+        margin={25}
+        onHide={(e) => {
+          setSeaBattlePanelShow(false)
+          if (GlobalGameState.jpSeaBattleHits > 0 || GlobalGameState.usSeaBattleHits > 0) {
+            setSeaBattleDamageDone(false)
+            setSeaBattleDamagePanelShow(true)
+          } else {
+            nextAction(e)
+          }
+        }}
+        doRoll={doInitiativeRoll}
+        diceButtonDisabled={seaBattleDiceButtonDisabled}
+        closeButtonDisabled={!seaBattleDiceButtonDisabled}
+      ></DicePanel>
+      <DicePanel
+        numDice={0}
+        show={!testClicked && !testyClicked && seaBattleDamagePanelShow}
+        headerText="Surface Battle Damage Allocation"
+        headers={seaBattleDamageHeaders}
+        footers={seaBattleDamageFooters}
+        showDice={false}
+        margin={25}
+        onHide={(e) => {
+          setSeaBattleDamagePanelShow(false)
+          nextAction(e)
+        }}
+        closeButtonDisabled={seaBattleDamageCloseButtonDisabled}
       ></DicePanel>
       <DicePanel
         numDice={1}
@@ -2361,6 +2544,8 @@ export function App() {
                   setUSMapRegions,
                   japanMapRegions,
                   setJapanMapRegions,
+                  japanMIFMapRegions,
+                  setJapanMIFMapRegions,
                   enabledJapanBoxes,
                   enabledUSBoxes,
                   setEnabledUSBoxes,
@@ -2374,6 +2559,7 @@ export function App() {
                   scale={scale}
                   USMapRegions={USMapRegions}
                   japanMapRegions={japanMapRegions}
+                  japanMIFMapRegions={japanMIFMapRegions}
                   japanStrikePanelEnabled={japanStrikePanelEnabled}
                   usStrikePanelEnabled={usStrikePanelEnabled}
                   setPreviousPosition={setPreviousPosition}

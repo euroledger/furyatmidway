@@ -58,7 +58,7 @@ function loadCounters(controller) {
       "MIF",
       "Japanese Midway Invasion Force",
       position,
-      { x: 50, y: 68 }, // offsets
+      { x: 120, y: -92 }, // offsets
       "/images/fleetcounters/MIF.png",
       "2.5%",
       GlobalUnitsModel.Side.JAPAN
@@ -76,7 +76,7 @@ function loadCounters(controller) {
       "MIF-USMAP",
       "Japanese Midway Invasion Force (US Map)",
       position,
-      { x: 50, y: 68 }, // offsets
+      { x: -298, y: 102 }, // offsets
       "/images/fleetcounters/MIF.png",
       "2.5%",
       GlobalUnitsModel.Side.JAPAN
@@ -126,7 +126,6 @@ function loadCounters(controller) {
     left: 810,
     top: 119,
   }
-
 
   counters.set(
     "US-DMCV",
@@ -1223,9 +1222,8 @@ function loadMarkers() {
     GlobalUnitsModel.sunkMarkers.push(marker)
   }
 
-  GlobalUnitsModel.jpDMCVShipMarker = { name: "JP-DMCV-MARKER", image: "/images/markers/japan-dmcv.png", width: "2.1%"}
-  GlobalUnitsModel.usDMCVShipMarker = { name: "US-DMCV-MARKER", image: "/images/markers/us-dmcv.png", width: "2.1%"}
-
+  GlobalUnitsModel.jpDMCVShipMarker = { name: "JP-DMCV-MARKER", image: "/images/markers/japan-dmcv.png", width: "2.1%" }
+  GlobalUnitsModel.usDMCVShipMarker = { name: "US-DMCV-MARKER", image: "/images/markers/us-dmcv.png", width: "2.1%" }
 }
 function loadFleetUnits() {
   for (const unit of japanFleetUnits) {
@@ -1258,8 +1256,8 @@ function loadStrikeGroups(controller, counters) {
         top: 50,
       },
       false, // moved
-      false,  // attacked
-      group.initialPosition,
+      false, // attacked
+      group.initialPosition
     )
 
     GlobalUnitsModel.jpStrikeGroups.set(group.box, sgu)
@@ -1282,8 +1280,8 @@ function loadStrikeGroups(controller, counters) {
         top: 50,
       },
       false, // moved
-      false,  // attacked
-      group.initialPosition,
+      false, // attacked
+      group.initialPosition
     )
 
     GlobalUnitsModel.usStrikeGroups.set(group.box, sgu)

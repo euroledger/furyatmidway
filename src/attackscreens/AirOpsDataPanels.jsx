@@ -58,6 +58,9 @@ export function AirOpsFooters({ controller }) {
   const sideWithInitiative = controller.determineInitiative(rolls[0], rolls[1])
 
   const initText = sideWithInitiative !== null ? `${sideWithInitiative} has initiative` : "re roll required"
+  // if (sideWithInitiative === null) {
+  //   GlobalGameState.sideWithInitiative = undefined
+  // }
   return (
     <>
       {show && (

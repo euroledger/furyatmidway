@@ -28,6 +28,7 @@ function Board({
   scale,
   USMapRegions,
   japanMapRegions,
+  japanMIFMapRegions,
   japanStrikePanelEnabled,
   usStrikePanelEnabled,
   setPreviousPosition,
@@ -129,6 +130,7 @@ function Board({
             setCurrentCoords={setCurrentJapanCoords}
             usRegions={USMapRegions}
             jpRegions={japanMapRegions}
+            jpMIFRegions={japanMIFMapRegions}
           ></CanvasHex>
         </div>
         <div
@@ -194,7 +196,7 @@ function Board({
           counterData={GlobalInit.counters.get("MIF")}
           setCurrentJapanHex={setCurrentJapanHex}
           setCurrentUSHex={setCurrentUSHex}
-          jpRegions={japanMapRegions}
+          jpRegions={japanMIFMapRegions}
           enabled={true}
           side={GlobalUnitsModel.Side.JAPAN}
           setPreviousPosition={setPreviousPosition}

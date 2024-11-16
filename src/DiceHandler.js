@@ -7,7 +7,6 @@ import USAirBoxOffsets from "./components/draganddrop/USAirBoxOffsets"
 import JapanAirBoxOffsets from "./components/draganddrop/JapanAirBoxOffsets"
 import HexCommand from "./commands/HexCommand"
 
-
 export function doSubmarineDamageRoll(roll) {
   let theRoll = roll ?? randomDice(1)
   GlobalGameState.dieRolls = [theRoll]
@@ -15,13 +14,13 @@ export function doSubmarineDamageRoll(roll) {
 
 export function doCVDamageControl(roll) {
   let theRoll = roll ?? randomDice(1)
-  GlobalGameState.dieRolls = [theRoll] 
+  GlobalGameState.dieRolls = [theRoll]
 }
 
 export function doNavalBombardmentRoll(controller, roll) {
   let theRoll = roll ?? randomDice(1)
   GlobalGameState.dieRolls = [theRoll]
-  const midwayGarrisonReduction = Math.floor(theRoll/2)
+  const midwayGarrisonReduction = Math.floor(theRoll / 2)
 
   GlobalGameState.midwayGarrisonLevel = Math.max(2, GlobalGameState.midwayGarrisonLevel - midwayGarrisonReduction)
   GlobalGameState.updateGlobalState()
@@ -30,7 +29,7 @@ export function doNavalBombardmentRoll(controller, roll) {
     type: Controller.EventTypes.NAVAL_BOMBARDMENT_ROLL,
     data: {
       roll: theRoll,
-      side: GlobalUnitsModel.Side.JAPAN
+      side: GlobalUnitsModel.Side.JAPAN,
     },
   })
 }
@@ -45,11 +44,10 @@ export function doTroubledReconnaissanceRoll(controller, roll) {
     type: Controller.EventTypes.TROUBLED_RECON_ROLL,
     data: {
       roll: theRoll,
-      side: GlobalUnitsModel.Side.US
+      side: GlobalUnitsModel.Side.US,
     },
   })
 }
-
 
 export function doIntiativeRoll(controller, roll0, roll1, showDice) {
   // for automated testing
@@ -57,7 +55,7 @@ export function doIntiativeRoll(controller, roll0, roll1, showDice) {
   let jpRolls, usRolls
   if (showDice) {
     const rolls = randomDice(2, [roll0, roll1])
-    GlobalGameState.sideWithInitiative = controller.determineInitiative(roll0, roll1)  
+    GlobalGameState.sideWithInitiative = controller.determineInitiative(roll0, roll1)
   } else {
     if (roll0 && roll1) {
       GlobalGameState.sideWithInitiative = controller.determineInitiative(roll0, roll1)
@@ -69,7 +67,7 @@ export function doIntiativeRoll(controller, roll0, roll1, showDice) {
       GlobalGameState.sideWithInitiative = controller.determineInitiative(rolls[0], rolls[1])
       jpRolls = [rolls[0]]
       usRolls = [rolls[1]]
-    }    
+    }
   }
 
   if (GlobalGameState.sideWithInitiative === GlobalUnitsModel.Side.JAPAN) {
@@ -118,7 +116,7 @@ export function doFighterCounterattack(controller, testRolls) {
 
   let rolls = testRolls === undefined ? randomDice(numSteps) : testRolls
 
-  let drm = GlobalGameState.elitePilots ? 1: 0
+  let drm = GlobalGameState.elitePilots ? 1 : 0
 
   let hits = 0,
     index = 0
@@ -132,8 +130,7 @@ export function doFighterCounterattack(controller, testRolls) {
   }
   // GlobalGameState.dieRolls = 1
   GlobalGameState.fighterHits = hits
-    // GlobalGameState.fighterHits = 1 // QUACK TESTING ONLY
-
+  // GlobalGameState.fighterHits = 1 // QUACK TESTING ONLY
 }
 
 export function getAirUnitOnFlightDeck(controller, carrier, bowOrStern) {
@@ -156,7 +153,7 @@ export function getAirUnitsInHangar(controller, carrier) {
 
   const box = controller.getAirBoxForNamedShip(sideBeingAttacked, carrier, "HANGAR")
   const airUnits = controller.getAllAirUnitsInBox(box)
-  return airUnits
+  return airUnits ?? new Array()
 }
 
 export function carrierDamageRollNeeded(controller) {
@@ -284,7 +281,6 @@ export function doMidwayDamageRoll(controller, testRoll) {
 }
 
 export function autoAllocateMidwayDamage(controller) {
-
   let box = -1
   let damage = {
     box0: false,
@@ -334,9 +330,78 @@ export function autoAllocateMidwayDamage(controller) {
   return damage
 }
 
+export async function doDMCVFleetDamage(
+  show1,
+  show2,
+  controller,
+  sendDamageUpdates,
+  sendDMCVUpdate,
+  setDamageMarkerUpdate,
+  setDmcvShipMarkerUpdate,
+  setDamageDone
+) {
+  if (show1) {
+    await doDMCVDamage(
+      controller,
+      sendDamageUpdates,
+      sendDMCVUpdate,
+      setDamageMarkerUpdate,
+      setDmcvShipMarkerUpdate,
+      GlobalUnitsModel.Side.JAPAN
+    )
+  }
+  await delay(1)
+  if (show2) {
+    await doDMCVDamage(
+      controller,
+      sendDamageUpdates,
+      sendDMCVUpdate,
+      setDamageMarkerUpdate,
+      setDmcvShipMarkerUpdate,
+      GlobalUnitsModel.Side.US
+    )
+  }
+  setDamageDone(true)
+}
+export async function doDMCVDamage(
+  controller,
+  sendDamageUpdates,
+  sendDMCVUpdate,
+  setDamageMarkerUpdate,
+  setDmcvShipMarkerUpdate,
+  side
+) {
+  await delay(1)
+  const otherSide = side === GlobalUnitsModel.Side.US ? GlobalUnitsModel.Side.JAPAN : GlobalUnitsModel.Side.US
+  GlobalGameState.currentCarrierAttackTarget =
+    side === GlobalUnitsModel.Side.JAPAN ? GlobalGameState.jpDMCVCarrier : GlobalGameState.usDMCVCarrier
+
+  GlobalGameState.carrierAttackHits = 0 // this causes NON firing in the CarrierDamagePanel
+  GlobalGameState.sideWithInitiative = otherSide
+
+  // ---- THIS IS DUPLICATE CODE, SEE CarrierDamageDicePanel NEEDS REFACRING QUACK TODO ---
+  const damage = autoAllocateDamage(controller, 1)
+  sendDamageUpdates(controller, damage, setDamageMarkerUpdate)
+  if (damage.sunk) {
+    sendDMCVUpdate(controller, GlobalGameState.currentCarrierAttackTarget, setDmcvShipMarkerUpdate, side)
+  }
+  await delay(1)
+
+  // ---- END ---
+
+  // this logs the event
+  // controller.viewEventHandler({
+  //   type: Controller.EventTypes.SUBMARINE_ATTACK_ROLL,
+  //   data: {
+  //     target: GlobalGameState.currentCarrierAttackTarget,
+  //     side,
+  //     roll: GlobalGameState.dieRolls[0],
+  //     damage: GlobalGameState.damageThisAttack,
+  //   },
+  // })
+}
 export function autoAllocateDamage(controller, theHits) {
   const carrier = GlobalGameState.currentCarrierAttackTarget
-
   const currentCarrierHits = controller.getCarrierHits(carrier)
   const hits = theHits ?? GlobalGameState.carrierAttackHits
 
@@ -346,10 +411,9 @@ export function autoAllocateDamage(controller, theHits) {
     stern: false,
     sunk: false,
   }
-  if (hits === 0) return damage
-
-  // const currentCarrierHits = controller.getCarrierHits(carrier)
-  // console.log(">>> CARRIER=", carrier, "HITS=", currentCarrierHits)
+  if (hits === 0) {
+    return damage
+  }
 
   if (hits == 1) {
     if (!controller.getCarrierBowDamaged(carrier)) {
@@ -372,14 +436,12 @@ export function autoAllocateDamage(controller, theHits) {
     controller.setCarrierHits(carrier, Math.min(3, currentCarrierHits + hits))
     if (controller.getCarrierHits(carrier) >= 3) {
       damage.sunk = true
-   
+
       if (GlobalGameState.sideWithInitiative === GlobalUnitsModel.Side.US) {
         GlobalGameState.japanCVsSunk++
       } else {
         GlobalGameState.usCVsSunk++
-        }   
-
-      
+      }
       const airUnits = getAirUnitsInHangar(controller, carrier)
       for (let unit of airUnits) {
         moveAirUnitToEliminatedBox(controller, unit)
@@ -409,7 +471,7 @@ export function autoAllocateDamage(controller, theHits) {
       for (let unit of airUnits) {
         moveAirUnitToEliminatedBox(controller, unit)
         GlobalGameState.eliminatedAirUnits.push(unit)
-      }   
+      }
     }
   }
   GlobalGameState.damageThisAttack = damage
@@ -427,12 +489,9 @@ export function doCarrierDamageRolls(controller, testRoll) {
   const carrier = GlobalGameState.currentCarrierAttackTarget
   let roll = testRoll === undefined ? randomDice(1) : testRoll
 
-
-
   // QUACK FOR TESTING ONLY
   // roll = 1
   //  -------------TAKE THIS OUT
-
 
   // Undamaged Carrier
 
@@ -457,7 +516,7 @@ export function doCarrierDamageRolls(controller, testRoll) {
     }
     controller.setCarrierHits(carrier, 1)
   }
-  
+
   GlobalGameState.carrierDamageRoll = roll
   GlobalGameState.damageThisAttack = damage
 
@@ -497,7 +556,14 @@ export async function sendMidwayDamageUpdates(controller, box, setDamageMarkerUp
   controller.setMarkerLocation(marker.name, boxName, box)
 }
 
-export async function sendRemoveDamageMarkerUpdate(controller, carrier, boxName, boxIndex, setDamageMarkerUpdate, side) {
+export async function sendRemoveDamageMarkerUpdate(
+  controller,
+  carrier,
+  boxName,
+  boxIndex,
+  setDamageMarkerUpdate,
+  side
+) {
   // remove a damage marker from the given carrier
 
   const name = controller.getMarkerNameForBox(boxName, boxIndex)
@@ -517,13 +583,9 @@ export async function sendDMCVUpdate(controller, carrier, setDmcvShipMarkerUpdat
   // a DMCV fleet
   const carrierUnit = controller.getCarrier(carrier)
 
-  const boxName = controller.getAirBoxForNamedShip(
-    side,
-    carrier,
-    "DMCV"
-  )
+  const boxName = controller.getAirBoxForNamedShip(side, carrier, "DMCV")
   const sideStr = side === GlobalUnitsModel.Side.JAPAN ? "JP" : "US"
-  const markerName= `${sideStr}-DMCV-MARKER`
+  const markerName = `${sideStr}-DMCV-MARKER`
   let dmcvMarkerUpdate = {
     name: markerName,
     box: boxName,
@@ -697,8 +759,8 @@ export function doAttackFireRolls(controller, testRolls) {
     GlobalGameState.carrierAttackHitsThisAttack = hits
 
     // QUACK REMOVE TEESTING ONLY
-    GlobalGameState.carrierAttackHits = 0
-    GlobalGameState.carrierAttackHitsThisAttack = 0
+    // GlobalGameState.carrierAttackHits = 2
+    // GlobalGameState.carrierAttackHitsThisAttack = 2
   }
   return hits
 }
@@ -779,7 +841,7 @@ export function doDMCVSelectionEvent(controller, selectedDMCVCarrier, side) {
     type: Controller.EventTypes.ASSIGN_DMCV_CARRIER,
     data: {
       side,
-      carrier: selectedDMCVCarrier
+      carrier: selectedDMCVCarrier,
     },
   })
 }
@@ -938,7 +1000,7 @@ export function doCAP(controller, capAirUnits, fightersPresent, testRolls) {
   let drm = fightersPresent ? 0 : 1
 
   if (GlobalGameState.sideWithInitiative === GlobalUnitsModel.Side.US) {
-    drm += GlobalGameState.elitePilots ? 1: 0
+    drm += GlobalGameState.elitePilots ? 1 : 0
   }
 
   // compare each roll with the steps of the defending units, and the corresponding attack factor
@@ -962,11 +1024,10 @@ export function doCAP(controller, capAirUnits, fightersPresent, testRolls) {
 }
 
 export function moveAirUnitToEliminatedBox(controller, airUnit) {
-
   const toBox =
-  airUnit.side === GlobalUnitsModel.Side.JAPAN
-    ? GlobalUnitsModel.AirBox.JP_ELIMINATED
-    : GlobalUnitsModel.AirBox.US_ELIMINATED
+    airUnit.side === GlobalUnitsModel.Side.JAPAN
+      ? GlobalUnitsModel.AirBox.JP_ELIMINATED
+      : GlobalUnitsModel.AirBox.US_ELIMINATED
 
   controller.viewEventHandler({
     type: Controller.EventTypes.AIR_UNIT_MOVE,
@@ -995,7 +1056,7 @@ export function moveAirUnitFromEliminatedBox(controller, side, carrierName, airU
   update.log = false // hack to prevent logging
 
   setAirUnitUpdate(update)
-  
+
   controller.viewEventHandler({
     type: Controller.EventTypes.AIR_UNIT_MOVE,
     data: {

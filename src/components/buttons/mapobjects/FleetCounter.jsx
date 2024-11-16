@@ -24,7 +24,7 @@ function FleetCounter({
   previousPosition,
 }) {
   const { setIsMoveable } = useContext(BoardContext)
-  const { controller, onDrag, onStop, fleetUnitUpdate } = useContext(BoardContext)
+  const { controller, fleetUnitUpdate } = useContext(BoardContext)
 
   const [position, setPosition] = useState({
     initial: true,
@@ -91,7 +91,7 @@ function FleetCounter({
       const location1AF = controller.getFleetLocation("1AF-USMAP", GlobalUnitsModel.Side.US)
 
       let dmcv, csf, af1
-      if (locationDMCV !== undefined) {
+      if (locationDMCV !== undefined  && locationDMCV !== HexCommand.OFFBOARD) {
         dmcv = distanceBetweenHexes(locationDMCV.currentHex, hex) === 0
       }
       if (locationCSF !== undefined) {
@@ -120,12 +120,17 @@ function FleetCounter({
     } else {
       const locationDMCV = controller.getFleetLocation("IJN-DMCV", GlobalUnitsModel.Side.JAPAN)
       const location1AF = controller.getFleetLocation("1AF", GlobalUnitsModel.Side.JAPAN)
-      let dmcv, af1
-      if (locationDMCV !== undefined) {
+      const locationMIF = controller.getFleetLocation("MIF", GlobalUnitsModel.Side.JAPAN)
+
+      let dmcv, af1, mif
+      if (locationDMCV !== undefined  && locationDMCV !== HexCommand.OFFBOARD) {
         dmcv = distanceBetweenHexes(locationDMCV.currentHex, hex) === 0
       }
       if (location1AF !== undefined) {
         af1 = distanceBetweenHexes(location1AF.currentHex, hex) === 0
+      }
+      if (locationMIF !== undefined) {
+        mif = distanceBetweenHexes(locationMIF.currentHex, hex) === 0
       }
       if (dmcv) {
         smallOffset.x = -7
@@ -135,7 +140,11 @@ function FleetCounter({
         smallOffset.x = -7
         smallOffset.y = -7
       }
-      if (!dmcv && !af1) {
+      if (mif) {
+        smallOffset.x = -7
+        smallOffset.y = -7
+      }
+      if (!dmcv && !af1 && !mif) {
         smallOffset.x = 0
         smallOffset.y = 0
       }
@@ -190,12 +199,17 @@ function FleetCounter({
       }
       const af1Location = controller.getFleetLocation("1AF", GlobalUnitsModel.Side.JAPAN)
       const locationDMCV = controller.getFleetLocation("IJN-DMCV", GlobalUnitsModel.Side.JAPAN)
-      let dmcv, af1
-      if (locationDMCV !== undefined) {
+      const locationMIF = controller.getFleetLocation("MIF", GlobalUnitsModel.Side.JAPAN)
+
+      let dmcv, af1, mif
+      if (locationDMCV !== undefined && locationDMCV !== HexCommand.OFFBOARD) {
         dmcv = distanceBetweenHexes(locationDMCV.currentHex, hex) === 0
       }
       if (af1Location !== undefined) {
         af1 = distanceBetweenHexes(af1Location.currentHex, hex) === 0
+      }
+      if (locationMIF !== undefined) {
+        mif = distanceBetweenHexes(locationMIF.currentHex, hex) === 0
       }
       if (af1) {
         smallOffset.x = 7
@@ -205,7 +219,11 @@ function FleetCounter({
         smallOffset.x = 7
         smallOffset.y = 7
       }
-      if (!dmcv && !af1) {
+      if (mif) {
+        smallOffset.x = 7
+        smallOffset.y = 7
+      }
+      if (!dmcv && !af1 && !mif) {
         smallOffset.x = 0
         smallOffset.y = 0
       }
@@ -222,14 +240,34 @@ function FleetCounter({
       if (GlobalGameState.gamePhase !== GlobalGameState.PHASE.JAPAN_FLEET_MOVEMENT) {
         return
       }
+
+      // prevent 1AF and MIF ending up in same hex
+      const locationMIF = controller.getFleetLocation("MIF", GlobalUnitsModel.Side.JAPAN)
+      const location1AF = controller.getFleetLocation("1AF", GlobalUnitsModel.Side.JAPAN)
+
+      if (counterData.name === "1AF" && locationMIF !== undefined) {
+        if (distanceBetweenHexes(locationMIF.currentHex, hex) === 0) {
+          return
+        }
+      }
+      if (counterData.name === "MIF") {
+        if (distanceBetweenHexes(location1AF.currentHex, hex) === 0) {
+          return
+        }
+      }
       const csfLocation = controller.getFleetLocation("CSF-JPMAP", GlobalUnitsModel.Side.JAPAN)
       const locationDMCV = controller.getFleetLocation("US-DMCV-JPMAP", GlobalUnitsModel.Side.JAPAN)
-      let dmcv, csf
-      if (locationDMCV !== undefined) {
+      // const locationMIFjp = controller.getFleetLocation("MIF-JPMAP", GlobalUnitsModel.Side.JAPAN)
+
+      let dmcv, csf, mif
+      if (locationDMCV !== undefined && locationDMCV !== HexCommand.OFFBOARD) {
         dmcv = distanceBetweenHexes(locationDMCV.currentHex, hex) === 0
       }
       if (csfLocation !== undefined) {
         csf = distanceBetweenHexes(csfLocation.currentHex, hex) === 0
+      }
+      if (locationMIF !== undefined) {
+        mif = distanceBetweenHexes(locationMIF.currentHex, hex) === 0
       }
       if (csf) {
         smallOffset.x = -7
@@ -239,7 +277,11 @@ function FleetCounter({
         smallOffset.x = -7
         smallOffset.y = -7
       }
-      if (!dmcv && !csf) {
+      if (mif) {
+        smallOffset.x = -7
+        smallOffset.y = -7
+      }
+      if (!dmcv && !csf && !mif) {
         smallOffset.x = 0
         smallOffset.y = 0
       }
@@ -248,8 +290,14 @@ function FleetCounter({
       if (!isThere) {
         return
       }
-      GlobalGameState.jpFleetPlaced = true
-      GlobalGameState.jpFleetMoved = true
+      if (counterData.name === "1AF") {
+        GlobalGameState.jpFleetPlaced = true
+        GlobalGameState.jpFleetMoved = true
+      }
+      if (counterData.name === "MIF") {
+        GlobalGameState.mifFleetPlaced = true
+        GlobalGameState.mifFleetMoved = true
+      }
       GlobalGameState.phaseCompleted = true
     }
 
@@ -315,21 +363,37 @@ function FleetCounter({
   // }
 
   const fleets = controller.getAllFleetsInLocation(position, side, false)
-  // console.log("FLEET POSITION:", counterData.name, "SMALL OFFSET=", smallOffset, "NumFleets=", fleets.length)
+
   if (fleets.length === 1 && smallOffset.x !== 0) {
     // if -7, -7 do -x and +y
     if (smallOffset.x == -7) {
-      setPosition({
-        ...position,
-        left: position.left - smallOffset.x,
-        top: position.top + smallOffset.y,
-      })
+      if (counterData.name === "CSF-JPMAP") {
+        setPosition({
+          ...position,
+          left: position.left + smallOffset.x,
+          top: position.top - smallOffset.y,
+        })
+      } else {
+        setPosition({
+          ...position,
+          left: position.left - smallOffset.x,
+          top: position.top + smallOffset.y,
+        })
+      }
     } else {
-      setPosition({
-        ...position,
-        left: position.left + smallOffset.x,
-        top: position.top - smallOffset.y,
-      })
+      if (counterData.name === "CSF") {
+        setPosition({
+          ...position,
+          left: position.left - smallOffset.x,
+          top: position.top + smallOffset.y,
+        })
+      } else {
+        setPosition({
+          ...position,
+          left: position.left + smallOffset.x,
+          top: position.top - smallOffset.y,
+        })
+      }
     }
     smallOffset.x = 0
     smallOffset.y = 0

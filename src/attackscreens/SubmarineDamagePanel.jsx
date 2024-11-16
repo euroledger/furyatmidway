@@ -1,4 +1,4 @@
-import { React, useState } from "react"
+import { React } from "react"
 import Button from "react-bootstrap/Button"
 import GlobalUnitsModel from "../model/GlobalUnitsModel"
 import GlobalGameState from "../model/GlobalGameState"
@@ -342,17 +342,6 @@ export function SubmarineDamagePanelFooters({
         damage: GlobalGameState.damageThisAttack,
       },
     })
-
-    // this logs the damage
-    // controller.viewEventHandler({
-    //   type: Controller.EventTypes.SUBMARINE_ATTACK_ROLL,
-    //   data: {
-    //     target: GlobalGameState.currentCarrierAttackTarget,
-    //     side,
-    //     roll: undefined,
-    //     damage: GlobalGameState.damageThisAttack,
-    //   },
-    // })
   }
 
   const allocateDamage = (box) => {
@@ -378,7 +367,7 @@ export function SubmarineDamagePanelFooters({
     })
   }
   // QUACK FOR TESTING ONLY
-  GlobalGameState.dieRolls = [1]
+  // GlobalGameState.dieRolls = [1]
 
   let success = side === GlobalUnitsModel.Side.US ? GlobalGameState.dieRolls[0] <= 1 : GlobalGameState.dieRolls[0] <= 3
   const message1 = success ? side + " Die Roll Successful!" : side + " Die Roll Unsuccessful!"

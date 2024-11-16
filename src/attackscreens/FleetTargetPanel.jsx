@@ -43,9 +43,6 @@ export function FleetTargetHeaders({ controller, setTargetSelected }) {
       />
     )
   }
-
-  //   console.log(">>> attackingSG=", GlobalGameState.attackingStrikeGroup)
-
   const fleets = controller.getAllFleetsInLocation(
     GlobalGameState.attackingStrikeGroup.location,
     GlobalGameState.sideWithInitiative,

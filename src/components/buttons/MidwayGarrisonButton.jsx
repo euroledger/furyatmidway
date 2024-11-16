@@ -18,23 +18,6 @@ function MidwayGarrisonButton({
       top: MGTOffsets[GlobalGameState.midwayGarrisonLevel].top + 0.6,
     });
   }, [GlobalGameState.midwayGarrisonLevel])
-  
-  // const handleDrop = (event) => {
-  //   event.preventDefault();
-
-  //   GlobalGameState.midwayGarrisonLevel = getZone();
-
-  //   const gl = getZone() === 0 ? "X" : getZone()
-  
-  //   GlobalGameState.log(`Midway Garrison Track set to ${gl}`)
-
-  //   setPosition({
-  //     ...position,
-  //     left: MGTOffsets[getZone()].left + 0.5,
-  //     top: MGTOffsets[getZone()].top + 0.6,
-  //   });
-  //   GlobalGameState.stateHandler();
-  // };
 
   return (
     <>
@@ -51,11 +34,6 @@ function MidwayGarrisonButton({
             top: `${position.top}%`,
           }}
           id="saveForm"
-          // onMouseEnter={onDrag}
-          // onMouseLeave={onStop}
-          // draggabble="true"
-          // onDragStart={onDrag}
-          // onDragEnd={handleDrop}
         />
       </div>
     </>

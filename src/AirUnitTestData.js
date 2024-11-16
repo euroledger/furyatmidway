@@ -263,6 +263,8 @@ export function createMapUpdateForFleet(controller, name, side) {
     otherName = "IJN-DMCV-USMAP"
   } else if (name === "US-DMCV") {
     otherName = "US-DMCV-JPMAP"
+  } else if (name === "MIF") {
+    otherName = "MIF-USMAP"
   }
   if (location === undefined) {
     return null

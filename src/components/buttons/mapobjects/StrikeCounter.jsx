@@ -170,7 +170,6 @@ function StrikeCounter({ setStrikeGroupPopup, currentUSHex, currentJapanHex, cou
       const locationOfEnemyCarrier = controller.getFleetLocation("CSF", GlobalUnitsModel.Side.US)
       const locationOfEnemyDMCV = controller.getFleetLocation("US-DMCV", GlobalUnitsModel.Side.US)
 
-      // console.log("LOCATION OF ENEMY CARRIER=", locationOfEnemyCarrier)
       // if enemy fleet within range of 3
       // SG must move to enemy
       const jpRegion = new Array()
@@ -222,22 +221,16 @@ function StrikeCounter({ setStrikeGroupPopup, currentUSHex, currentJapanHex, cou
     // if naval strike group - use, counter CSF else use Midway
     // determine this from first air unit
     let usRegion, locationOfCarrier
-    // @TODO need some new flag -> counterData.comingFromOffboard
-    // to allow for remove (eg if player accidentally drops onto wrong hex)
-    // if (locationOfStrikeGroup === undefined) {
-
-    // }
-
-    console.log(
-      "GlobalGameState.airOpUS=",
-      GlobalGameState.airOpUS,
-      "counter data name:",
-      counterData.name,
-      "counterData.airOpMoved=",
-      counterData.airOpMoved,
-      "counterData.gameTurnMoved=",
-      counterData.gameTurnMoved
-    )
+    // console.log(
+    //   "GlobalGameState.airOpUS=",
+    //   GlobalGameState.airOpUS,
+    //   "counter data name:",
+    //   counterData.name,
+    //   "counterData.airOpMoved=",
+    //   counterData.airOpMoved,
+    //   "counterData.gameTurnMoved=",
+    //   counterData.gameTurnMoved
+    // )
 
     const locationOfStrikeGroup = controller.getStrikeGroupLocation(counterData.name, side)
     const sg = controller.getStrikeGroupForBox(side, counterData.box)

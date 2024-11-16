@@ -15,6 +15,7 @@ import ViewEventCapHandler from "./ViewEventCapHandler"
 import ViewEventCarrierDamageHandler from "./ViewEventDamageHandler"
 import ViewEventCardHandler from "./ViewEventCardHandler"
 import { isMidwayHex } from "../components/HexUtils"
+import HexCommand from "../commands/HexCommand"
 
 export default class Controller {
   static EventTypes = {
@@ -196,7 +197,6 @@ export default class Controller {
     let box =
       side === GlobalUnitsModel.Side.US ? GlobalUnitsModel.AirBox.US_ELIMINATED : GlobalUnitsModel.AirBox.JP_ELIMINATED
     const units = this.getAllAirUnits(side)
-    console.log("UNITS=", units)
     const eliminatedAirUnits = units.filter(
       (unit) => this.getAirUnitLocation(unit.name).boxName === box && unit.carrier !== GlobalUnitsModel.Carrier.MIDWAY
     )
@@ -1439,12 +1439,10 @@ export default class Controller {
     const flightDeckBox = this.airOperationsModel.getAirBoxForNamedShip(side, name, "FLIGHT")
     let boxName = Object.values(flightDeckBox)[0]
     const airUnitsOnFlightDeck = this.getAllAirUnitsInBox(boxName)
-
     const hangarBox = this.airOperationsModel.getAirBoxForNamedShip(side, name, "HANGAR")
     boxName = Object.values(hangarBox)[0]
 
     const airUnitsInHangar = this.getAllAirUnitsInBox(boxName)
-
     return airUnitsInHangar.length + airUnitsOnFlightDeck.length
   }
 
@@ -1570,6 +1568,10 @@ export default class Controller {
       }
       found = true // will stay false if no fleets on map
       const locationB = locations.get(fleet)
+      // this fleet may be sunk so continue...
+      if (locationB === HexCommand.OFFBOARD) {
+        continue
+      }
       const hexB = {
         q: locationB.currentHex.q,
         r: locationB.currentHex.r,

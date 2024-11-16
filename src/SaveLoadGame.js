@@ -17,7 +17,6 @@ export function saveGameState(controller, gameId) {
       globalState.set(key, val)
     }
   }
-
   let airState = new Map()
   const units = Array.from(GlobalInit.counters.values())
   const airCounters = units.filter((unit) => unit.constructor.name === "AirUnit")
@@ -353,12 +352,12 @@ function loadAirUnits(airUnitMap) {
     // if (airUnit.counterData._name === "Hornet-F4F4-1" || airUnit.counterData._name === "Hornet-F4F4-2") {
     //   globalAirUnit.aircraftUnit.steps = 1
     //   globalAirUnit.image = "/images/aircounters/hornet-f4f-back.png"
-    // }
+    // // }
     // GlobalGameState.usDMCVFleetPlaced = false
     // GlobalGameState.jpDMCVFleetPlaced = false
     GlobalGameState.fleetSpeed = 2
     GlobalGameState.dmcvFleetSpeed = 1
-    // GlobalGameState.usDMCVCarrier = GlobalUnitsModel.Carrier.ENTERPRISE
+    GlobalGameState.usDMCVCarrier = GlobalUnitsModel.Carrier.HORNET
   }
 }
 
@@ -421,6 +420,7 @@ export function loadGameStateForId(controller, gameId) {
 
   const globalState = gameDetails.global
 
+
   const global = new Map(JSON.parse(globalState))
 
   for (var property in GlobalGameState) {
@@ -430,7 +430,6 @@ export function loadGameStateForId(controller, gameId) {
       GlobalGameState[property] = global.get(property)
     }
   }
-
   const airOperationText = gameDetails.airoperations
   GlobalGameState.airOperationPoints = JSON.parse(airOperationText)
 
@@ -521,9 +520,9 @@ export function loadGameStateForId(controller, gameId) {
   }
 
   // QUACK REMOVE ONE CARD AND REPLACE IT WITH ANOTHER
-  GlobalInit.controller.replaceCardWithOtherCard(4, 9, GlobalUnitsModel.Side.JAPAN)
+  // GlobalInit.controller.replaceCardWithOtherCard(4, 9, GlobalUnitsModel.Side.JAPAN)
 
-  GlobalInit.controller.replaceCardWithOtherCard(5, 4, GlobalUnitsModel.Side.US)
+  // GlobalInit.controller.replaceCardWithOtherCard(1, 2, GlobalUnitsModel.Side.US)
   GlobalGameState.midwayControl = GlobalUnitsModel.Side.US
   // ------------------------------------------------------
 

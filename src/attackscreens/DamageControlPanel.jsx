@@ -160,8 +160,14 @@ export function DamageControlPanelHeaders({ controller, setDamagedCV, damagedCV,
     
     sendRemoveDamageMarkerUpdate(controller, carrier, boxName, boxIndex, setDamageMarkerUpdate, side)
   }
+  let msg = side === GlobalUnitsModel.Side.US ? "" : "(Successful on roll of 1-3 for Japan)"
 
   let damagedCarriers = controller.getDamagedCarriers(side)
+  damagedCarriers = damagedCarriers.filter((cv) => !controller.getCarrier(cv).dmcv)
+  if (damagedCarriers.length === 0) {
+    msg="No Eligible Carriers"
+    setDamagedCV("x")
+  }
   if (side === GlobalUnitsModel.Side.US && damagedCarriers.length === 1 && damagedCV === "") {
     removeDamageFromCV(damagedCarriers[0])
   }
@@ -191,7 +197,6 @@ export function DamageControlPanelHeaders({ controller, setDamagedCV, damagedCV,
     )
   })
 
-  let msg = side === GlobalUnitsModel.Side.US ? "" : "(Successful on roll of 1-3 for Japan)"
   return (
     <div
       style={{

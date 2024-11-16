@@ -22,7 +22,8 @@ export default class CanvasHex extends React.Component {
       scale: props.scale,
       side: props.side,
       usRegions: props.usRegions,
-      jpRegions: props.jpRegions
+      jpRegions: props.jpRegions,
+      jpMIFRegions: props.jpMIFRegions
     }
     this.handleMouseMove = this.handleMouseMove.bind(this)
   }
@@ -37,9 +38,10 @@ export default class CanvasHex extends React.Component {
   UNSAFE_componentWillReceiveProps(nextProps) {
     this.setState({
       usRegions: nextProps.usRegions,
-      jpRegions: nextProps.jpRegions
+      jpRegions: nextProps.jpRegions,
+      jpMIFRegions: nextProps.jpMIFRegions
     })
-    this.clearCanvas(nextProps.usRegions, nextProps.jpRegions)
+    this.clearCanvas(nextProps.usRegions, nextProps.jpRegions, nextProps.jpMIFRegions)
   }
   componentDidMount() {
     this.setState({
@@ -58,7 +60,7 @@ export default class CanvasHex extends React.Component {
     }
   }
 
-  clearCanvas(usRegions, jpRegions) {
+  clearCanvas(usRegions, jpRegions, jpMIFRegions) {
     const { canvasWidth, canvasHeight } = this.state.canvasSize
     const ctx = this.canvasCoordinates.getContext("2d")
     ctx.clearRect(0, 0, canvasWidth, canvasHeight) // clears the canvas
@@ -70,6 +72,11 @@ export default class CanvasHex extends React.Component {
     if (jpRegions || (this.state.jpRegions && this.state.jpRegions.length > 0)) {
       const regs = jpRegions ? jpRegions : this.state.jpRegions
       this.drawRegions("japan", regs, "rgba(223, 71,71, 0.6)")
+      this.forceUpdate()
+    } 
+    if (jpMIFRegions || (this.state.jpMIFRegions && this.state.jpMIFRegions.length > 0)) {
+      const regs = jpMIFRegions ? jpMIFRegions : this.state.jpMIFRegions
+      this.drawRegions("japan", regs, "rgba(255, 255, 255, 0.4)")
       this.forceUpdate()
     } 
   }

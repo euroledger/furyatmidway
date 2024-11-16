@@ -7,7 +7,7 @@ import GlobalGameState from "../../model/GlobalGameState"
 
 function AlertPanel(props) {
   // TODO set different colors/header for different alert level, info, warning etc
-  const bg = "#293a4b"  
+  const bg = GlobalGameState.gameTurn === 4 ? "black" :"#293a4b"
   const size = props.size ? "modal-width" + props.size : "sm"
 
   const buttonRef = useRef(null)
