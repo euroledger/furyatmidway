@@ -49,6 +49,27 @@ export function doTroubledReconnaissanceRoll(controller, roll) {
   })
 }
 
+export function doNavalBattleRoll(controller, roll0, roll1) {
+  let jpRolls, usRolls
+
+  if (roll0 && roll1) {
+    jpRolls = [roll0]
+    usRolls = [roll1]
+  } else {
+    const rolls = randomDice(2)
+    jpRolls = [rolls[0]]
+    usRolls = [rolls[1]]
+  }
+
+  controller.viewEventHandler({
+    type: Controller.EventTypes.NAVAL_BATTLE_ROLL,
+    data: {
+      jpRolls,
+      usRolls,
+    },
+  })
+}
+
 export function doIntiativeRoll(controller, roll0, roll1, showDice) {
   // for automated testing
   // let sideWithInitiative
@@ -986,6 +1007,30 @@ export function doEscortEvent(controller) {
       side: GlobalGameState.sideWithInitiative,
     },
   })
+}
+
+export function doNightLanding(controller, nightAirUnits, nightSteps, setNightStepsLost, testRolls) {
+  let rolls = testRolls === undefined ? randomDice(nightSteps) : testRolls
+
+  let index = 0
+  let stepsLostArray = new Array()
+  for (let unit of nightAirUnits) {
+    let stepsLost = 0
+    for (let i = 0; i < unit.aircraftUnit.steps; i++) {
+      if (rolls[index] <= 4) {
+        // landing successful
+      } else {
+        stepsLost++
+        // landing failed -> lose step
+        // doDamageAllocation(controller, unit)
+
+        // do damage allocation at close to avoid counters disappearing
+      }
+      index++
+    }
+    stepsLostArray.push(stepsLost)
+  }
+  setNightStepsLost(stepsLostArray)
 }
 
 export function doCAP(controller, capAirUnits, fightersPresent, testRolls) {

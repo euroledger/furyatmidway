@@ -21,7 +21,16 @@ class ViewDieRollEventHandler {
     GlobalGameState.log(`${command.toString()}`)
 
     command = new InitiativeStatusChange(COMMAND_TYPE.INITIATIVE_STATUS_CHANGE, GlobalGameState.sideWithInitiative)
-    
+
+    GlobalGameState.log(`${command.toString()}`)
+  }
+
+  handleNavalBattleDiceRollEvent(event) {
+    // event contains type and data
+    const { jpRolls, usRolls } = event.data
+
+    let command = new DiceCommand(event.type, jpRolls, usRolls)
+
     GlobalGameState.log(`${command.toString()}`)
   }
 
@@ -30,10 +39,9 @@ class ViewDieRollEventHandler {
     const { track, level } = event.data
 
     const command = new TrackStatusChange(COMMAND_TYPE.TRACK_STATUS_CHANGE, track, level)
-    
+
     GlobalGameState.log(`${command.toString()}`)
   }
-
 
   handleTargetSelectionDiceRollEvent(event) {
     // event contains type and data
@@ -49,10 +57,8 @@ class ViewDieRollEventHandler {
   }
 
   handleCapInterceptionDiceRollEvent(event) {
-
     // event contains type and data
     const { rolls, side } = event.data
-
 
     let jpRolls = null
     let usRolls = null
@@ -64,7 +70,7 @@ class ViewDieRollEventHandler {
     let command = new DiceCommand(event.type, jpRolls, usRolls, null, side, GlobalGameState.capHits)
     GlobalGameState.log(`${command.toString()}`)
   }
-  
+
   handleAAADiceRollEvent(event) {
     // event contains type and data
     const { rolls, side, target } = event.data
@@ -79,11 +85,10 @@ class ViewDieRollEventHandler {
     GlobalGameState.log(`${command.toString()}`)
   }
 
-  
   handleNavalBombardmentDiceRollEvent(event) {
     // event contains type and data
     const { roll, side } = event.data
-    
+
     const message = `Midway Garrison Level now ${GlobalGameState.midwayGarrisonLevel}`
     let command = new EventCardDiceCommand(event.type, roll, side, message)
     GlobalGameState.log(`${command.toString()}`)
@@ -92,7 +97,7 @@ class ViewDieRollEventHandler {
   handleTroubledReconnaissanceDiceRollEvent(event) {
     // event contains type and data
     const { roll, side } = event.data
-    
+
     const message = `Japanese Search Level now ${GlobalGameState.SearchValue.JP_AF}`
     let command = new EventCardDiceCommand(event.type, roll, side, message)
     GlobalGameState.log(`${command.toString()}`)
@@ -110,9 +115,8 @@ class ViewDieRollEventHandler {
     let command = new DiceCommand(event.type, jpRolls, usRolls, null, side, hits, target)
     GlobalGameState.log(`${command.toString()}`)
   }
-  
-  handleEscortCounterAttackDiceRollEvent(event) {
 
+  handleEscortCounterAttackDiceRollEvent(event) {
     // event contains type and data
     const { rolls, side } = event.data
 

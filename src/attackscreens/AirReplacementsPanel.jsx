@@ -226,6 +226,8 @@ export function AirReplacementsFooters({
   }
   let availableUSCVs, availableJapanCVs
   let availableCVImages = []
+  let msg = ""
+
   if (side === GlobalUnitsModel.Side.US) {
     const usCVs = [
       GlobalUnitsModel.Carrier.ENTERPRISE,
@@ -236,6 +238,10 @@ export function AirReplacementsFooters({
       (carrier) => {
         return !controller.isSunk(carrier) && controller.isHangarAvailable(carrier)}
     )
+    if (availableUSCVs.length === 0) {
+      msg = "No carriers available to receive replacements"
+      setAirReplacementsSelected(true)
+    }
   } else {
     const japanCVs = [
       GlobalUnitsModel.Carrier.AKAGI,
@@ -298,7 +304,6 @@ export function AirReplacementsFooters({
       </>
     )
   }
-  let msg = ""
 
   if (!airReplacementsSelected) {
     if (side === GlobalUnitsModel.Side.US) {

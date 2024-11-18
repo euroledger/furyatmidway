@@ -2,7 +2,7 @@ import Controller from "../src/controller/Controller"
 import GlobalUnitsModel from "../src/model/GlobalUnitsModel"
 import loadCounters from "../src/CounterLoader"
 import GlobalGameState from "../src/model/GlobalGameState"
-import { createFleetMove } from "./TestUtils"
+import { createFleetMove } from "./testUtils"
 import HexCommand from "../src/commands/HexCommand"
 import {
   doAttackFireRolls,

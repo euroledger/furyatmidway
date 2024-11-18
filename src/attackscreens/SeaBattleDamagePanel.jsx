@@ -2,6 +2,7 @@ import { React, useState } from "react"
 import Button from "react-bootstrap/Button"
 import GlobalUnitsModel from "../model/GlobalUnitsModel"
 import GlobalGameState from "../model/GlobalGameState"
+import Controller from "../controller/Controller"
 import { sendDamageUpdates, autoAllocateDamage, doCarrierDamageRolls } from "../DiceHandler"
 
 export function SeaBattleDamagePanelHeaders({
@@ -249,24 +250,17 @@ export function SeaBattleDamagePanelHeaders({
     if (damage.sunk) {
       setCarriersSunk([...carriersSunk, carrier])
     }
-    // if (damage.sunk) {
-    //   const sideBeingAttacked =
-    //     side === GlobalUnitsModel.Side.US ? GlobalUnitsModel.Side.JAPAN : GlobalUnitsModel.Side.US
-
-    //   sendDMCVUpdate(controller, GlobalGameState.currentCarrierAttackTarget, setDmcvShipMarkerUpdate, sideBeingAttacked)
-    // }
-    // ---- END ---
 
     // this logs the damage allocation
-    // controller.viewEventHandler({
-    //   type: Controller.EventTypes.SUBMARINE_ATTACK_ROLL,
-    //   data: {
-    //     target: GlobalGameState.currentCarrierAttackTarget,
-    //     side,
-    //     roll: GlobalGameState.dieRolls[0],
-    //     damage: GlobalGameState.damageThisAttack,
-    //   },
-    // })
+    controller.viewEventHandler({
+      type: Controller.EventTypes.CARRIER_DAMAGE,
+      data: {
+        target: GlobalGameState.currentCarrierAttackTarget,
+        side: carrier.side,
+        roll: GlobalGameState.dieRolls[0],
+        damage,
+      },
+    })
   }
 
   const calculateHitsLeftOnCarriers = (side) => {
@@ -292,15 +286,15 @@ export function SeaBattleDamagePanelHeaders({
     }
     sendDamageUpdates(controller, damage, setDamageMarkerUpdate)
 
-    // controller.viewEventHandler({
-    //   type: Controller.EventTypes.SUBMARINE_ATTACK_ROLL,
-    //   data: {
-    //     target: GlobalGameState.currentCarrierAttackTarget,
-    //     side,
-    //     roll: GlobalGameState.dieRolls[0],
-    //     damage: GlobalGameState.damageThisAttack,
-    //   },
-    // })
+    controller.viewEventHandler({
+      type: Controller.EventTypes.CARRIER_DAMAGE,
+      data: {
+        target: GlobalGameState.currentCarrierAttackTarget,
+        side: carrier.side,
+        roll: GlobalGameState.dieRolls[0],
+        damage,
+      },
+    })
   }
   let targetMsg = ""
 

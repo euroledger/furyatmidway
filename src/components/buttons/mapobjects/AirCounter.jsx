@@ -9,6 +9,7 @@ import {
   setValidDestinationBoxes,
   moveOrphanedCAPUnitsToEliminatedBox,
   moveOrphanedAirUnitsInReturn1Boxes,
+  setValidDestinationBoxesNightOperations,
 } from "../../../controller/AirOperationsHandler"
 
 function AirCounter({ getAirBox, setAirBox, counterData, side }) {
@@ -35,16 +36,58 @@ function AirCounter({ getAirBox, setAirBox, counterData, side }) {
 
     // only the selected (clicked) air unit should be draggable
     setSelected(() => true)
+    const location = controller.getAirUnitLocation(counterData.name)
+
+    if (location.boxName.includes("ELIMINATED")) {
+      return
+    }
+    if (
+      GlobalGameState.gamePhase === GlobalGameState.PHASE.NIGHT_AIR_OPERATIONS_JAPAN ||
+      GlobalGameState.gamePhase === GlobalGameState.PHASE.NIGHT_AIR_OPERATIONS_US
+    ) {
+      if (location.boxName.includes("FLIGHT")) {
+        return // cannot launch air operations at night
+      }
+
+      if (
+        GlobalGameState.gamePhase === GlobalGameState.PHASE.NIGHT_AIR_OPERATIONS_JAPAN &&
+        counterData.side === GlobalUnitsModel.Side.JAPAN
+      ) {
+        // console.log("ARSE FUCK AIR UNIT LOCATION=", location)
+        // // Units can move in to hangar and back out again during night operations
+        // if (counterData.aircraftUnit.moved && !location.boxName.includes("HANGAR")
+        // ) {
+        //   setEnabledJapanBoxes(() => [])
+        //   return
+        // }
+        setValidDestinationBoxesNightOperations(
+          controller,
+          counterData.name,
+          counterData.side,
+          counterData.aircraftUnit.moved
+        )
+        setBoxes(counterData, location.boxName)
+        return
+      } else if (
+        GlobalGameState.gamePhase === GlobalGameState.PHASE.NIGHT_AIR_OPERATIONS_US &&
+        counterData.side === GlobalUnitsModel.Side.US
+      ) {
+        if (counterData.aircraftUnit.moved) {
+          setEnabledUSBoxes(() => [])
+          return
+        }
+        setValidDestinationBoxesNightOperations(controller, counterData.name, counterData.side)
+        setBoxes(counterData, location.boxName)
+        return
+      } else {
+        return // us counter in Japan phase or vice versa, do nothing
+      }
+    }
 
     // Only CAP Units can be moved during the other side's air operation (at the end
     // of all airstrikes to return to carrier)
-    const location = controller.getAirUnitLocation(counterData.name)
 
     if (GlobalGameState.sideWithInitiative !== counterData.side && !location.boxName.includes("CAP RETURNING")) {
-      return
-    }
-
-    if (location.boxName.includes("ELIMINATED")) {
       return
     }
     if (
@@ -193,7 +236,9 @@ function AirCounter({ getAirBox, setAirBox, counterData, side }) {
       if (
         (counterData.carrier != GlobalGameState.getUSCarrier() ||
           GlobalGameState.gamePhase !== GlobalGameState.PHASE.US_SETUP_AIR) &&
-        GlobalGameState.gamePhase !== GlobalGameState.PHASE.AIR_OPERATIONS
+        GlobalGameState.gamePhase !== GlobalGameState.PHASE.AIR_OPERATIONS && 
+        GlobalGameState.gamePhase !== GlobalGameState.PHASE.NIGHT_AIR_OPERATIONS_US 
+
       ) {
         // cannot move units from carrier other than the current one being set up
         return false
@@ -264,7 +309,9 @@ function AirCounter({ getAirBox, setAirBox, counterData, side }) {
       GlobalGameState.gamePhase === GlobalGameState.PHASE.AAA_DAMAGE_ALLOCATION ||
       GlobalGameState.gamePhase === GlobalGameState.PHASE.ANTI_AIRCRAFT_FIRE ||
       GlobalGameState.gamePhase === GlobalGameState.PHASE.ESCORT_COUNTERATTACK ||
-      GlobalGameState.gamePhase === GlobalGameState.PHASE.ESCORT_DAMAGE_ALLOCATION
+      GlobalGameState.gamePhase === GlobalGameState.PHASE.ESCORT_DAMAGE_ALLOCATION ||
+      GlobalGameState.gamePhase === GlobalGameState.PHASE.NIGHT_AIR_OPERATIONS_JAPAN ||
+      GlobalGameState.gamePhase === GlobalGameState.PHASE.NIGHT_AIR_OPERATIONS_US
     ) {
       controller.viewEventHandler({
         type: Controller.EventTypes.AIR_UNIT_MOVE,

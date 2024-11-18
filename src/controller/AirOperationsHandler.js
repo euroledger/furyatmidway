@@ -58,7 +58,7 @@ export function getValidUSDestinationsCAP(controller, parentCarrier, side, name)
   // and we check flight deck not hangar
 
   // rather than use parent carrier, determine TF from current location (ie which CAP Box)
-  
+
   let destinationsArray = new Array()
 
   const thisTF = controller.getTaskForceForAirBox(location.boxName)
@@ -86,6 +86,31 @@ export function getValidUSDestinationsCAP(controller, parentCarrier, side, name)
   return destinationsArray
 }
 
+export function getValidUSDestinationsCAPNight(controller, parentCarrier, side, name) {
+  const location = controller.getAirUnitLocation(name)
+
+  // This is returning CAP, must always go to same TF
+  // and we check flight deck not hangar
+
+  // rather than use parent carrier, determine TF from current location (ie which CAP Box)
+
+  let destinationsArray = new Array()
+
+  const thisTF = controller.getTaskForceForAirBox(location.boxName)
+  // const thisTF = controller.getTaskForceForCarrier(parentCarrier, side)
+  const carriersInTF = controller.getAllCarriersInTaskForce(thisTF, side)
+
+  for (const carrier of carriersInTF) {
+    // As this is CAP (Night) -> go to hangar
+    // if carrier not at capacity
+    if (!controller.isSunk(carrier.name) && controller.isHangarAvailable(carrier.name)) {
+      const capHangar = controller.getAirBoxForNamedShip(side, carrier.name, "HANGAR")
+      destinationsArray.push(capHangar)
+    }
+  }
+  // Never try other task force
+  return destinationsArray
+}
 function getValidJapanDestinationsRETURN1(controller, parentCarrier, side) {
   let destinationsArray = new Array()
   if (controller.isSunk(parentCarrier)) {
@@ -104,6 +129,18 @@ function getValidJapanDestinationsRETURN1(controller, parentCarrier, side) {
       destinationsArray = tryOtherTaskForce(controller, parentCarrier, side)
     }
   }
+  return destinationsArray
+}
+
+export function getValidJapanDestinationsCAPNight(controller, parentCarrier, side) {
+  let destinationsArray = new Array()
+
+  if (controller.getCarrierHits(parentCarrier) < 2 && controller.isHangarAvailable(parentCarrier)) {
+    const capHangar = controller.getAirBoxForNamedShip(side, parentCarrier, "HANGAR")
+    destinationsArray.push(capHangar)
+    return destinationsArray
+  }
+  destinationsArray = destinationsArray.concat(tryOtherCarrierCAPNight(controller, parentCarrier, side))
   return destinationsArray
 }
 
@@ -186,6 +223,24 @@ function tryOtherCarrierCAP(controller, parentCarrier, side) {
     const box = controller.getAirBoxForNamedShip(side, otherCarrier.name, "FLIGHT_DECK")
     destinationsArray.push(box)
   }
+  if (controller.isHangarAvailable(otherCarrier.name)) {
+    const capHangar = controller.getAirBoxForNamedShip(side, otherCarrier.name, "HANGAR")
+    destinationsArray.push(capHangar)
+  }
+  return destinationsArray
+}
+
+function tryOtherCarrierCAPNight(controller, parentCarrier, side) {
+  let destinationsArray = new Array()
+  const otherCarrier = controller.getOtherCarrierInTF(parentCarrier, side)
+  if (!otherCarrier) {
+    return destinationsArray // empty list, eg TF 17 has no other carrier
+  }
+
+  if (controller.isSunk(otherCarrier.name)) {
+    return destinationsArray
+  }
+
   if (controller.isHangarAvailable(otherCarrier.name)) {
     const capHangar = controller.getAirBoxForNamedShip(side, otherCarrier.name, "HANGAR")
     destinationsArray.push(capHangar)
@@ -396,6 +451,44 @@ export function doFlightDeck(controller, name, side) {
   controller.setValidAirUnitDestinations(name, destinationsArray)
 }
 
+export function doHangarNight(controller, name, side) {
+  // for night operations we do hangar last, so if any units still
+  // to move from return1 or CAP boxes -> disallow all hangar moves
+  let destinationsArray = new Array()
+  controller.setValidAirUnitDestinations(name, destinationsArray)
+  let unitsReturn1 = controller.getAttackingReturningUnitsNotMoved(side)
+  const capUnits = controller.getAllAirUnitsInCAPBoxes(side)
+
+  if (unitsReturn1.length > 0 || capUnits.length > 0) {
+    return
+  }
+
+  const location = controller.getAirUnitLocation(name)
+  const carrierName = controller.getCarrierForAirBox(location.boxName)
+
+
+  // At night fighters can be moved to CAP box
+  const unit = controller.getAirUnitForName(name)
+  if (!unit.aircraftUnit.attack) {
+    const capBox = controller.getCapBoxForNamedCarrier(carrierName, side)
+    destinationsArray.push(capBox)
+  }
+  
+  const destBox = controller.getAirBoxForNamedShip(side, carrierName, "FLIGHT_DECK")
+
+  // check there is room on this carrier's flight deck
+  const destAvailable = controller.isFlightDeckAvailable(carrierName, side)
+
+  if (!destAvailable) {
+    controller.setValidAirUnitDestinations(name, destinationsArray)
+    return
+  }
+  if (destBox) {
+    destinationsArray.push(destBox)
+    controller.setValidAirUnitDestinations(name, destinationsArray)
+  }
+}
+
 export function doHangar(controller, name, side) {
   const location = controller.getAirUnitLocation(name)
   const carrierName = controller.getCarrierForAirBox(location.boxName)
@@ -518,10 +611,10 @@ export async function resetStrikeGroups(controller, side, setStrikeGroupUpdate) 
         currentHex: HexCommand.OFFBOARD,
       },
       moved: strikeGroup.moved,
-      attacked: false
+      attacked: false,
     }
     setStrikeGroupUpdate(update)
-    
+
     await delay(1)
     strikeGroup.airOpAttacked = undefined
     strikeGroup.airOpMoved = undefined
@@ -542,8 +635,6 @@ export async function resetStrikeGroups(controller, side, setStrikeGroupUpdate) 
       name: "",
       position: {},
     }) // reset
-
-   
   }
 }
 
@@ -589,8 +680,12 @@ export async function moveOrphanedAirUnitsInReturn1Boxes(side) {
   const unitsReturning = GlobalInit.controller.getAllAirUnitsInReturn1Boxes(side)
   for (const unit of unitsReturning) {
     await delay(1)
+    if (unit.aircraftUnit.moved) {
+      continue // there is an edge case where units moved from return2 to return1 and this
+      // gets called from another carrier's unit. Avoid.
+    }
     const parentCarrier = GlobalInit.controller.getCarrierForAirUnit(unit.name)
-      let destinationsArray
+    let destinationsArray
     if (side === GlobalUnitsModel.Side.JAPAN) {
       destinationsArray = getValidJapanDestinationsRETURN1(GlobalInit.controller, parentCarrier, side)
     } else {
@@ -627,9 +722,6 @@ export async function setStrikeGroupAirUnitsToNotMoved(side) {
     if (!group.attacked) {
       continue
     }
-    // @TODO remove Strike Group counter from map
-
-    // .....................
 
     const unitsInGroup = GlobalInit.controller.getAirUnitsInStrikeGroups(group.box)
     for (const unit of unitsInGroup) {
@@ -692,6 +784,18 @@ export async function moveCAPtoReturnBox(controller, capAirUnits, setAirUnitUpda
     boxName: "",
     index: -1,
   })
+}
+
+export function doCapNight(controller, name, side) {
+  const parentCarrier = controller.getCarrierForAirUnit(name)
+  let destinationsArray = new Array()
+  if (side === GlobalUnitsModel.Side.US) {
+    destinationsArray = getValidUSDestinationsCAPNight(controller, parentCarrier, side, name)
+  } else {
+    destinationsArray = getValidJapanDestinationsCAPNight(controller, parentCarrier, side)
+  }
+  controller.setValidAirUnitDestinations(name, destinationsArray)
+  return
 }
 
 // CAP -> CAP RETURN occurs after CAP has intercepted a Strike Group
@@ -1012,6 +1116,44 @@ export function checkAllBoxesForReorganization(controller, unit, fromBox, side, 
   return
 }
 
+export function setValidDestinationBoxesNightOperations(controller, airUnitName, side, moved) {
+  controller.setValidAirUnitDestinations(airUnitName, new Array()) // just to be sure last entries are gone
+
+  const location = controller.getAirUnitLocation(airUnitName)
+  // Units can move in to hangar and back out again during night operations
+  if (moved && !location.boxName.includes("HANGAR")) {
+    return
+  }
+  if (location.boxName.includes("RETURNING (1)")) {
+    // see if US CSF within two hexes of Midway
+    let hexesBetweenMidwayAndCSF = controller.numHexesBetweenFleets(
+      { name: "MIDWAY", side: GlobalUnitsModel.Side.US },
+      { name: "CSF", side: GlobalUnitsModel.Side.US }
+    )
+
+    // This is not correct, the test should be if strike hex is within 5 of Midway
+    // @TODO fix this!
+    const useMidway = hexesBetweenMidwayAndCSF <= 2 && side === GlobalUnitsModel.Side.US
+    const destinations = doReturn1(controller, airUnitName, side, useMidway)
+    if (destinations.length === 0) {
+      // check for possible reorganisation
+      const unit = GlobalInit.counters.get(airUnitName)
+      checkAllBoxesForReorganization(controller, unit, location.boxName, side, false)
+    }
+  }
+  if (location.boxName.includes("RETURNING (2)")) {
+    doReturn2(controller, airUnitName, side)
+  }
+  if (location.boxName.includes("CAP") && !location.boxName.includes("RETURNING")) {
+    doCapNight(controller, airUnitName, side)
+  }
+  if (location.boxName.includes("HANGAR")) {
+    doHangarNight(controller, airUnitName, side)
+  }
+  if (location.boxName.includes("FLIGHT")) {
+    doFlightDeck(controller, airUnitName, side)
+  }
+}
 export function setValidDestinationBoxes(controller, airUnitName, side) {
   controller.setValidAirUnitDestinations(airUnitName, new Array()) // just to be sure last entries are gone
 

@@ -52,6 +52,8 @@ function DicePanel(props) {
     }
   }, [GlobalGameState.closePanel])
   const bg = GlobalGameState.gameTurn === 4 ? "black" :"#293a4b"
+
+
   const rowClass = `g-${numDice}`
 
   let myBigBollocks = "modal-width" + numDice

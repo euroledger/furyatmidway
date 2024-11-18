@@ -22,6 +22,8 @@ export default class GlobalGameState {
     RETREAT_US_FLEET: "Check Fleets in Same Hex",
     NIGHT_BATTLES_1: "Surface Sea Battle CSF",
     NIGHT_BATTLES_2: "Surface Sea Battle DMCV",
+    NIGHT_AIR_OPERATIONS_JAPAN: "Night Air Operations (Japan)",
+    NIGHT_AIR_OPERATIONS_US: "Night Air Operations (US)",
     AIR_SEARCH: "Search Phase",
     INITIATIVE_DETERMINATION: "Initiative Determination",
     AIR_OPERATIONS: "Air Operations Phase",

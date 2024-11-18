@@ -20,12 +20,14 @@ import "./style.css"
 import { allCards } from "./CardLoader"
 import {
   doIntiativeRoll,
+  doNavalBattleRoll,
   doNavalBombardmentRoll,
   doCVDamageControl,
   doSubmarineDamageRoll,
   doTroubledReconnaissanceRoll,
   doSelectionRoll,
   doCAP,
+  doNightLanding,
   getNumEscortFighterSteps,
   doDamageAllocation,
   doCAPEvent,
@@ -72,6 +74,8 @@ import { TargetHeaders, TargetFooters } from "./attackscreens/TargetPanel"
 import { FleetTargetHeaders, FleetTargetFooters } from "./attackscreens/FleetTargetPanel"
 import { AttackTargetHeaders, AttackTargetFooters } from "./attackscreens/AttackTargetPanel"
 import { CAPHeaders, CAPFooters } from "./attackscreens/CAPPanel"
+import NightLandingDicePanel from "./components/dialogs/NightLandingDicePanel"
+import { NightHeaders, NightFooters } from "./attackscreens/NightLandingPanel"
 import { DamageHeaders, DamageFooters } from "./attackscreens/DamageAllocationPanel"
 import SubmarineAlertPanel from "./components/dialogs/SubmarineAlertPanel"
 import {
@@ -183,6 +187,8 @@ export function App() {
 
   const [capInterceptionPanelShow, setCapInterceptionPanelShow] = useState(false)
 
+  const [nightLandingPanelShow, setNightLandingPanelShow] = useState(false)
+
   const [damageAllocationPanelShow, setDamageAllocationPanelShow] = useState(false)
 
   const [strikeLostPanelShow, setStrikeLostPanelShow] = useState(false)
@@ -206,6 +212,12 @@ export function App() {
 
   const [capAirUnits, setCapAirUnits] = useState([])
   const [capSteps, setCapSteps] = useState(0)
+
+  const [nightAirUnits, setNightAirUnits] = useState([])
+  const [nightLandingDone, setNightLandingDone] = useState(false)
+  const [nightSteps, setNightSteps] = useState(0)
+  const [nightStepsLost, setNightStepsLost] = useState([])
+
   const [escortSteps, setEscortSteps] = useState(0)
 
   const [showCarrierDisplay, setShowCarrierDisplay] = useState(false)
@@ -332,6 +344,31 @@ export function App() {
   }, [GlobalGameState.gamePhase])
 
   useEffect(() => {
+    if (
+      GlobalGameState.gamePhase === GlobalGameState.PHASE.NIGHT_AIR_OPERATIONS_JAPAN ||
+      GlobalGameState.gamePhase === GlobalGameState.PHASE.NIGHT_AIR_OPERATIONS_US
+    ) {
+      const side =
+        GlobalGameState.gamePhase === GlobalGameState.PHASE.NIGHT_AIR_OPERATIONS_JAPAN
+          ? GlobalUnitsModel.Side.JAPAN
+          : GlobalUnitsModel.Side.US
+
+      setNightLandingDone(false)
+      GlobalGameState.sideWithInitiative = side // needed in view event handler
+      let unitsReturn2 = GlobalInit.controller.getAllAirUnitsInReturn2Boxes(side)
+      if (unitsReturn2.length > 0) {
+        const steps = GlobalInit.controller.getTotalSteps(unitsReturn2)
+        setNightSteps(steps)
+        setNightAirUnits(unitsReturn2)
+        setNightLandingPanelShow(true)
+      }
+      GlobalGameState.phaseCompleted = false
+      GlobalGameState.nextActionButtonDisabled = true
+      GlobalGameState.updateGlobalState()
+    }
+  }, [GlobalGameState.gamePhase])
+
+  useEffect(() => {
     if (GlobalGameState.gamePhase === GlobalGameState.PHASE.INITIATIVE_DETERMINATION) {
       GlobalGameState.dieRolls = []
       GlobalGameState.sideWithInitiative = undefined
@@ -340,11 +377,9 @@ export function App() {
   }, [GlobalGameState.gamePhase])
 
   useEffect(() => {
-    if (
-      GlobalGameState.gamePhase === GlobalGameState.PHASE.NIGHT_BATTLES_1
-    ) {
+    if (GlobalGameState.gamePhase === GlobalGameState.PHASE.NIGHT_BATTLES_1) {
       GlobalGameState.dieRolls = []
-      GlobalGameState.jpSeaBattleHits = 0 
+      GlobalGameState.jpSeaBattleHits = 0
       GlobalGameState.usSeaBattleHits = 0
       setDamageDone(false)
       setDamagedCV("")
@@ -355,11 +390,9 @@ export function App() {
     }
   }, [GlobalGameState.gamePhase])
   useEffect(() => {
-    if (
-      GlobalGameState.gamePhase === GlobalGameState.PHASE.NIGHT_BATTLES_2
-    ) {
+    if (GlobalGameState.gamePhase === GlobalGameState.PHASE.NIGHT_BATTLES_2) {
       GlobalGameState.dieRolls = []
-      GlobalGameState.jpSeaBattleHits = 0 
+      GlobalGameState.jpSeaBattleHits = 0
       GlobalGameState.usSeaBattleHits = 0
       setDamageDone(false)
       setDamagedCV("")
@@ -639,9 +672,9 @@ export function App() {
 
       GlobalGameState.phaseCompleted = true
     } else if (GlobalGameState.gamePhase === GlobalGameState.PHASE.AIR_SEARCH) {
+      GlobalInit.controller.setAllUnitsToNotMoved()
       setJapanMapRegions([])
       setJapanMIFMapRegions([])
-
       GlobalGameState.phaseCompleted = true
     } else if (
       GlobalGameState.gamePhase === GlobalGameState.PHASE.AIR_OPERATIONS ||
@@ -699,7 +732,10 @@ export function App() {
         jpRegion = removeHexFromRegion(jpRegion, mifLocation.currentHex)
       }
       setJapanMapRegions(jpRegion)
+    } else if (GlobalGameState.gamePhase === GlobalGameState.PHASE.RETREAT_US_FLEET) {
+      GlobalGameState.phaseCompleted = true
     }
+
     // If we don't do this, a drag and drop move fires a fleet update and the fleet does not move
     setFleetUnitUpdate(undefined)
     setStrikeGroupUpdate(undefined)
@@ -821,6 +857,27 @@ export function App() {
     }
     return false
   }
+
+  async function endOfMyNightAirOperations(side) {
+    let unitsReturn2 = GlobalInit.controller.getAllAirUnitsInReturn2Boxes(side)
+    if (unitsReturn2.length > 0) {
+      return false
+    }
+
+    // 2. Units in Return 1 box must move to hangar as per normal rules
+    let unitsReturn1 = GlobalInit.controller.getAttackingReturningUnitsNotMoved(side)
+    if (unitsReturn1.length > 0) {
+      return false
+    }
+
+    // 3. Units in CAP boxes must move to hangar
+    const capUnits = GlobalInit.controller.getAllAirUnitsInCAPBoxes(side)
+    if (capUnits.length > 0) {
+      return false
+    }
+    return true
+  }
+
   async function endOfMyAirOperation(side) {
     if (GlobalGameState.gamePhase !== GlobalGameState.PHASE.AIR_OPERATIONS) {
       return false
@@ -850,6 +907,7 @@ export function App() {
     }
     return false
   }
+
   const getAllAirUnitsRequiringMoves = () => {
     // get list of units in stike boxes and return boxes still to move this air op
     if (GlobalGameState.sideWithInitiative === undefined) {
@@ -876,11 +934,35 @@ export function App() {
     }
   }
 
+  const getAllAirUnitsRequiringMovesNightAirOperation = (side) => {
+    // 1. Units in Return 2 box must attempt night landing
+    let unitsReturn2 = GlobalInit.controller.getAllAirUnitsInReturn2Boxes(side)
+
+    // 2. Units in Return 1 box must move to hangar as per normal rules
+    let unitsReturn1 = GlobalInit.controller.getAttackingReturningUnitsNotMoved(side)
+
+    // 3. Units in CAP boxes must move to hangar
+    const capUnits = GlobalInit.controller.getAllAirUnitsInCAPBoxes(side)
+
+    let units = unitsReturn2.concat(unitsReturn1).concat(capUnits)
+
+    for (let unit of units) {
+      unit.border = true
+    }
+  }
+
   if (
     GlobalGameState.gamePhase === GlobalGameState.PHASE.AIR_OPERATIONS ||
     GlobalGameState.gamePhase === GlobalGameState.PHASE.MIDWAY_ATTACK
   ) {
     getAllAirUnitsRequiringMoves()
+  }
+
+  if (GlobalGameState.gamePhase === GlobalGameState.PHASE.NIGHT_AIR_OPERATIONS_JAPAN) {
+    getAllAirUnitsRequiringMovesNightAirOperation(GlobalUnitsModel.Side.JAPAN)
+  }
+  if (GlobalGameState.gamePhase === GlobalGameState.PHASE.NIGHT_AIR_OPERATIONS_US) {
+    getAllAirUnitsRequiringMovesNightAirOperation(GlobalUnitsModel.Side.US)
   }
 
   const nextActionButtonDisabled = async () => {
@@ -890,7 +972,6 @@ export function App() {
       return
     }
     if (GlobalGameState.gamePhase === GlobalGameState.PHASE.US_FLEET_MOVEMENT) {
-      // GlobalGameState.nextActionButtonDisabled = false
       return
     }
     if (GlobalGameState.gamePhase === GlobalGameState.PHASE.JAPAN_FLEET_MOVEMENT) {
@@ -909,7 +990,6 @@ export function App() {
     if (GlobalGameState.phaseCompleted) {
       GlobalGameState.nextActionButtonDisabled = false
       return
-    } else {
     }
     let midwayStrikeGroupsReady = true
     if (GlobalGameState.gamePhase === GlobalGameState.PHASE.MIDWAY_ATTACK) {
@@ -919,10 +999,21 @@ export function App() {
     }
     let endOfAirOps = false
     if (GlobalGameState.gamePhase !== GlobalGameState.PHASE.MIDWAY_ATTACK) {
-      endOfAirOps = await endOfMyAirOperation(GlobalGameState.sideWithInitiative, setAirUnitUpdate)
+      if (GlobalGameState.gamePhase === GlobalGameState.PHASE.NIGHT_AIR_OPERATIONS_JAPAN) {
+        endOfAirOps = await endOfMyNightAirOperations(GlobalUnitsModel.Side.JAPAN)
+      } else if (GlobalGameState.gamePhase === GlobalGameState.PHASE.NIGHT_AIR_OPERATIONS_US) {
+        endOfAirOps = await endOfMyNightAirOperations(GlobalUnitsModel.Side.US)
+      } else {
+        endOfAirOps = await endOfMyAirOperation(GlobalGameState.sideWithInitiative)
+      }
     } else {
       // @TODO Can have midway strike in first air op
       // need code to do this
+      // HOW TO TEST THIS:
+      // -> move 1AF to within two hexes of Midway
+      // -> As soon as this is achieved, declare Midway attack
+      // (for example, could move 1AF to  B4 on turn one then declare Midway attack on turn two)
+
       if (GlobalGameState.midwayAirOp === 2) {
         endOfAirOps = await endOfMidwayOperation()
       }
@@ -950,6 +1041,7 @@ export function App() {
       GlobalGameState.gaFmePhase === GlobalGameState.PHASE.JAPAN_FLEET_MOVEMENT ||
       GlobalGameState.gamePhase === GlobalGameState.PHASE.JAPAN_DMCV_FLEET_MOVEMENT ||
       GlobalGameState.gamePhase === GlobalGameState.PHASE.MIDWAY_ATTACK ||
+      GlobalGameState.gamePhase === GlobalGameState.PHASE.NIGHT_AIR_OPERATIONS_JAPAN ||
       (GlobalGameState.gamePhase === GlobalGameState.PHASE.AIR_OPERATIONS &&
         GlobalGameState.sideWithInitiative === GlobalUnitsModel.Side.JAPAN)
     ) {
@@ -1303,6 +1395,28 @@ export function App() {
       ></CAPHeaders>
     </>
   )
+  const capFooters = (
+    <>
+      <CAPFooters controller={GlobalInit.controller} setFightersPresent={setFightersPresent}></CAPFooters>
+    </>
+  )
+
+  let nSide =
+    GlobalGameState.gamePhase === GlobalGameState.PHASE.NIGHT_AIR_OPERATIONS_JAPAN
+      ? GlobalUnitsModel.Side.JAPAN
+      : GlobalUnitsModel.Side.US
+  let nightSide = "Night Landing: " + nSide
+  const nightHeaders = (
+    <>
+      <NightHeaders controller={GlobalInit.controller} side={nSide} night={setNightLandingDone}></NightHeaders>
+    </>
+  )
+  const nightFooters = (
+    <>
+      <NightFooters controller={GlobalInit.controller}></NightFooters>
+    </>
+  )
+
   const damageHeaders = (
     <>
       <DamageHeaders
@@ -1522,11 +1636,6 @@ export function App() {
     </>
   )
 
-  const capFooters = (
-    <>
-      <CAPFooters controller={GlobalInit.controller} setFightersPresent={setFightersPresent}></CAPFooters>
-    </>
-  )
   const airOpsFooters = (
     <>
       <AirOpsFooters controller={GlobalInit.controller}></AirOpsFooters>
@@ -1682,15 +1791,18 @@ export function App() {
       doTroubledReconnaissanceRoll(GlobalInit.controller, roll)
     }
   }
+  function doSeaBattleRoll(roll0, roll1) {
+    doNavalBattleRoll(GlobalInit.controller, roll0, roll1)
+  }
   // console.log("GlobalUnitsModel.usStrikeGroups=", GlobalUnitsModel.usStrikeGroups)
   function doInitiativeRoll(roll0, roll1) {
     // for testing QUACK
-    // doIntiativeRoll(GlobalInit.controller, 6, 1, true) // JAPAN initiative
+    doIntiativeRoll(GlobalInit.controller, 6, 1, true) // JAPAN initiative
     // doIntiativeRoll(GlobalInit.controller, 1, 6, true) // US initiative
 
     // doIntiativeRoll(GlobalInit.controller, 3, 3, true) // tie
 
-    doIntiativeRoll(GlobalInit.controller, roll0, roll1)
+    // doIntiativeRoll(GlobalInit.controller, roll0, roll1)
     GlobalGameState.updateGlobalState()
   }
 
@@ -1699,6 +1811,18 @@ export function App() {
 
     setTargetDetermined(true)
     GlobalGameState.updateGlobalState()
+  }
+
+  function doNightRollsDamage() {
+    for (let i = 0; i < nightAirUnits.length; i++) {
+      for (let j = 0; j < nightStepsLost[i]; j++) {
+        doDamageAllocation(GlobalInit.controller, nightAirUnits[i])
+      }
+    }
+  }
+  function doNightLandingRolls() {
+    doNightLanding(GlobalInit.controller, nightAirUnits, nightSteps, setNightStepsLost)
+    setNightLandingDone(true)
   }
 
   function doCAPRolls() {
@@ -1767,6 +1891,9 @@ export function App() {
     doDMCVSelectionEvent(GlobalInit.controller, DMCVCarrierSelected, dmcvSide)
   }
 
+  function sendNightLandingEvent() {
+    // QUACK @TODO
+  }
   function sendCapEvent() {
     doCAPEvent(GlobalInit.controller, capAirUnits)
   }
@@ -1835,6 +1962,8 @@ export function App() {
 
   let capInterceptionDiceButtonDisabled = capAirUnits.length === 0 || GlobalGameState.dieRolls.length > 0
 
+  let nightLandingDiceButtonDisabled = nightLandingDone
+
   let airOpsDiceButtonDisabled =
     GlobalGameState.sideWithInitiative !== undefined &&
     GlobalGameState.sideWithInitiative !== null &&
@@ -1869,6 +1998,7 @@ export function App() {
     jpMsg =
       "Drag the Japanese 1AF Fleet Unit to any hex in the shaded red area of the map, and Japanese MIF Fleet Unit to any white shaded hex"
   }
+
   return (
     <>
       <LoadGamePanel
@@ -2014,7 +2144,7 @@ export function App() {
             nextAction(e)
           }
         }}
-        doRoll={doInitiativeRoll}
+        doRoll={doSeaBattleRoll}
         diceButtonDisabled={seaBattleDiceButtonDisabled}
         closeButtonDisabled={!seaBattleDiceButtonDisabled}
       ></DicePanel>
@@ -2164,7 +2294,6 @@ export function App() {
       ></LargeDicePanel>
 
       <AttackDicePanel
-        // numDice={GlobalInit.controller.getAttackingStepsRemainingTEST()}
         controller={GlobalInit.controller}
         numDice={numDiceToRoll}
         show={!testClicked && attackResolutionPanelShow}
@@ -2200,6 +2329,30 @@ export function App() {
         closeButtonDisabled={GlobalGameState.dieRolls.length === 0 && !attackResolved}
         disabled={false}
       ></AttackDicePanel>
+      <NightLandingDicePanel
+        controller={GlobalInit.controller}
+        numDice={nightSteps}
+        diceButtonDisabled={nightLandingDiceButtonDisabled}
+        closeButtonDisabled={!nightLandingDiceButtonDisabled}
+        show={!testClicked && nightLandingPanelShow}
+        headerText={nightSide}
+        headers={nightHeaders}
+        setNightLandingDone={setNightLandingDone}
+        footers={nightFooters}
+        showDice={true}
+        side={nSide}
+        nightStepsLost={nightStepsLost}
+        width={74}
+        onHide={(e) => {
+          setNightLandingPanelShow(false)
+          if (nightAirUnits.length > 0) {
+            sendNightLandingEvent()
+          }
+          doNightRollsDamage()
+        }}
+        doRoll={doNightLandingRolls}
+        disabled={true}
+      ></NightLandingDicePanel>
 
       <CarrierDamageDicePanel
         numDice={1}

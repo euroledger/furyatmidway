@@ -1,10 +1,11 @@
-import GlobalGameState from "../model/GlobalGameState";
-import COMMAND_TYPE from "../commands/COMMAND_TYPE";
-import HexCommand from "../commands/HexCommand";
+import GlobalGameState from "../model/GlobalGameState"
+import COMMAND_TYPE from "../commands/COMMAND_TYPE"
+import HexCommand from "../commands/HexCommand"
 
 class ViewEventFleetUnitSetupHandler {
   constructor(controller) {
-    this.controller = controller;
+    this.controller = controller
+    this.lastMsg = ""
   }
   handleEvent(event) {
     // event contains type and data
@@ -15,7 +16,6 @@ class ViewEventFleetUnitSetupHandler {
 
     this.controller.setFleetUnitLocation(id, to, side)
 
-    
     if (id.includes("MAP")) {
       // no need to log fleet movements on the other side's map (for now)
       return
@@ -25,7 +25,12 @@ class ViewEventFleetUnitSetupHandler {
       cmdType = COMMAND_TYPE.PLACE
     }
     let command = new HexCommand(cmdType, id, from, to, side)
-    GlobalGameState.log(`${command.toString()}`)
+
+    // hack to avoid duplicate messages
+    if (command.toString() !== this.lastMsg) {
+      GlobalGameState.log(`${command.toString()}`)
+      this.lastMsg = command.toString()
+    }
   }
 }
-export default ViewEventFleetUnitSetupHandler;
+export default ViewEventFleetUnitSetupHandler

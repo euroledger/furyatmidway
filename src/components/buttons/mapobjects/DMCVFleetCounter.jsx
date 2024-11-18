@@ -68,11 +68,12 @@ function DMCVFleetCounter({
   }
 
   function resetPosition() {
-    setPosition({
+    const newPos = {
       left: counterData.position.left,
       top: counterData.position.top,
       currentHex: HexCommand.OFFBOARD,
-    })
+    }
+    setPosition(() => newPos)
   }
   let hex = {}
 
@@ -87,11 +88,21 @@ function DMCVFleetCounter({
     counterData.name === fleetUnitUpdate.name &&
     fleetUnitUpdate.position.currentHex === HexCommand.OFFBOARD
   ) {
+    console.log(
+      "I am",
+      fleetUnitUpdate.name,
+      "side:",
+      side,
+      "-> FLEET UNIT CURRENT POSITION=", position.currentHex,
+      "-> move to",
+      fleetUnitUpdate.position.currentHex
+    )
     if (position.currentHex !== HexCommand.OFFBOARD) {
       resetPosition()
       const to = HexCommand.OFFBOARD
       const from = position.currentHex
 
+      console.log("RESET DMCV FLEET:", counterData.name)
       // No need to log JPMAP or USMAP removal of DMCV Fleet
       controller.viewEventHandler({
         type: Controller.EventTypes.FLEET_SETUP,

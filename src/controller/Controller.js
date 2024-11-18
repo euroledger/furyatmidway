@@ -23,6 +23,7 @@ export default class Controller {
     FLEET_SETUP: "FleetSetup",
     AIR_UNIT_MOVE: "StrikeGroupSetup",
     INITIATIVE_ROLL: "Initiative Roll",
+    NAVAL_BATTLE_ROLL: "Naval Battle Roll",
     MIDWAY_GARRISON: "Midway Garrison Change",
     STRIKE_GROUP_MOVE: "StrikeGroupMove",
     TARGET_SELECTION_ROLL: "Target Selection Roll",
@@ -153,6 +154,52 @@ export default class Controller {
     return airCounters
   }
 
+  getAllAirUnitsInReturn2Boxes(side) {
+    const airUnits = Array.from(this.counters.values())
+    const defenders = airUnits.filter((unit) => unit.constructor.name === "AirUnit" && unit.side === side)
+
+    let units = new Array()
+    for (const unit of defenders) {
+      const location = this.getAirUnitLocation(unit.name)
+      unit.location = location
+      if (location.boxName.includes("RETURNING (2)")) {
+        units.push(unit)
+      }
+    }
+    return units
+  }
+
+  getAllAirUnitsInCAPBoxes(side) {
+    const airUnits = Array.from(this.counters.values())
+    const defenders = airUnits.filter((unit) => unit.constructor.name === "AirUnit" && unit.side === side)
+
+    let units = new Array()
+    for (const unit of defenders) {
+      const location = this.getAirUnitLocation(unit.name)
+      unit.location = location
+      if (unit.aircraftUnit.moved) {
+        continue // unit may have moved back to hangar and out again on a night operation
+      }
+      if (side === GlobalUnitsModel.Side.JAPAN) {
+        if (
+          location.boxName === GlobalUnitsModel.AirBox.JP_CD1_CAP ||
+          location.boxName === GlobalUnitsModel.AirBox.JP_CD2_CAP
+        ) {
+          units.push(unit)
+        }
+      } else {
+        if (
+          location.boxName === GlobalUnitsModel.AirBox.US_TF16_CAP ||
+          location.boxName === GlobalUnitsModel.AirBox.US_TF17_CAP  || 
+          location.boxName === GlobalUnitsModel.AirBox.US_MIDWAY_CAP
+        ) {
+          units.push(unit)
+        }
+      }
+    }
+    return units
+  }
+
   getAllAirUnitsInReturn1Boxes(side) {
     const airUnits = Array.from(this.counters.values())
     const defenders = airUnits.filter((unit) => unit.constructor.name === "AirUnit" && unit.side === side)
@@ -228,6 +275,14 @@ export default class Controller {
       (unit) => unit.constructor.name === "AirUnit" && unit.side === side && unit.aircraftUnit.intercepting
     )
     return defenders
+  }
+
+  getTotalSteps(airUnits) {
+    let totalSteps = 0
+    for (let unit of airUnits) {
+      totalSteps += unit.aircraftUnit.steps
+    }
+    return totalSteps
   }
 
   getNumDefendingSteps(side) {
@@ -1079,19 +1134,19 @@ export default class Controller {
   opposingFleetsInSameHex() {
     const csfLocation = this.getFleetLocation("CSF", GlobalUnitsModel.Side.US)
     const usDMCVLocation = this.getFleetLocation("US-DMCV", GlobalUnitsModel.Side.US)
-  
+
     let numFleetsInSameHexAsCSF = 1,
       numFleetsInSameHexAsUSDMCV = 1
     let fleetsInSameHexAsCSF = new Array(),
       fleetsInSameHexAsUSDMCV = new Array()
-  
+
     if (csfLocation !== undefined) {
       fleetsInSameHexAsCSF = this.getAllFleetsInLocation(csfLocation, GlobalUnitsModel.Side.US, false)
     }
     if (usDMCVLocation) {
       fleetsInSameHexAsUSDMCV = this.getAllFleetsInLocation(usDMCVLocation, GlobalUnitsModel.Side.US, false)
     }
-  
+
     numFleetsInSameHexAsCSF = fleetsInSameHexAsCSF.length
     numFleetsInSameHexAsUSDMCV = fleetsInSameHexAsUSDMCV.length
 
@@ -1702,6 +1757,10 @@ export default class Controller {
 
       case Controller.EventTypes.INITIATIVE_ROLL:
         this.dieRollEventHandler.handlInitiativeDiceRollEvent(event)
+        break
+
+      case Controller.EventTypes.NAVAL_BATTLE_ROLL:
+        this.dieRollEventHandler.handleNavalBattleDiceRollEvent(event)
         break
 
       case Controller.EventTypes.MIDWAY_GARRISON:
