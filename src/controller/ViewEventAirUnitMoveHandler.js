@@ -29,10 +29,21 @@ class ViewEventAirUnitMoveHandler {
         : `${name} - box ${index}`
 
     if (name.includes("STRIKE BOX")) {
-      // console.log("UNIT", counterData.name, "moving to", name)
-      // console.log("AND IT WAS LAUNCHED FROM", boxName)
       counterData.launchedFrom = boxName
     }
+
+    // if unit lands on a carrier other than its parent, reset its parent 
+    // this can happen if parent carrier is sunk or damaged
+
+    // NEEDS TO BE TESTED
+    if (name.includes("FLIGHT_DECK") || name.includes("HANGAR")) {
+      const carrierMovingTo = this.controller.getCarrierForAirBox(name)
+      if (carrierMovingTo !== counterData.carrier) {
+        counterData.carrier = carrierMovingTo
+      }
+    }
+
+
     this.controller.addAirUnitToBox(name, index, counterData)
     let command = new MoveCommand(COMMAND_TYPE.MOVE_AIR_UNIT, counterData.longName, from, to)
 

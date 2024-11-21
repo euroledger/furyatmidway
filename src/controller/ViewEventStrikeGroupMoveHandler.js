@@ -8,7 +8,7 @@ class ViewEventStrikeGroupMoveHandler {
     this.controller = controller
   }
   handleEvent(event) {
-    const { initial, counterData, from, to, side, loading, moved, attacked, setCardNumber } = event.data
+    const { initial, counterData, from, to, side, loading, moved, attacked } = event.data
 
     // add strike group to map holding name -> current Hex
     this.controller.setStrikeGroupLocation(counterData.name, to, side)
@@ -35,10 +35,6 @@ class ViewEventStrikeGroupMoveHandler {
 
       if (counterData.airOpMoved === undefined) {
         this.controller.setAirOpMoved(counterData)
-      }
-
-      if (this.controller.checkForAirAttack(to, side)) {
-        setUpAirAttack(this.controller, to, counterData)
       }
     } else {
       counterData.moved = moved

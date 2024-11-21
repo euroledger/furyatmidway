@@ -348,6 +348,10 @@ function loadAirUnits(airUnitMap) {
       globalAirUnit.aircraftUnit.moved = true
     }
 
+    // possibly check airUnit parent carrier here
+    if (globalAirUnit.carrier !== airUnit.counterData._carrier) {
+      globalAirUnit.carrier = airUnit.counterData._carrier
+    }
     // QUACK FOR TESTING ONLY
     // if (airUnit.counterData._name === "Hornet-F4F4-1" || airUnit.counterData._name === "Hornet-F4F4-2") {
     //   globalAirUnit.aircraftUnit.steps = 1
@@ -356,8 +360,10 @@ function loadAirUnits(airUnitMap) {
     // GlobalGameState.usDMCVFleetPlaced = false
     // GlobalGameState.jpDMCVFleetPlaced = false
     GlobalGameState.fleetSpeed = 2
+    GlobalGameState.nextMidwayInvasionRoll = GlobalUnitsModel.Side.JAPAN
     GlobalGameState.dmcvFleetSpeed = 1
     GlobalGameState.usDMCVCarrier = GlobalUnitsModel.Carrier.HORNET
+    GlobalGameState.midwayGarrisonLevel = 4
   }
 }
 
@@ -419,7 +425,6 @@ export function loadGameStateForId(controller, gameId) {
   }
 
   const globalState = gameDetails.global
-
 
   const global = new Map(JSON.parse(globalState))
 

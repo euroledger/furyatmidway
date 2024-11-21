@@ -3,6 +3,9 @@ import Button from "react-bootstrap/Button"
 import GlobalUnitsModel from "../model/GlobalUnitsModel"
 import GlobalGameState from "../model/GlobalGameState"
 
+
+  // QUACK @TODO REMOVE THIS COMPONENT AND ALL STATES RELATED TO IT
+  // CAN NEVER HAVE TWO FLEETS IN SAME HEX DURING AIR OPERATIONS 
 export function FleetTargetHeaders({ controller, setTargetSelected }) {
   const [buttonsDisabled, setButtonsDisabled] = useState(false)
   const [myTarget, setMyTarget] = useState(null)

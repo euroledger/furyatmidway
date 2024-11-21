@@ -64,6 +64,7 @@ async function loadHandler({
   }
 
   for (const updateArray of jpDamageMarkerUpdates) {
+    await delay(1)
     for (let update of updateArray) {
       if (update === null) {
         continue
@@ -74,6 +75,7 @@ async function loadHandler({
   }
 
   for (const updateArray of usDamageMarkerUpdates) {
+    await delay(1)
     for (let update of updateArray) {
       if (update === null) {
         continue

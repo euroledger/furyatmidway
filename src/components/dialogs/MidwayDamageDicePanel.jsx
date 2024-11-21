@@ -61,6 +61,8 @@ function MidwayDamageDicePanel(props) {
     closeButtonStr,
     closeButtonCallback,
     setDamageMarkerUpdate,
+    setDamageDone,
+    damageDone,
     ...rest
   } = props
 
@@ -97,12 +99,12 @@ function MidwayDamageDicePanel(props) {
 
   if (GlobalGameState.midwayHits > 0 && GlobalGameState.midwayHits + GlobalGameState.totalMidwayHits < 3) {
     showDicePanel = true
-
-    // sendDamageUpdates(controller, damage, setDamageMarkerUpdate)
-  } else if (GlobalGameState.midwayHits > 0 && GlobalGameState.midwayHits + GlobalGameState.totalMidwayHits >= 3) {
+    // } else if (GlobalGameState.midwayHits > 0 && GlobalGameState.midwayHits + GlobalGameState.totalMidwayHits >= 3) {
+  } else if (!damageDone && GlobalGameState.midwayHits + GlobalGameState.totalMidwayHits >= 3) {
     showMsgPanel = true
     allMidwayBoxesDamaged(controller, setDamageMarkerUpdate)
     GlobalGameState.midwayHits = 0
+    setDamageDone(true)
   }
 
   let isSunk = controller.isMidwayBaseDestroyed()
@@ -126,7 +128,6 @@ function MidwayDamageDicePanel(props) {
   )
 
   let runwayCounters = new Array()
-  let image
   for (let i = 0; i < 3; i++) {
     const damageMarker = "/images/markers/damage.png"
 

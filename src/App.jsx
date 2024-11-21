@@ -30,6 +30,7 @@ import {
   doNightLanding,
   getNumEscortFighterSteps,
   doDamageAllocation,
+  doMidwayLandBattleRoll,
   doCAPEvent,
   doDMCVSelectionEvent,
   doDamageEvent,
@@ -65,6 +66,7 @@ import { allHexesWithinDistance, removeHexFromRegion } from "./components/HexUti
 import DicePanel from "./components/dialogs/DicePanel"
 import LargeDicePanel from "./components/dialogs/LargeDicePanel"
 import AttackDicePanel from "./components/dialogs/AttackDicePanel"
+import MidwayInvasionDicePanel from "./components/dialogs/MidwayInvasionDicePanel"
 import CarrierDamageDicePanel from "./components/dialogs/CarrierDamageDicePanel"
 import MidwayDamageDicePanel from "./components/dialogs/MidwayDamageDicePanel"
 import EliminatedReturningUnits from "./components/dialogs/EliminatedReturningUnitsPanel"
@@ -198,6 +200,8 @@ export function App() {
   const [damageControlPanelShow, setDamageControlPanelShow] = useState(false)
   const [submarineDamagePanelShow, setSubmarineDamagePanelShow] = useState(false)
   const [submarineAlertPanelShow, setSubmarineAlertPanelShow] = useState(false)
+
+  const [midwayInvasionPanelShow, setMidwayInvasionPanelShow] = useState(false)
 
   const [airReplacementsPanelShow, setAirReplacementsPanelShow] = useState(false)
 
@@ -474,6 +478,7 @@ export function App() {
     if (GlobalGameState.gamePhase === GlobalGameState.PHASE.MIDWAY_DAMAGE_RESOLUTION) {
       GlobalGameState.dieRolls = []
       setAttackResolutionPanelShow(false)
+      setDamageDone(false)
       setMidwayDamagePanelShow(true)
       setAttackResolved(false)
     }
@@ -525,6 +530,16 @@ export function App() {
   useEffect(() => {
     if (GlobalGameState.gamePhase === GlobalGameState.PHASE.END_OF_TURN) {
       GlobalGameState.SearchValue.JP_AF = 6 // in case card 6 was played
+    }
+  }, [GlobalGameState.gamePhase])
+
+  useEffect(() => {
+    if (GlobalGameState.gamePhase === GlobalGameState.PHASE.MIDWAY_INVASION) {
+      GlobalGameState.dieRolls = []
+      if (GlobalGameState.semperFi) {
+        GlobalGameState.nextMidwayInvasionRoll = GlobalUnitsModel.Side.US
+      }
+      setMidwayInvasionPanelShow(true)
     }
   }, [GlobalGameState.gamePhase])
 
@@ -840,7 +855,7 @@ export function App() {
     return false
   }
   async function endOfMidwayOperation() {
-    if (GlobalGameState.midwayAirOpsCompleted < 2) {
+    if (GlobalGameState.midwayAirOpsCompleted < 2 && GlobalInit.controller.getDistanceBetween1AFAndMidway() > 2) {
       return false
     }
     const returningUnitsNotMoved = GlobalInit.controller.getReturningUnitsNotMoved(GlobalUnitsModel.Side.JAPAN)
@@ -984,6 +999,9 @@ export function App() {
         if (GlobalGameState.mifFleetPlaced) {
           GlobalGameState.nextActionButtonDisabled = false
           return
+        } else {
+          GlobalGameState.nextActionButtonDisabled = true
+          return
         }
       }
     }
@@ -1007,14 +1025,7 @@ export function App() {
         endOfAirOps = await endOfMyAirOperation(GlobalGameState.sideWithInitiative)
       }
     } else {
-      // @TODO Can have midway strike in first air op
-      // need code to do this
-      // HOW TO TEST THIS:
-      // -> move 1AF to within two hexes of Midway
-      // -> As soon as this is achieved, declare Midway attack
-      // (for example, could move 1AF to  B4 on turn one then declare Midway attack on turn two)
-
-      if (GlobalGameState.midwayAirOp === 2) {
+      if (GlobalGameState.midwayAirOp === 2 || GlobalInit.controller.getDistanceBetween1AFAndMidway() <= 2) {
         endOfAirOps = await endOfMidwayOperation()
       }
     }
@@ -1023,7 +1034,11 @@ export function App() {
     } else {
       GlobalGameState.nextActionButtonDisabled = true
     }
-    if (midwayStrikeGroupsReady && GlobalGameState.midwayAirOp === 1) {
+    if (
+      midwayStrikeGroupsReady &&
+      GlobalGameState.midwayAirOp === 1 &&
+      GlobalInit.controller.getDistanceBetween1AFAndMidway() > 2
+    ) {
       GlobalGameState.nextActionButtonDisabled = false
     }
     if (prevButton !== GlobalGameState.nextActionButtonDisabled) {
@@ -1042,6 +1057,7 @@ export function App() {
       GlobalGameState.gamePhase === GlobalGameState.PHASE.JAPAN_DMCV_FLEET_MOVEMENT ||
       GlobalGameState.gamePhase === GlobalGameState.PHASE.MIDWAY_ATTACK ||
       GlobalGameState.gamePhase === GlobalGameState.PHASE.NIGHT_AIR_OPERATIONS_JAPAN ||
+      GlobalGameState.gamePhase === GlobalGameState.PHASE.MIDWAY_INVASION ||
       (GlobalGameState.gamePhase === GlobalGameState.PHASE.AIR_OPERATIONS &&
         GlobalGameState.sideWithInitiative === GlobalUnitsModel.Side.JAPAN)
     ) {
@@ -1564,7 +1580,8 @@ export function App() {
       <CarrierPlanesDitchDamageFooters eliminatedSteps={eliminatedSteps}></CarrierPlanesDitchDamageFooters>
     </>
   )
-  const endOfTurnHeader = `End of Turn ${GlobalGameState.gameTurn} - Summary`
+  const endOfTurnHeader =
+    GlobalGameState.gameTurn !== 7 ? `End of Turn ${GlobalGameState.gameTurn} - Summary` : "End of Game Summary"
   const endOfTurnSummaryHeaders = (
     <>
       <EndOfTurnSummaryHeaders
@@ -1620,9 +1637,11 @@ export function App() {
   )
 
   const numAAADice =
-    GlobalGameState.taskForceTarget !== GlobalUnitsModel.TaskForce.MIDWAY
-      ? 2
-      : Math.ceil(GlobalGameState.midwayGarrisonLevel / 2)
+    GlobalGameState.taskForceTarget === GlobalUnitsModel.TaskForce.MIDWAY
+      ? Math.ceil(GlobalGameState.midwayGarrisonLevel / 2)
+      : GlobalGameState.taskForceTarget === GlobalUnitsModel.TaskForce.MIF
+      ? Math.ceil(GlobalGameState.midwayInvasionLevel / 2)
+      : 2
 
   const aaaHeaders = (
     <>
@@ -1708,7 +1727,11 @@ export function App() {
 
   const attackResolutionFooters = (
     <>
-      <AttackResolutionFooters totalHits={carrierHits}></AttackResolutionFooters>
+      <AttackResolutionFooters
+        totalHits={carrierHits}
+        attackResolved={attackResolved}
+        setAttackResolved={setAttackResolved}
+      ></AttackResolutionFooters>
     </>
   )
 
@@ -1797,12 +1820,12 @@ export function App() {
   // console.log("GlobalUnitsModel.usStrikeGroups=", GlobalUnitsModel.usStrikeGroups)
   function doInitiativeRoll(roll0, roll1) {
     // for testing QUACK
-    doIntiativeRoll(GlobalInit.controller, 6, 1, true) // JAPAN initiative
+    // doIntiativeRoll(GlobalInit.controller, 6, 1, true) // JAPAN initiative
     // doIntiativeRoll(GlobalInit.controller, 1, 6, true) // US initiative
 
     // doIntiativeRoll(GlobalInit.controller, 3, 3, true) // tie
 
-    // doIntiativeRoll(GlobalInit.controller, roll0, roll1)
+    doIntiativeRoll(GlobalInit.controller, roll0, roll1)
     GlobalGameState.updateGlobalState()
   }
 
@@ -1811,6 +1834,15 @@ export function App() {
 
     setTargetDetermined(true)
     GlobalGameState.updateGlobalState()
+  }
+  function doMidwayInvasionRoll() {
+    // Alternate Rolls in the ground combat
+    doMidwayLandBattleRoll()
+    if (GlobalGameState.nextMidwayInvasionRoll === GlobalUnitsModel.Side.JAPAN) {
+      GlobalGameState.nextMidwayInvasionRoll = GlobalUnitsModel.Side.US
+    } else {
+      GlobalGameState.nextMidwayInvasionRoll = GlobalUnitsModel.Side.JAPAN
+    }
   }
 
   function doNightRollsDamage() {
@@ -1945,13 +1977,19 @@ export function App() {
       closeDamageButtonDisabled = eliminatedSteps !== 1 && stepsLeft != 0
     }
   }
+  let carrieDamageDiceButtonDisabled
 
-  const oldCarrierHits = GlobalInit.controller.getCarrierHits(GlobalGameState.currentCarrierAttackTarget)
-
-  let carrieDamageDiceButtonDisabled =
-    oldCarrierHits > 0 ||
-    GlobalGameState.carrierAttackHits !== 1 ||
-    (GlobalGameState.carrierAttackHits === 1 && attackResolved)
+  if (
+    GlobalGameState.currentCarrierAttackTarget !== GlobalUnitsModel.TaskForce.MIF &&
+    GlobalGameState.currentCarrierAttackTarget !== GlobalUnitsModel.TaskForce.JAPAN_DMCV &&
+    GlobalGameState.currentCarrierAttackTarget !== GlobalUnitsModel.TaskForce.US_DMCV
+  ) {
+    const oldCarrierHits = GlobalInit.controller.getCarrierHits(GlobalGameState.currentCarrierAttackTarget)
+    carrieDamageDiceButtonDisabled =
+      oldCarrierHits > 0 ||
+      GlobalGameState.carrierAttackHits !== 1 ||
+      (GlobalGameState.carrierAttackHits === 1 && attackResolved)
+  }
 
   const totalHits = GlobalGameState.midwayHits + GlobalGameState.totalMidwayHits
   let midwayDamageDiceButtonEnabled = GlobalGameState.midwayHits > 0 && totalHits < 3
@@ -1963,6 +2001,9 @@ export function App() {
   let capInterceptionDiceButtonDisabled = capAirUnits.length === 0 || GlobalGameState.dieRolls.length > 0
 
   let nightLandingDiceButtonDisabled = nightLandingDone
+
+  let midwayInvasionDiceButtonDisabled =
+    GlobalGameState.midwayInvasionLevel === 0 || GlobalGameState.midwayGarrisonLevel === 0
 
   let airOpsDiceButtonDisabled =
     GlobalGameState.sideWithInitiative !== undefined &&
@@ -2309,7 +2350,7 @@ export function App() {
         }}
         doRoll={doAttackResolutionRolls}
         width={74}
-        closeButtonStr="Next..."
+        closeButtonStr={GlobalGameState.taskForceTarget !== GlobalUnitsModel.TaskForce.MIF ? "Next..." : "Close"}
         closeButtonCallback={
           !attackResolved
             ? (e) => {
@@ -2353,6 +2394,26 @@ export function App() {
         doRoll={doNightLandingRolls}
         disabled={true}
       ></NightLandingDicePanel>
+
+      <MidwayInvasionDicePanel
+        controller={GlobalInit.controller}
+        numDice={2}
+        diceButtonDisabled={midwayInvasionDiceButtonDisabled}
+        closeButtonDisabled={!midwayInvasionDiceButtonDisabled}
+        show={!testClicked && midwayInvasionPanelShow}
+        headerText="Midway Invasion"
+        // headers={nightHeaders}
+        setNightLandingDone={setNightLandingDone}
+        // footers={nightFooters}
+        showDice={true}
+        side={nSide}
+        width={74}
+        onHide={(e) => {
+          setMidwayInvasionPanelShow(false)
+        }}
+        doRoll={doMidwayInvasionRoll}
+        disabled={true}
+      ></MidwayInvasionDicePanel>
 
       <CarrierDamageDicePanel
         numDice={1}
@@ -2402,6 +2463,8 @@ export function App() {
         diceButtonDisabled={!midwayDamageDiceButtonEnabled}
         closeButtonDisabled={midwayDamageDiceButtonEnabled}
         setDamageMarkerUpdate={setDamageMarkerUpdate}
+        setDamageDone={setDamageDone}
+        damageDone={damageDone}
         disabled={false}
       ></MidwayDamageDicePanel>
       <EliminatedReturningUnits
@@ -2413,7 +2476,7 @@ export function App() {
           setEliminatedUnitsPanelShow(false)
           GlobalGameState.orphanedAirUnits = new Array()
         }}
-        width={30}
+        width={74}
         closeButtonStr="Next..."
         closeButtonDisabled={false}
         disabled={false}

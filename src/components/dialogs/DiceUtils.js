@@ -24,6 +24,16 @@ export const randomDice = (num, testRolls) => {
   return rolls
 }
 
+export const randomDiceWithOffset = (num, offset) => {
+  const rolls = new Array()
+  for (let i = 0; i < num; i++) {
+    const random = Math.floor(Math.random() * 6) + 1
+    rolls.push(random)
+  }
+  rollDice(rolls, offset)
+  return rolls
+}
+
 const spin = (r, dice) => {
   switch (r) {
     case 1:
@@ -54,13 +64,17 @@ const spin = (r, dice) => {
       break
   }
 }
-const rollDice = (rolls) => {
+const rollDice = (rolls, ix) => {
   const diceElements = new Array()
   var audio = new Audio("/sounds/dice.wav");
 
   audio.play();
   for (let i = 0; i < rolls.length; i++) {
-    const dice = document.querySelector(".dice" + (i+1))
+    let dix = i
+    if (ix) {
+      dix = i + ix
+    }
+    const dice = document.querySelector(".dice" + (dix+1))
    
     dice.style.animation = `rolling${i+1} 1s`  
     diceElements.push(dice)

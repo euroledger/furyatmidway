@@ -190,7 +190,7 @@ export default class Controller {
       } else {
         if (
           location.boxName === GlobalUnitsModel.AirBox.US_TF16_CAP ||
-          location.boxName === GlobalUnitsModel.AirBox.US_TF17_CAP  || 
+          location.boxName === GlobalUnitsModel.AirBox.US_TF17_CAP ||
           location.boxName === GlobalUnitsModel.AirBox.US_MIDWAY_CAP
         ) {
           units.push(unit)
@@ -707,16 +707,17 @@ export default class Controller {
   }
 
   getStrikeUnitsAttackingCarrier() {
-    if (GlobalGameState.TESTING) {
-      return this.getAttackingStrikeUnitsTEST(
-        GlobalUnitsModel.TaskForce.TASK_FORCE_16,
-        GlobalUnitsModel.Carrier.ENTERPRISE
-      )
-    }
+    const carrier =
+      GlobalGameState.currentCarrierAttackTarget === GlobalUnitsModel.TaskForce.MIF ||
+      GlobalGameState.currentCarrierAttackTarget === GlobalUnitsModel.TaskForce.JAPAN_DMCV ||
+      GlobalGameState.currentCarrierAttackTarget === GlobalUnitsModel.TaskForce.US_DMCV
+        ? undefined
+        : GlobalGameState.currentCarrierAttackTarget
     // only return strike units attacking this carrier
 
+    // console.log(">>>>>> targetMap=", this.targetMap)
     // filter target map on this carrier
-    const x = new Map([...this.targetMap].filter(([_, v]) => v === GlobalGameState.currentCarrierAttackTarget))
+    const x = new Map([...this.targetMap].filter(([_, v]) => v === carrier))
     return Array.from(x.keys())
   }
 
@@ -1175,6 +1176,14 @@ export default class Controller {
     return this.mapModel.getAllFleetsInLocation(location, side, this.counters, filterOtherSide)
   }
 
+  getDistanceBetween1AFAndMidway() {
+    const locationOfCarrier = this.getFleetLocation("1AF", GlobalUnitsModel.Side.JAPAN)
+    if (locationOfCarrier === undefined) {
+      return NaN
+    }
+    return distanceBetweenHexes(locationOfCarrier.currentHex, Controller.MIDWAY_HEX.currentHex)
+  }
+
   getAllStrikeGroupsInLocation = (location, side) => {
     return this.mapModel.getAllStrikeGroupsInLocation(location, side)
   }
@@ -1260,6 +1269,8 @@ export default class Controller {
 
     const numJapanCVsRemaining = 4 - numJapanCVsSunk
     const numUSCVsRemaining = 3 - numUSCVsSunk
+    GlobalGameState.japanVPs = 0
+    GlobalGameState.usVPs = 0
 
     if (GlobalGameState.gameTurn === 3) {
       if (numJapanCVsRemaining === 0 && numUSCVsRemaining !== 0) {
@@ -1289,6 +1300,11 @@ export default class Controller {
       if (GlobalGameState.japanVPs > GlobalGameState.usVPs) {
         return GlobalUnitsModel.Side.JAPAN
       }
+      if (GlobalGameState.usVPs > GlobalGameState.japanVPs) {
+        return "US"
+      } else if (GlobalGameState.japanVPsVPs > GlobalGameState.usVPs) {
+        return "JAPAN"
+      }
       return "DRAW"
     }
     return null
@@ -1311,7 +1327,7 @@ export default class Controller {
     }
   }
 
-  isFlightDeckAvailable(carrierName, side) {
+  isFlightDeckAvailable(carrierName, side, comingFromHangar) {
     let hits = 0
     let carrier
     if (side === GlobalUnitsModel.Side.JAPAN) {
@@ -1338,7 +1354,16 @@ export default class Controller {
     const capacity = carrierName.toUpperCase().includes("MIDWAY") ? 3 : 2
 
     const totalUnavailableSlots = hits + units.length
-    const retVal = totalUnavailableSlots < capacity
+    let retVal = totalUnavailableSlots < capacity
+
+    const currentLoad = this.numUnitsOnCarrier(carrierName, side)
+
+    // if this is a move from hangar -> flight deck we don't care about capacity
+    if (!comingFromHangar) {
+      const baseCapacity = carrierName === GlobalUnitsModel.Carrier.MIDWAY ? 7 : 5
+      retVal = retVal && currentLoad < baseCapacity
+    }
+
     return retVal
   }
 
@@ -1681,6 +1706,11 @@ export default class Controller {
   }
   getFleetForTaskForce(tf, side) {
     if (side === GlobalUnitsModel.Side.JAPAN) {
+      if (tf === "MIF") {
+        return "MIF"
+      } else if (tf.includes("DMCV")) {
+        return "IJN-DMCV"
+      }
       return "1AF"
     }
     if (tf.toUpperCase() != "MIDWAY") return "CSF"

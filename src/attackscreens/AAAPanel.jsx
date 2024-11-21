@@ -6,6 +6,7 @@ export function AAAHeaders({ numDice }) {
   const diceMsg = `Roll ${numDice} dice. Each "1" rolled is a hit`
 
   let tfUnderAttack
+
   if (GlobalGameState.taskForceTarget === GlobalUnitsModel.TaskForce.CARRIER_DIV_1) {
     tfUnderAttack = {
       image: "/images/fleetcounters/cardiv1.jpg",
@@ -46,6 +47,12 @@ export function AAAHeaders({ numDice }) {
     tfUnderAttack = {
       image: "/images/fleetcounters/Japan-DMCV.png",
       name: GlobalUnitsModel.TaskForce.JAPAN_DMCV,
+      width: "200px",
+    }
+  } else if (GlobalGameState.taskForceTarget === GlobalUnitsModel.TaskForce.MIF) {
+    tfUnderAttack = {
+      image: "/images/fleetcounters/MIF.png",
+      name: GlobalUnitsModel.TaskForce.MIF,
       width: "200px",
     }
   }

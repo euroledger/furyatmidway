@@ -8,6 +8,7 @@ import "./counter.css"
 import {
   setValidDestinationBoxes,
   moveOrphanedCAPUnitsToEliminatedBox,
+  moveOrphanedCAPUnitsToEliminatedBoxNight,
   moveOrphanedAirUnitsInReturn1Boxes,
   setValidDestinationBoxesNightOperations,
 } from "../../../controller/AirOperationsHandler"
@@ -53,7 +54,6 @@ function AirCounter({ getAirBox, setAirBox, counterData, side }) {
         GlobalGameState.gamePhase === GlobalGameState.PHASE.NIGHT_AIR_OPERATIONS_JAPAN &&
         counterData.side === GlobalUnitsModel.Side.JAPAN
       ) {
-        // console.log("ARSE FUCK AIR UNIT LOCATION=", location)
         // // Units can move in to hangar and back out again during night operations
         // if (counterData.aircraftUnit.moved && !location.boxName.includes("HANGAR")
         // ) {
@@ -236,9 +236,8 @@ function AirCounter({ getAirBox, setAirBox, counterData, side }) {
       if (
         (counterData.carrier != GlobalGameState.getUSCarrier() ||
           GlobalGameState.gamePhase !== GlobalGameState.PHASE.US_SETUP_AIR) &&
-        GlobalGameState.gamePhase !== GlobalGameState.PHASE.AIR_OPERATIONS && 
-        GlobalGameState.gamePhase !== GlobalGameState.PHASE.NIGHT_AIR_OPERATIONS_US 
-
+        GlobalGameState.gamePhase !== GlobalGameState.PHASE.AIR_OPERATIONS &&
+        GlobalGameState.gamePhase !== GlobalGameState.PHASE.NIGHT_AIR_OPERATIONS_US
       ) {
         // cannot move units from carrier other than the current one being set up
         return false
@@ -301,8 +300,6 @@ function AirCounter({ getAirBox, setAirBox, counterData, side }) {
       top: offsets.top - 0.2 + "%",
     })
 
-    // moveOrphanedCAPUnitsToEliminatedBox(counterData.side)
-
     if (
       GlobalGameState.gamePhase === GlobalGameState.PHASE.AIR_OPERATIONS ||
       GlobalGameState.gamePhase === GlobalGameState.PHASE.MIDWAY_ATTACK ||
@@ -343,6 +340,21 @@ function AirCounter({ getAirBox, setAirBox, counterData, side }) {
   }
 
   const setBoxes = async (counterData, box) => {
+    if (
+      GlobalGameState.gamePhase === GlobalGameState.PHASE.NIGHT_AIR_OPERATIONS_JAPAN ||
+      GlobalGameState.gamePhase === GlobalGameState.PHASE.NIGHT_AIR_OPERATIONS_US
+    ) {
+      if (
+        (box !== undefined && box === GlobalUnitsModel.AirBox.JP_CD1_CAP) ||
+        box === GlobalUnitsModel.AirBox.JP_CD2_CAP ||
+        box === GlobalUnitsModel.AirBox.US_TF16_CAP ||
+        box === GlobalUnitsModel.AirBox.US_TF17_CAP ||
+        box === GlobalUnitsModel.AirBox.US_MIDWAY_CAP
+      ) {
+        await moveOrphanedCAPUnitsToEliminatedBoxNight(counterData.side)
+      }
+    }
+   
     if (box !== undefined && box.includes("CAP RETURNING")) {
       await moveOrphanedCAPUnitsToEliminatedBox(counterData.side)
     }
@@ -406,7 +418,6 @@ function AirCounter({ getAirBox, setAirBox, counterData, side }) {
   }
   return (
     <div>
-      {/* <a> */}
       <input
         type="image"
         src={counterData.image}

@@ -2,8 +2,6 @@ import { useEffect, useRef } from "react"
 import Modal from "react-bootstrap/Modal"
 import Button from "react-bootstrap/Button"
 import GlobalGameState from "../../model/GlobalGameState"
-import { SingleCarrier } from "../../attackscreens/SingleCarrier"
-import GlobalUnitsModel from "../../model/GlobalUnitsModel"
 
 import Die from "./Die"
 import "./modal.css"

@@ -101,7 +101,8 @@ export default class GlobalUnitsModel {
     TASK_FORCE_17: "TF17",
     MIDWAY: "MIDWAY",
     JAPAN_DMCV: "IJN DMCV",
-    US_DMCV: "US DMCV"
+    US_DMCV: "US DMCV",
+    MIF: "MIF"
   }
 
   static jpFleetUnits = new Map()

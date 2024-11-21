@@ -1,4 +1,4 @@
-import { randomDice } from "./components/dialogs/DiceUtils"
+import { randomDice, randomDiceWithOffset } from "./components/dialogs/DiceUtils"
 import GlobalGameState from "./model/GlobalGameState"
 import Controller from "./controller/Controller"
 import GlobalUnitsModel from "./model/GlobalUnitsModel"
@@ -345,7 +345,7 @@ export function autoAllocateMidwayDamage(controller) {
   GlobalGameState.damageThisAttack = damage
   if (GlobalGameState.midwayHits > 0) {
     doCarrierDamageEvent(GlobalInit.controller)
-    GlobalGameState.midwayHits = 0
+    GlobalGameState.midwayHits = 0 // this prevents re-render limit loop
   }
 
   return damage
@@ -712,17 +712,19 @@ export function doAttackFireRolls(controller, testRolls) {
   // 2. Determine if any attack aircraft on deck (set dive bomber DRM if so)
   // For Midway all Japanese planes get a -1 DRM
 
-  if (GlobalGameState.currentCarrierAttackTarget === GlobalUnitsModel.Carrier.MIDWAY) {
-    dbDRM = -1
-    torpDRM = -1
-  } else {
-    const attackAircraftOnDeck = controller.attackAircraftOnDeck()
-    if (attackAircraftOnDeck) {
-      dbDRM = 1
-    }
-    const combinedAttack = controller.combinedAttack()
-    if (combinedAttack) {
-      torpDRM = 1
+  if (GlobalGameState.currentCarrierAttackTarget !== GlobalUnitsModel.TaskForce.MIF) {
+    if (GlobalGameState.currentCarrierAttackTarget === GlobalUnitsModel.Carrier.MIDWAY) {
+      dbDRM = -1
+      torpDRM = -1
+    } else {
+      const attackAircraftOnDeck = controller.attackAircraftOnDeck()
+      if (attackAircraftOnDeck) {
+        dbDRM = 1
+      }
+      const combinedAttack = controller.combinedAttack()
+      if (combinedAttack) {
+        torpDRM = 1
+      }
     }
   }
 
@@ -775,6 +777,7 @@ export function doAttackFireRolls(controller, testRolls) {
 
     // GlobalGameState.midwayHits = 3
     // GlobalGameState.midwayHitsThisAttack = 3
+
   } else {
     GlobalGameState.carrierAttackHits = hits
     GlobalGameState.carrierAttackHitsThisAttack = hits
@@ -799,7 +802,7 @@ export function doAAAFireRolls(numDice, testRolls) {
   GlobalGameState.antiaircraftHits = hits
 
   // QUACK TESTING TAKE THIS OUT
-  // GlobalGameState.antiaircraftHits = 2
+  // GlobalGameState.antiaircraftHits = 1
 }
 
 function getFightersForStrikeGroup(controller) {
@@ -1007,6 +1010,32 @@ export function doEscortEvent(controller) {
       side: GlobalGameState.sideWithInitiative,
     },
   })
+}
+
+export function doMidwayLandBattleRoll(testRolls) {
+  let offset = 0
+  if (GlobalGameState.nextMidwayInvasionRoll === GlobalUnitsModel.Side.US) {
+    offset = 1
+  }
+  let rolls = testRolls === undefined ? randomDiceWithOffset(1, offset) : testRolls
+  GlobalGameState.dieRolls = rolls
+
+  if (GlobalGameState.nextMidwayInvasionRoll === GlobalUnitsModel.Side.JAPAN) {
+    if (GlobalGameState.dieRolls[0] <= GlobalGameState.midwayInvasionLevel) {
+      // HIT! reduce garrison level by one
+      GlobalGameState.midwayGarrisonLevel--
+    }
+  }
+  if (GlobalGameState.nextMidwayInvasionRoll === GlobalUnitsModel.Side.US) {
+    if (GlobalGameState.dieRolls[0] <= GlobalGameState.midwayGarrisonLevel) {
+      // HIT! reduce invasion level by one
+      GlobalGameState.midwayInvasionLevel--
+    }
+  }
+  if (GlobalGameState.midwayGarrisonLevel === 0) {
+    // invasion succeeds
+    GlobalGameState.midwayControl = GlobalUnitsModel.Side.JAPAN
+  }
 }
 
 export function doNightLanding(controller, nightAirUnits, nightSteps, setNightStepsLost, testRolls) {

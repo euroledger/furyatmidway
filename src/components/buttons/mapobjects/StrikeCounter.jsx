@@ -7,6 +7,7 @@ import GlobalGameState from "../../../model/GlobalGameState"
 import "./counter.css"
 import { allHexesWithinDistance, hexesInTwoRegions, distanceBetweenHexes } from "../../HexUtils"
 import HexCommand from "../../../commands/HexCommand"
+import { setUpAirAttack } from "../../../controller/AirAttackHandler"
 
 function StrikeCounter({ setStrikeGroupPopup, currentUSHex, currentJapanHex, counterData, side, index }) {
   const {
@@ -133,11 +134,14 @@ function StrikeCounter({ setStrikeGroupPopup, currentUSHex, currentJapanHex, cou
         to,
         side,
         loading,
-        setCardNumber,
         moved: true,
         attacked: strikeGroupUpdate.attacked,
       },
     })
+    if (!loading && controller.checkForAirAttack(to, side)) {
+      setUpAirAttack(controller, to, counterData, setCardNumber)
+      GlobalGameState.attackingStrikeGroup = counterData
+    }
   }
 
   function setJapanRegions() {
@@ -155,10 +159,12 @@ function StrikeCounter({ setStrikeGroupPopup, currentUSHex, currentJapanHex, cou
     // )
 
     const sg = controller.getStrikeGroupForBox(side, counterData.box)
+    const locationOfCarrier = controller.getFleetLocation("1AF", GlobalUnitsModel.Side.JAPAN)
+
     // console.log("SG turn moved=", sg.gameTurnMoved)
     // Use 1AF
-    const locationOfStrikeGroup = controller.getStrikeGroupLocation(counterData.name, side)
 
+    const locationOfStrikeGroup = controller.getStrikeGroupLocation(counterData.name, side)
     if (
       (sg.gameTurnMoved !== undefined && sg.gameTurnMoved !== GlobalGameState.gameTurn) ||
       (locationOfStrikeGroup !== undefined &&
@@ -175,7 +181,6 @@ function StrikeCounter({ setStrikeGroupPopup, currentUSHex, currentJapanHex, cou
       const jpRegion = new Array()
       if (locationOfEnemyCarrier === undefined && locationOfEnemyDMCV === undefined) {
         // strike group must return to "RETURN 2" space
-        // @TODO move SG counter offboard and mark Strike Units as moved
         // Set SG to attacked - will trigger units to be moved to return 2
         counterData.attacked = true
       } else {
@@ -194,7 +199,6 @@ function StrikeCounter({ setStrikeGroupPopup, currentUSHex, currentJapanHex, cou
         setJapanMapRegions(jpRegion)
       }
     } else {
-      const locationOfCarrier = controller.getFleetLocation("1AF", GlobalUnitsModel.Side.JAPAN)
       // First Air Op: Set Regions to be any hex within 2 of 1AF
       setCurrentHex(locationOfCarrier)
       if (locationOfCarrier) {
@@ -202,17 +206,24 @@ function StrikeCounter({ setStrikeGroupPopup, currentUSHex, currentJapanHex, cou
         setJapanMapRegions(jpRegion)
       }
     }
-
     // If this is the first Midway AirOp and strike group is more than two hexes from Midway
     // ensure that SG moves to within two hexes of Midway
-    if (GlobalGameState.gamePhase === GlobalGameState.PHASE.MIDWAY_ATTACK && GlobalGameState.midwayAirOp === 1) {
+    const distanceToMidway = controller.getDistanceBetween1AFAndMidway()
+    if (
+      GlobalGameState.gamePhase === GlobalGameState.PHASE.MIDWAY_ATTACK &&
+      GlobalGameState.midwayAirOp === 1 &&
+      distanceToMidway > 2
+    ) {
       const jpRegion2 = allHexesWithinDistance(Controller.MIDWAY_HEX.currentHex, 3, true)
       const hexes = hexesInTwoRegions(jpRegion, jpRegion2)
       setJapanMapRegions(hexes)
     }
 
     // If this is the second Midway AirOp ensure SG moves to Midway
-    if (GlobalGameState.gamePhase === GlobalGameState.PHASE.MIDWAY_ATTACK && GlobalGameState.midwayAirOp === 2) {
+    if (
+      GlobalGameState.gamePhase === GlobalGameState.PHASE.MIDWAY_ATTACK &&
+      (GlobalGameState.midwayAirOp === 2 || distanceToMidway <= 2)
+    ) {
       const midway = [{ q: 6, r: 3 }]
       setJapanMapRegions(midway)
     }
@@ -399,9 +410,12 @@ function StrikeCounter({ setStrikeGroupPopup, currentUSHex, currentJapanHex, cou
         to,
         side,
         loading,
-        setCardNumber,
       },
     })
+    if (!loading && controller.checkForAirAttack(to, side)) {
+      setUpAirAttack(controller, to, counterData, setCardNumber)
+      GlobalGameState.attackingStrikeGroup = counterData
+    }
 
     // Since air units cannot move again after being added to a strike group,
     // once that strike group has moved, we should rotate the air counters back to normal position
@@ -409,7 +423,10 @@ function StrikeCounter({ setStrikeGroupPopup, currentUSHex, currentJapanHex, cou
   const zx = side === GlobalUnitsModel.Side.JAPAN ? 93 : 11
 
   const handleMouseEnter = () => {
-    if (GlobalGameState.gamePhase === GlobalGameState.PHASE.AIR_OPERATIONS) {
+    if (
+      GlobalGameState.gamePhase === GlobalGameState.PHASE.AIR_OPERATIONS ||
+      GlobalGameState.gamePhase === GlobalGameState.PHASE.MIDWAY_ATTACK
+    ) {
       setIsMoveable(true)
       const sg = controller.getStrikeGroupForBox(side, counterData.box)
       if (!sg.attacked) {

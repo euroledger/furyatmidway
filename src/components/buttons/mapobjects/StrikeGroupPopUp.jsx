@@ -33,7 +33,7 @@ function StrikeGroupPopUp({ strikeGroup, fleetUnits, popUpPosition, hex, side })
   const sideStr = side === GlobalUnitsModel.Side.US ? "USN" : "IJN"
   const coords = `${sideStr} - Hex ${row}${col}`
 
-  const leftOffset = side === GlobalUnitsModel.Side.US ? 600 : 170
+  const leftOffset = side === GlobalUnitsModel.Side.US ? 615 : 170
   const topOffset = side === GlobalUnitsModel.Side.US ? 150 : 130
 
   const bg = side === GlobalUnitsModel.Side.US ? "rgba(92, 131, 228, 0.8)" : "rgba(228, 92, 92, 0.8)"

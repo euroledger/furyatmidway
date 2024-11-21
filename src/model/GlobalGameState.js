@@ -29,6 +29,8 @@ export default class GlobalGameState {
     AIR_OPERATIONS: "Air Operations Phase",
     END_OF_AIR_OPERATION: "Air Operations Tidy Up",
     END_OF_TURN: "End of Turn",
+    END_OF_GAME: "End of Game",
+    MIDWAY_INVASION: "Midway Invasion",
     TARGET_DETERMINATION: "Target Determination Phase",
     CAP_INTERCEPTION:"CAP Interception Phase",
     AIR_ATTACK_1: "Attack Resolution Phase (1)",
@@ -123,6 +125,8 @@ export default class GlobalGameState {
 
   static midwayGarrisonLevel = 6;
 
+  static nextMidwayInvasionRoll = GlobalUnitsModel.Side.JAPAN
+
   static midwayAttackDeclaration = false
 
   static totalMidwayHits = 0
@@ -169,6 +173,7 @@ export default class GlobalGameState {
   static allStrikeUnitsReturned = false
 
   static elitePilots = false
+  static semperFi = false
   
   static updateGlobalState = () => {
     this.stateHandler();

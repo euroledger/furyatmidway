@@ -45,93 +45,208 @@ export function EndOfTurnSummaryHeaders({ controller }) {
   const gameContinuesMsg = GlobalGameState.gameTurn === 3 ? "Neither Side has Achieved Victory" : ""
 
   let winner = undefined
-  if (GlobalGameState.gameTurn === 3) {
+  if (GlobalGameState.gameTurn === 3 || GlobalGameState.gameTurn === 7) {
     winner = controller.victoryCheck()
   }
+
+  let vmsg = "Automatic Victory"
+
+  if (GlobalGameState.gameTurn === 7) {
+    vmsg = "Game Result - Winner:"
+  }
+
+  let imageUS = "/images/usaflag.jpg"
+  let imageJP = "/images/japanflag.jpg"
 
   return (
     <>
       <div
         style={{
           display: "flex",
-          justifyContent: "center",
-          alignItems: "center",
-          color: "white",
         }}
       >
-        <div>
-          <p
+        <div
+          style={{
+            width: "33%",
+          }}
+        >
+          <div
             style={{
               color: "white",
-              marginTop: "5px",
+              marginLeft: "10px",
+              fontSize: "24px"
+
             }}
           >
-            {japanCVMsg} &emsp;
-            <strong>
-              {numJapanCVsSunk}
-              {japanCVsSunkMsg}
-            </strong>
-            &emsp; <br></br>
-          </p>
-          <p
+            VICTORY POINTS
+          </div>
+          <div
             style={{
-              color: "white",
-              marginTop: "5px",
+              display: "flex",
+              justifyContent: "center",
+              alignItems: "center",
+              marginLeft: "-100px",
+              marginTop: "30px",
             }}
           >
-            {usCVMsg} &emsp;
-            <strong>
-              {numUSCVsSunk}
-              {usCVsSunkMsg}
-            </strong>
-            &emsp; <br></br>
-          </p>
-          <p
-            style={{
-              color: "white",
-              marginTop: "5px",
-            }}
-          >
-            {midwayControlMsg} &emsp;<strong>{midwayControl}</strong>&emsp; <br></br>
-          </p>
-          <p
-            style={{
-              marginTop: "20px",
-              color: "white",
-            }}
-          >
-            {gameContinuesMsg}
-          </p>
-          {winner && (
+            <img src={imageUS} alt="test" width="80px" height="60px" />
+          </div>
+          <div style={{
+            marginLeft: "20px"
+          }}>
             <p
               style={{
-                display: "flex",
-                marginTop: "50px",
-                justifyContent: "center",
-                alignItems: "center",
                 color: "white",
+                marginTop: "5px",
+                fontSize: "54px"
               }}
             >
-              Automatic Victory {winner} !!
+              &emsp;<strong>{GlobalGameState.usVPs}</strong>&emsp;
             </p>
-          )}
-          {!winner && (
-            <p
-              style={{
-                display: "flex",
-                marginTop: "50px",
-                justifyContent: "center",
-                alignItems: "center",
-                color: "white",
-              }}
-            >
-              Click "Close" to begin next turn...
-            </p>
-          )}
+          </div>
         </div>
 
-        <div></div>
-        <div></div>
+        <div
+          style={{
+            display: "flex",
+            justifyContent: "center",
+            alignItems: "center",
+            color: "white",
+            width: "33%",
+          }}
+        >
+          <div>
+            <p
+              style={{
+                color: "white",
+                marginTop: "5px",
+              }}
+            >
+              {japanCVMsg} &emsp;
+              <strong>
+                {numJapanCVsSunk}
+                {japanCVsSunkMsg}
+              </strong>
+              &emsp; <br></br>
+            </p>
+            <p
+              style={{
+                color: "white",
+                marginTop: "5px",
+              }}
+            >
+              {usCVMsg} &emsp;
+              <strong>
+                {numUSCVsSunk}
+                {usCVsSunkMsg}
+              </strong>
+              &emsp; <br></br>
+            </p>
+            <p
+              style={{
+                color: "white",
+                marginTop: "5px",
+              }}
+            >
+              {midwayControlMsg} &emsp;<strong>{midwayControl}</strong>&emsp; <br></br>
+            </p>
+            <p
+              style={{
+                marginTop: "20px",
+                color: "white",
+              }}
+            >
+              {gameContinuesMsg}
+            </p>
+            <p
+              style={{
+                marginTop: "20px",
+                color: "white",
+              }}
+            >
+              Japan VPs:&emsp;<strong>{GlobalGameState.japanVPs}</strong>&emsp;
+            </p>
+            <p
+              style={{
+                marginTop: "5px",
+                color: "white",
+              }}
+            >
+              US VPs:&emsp;<strong>{GlobalGameState.usVPs}</strong>&emsp;
+            </p>
+            {winner && (
+              <p
+                style={{
+                  marginTop: "50px",
+
+                  color: "white",
+                }}
+              >
+                &emsp;
+                <strong>
+                  {vmsg}&emsp;{winner}
+                </strong>
+                !!
+              </p>
+            )}
+            {!winner && (
+              <p
+                style={{
+                  display: "flex",
+                  marginTop: "50px",
+                  justifyContent: "center",
+                  alignItems: "center",
+                  color: "white",
+                }}
+              >
+                Click "Close" to begin next turn...
+              </p>
+            )}
+          </div>
+
+          <div></div>
+          <div></div>
+        </div>
+        <div
+          style={{
+            width: "33%",
+          }}
+        >
+          <div
+            style={{
+              color: "white",
+              marginLeft: "30px",
+              fontSize: "24px"
+
+            }}
+          >
+            VICTORY POINTS
+          </div>
+          <div
+            style={{
+              display: "flex",
+              justifyContent: "center",
+              alignItems: "center",
+              marginLeft: "-40px",
+              marginTop: "30px",
+            }}
+          >
+            <img src={imageJP} alt="test" width="80px" height="60px" />
+          </div>
+          <div style={{
+            marginLeft: "40px"
+          }}>
+            <p
+              style={{
+                color: "white",
+                marginTop: "5px",
+                fontSize: "54px"
+              }}
+            >
+              &emsp;<strong>{GlobalGameState.japanVPs}</strong>&emsp;
+            </p>
+          </div>
+        </div>
       </div>
     </>
   )

@@ -104,7 +104,21 @@ function CarrierDamageDicePanel(props) {
 
   // 3. autoAllocateDamage
 
-  const currentCarrierHits = controller.getCarrierHits(GlobalGameState.currentCarrierAttackTarget)
+  if (GlobalGameState.currentCarrierAttackTarget === GlobalUnitsModel.TaskForce.MIF) {
+    return
+  }
+
+  let carrier = GlobalGameState.currentCarrierAttackTarget
+
+  if (GlobalGameState.currentCarrierAttackTarget === GlobalUnitsModel.TaskForce.JAPAN_DMCV) {
+    carrier = GlobalGameState.jpDMCVCarrier
+    GlobalGameState.currentCarrierAttackTarget = carrier
+  }
+  if (GlobalGameState.currentCarrierAttackTarget === GlobalUnitsModel.TaskForce.US_DMCV) {
+    carrier = GlobalGameState.usDMCVCarrier
+    GlobalGameState.currentCarrierAttackTarget = carrier
+  }
+  const currentCarrierHits = controller.getCarrierHits(carrier)
 
   if ((currentCarrierHits > 0 || GlobalGameState.carrierAttackHits > 1) && GlobalGameState.TESTING !== true) {  
     const damage = autoAllocateDamage(controller)

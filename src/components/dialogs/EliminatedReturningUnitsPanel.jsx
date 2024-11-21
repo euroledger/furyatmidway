@@ -5,7 +5,6 @@ import Button from "react-bootstrap/Button"
 import GlobalGameState from "../../model/GlobalGameState"
 import "./modal.css"
 import "./largemodal.css"
-import GlobalInit from "../../model/GlobalInit"
 
 function getEliminatedAirCounters() {
   if (GlobalGameState.orphanedAirUnits.length === 0) {

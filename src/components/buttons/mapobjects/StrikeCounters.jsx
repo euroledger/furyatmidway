@@ -1,7 +1,6 @@
 import React, { useState } from "react"
 
 import "../../board.css"
-import GlobalGameState from "../../../model/GlobalGameState"
 import StrikeCounter from "./StrikeCounter"
 import StrikeGroupPopUp from "./StrikeGroupPopUp"
 import GlobalUnitsModel from "../../../model/GlobalUnitsModel"

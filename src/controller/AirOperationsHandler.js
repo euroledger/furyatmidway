@@ -171,16 +171,12 @@ function tryOtherTaskForce(controller, parentCarrier, side, useMidway) {
     carriersInOtherTaskForce.push(GlobalUnitsModel.usFleetUnits.get(GlobalUnitsModel.Carrier.MIDWAY))
   }
   for (const carrier of carriersInOtherTaskForce) {
-    // console.log("----------> try", carrier.name)
     if (!controller.isSunk(carrier.name)) {
       if (controller.isHangarAvailable(carrier.name)) {
         const box = controller.getAirBoxForNamedShip(side, carrier.name, "HANGAR")
 
         destinationsArray.push(box)
       }
-      // else {
-      //   console.log("NO room on carrier", carrier.name)
-      // }
     }
   }
   return destinationsArray
@@ -477,7 +473,7 @@ export function doHangarNight(controller, name, side) {
   const destBox = controller.getAirBoxForNamedShip(side, carrierName, "FLIGHT_DECK")
 
   // check there is room on this carrier's flight deck
-  const destAvailable = controller.isFlightDeckAvailable(carrierName, side)
+  const destAvailable = controller.isFlightDeckAvailable(carrierName, side, true)
 
   if (!destAvailable) {
     controller.setValidAirUnitDestinations(name, destinationsArray)
@@ -498,7 +494,7 @@ export function doHangar(controller, name, side) {
   const destBox = controller.getAirBoxForNamedShip(side, carrierName, "FLIGHT_DECK")
 
   // check there is room on this carrier's flight deck
-  const destAvailable = controller.isFlightDeckAvailable(carrierName, side)
+  const destAvailable = controller.isFlightDeckAvailable(carrierName, side, true)
 
   if (!destAvailable) {
     return
@@ -535,53 +531,6 @@ export function delay(ms) {
   })
 }
 
-// function createStrikeGroupUpdate(sg) {
-//   const usSGPositions = [
-//     {
-//       left: "95%",
-//       top: "63%",
-//     },
-//     {
-//       left: "95%",
-//       top: "67.5%",
-//     },
-//     {
-//       left: "95%",
-//       top: "72.0%",
-//     },
-//     {
-//       left: "95%",
-//       top: "76.5%",
-//     },
-//     {
-//       left: "95%",
-//       top: "81.0%",
-//     },
-//     {
-//       left: "95%",
-//       top: "85.5%",
-//     },
-//     {
-//       left: "95%",
-//       top: "89.5%",
-//     },
-//   ]
-//   console.log("SG INITIAL POSITION=", sg.initialPosition)
-
-//   const str = sg.name
-//   let res = str.charAt(str.length - 1);
-// console.log("LAST CHAR=", res)
-
-//   let index = Number(res)
-//   let update = {
-//     name: sg.name,
-//     position: usSGPositions[index - 1],
-//     moved: false,
-//     attacked: false,
-//     initial: true
-//   }
-//   return update
-// }
 export async function resetStrikeGroups(controller, side, setStrikeGroupUpdate) {
   console.log("RESET STRIKE GROUPS...")
   let positions, groups
@@ -593,7 +542,6 @@ export async function resetStrikeGroups(controller, side, setStrikeGroupUpdate) 
     groups = GlobalUnitsModel.usStrikeGroups
   }
 
-  // console.log(">>>>>>>>>> GROUPS=", groups)
   let index = 0
   for (let strikeGroup of groups.values()) {
     if (!strikeGroup.attacked) {
@@ -697,6 +645,27 @@ export async function moveOrphanedAirUnitsInReturn1Boxes(side) {
     }
   }
 }
+export async function moveOrphanedCAPUnitsToEliminatedBoxNight(side) {
+  const capUnitsReturning = GlobalInit.controller.getAllAirUnitsInCAPBoxes(side)
+  for (const unit of capUnitsReturning) {
+    await delay(1)
+    const parentCarrier = GlobalInit.controller.getCarrierForAirUnit(unit.name)
+
+    let destinationsArray
+    if (side === GlobalUnitsModel.Side.JAPAN) {
+      destinationsArray = getValidJapanDestinationsCAP(GlobalInit.controller, parentCarrier, side)
+    } else {
+      destinationsArray = getValidUSDestinationsCAP(GlobalInit.controller, parentCarrier, side, unit.name)
+    }
+    if (destinationsArray.length === 0) {
+      if (!GlobalGameState.orphanedAirUnits.includes(unit)) {
+        GlobalGameState.orphanedAirUnits.push(unit)
+      }
+      moveAirUnitToEliminatedBox(GlobalInit.controller, unit)
+    }
+  }
+}
+
 export async function moveOrphanedCAPUnitsToEliminatedBox(side) {
   const capUnitsReturning = GlobalInit.controller.getAllCAPDefendersInCAPReturnBoxes(side)
   for (const unit of capUnitsReturning) {

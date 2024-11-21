@@ -15,7 +15,7 @@ export function SingleCarrier({ controller }) {
     name: GlobalUnitsModel.Carrier.KAGA,
     buttonStr: "Kaga",
     width: "100px",
-    marginLeft: "45px",
+    // marginLeft: "45px",
   }
   let jpHiryu = {
     image: "/images/fleetcounters/hiryu.jpg",
@@ -28,7 +28,7 @@ export function SingleCarrier({ controller }) {
     name: GlobalUnitsModel.Carrier.SORYU,
     buttonStr: "Soryu",
     width: "100px",
-    marginLeft: "45px",
+    // marginLeft: "45px",
   }
   let usEnterprise = {
     image: "/images/fleetcounters/enterprise.jpg",
@@ -41,26 +41,42 @@ export function SingleCarrier({ controller }) {
     name: GlobalUnitsModel.Carrier.HORNET,
     buttonStr: "Hornet",
     width: "100px",
-    marginLeft: "3px",
+    // marginLeft: "3px",
   }
   let usYorktown = {
     image: "/images/fleetcounters/yorktown.jpg",
     name: GlobalUnitsModel.Carrier.YORKTOWN,
     buttonStr: "Yorktown",
     width: "100px",
-    marginLeft: "3px",
+    // marginLeft: "3px",
   }
   let usMidway = {
     image: "/images/fleetcounters/midway.jpg",
     name: GlobalUnitsModel.Carrier.MIDWAY,
     buttonStr: "Midway",
     width: "200px",
-    marginLeft: "-130px",
+    // marginLeft: "-130px",
+  }
+  let jpMIF = {
+    image: "/images/fleetcounters/MIF.png",
+    name: GlobalUnitsModel.TaskForce.MIF,
+    buttonStr: "MIF",
+    width: "200px",
+    marginLeft: "-50px",
   }
 
   let carrierTarget
   let marginL = ""
-  if (GlobalGameState.currentCarrierAttackTarget === GlobalUnitsModel.Carrier.AKAGI) {
+
+  if (GlobalGameState.taskForceTarget === GlobalUnitsModel.TaskForce.JAPAN_DMCV) {
+    carrierTarget = GlobalGameState.jpDMCVCarrier
+  }
+  if (GlobalGameState.taskForceTarget === GlobalUnitsModel.TaskForce.US_DMCV) {
+    carrierTarget = GlobalGameState.usDMCVCarrier
+  }
+  if (GlobalGameState.taskForceTarget === GlobalUnitsModel.TaskForce.MIF) {
+    carrierTarget = jpMIF
+  } else if (GlobalGameState.currentCarrierAttackTarget === GlobalUnitsModel.Carrier.AKAGI) {
     carrierTarget = jpAkagi
   } else if (GlobalGameState.currentCarrierAttackTarget === GlobalUnitsModel.Carrier.KAGA) {
     carrierTarget = jpKaga
@@ -123,6 +139,12 @@ export function SingleCarrier({ controller }) {
     airUnitsOnDeckCarrier = controller.getAllAirUnitsInBox(GlobalUnitsModel.AirBox.US_YORKTOWN_FLIGHT_DECK)
   } else if (GlobalGameState.taskForceTarget === GlobalUnitsModel.TaskForce.MIDWAY) {
     airUnitsOnDeckCarrier = [] // no Midway Flight Deck
+  } else if (
+    GlobalGameState.taskForceTarget === GlobalUnitsModel.TaskForce.MIF ||
+    GlobalGameState.taskForceTarget === GlobalUnitsModel.TaskForce.JAPAN_DMCV ||
+    GlobalGameState.taskForceTarget === GlobalUnitsModel.TaskForce.US_DMCV
+  ) {
+    airUnitsOnDeckCarrier = [] // no MIF or DMCV Flight Decks
   }
   let airUnitsCarrier1
   if (airUnitsOnDeckCarrier !== undefined && airUnitsOnDeckCarrier !== null) {
@@ -135,26 +157,29 @@ export function SingleCarrier({ controller }) {
       return <div>{createImage(airUnit.image, "25.2%", top)}</div>
     })
   }
-
-  const carrier1SternDamaged = controller.getCarrierSternDamaged(carrierTarget.name)
-  const carrier1BowDamaged = controller.getCarrierBowDamaged(carrierTarget.name)
-
-  const carrier1Sunk = controller.isSunk(carrierTarget.name)
-  const damageMarker = "/images/markers/damage.png"
-  const sunkMarker = "/images/markers/sunk.png"
-
   let c1bowDamage, c1sternDamage
 
-  if (carrier1BowDamaged) {
-    c1bowDamage = <div>{createImage(damageMarker, "49.1%", "-74px")}</div>
-  }
-  if (carrier1SternDamaged) {
-    c1sternDamage = <div>{createImage(damageMarker, "49.1%", "-8px")}</div>
-  }
+  if (
+    GlobalGameState.taskForceTarget !== GlobalUnitsModel.TaskForce.MIF
+  ) {
+    const carrier1SternDamaged = controller.getCarrierSternDamaged(carrierTarget.name)
+    const carrier1BowDamaged = controller.getCarrierBowDamaged(carrierTarget.name)
 
-  if (carrier1Sunk && carrierTarget.name !== GlobalUnitsModel.Carrier.MIDWAY) {
-    c1bowDamage = <div>{createImage(sunkMarker, "49.1%", "-74px")}</div>
-    c1sternDamage = <div>{createImage(sunkMarker, "49.1%", "-8px")}</div>
+    const carrier1Sunk = controller.isSunk(carrierTarget.name)
+    const damageMarker = "/images/markers/damage.png"
+    const sunkMarker = "/images/markers/sunk.png"
+
+    if (carrier1BowDamaged) {
+      c1bowDamage = <div>{createImage(damageMarker, "49.1%", "-74px")}</div>
+    }
+    if (carrier1SternDamaged) {
+      c1sternDamage = <div>{createImage(damageMarker, "49.1%", "-8px")}</div>
+    }
+
+    if (carrier1Sunk && carrierTarget.name !== GlobalUnitsModel.Carrier.MIDWAY) {
+      c1bowDamage = <div>{createImage(sunkMarker, "49.1%", "-74px")}</div>
+      c1sternDamage = <div>{createImage(sunkMarker, "49.1%", "-8px")}</div>
+    }
   }
 
   return (
@@ -173,6 +198,7 @@ export function SingleCarrier({ controller }) {
             src={carrierTarget.image}
             style={{
               width: carrierTarget.width,
+              marginLeft: carrierTarget.marginLeft,
               height: "200px",
             }}
           />

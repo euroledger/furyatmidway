@@ -109,6 +109,7 @@ function AttackDicePanel(props) {
 
   const bg = "#293a4b"
   const closey = closeButtonStr ?? "Close"
+
   const msg = "Target For Air Attack:"
 
   let numDiceRow1 = numDice
@@ -133,19 +134,36 @@ function AttackDicePanel(props) {
   const diceButtonStr = numDice > 1 ? "Roll Dice" : "Roll Die"
   const attackers = controller.getStrikeUnitsAttackingCarrier()
 
-  let dbDRM = "No Attack Planes On Deck: No (Dive Bomber) DRM"
-  let torpDRM = "Not a combined attack: No (Torpedo Bomber) DRM"
-  if (GlobalGameState.currentCarrierAttackTarget === GlobalUnitsModel.Carrier.MIDWAY) {
-    dbDRM = "Midway Dive Bomber DRM: -1"
-    torpDRM = "Midway Torpedo Bomber DRM: -1"
-  } else if (GlobalGameState.currentCarrierAttackTarget !== undefined) {
-    const attackAircraftOnDeck = controller.attackAircraftOnDeck()
-    if (attackAircraftOnDeck) {
-      dbDRM = "Attack Planes On Deck: +1 (Dive Bomber) DRM"
+  let dbDRM, torpDRM
+  if (
+    GlobalGameState.taskForceTarget !== GlobalUnitsModel.TaskForce.MIF &&
+    GlobalGameState.taskForceTarget !== GlobalUnitsModel.TaskForce.JAPAN_DMCV &&
+    GlobalGameState.taskForceTarget !== GlobalUnitsModel.TaskForce.US_DMCV
+  ) {
+    dbDRM = "No Attack Planes On Deck: No (Dive Bomber) DRM"
+    torpDRM = "Not a combined attack: No (Torpedo Bomber) DRM"
+    if (GlobalGameState.currentCarrierAttackTarget === GlobalUnitsModel.Carrier.MIDWAY) {
+      dbDRM = "Midway Dive Bomber DRM: -1"
+      torpDRM = "Midway Torpedo Bomber DRM: -1"
+    } else if (GlobalGameState.currentCarrierAttackTarget !== undefined) {
+      const attackAircraftOnDeck = controller.attackAircraftOnDeck()
+      if (attackAircraftOnDeck) {
+        dbDRM = "Attack Planes On Deck: +1 (Dive Bomber) DRM"
+      }
+      const combinedAttack = controller.combinedAttack()
+      if (combinedAttack) {
+        torpDRM = "Combined attack: +1 (Torpedo Bomber) DRM"
+      }
     }
-    const combinedAttack = controller.combinedAttack()
-    if (combinedAttack) {
-      torpDRM = "Combined attack: +1 (Torpedo Bomber) DRM"
+  } else {
+    GlobalGameState.currentCarrierAttackTarget = GlobalUnitsModel.TaskForce.MIF
+
+    if (GlobalGameState.taskForceTarget === GlobalUnitsModel.TaskForce.JAPAN_DMCV) {
+      GlobalGameState.currentCarrierAttackTarget = GlobalGameState.jpDMCVCarrier
+    }
+
+    if (GlobalGameState.taskForceTarget === GlobalUnitsModel.TaskForce.US_DMCV) {
+      GlobalGameState.currentCarrierAttackTarget = GlobalGameState.usDMCVCarrier
     }
   }
 

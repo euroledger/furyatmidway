@@ -101,6 +101,9 @@ function CardAlertPanel(props) {
       setCardDicePanelShow7(true)
       controller.setCardPlayed(7, GlobalUnitsModel.Side.US)
       onHide(e)
+    } else if (cardNumber === 8) {
+      controller.setCardPlayed(8, GlobalUnitsModel.Side.JAPAN)
+      setShowCardFooter(() => true)
     } else if (cardNumber === 9) {
       controller.setCardPlayed(9, GlobalUnitsModel.Side.US)
       setShowCardFooter(() => true)

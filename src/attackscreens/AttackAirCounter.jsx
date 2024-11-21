@@ -72,6 +72,7 @@ function AirAttackCounter({
   }
   const setJapanAttackAirUnit = (airUnit, carrier, index) => {
     controller.removeAirUnitTarget(airUnit)
+
     controller.setAirUnitTarget(airUnit, carrier)
     // how many air units have been allocated to attack this carrier
     let size = controller.getTargetMapSizeForCarrier(carrier)

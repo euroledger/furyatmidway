@@ -12,6 +12,7 @@ export function DamageHeaders({ controller, eliminatedSteps, setEliminatedSteps,
   const msg = "Number of Hits to Allocate:"
 
   let unitsInGroup = capAirUnits ?? controller.getAttackingStrikeUnits()
+
   if (GlobalGameState.gamePhase === GlobalGameState.PHASE.AAA_DAMAGE_ALLOCATION) {
     // filter out fighters as AA hits must be allocated to attack aircraft
     unitsInGroup = controller.getAttackingStrikeUnits(true)
