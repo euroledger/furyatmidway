@@ -52,3 +52,4 @@ export const japanMIFStartHexes = [
   { q: 2, r: 4 },
   { q: 2, r: 5 },
 ]
+

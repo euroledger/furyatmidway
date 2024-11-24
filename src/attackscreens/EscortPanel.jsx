@@ -1,8 +1,6 @@
 import { React } from "react"
 import "./cap.css"
-import GlobalUnitsModel from "../model/GlobalUnitsModel"
 import GlobalGameState from "../model/GlobalGameState"
-import Controller from "../controller/Controller"
 
 export function EscortHeaders({ controller, setCapAirUnits }) {
   const msg = "Target For Air Attack:"

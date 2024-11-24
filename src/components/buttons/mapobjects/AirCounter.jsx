@@ -12,6 +12,7 @@ import {
   moveOrphanedAirUnitsInReturn1Boxes,
   setValidDestinationBoxesNightOperations,
 } from "../../../controller/AirOperationsHandler"
+import HexCommand from "../../../commands/HexCommand"
 
 function AirCounter({ getAirBox, setAirBox, counterData, side }) {
   const {
@@ -34,11 +35,23 @@ function AirCounter({ getAirBox, setAirBox, counterData, side }) {
 
   const onDrag = () => {
     setIsMoveable(true)
-
     // only the selected (clicked) air unit should be draggable
     setSelected(() => true)
     const location = controller.getAirUnitLocation(counterData.name)
 
+    const locationCSF = controller.getFleetLocation("CSF", GlobalUnitsModel.Side.US)
+    const location1AF = controller.getFleetLocation("1AF", GlobalUnitsModel.Side.JAPAN)
+
+    // if carrier fleet is off board that side cannot fly operations from carriers
+    if (counterData.carrier !== GlobalUnitsModel.Carrier.MIDWAY) {
+      if (side === GlobalUnitsModel.Side.US && locationCSF && locationCSF.boxName === HexCommand.FLEET_BOX) {
+        return
+      }
+      if (side === GlobalUnitsModel.Side.JAPAN &&  location1AF && location1AF.boxName === HexCommand.FLEET_BOX) {
+        return
+      }
+    }
+   
     if (location.boxName.includes("ELIMINATED")) {
       return
     }
@@ -54,12 +67,6 @@ function AirCounter({ getAirBox, setAirBox, counterData, side }) {
         GlobalGameState.gamePhase === GlobalGameState.PHASE.NIGHT_AIR_OPERATIONS_JAPAN &&
         counterData.side === GlobalUnitsModel.Side.JAPAN
       ) {
-        // // Units can move in to hangar and back out again during night operations
-        // if (counterData.aircraftUnit.moved && !location.boxName.includes("HANGAR")
-        // ) {
-        //   setEnabledJapanBoxes(() => [])
-        //   return
-        // }
         setValidDestinationBoxesNightOperations(
           controller,
           counterData.name,
@@ -354,7 +361,7 @@ function AirCounter({ getAirBox, setAirBox, counterData, side }) {
         await moveOrphanedCAPUnitsToEliminatedBoxNight(counterData.side)
       }
     }
-   
+
     if (box !== undefined && box.includes("CAP RETURNING")) {
       await moveOrphanedCAPUnitsToEliminatedBox(counterData.side)
     }

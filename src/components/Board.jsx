@@ -17,12 +17,15 @@ import USAirBoxOffsets from "./draganddrop/USAirBoxOffsets"
 import GlobalInit from "../model/GlobalInit"
 import JapanCarrierDropZones from "./draganddrop/JapanCarrierDropZones"
 import USCarrierDropZones from "./draganddrop/USCarrierDropZones"
+import USOffMapFleetDropZones from "./draganddrop/USOffMapFleetDropZones"
+import JapanOffMapFleetDropZones from "./draganddrop/JapanOffMapFleetDropZones"
 import GlobalGameState from "../model/GlobalGameState"
 import StrikePanel from "./dialogs/StrikePanel"
 import GlobalUnitsModel from "../model/GlobalUnitsModel"
 import DamageSunkCounters from "./buttons/mapobjects/DamageSunkCounters"
 import DMCVShipMarker from "./buttons/mapobjects/DMCVShipMarker"
 import TowedBox from "./buttons/TowedBox"
+import OffMapFleetBox from "./buttons/OffMapFleetBox"
 
 function Board({
   scale,
@@ -30,6 +33,8 @@ function Board({
   japanMapRegions,
   japanMIFMapRegions,
   japanStrikePanelEnabled,
+  enabledJapanFleetBoxes,
+  enabledUSFleetBoxes,
   usStrikePanelEnabled,
   setPreviousPosition,
   previousPosition,
@@ -48,6 +53,8 @@ function Board({
   const [mgfzone, setMGFZone] = useState(6)
   const [airBox, setAirBox] = useState({})
   const [zIndex, setZIndex] = useState(zProps)
+
+  const [fleetBox, setFleetBox] = useState(-1)
 
   const setCurrentJapanCoords = (currentHex) => {
     setCurrentJapanHex(currentHex)
@@ -89,6 +96,16 @@ function Board({
     setAirBox({ name, offsets, index, side: GlobalUnitsModel.Side.JAPAN })
   }
 
+  const handleOffMapFleetBoxDragEnter = (event, index) => {
+    setFleetBox(index)
+  }
+
+  const handleOffMapFleetBoxDragLeave = () => {
+    setFleetBox(-1)
+  }
+
+  const getFleetBox = () => fleetBox
+
   const handleUSAirBoxDragEnter = (event, index, name) => {
     event.preventDefault()
     event.stopPropagation()
@@ -98,12 +115,12 @@ function Board({
     const offsets = airZones.offsets[index]
     setAirBox({ name, offsets, index, side: GlobalUnitsModel.Side.US })
   }
+
   const getZone = () => zone
   const getMIFZone = () => mifzone
   const getMGFZone = () => mgfzone
-  const getAirBox = () => {
-    return airBox
-  }
+  const getAirBox = () => airBox
+  
 
   const incrementZIndex = (side, increment) => {
     if (side === "japan") {
@@ -197,6 +214,8 @@ function Board({
           setCurrentJapanHex={setCurrentJapanHex}
           setCurrentUSHex={setCurrentUSHex}
           jpRegions={japanMIFMapRegions}
+          getFleetBox={getFleetBox}
+          setFleetBox={setFleetBox}
           enabled={true}
           side={GlobalUnitsModel.Side.JAPAN}
           setPreviousPosition={setPreviousPosition}
@@ -213,6 +232,8 @@ function Board({
           usRegions={USMapRegions}
           setPreviousPosition={setPreviousPosition}
           previousPosition={previousPosition}
+          getFleetBox={getFleetBox}
+          setFleetBox={setFleetBox}
           enabled={
             GlobalGameState.gamePhase === GlobalGameState.PHASE.US_SETUP_FLEET || GlobalGameState.usFleetPlaced === true
           }
@@ -228,6 +249,8 @@ function Board({
           setCurrentUSHex={setCurrentUSHex}
           enabled={true}
           side={GlobalUnitsModel.Side.JAPAN}
+          getFleetBox={getFleetBox}
+          setFleetBox={setFleetBox}
           setPreviousPosition={setPreviousPosition}
           previousPosition={previousPosition}
         ></FleetCounter>
@@ -245,6 +268,8 @@ function Board({
             GlobalGameState.jpFleetPlaced === true
           }
           side={GlobalUnitsModel.Side.JAPAN}
+          getFleetBox={getFleetBox}
+          setFleetBox={setFleetBox}
           setPreviousPosition={setPreviousPosition}
           previousPosition={previousPosition}
         ></FleetCounter>
@@ -258,6 +283,8 @@ function Board({
           setCurrentJapanHex={setCurrentJapanHex}
           enabled={true}
           side={GlobalUnitsModel.Side.US}
+          getFleetBox={getFleetBox}
+          setFleetBox={setFleetBox}
           setPreviousPosition={setPreviousPosition}
           previousPosition={previousPosition}
         ></FleetCounter>
@@ -271,6 +298,8 @@ function Board({
           counterData={GlobalInit.counters.get("MIF-USMAP")}
           enabled={true}
           side={GlobalUnitsModel.Side.US}
+          getFleetBox={getFleetBox}
+          setFleetBox={setFleetBox}
           setPreviousPosition={setPreviousPosition}
           previousPosition={previousPosition}
         ></FleetCounter>
@@ -283,6 +312,8 @@ function Board({
           setCurrentJapanHex={setCurrentJapanHex}
           setCurrentUSHex={setCurrentUSHex}
           jpRegions={japanMapRegions}
+          getFleetBox={getFleetBox}
+          setFleetBox={setFleetBox}
           enabled={
             (GlobalInit.controller.getDamagedCarriers(GlobalUnitsModel.Side.JAPAN).length > 0 &&
               GlobalGameState.gamePhase === GlobalGameState.PHASE.JAPAN_DMCV_FLEET_MOVEMENT &&
@@ -301,6 +332,8 @@ function Board({
           counterData={GlobalInit.counters.get("IJN-DMCV-USMAP")}
           setCurrentJapanHex={setCurrentJapanHex}
           setCurrentUSHex={setCurrentUSHex}
+          getFleetBox={getFleetBox}
+          setFleetBox={setFleetBox}
           enabled={true}
           side={GlobalUnitsModel.Side.US}
           setPreviousPosition={setPreviousPosition}
@@ -315,6 +348,8 @@ function Board({
           setCurrentJapanHex={setCurrentJapanHex}
           setCurrentUSHex={setCurrentUSHex}
           usRegions={USMapRegions}
+          getFleetBox={getFleetBox}
+          setFleetBox={setFleetBox}
           enabled={
             (GlobalInit.controller.getDamagedCarriers(GlobalUnitsModel.Side.US).length > 0 &&
               GlobalGameState.gamePhase === GlobalGameState.PHASE.US_DMCV_FLEET_MOVEMENT_PLANNING &&
@@ -333,6 +368,8 @@ function Board({
           counterData={GlobalInit.counters.get("US-DMCV-JPMAP")}
           setCurrentJapanHex={setCurrentJapanHex}
           setCurrentUSHex={setCurrentUSHex}
+          getFleetBox={getFleetBox}
+          setFleetBox={setFleetBox}
           enabled={true}
           side={GlobalUnitsModel.Side.JAPAN}
           setPreviousPosition={setPreviousPosition}
@@ -361,6 +398,16 @@ function Board({
 
         <StrikePanel side="Japan" enabled={japanStrikePanelEnabled} zIndex={90}></StrikePanel>
         <StrikePanel side="US" enabled={usStrikePanelEnabled} zIndex={1}></StrikePanel>
+        <OffMapFleetBox side="Japan" enabled={enabledJapanFleetBoxes}></OffMapFleetBox>
+        <OffMapFleetBox side="US" enabled={enabledUSFleetBoxes}></OffMapFleetBox>
+        <USOffMapFleetDropZones
+          handleDragEnter={handleOffMapFleetBoxDragEnter}
+          handleDragLeave={handleOffMapFleetBoxDragLeave}
+        ></USOffMapFleetDropZones>
+         <JapanOffMapFleetDropZones
+          handleDragEnter={handleOffMapFleetBoxDragEnter}
+          handleDragLeave={handleOffMapFleetBoxDragLeave}
+        ></JapanOffMapFleetDropZones>
       </div>
     </>
   )

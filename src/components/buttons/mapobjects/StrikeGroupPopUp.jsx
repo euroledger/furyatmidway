@@ -1,7 +1,6 @@
 import GlobalUnitsModel from "../../../model/GlobalUnitsModel"
 import "../../board.css"
 import PopUpStrikeCounter from "./PopUpStrikeCounter"
-import BaseUnit from "./BaseUnit"
 
 function StrikeGroupPopUp({ strikeGroup, fleetUnits, popUpPosition, hex, side }) {
   let index = 0

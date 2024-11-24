@@ -56,6 +56,7 @@ export function saveGameState(controller, gameId) {
   const jpmaps = controller.getJapanFleetLocations()
   const jpMapText = JSON.stringify(Array.from(jpmaps.entries()))
 
+
   // console.log(usMapText)
   // console.log(jpMapText)
 
@@ -96,8 +97,44 @@ function createFleetUpdates(fleetMap) {
   let updates = new Array()
   for (const key of fleetMap.keys()) {
     let update
-    const cHex = fleetMap.get(key).currentHex
-
+    const location = fleetMap.get(key)
+    if (location.boxName === HexCommand.FLEET_BOX) {
+      let side
+      if (key === "CSF") {
+        side = GlobalUnitsModel.Side.US
+      } else if (key === "1AF") {
+        side = GlobalUnitsModel.Side.JAPAN
+      } else if (key === "IJN-DMCV") {
+        side = GlobalUnitsModel.Side.JAPAN
+      } else if (key === "US-DMCV") {
+        side = GlobalUnitsModel.Side.US
+      } else if (key === "MIF") {
+        side = GlobalUnitsModel.Side.JAPAN
+      } else if (key === "CSF-JPMAP") {
+        side = GlobalUnitsModel.Side.JAPAN
+      } else if (key === "1AF-USMAP") {
+        side = GlobalUnitsModel.Side.US
+      } else if (key === "IJN-DMCV-USMAP") {
+        side = GlobalUnitsModel.Side.US
+      } else if (key === "US-DMCV-JPMAP") {
+        side = GlobalUnitsModel.Side.JAPAN
+      } else if (key === "MIF-USMAP") {
+        side = GlobalUnitsModel.Side.US
+      }
+      update = {
+        name: key,
+        position: {
+          currentHex: {
+            boxName: location.boxName,
+            boxIndex: location.boxIndex,
+          },
+        },
+        side,
+      }
+      updates.push(update)
+      continue
+    }
+    const cHex = location.currentHex
     // calculate hex coords from grid coords q,r -> x.y
     if (cHex === undefined) {
       continue
@@ -224,8 +261,14 @@ function createDamageUpdatesMidway(controller) {
     "FLIGHT_DECK"
   )
   let markers = new Array()
+  // console.log("GlobalGameState.midwayBox0Damaged=", GlobalGameState.midwayBox0Damaged)
+  // console.log("GlobalGameState.midwayBox1Damaged=", GlobalGameState.midwayBox1Damaged)
+  // console.log("GlobalGameState.midwayBox2Damaged=", GlobalGameState.midwayBox2Damaged)
+
   if (GlobalGameState.midwayBox0Damaged) {
     const marker1 = GlobalInit.controller.getNextAvailableMarker("DAMAGED")
+    GlobalGameState.nextAvailableDamageMarker++
+
     const markerUpdate = {
       name: marker1.name,
       box: boxName,
@@ -237,24 +280,28 @@ function createDamageUpdatesMidway(controller) {
   }
   if (GlobalGameState.midwayBox1Damaged) {
     const marker2 = GlobalInit.controller.getNextAvailableMarker("DAMAGED")
+    GlobalGameState.nextAvailableDamageMarker++
+
     const markerUpdate = {
       name: marker2.name,
       box: boxName,
       index: 1,
       side: GlobalUnitsModel.Side.US,
     }
-    controller.setMarkerLocation(marker2.name, boxName, 0)
+    controller.setMarkerLocation(marker2.name, boxName, 1)
     markers.push(markerUpdate)
   }
   if (GlobalGameState.midwayBox2Damaged) {
     const marker2 = GlobalInit.controller.getNextAvailableMarker("DAMAGED")
+    GlobalGameState.nextAvailableDamageMarker++
+
     const markerUpdate = {
       name: marker2.name,
       box: boxName,
       index: 2,
       side: GlobalUnitsModel.Side.US,
     }
-    controller.setMarkerLocation(marker2.name, boxName, 0)
+    controller.setMarkerLocation(marker2.name, boxName, 2)
     markers.push(markerUpdate)
   }
   return markers
@@ -364,6 +411,7 @@ function loadAirUnits(airUnitMap) {
     GlobalGameState.dmcvFleetSpeed = 1
     GlobalGameState.usDMCVCarrier = GlobalUnitsModel.Carrier.HORNET
     GlobalGameState.midwayGarrisonLevel = 4
+    GlobalGameState.carrierHitsDetermined = false
   }
 }
 
@@ -410,6 +458,7 @@ function loadUSFleetUnits(loadedMap) {
     carrier.hits = loadedFleetUnit._hits
     carrier.bowDamaged = loadedFleetUnit._bowDamaged
     carrier.sternDamaged = loadedFleetUnit._sternDamaged
+
     carrier.towed = loadedFleetUnit._towed
     carrier.dmcv = loadedFleetUnit._dmcv
     GlobalUnitsModel.usFleetUnits.set(key, carrier)

@@ -214,8 +214,7 @@ export const airUnitsToStrikeGroupsUS = [
 export const strikeGroupsUS = [
   {
     name: "US-SG1",
-
-  }
+  },
 ]
 
 export function calcTestDataUS(unit, controller) {
@@ -238,8 +237,7 @@ export function calcStrikeDataJapan(unit) {
   return update
 }
 
-export function calcStrikeDataUS(unit) { 
-
+export function calcStrikeDataUS(unit) {
   const update = {
     name: unit.name,
     boxName: unit.boxName,
@@ -257,17 +255,32 @@ export function createMapUpdateForFleet(controller, name, side) {
   let otherName
   if (name === "CSF") {
     otherName = "CSF-JPMAP"
+    side = GlobalUnitsModel.Side.JAPAN
   } else if (name === "1AF") {
     otherName = "1AF-USMAP"
+    side = GlobalUnitsModel.Side.US
   } else if (name === "IJN-DMCV") {
     otherName = "IJN-DMCV-USMAP"
+    side = GlobalUnitsModel.Side.US
   } else if (name === "US-DMCV") {
     otherName = "US-DMCV-JPMAP"
+    side = GlobalUnitsModel.Side.JAPAN
   } else if (name === "MIF") {
     otherName = "MIF-USMAP"
+    side = GlobalUnitsModel.Side.US
   }
   if (location === undefined) {
     return null
+  }
+  if (location.boxName == HexCommand.FLEET_BOX) {
+    return {
+      name:otherName,
+      position: {
+        currentHex: location,
+      },
+      loading: false,
+      side
+    }
   }
   return createFleetUpdate(otherName, location.currentHex.q, location.currentHex.r)
 }
@@ -297,7 +310,7 @@ function convertHex(name, q, r) {
     position: {
       currentHex: cHex,
     },
-    loading: false
+    loading: false,
   }
 }
 export function createFleetUpdate(name, q, r) {

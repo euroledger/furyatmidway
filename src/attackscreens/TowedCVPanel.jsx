@@ -1,7 +1,6 @@
 import { React, useState, useRef, useEffect } from "react"
 import Button from "react-bootstrap/Button"
 import GlobalUnitsModel from "../model/GlobalUnitsModel"
-import GlobalGameState from "../model/GlobalGameState"
 
 export function TowedCVHeaders({ controller, setTowedCVSelected }) {
   let usEnterprise = {

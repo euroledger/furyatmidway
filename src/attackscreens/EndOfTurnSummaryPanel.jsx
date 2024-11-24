@@ -44,7 +44,7 @@ export function EndOfTurnSummaryHeaders({ controller }) {
 
   const gameContinuesMsg = GlobalGameState.gameTurn === 3 ? "Neither Side has Achieved Victory" : ""
 
-  let winner = undefined
+  let winner = "None"
   if (GlobalGameState.gameTurn === 3 || GlobalGameState.gameTurn === 7) {
     winner = controller.victoryCheck()
   }
@@ -184,7 +184,7 @@ export function EndOfTurnSummaryHeaders({ controller }) {
               >
                 &emsp;
                 <strong>
-                  {vmsg}&emsp;{winner}
+                  {vmsg}&nbsp;{winner}
                 </strong>
                 !!
               </p>

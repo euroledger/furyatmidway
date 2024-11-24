@@ -75,12 +75,14 @@ export function EventCardFooter({ cardNumber, showCardFooter, setShowDice, doCri
     setShowDice(false)
     // remove US Fighter From Strike Group
     let airMsg = ""
+    let airMsg2 = ""
     if (showCardFooter) {
       const units = GlobalInit.controller.getAttackingStrikeUnits()
       for (const unit of units) {
         if (!unit.aircraftUnit.attack) {
           unit.aircraftUnit.separated = true
-          airMsg = "Fighter Unit Removed From Air Strike: " + unit.name
+          airMsg = "Fighter Unit Removed from Air Strike: " + unit.name
+          airMsg2 = "(Move to Return Box Following Completion of Air Strike)"
           break
         }
       }
@@ -104,6 +106,16 @@ export function EventCardFooter({ cardNumber, showCardFooter, setShowDice, doCri
               }}
             >
               {airMsg}
+            </p>
+            <p
+              style={{
+                display: "flex",
+                justifyContent: "center",
+                alignItems: "center",
+                color: "white",
+              }}
+            >
+              {airMsg2}
             </p>
           </div>
         )}

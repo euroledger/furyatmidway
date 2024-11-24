@@ -2,6 +2,7 @@ import COMMAND_TYPE from "./COMMAND_TYPE";
 
 class Command {
   static OFFBOARD = "OFFBOARD"
+  static FLEET_BOX = "OFFMAP FLEET BOX"
   
   constructor(commandType, unit, from, to, side) {
     this.commandType = commandType;

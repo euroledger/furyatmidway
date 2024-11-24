@@ -975,7 +975,6 @@ export default class Controller {
   autoAssignTargets() {
     let carrierAttackTarget = this.getTargetForAttack()
     if (carrierAttackTarget === null) {
-      console.log("Cannot auto assign targets, no target available")
       return null
     }
     const unitsInGroup = this.getAttackingStrikeUnits(true)
@@ -1273,6 +1272,8 @@ export default class Controller {
     GlobalGameState.usVPs = 0
 
     if (GlobalGameState.gameTurn === 3) {
+      GlobalGameState.usVPs += numJapanCVsSunk
+      GlobalGameState.japanVPs += numUSCVsSunk
       if (numJapanCVsRemaining === 0 && numUSCVsRemaining !== 0) {
         return GlobalUnitsModel.Side.US
       }
@@ -1307,7 +1308,7 @@ export default class Controller {
       }
       return "DRAW"
     }
-    return null
+    return "None"
   }
   isSunk(name, countTowedAsSunk) {
     if (name === GlobalUnitsModel.Carrier.MIDWAY) {
@@ -1648,8 +1649,8 @@ export default class Controller {
       }
       found = true // will stay false if no fleets on map
       const locationB = locations.get(fleet)
-      // this fleet may be sunk so continue...
-      if (locationB === HexCommand.OFFBOARD) {
+      // this fleet may be sunk (or moved to off map fleet box) so continue...
+      if (locationB === HexCommand.OFFBOARD || locationB.boxName === HexCommand.FLEET_BOX) {
         continue
       }
       const hexB = {
