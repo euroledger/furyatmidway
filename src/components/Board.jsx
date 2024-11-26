@@ -19,6 +19,8 @@ import JapanCarrierDropZones from "./draganddrop/JapanCarrierDropZones"
 import USCarrierDropZones from "./draganddrop/USCarrierDropZones"
 import USOffMapFleetDropZones from "./draganddrop/USOffMapFleetDropZones"
 import JapanOffMapFleetDropZones from "./draganddrop/JapanOffMapFleetDropZones"
+import JapanReorganizationDropZones from "./draganddrop/JapanReorganizationDropZones"
+import USReorganizationDropZones from "./draganddrop/USReorganizationDropZones"
 import GlobalGameState from "../model/GlobalGameState"
 import StrikePanel from "./dialogs/StrikePanel"
 import GlobalUnitsModel from "../model/GlobalUnitsModel"
@@ -26,6 +28,7 @@ import DamageSunkCounters from "./buttons/mapobjects/DamageSunkCounters"
 import DMCVShipMarker from "./buttons/mapobjects/DMCVShipMarker"
 import TowedBox from "./buttons/TowedBox"
 import OffMapFleetBox from "./buttons/OffMapFleetBox"
+import ReorganizationBox from "./buttons/ReorganizationBox"
 
 function Board({
   scale,
@@ -35,6 +38,8 @@ function Board({
   japanStrikePanelEnabled,
   enabledJapanFleetBoxes,
   enabledUSFleetBoxes,
+  enabledJapanReorgBoxes,
+  enabledUSReorgBoxes,
   usStrikePanelEnabled,
   setPreviousPosition,
   previousPosition,
@@ -120,7 +125,6 @@ function Board({
   const getMIFZone = () => mifzone
   const getMGFZone = () => mgfzone
   const getAirBox = () => airBox
-  
 
   const incrementZIndex = (side, increment) => {
     if (side === "japan") {
@@ -404,10 +408,14 @@ function Board({
           handleDragEnter={handleOffMapFleetBoxDragEnter}
           handleDragLeave={handleOffMapFleetBoxDragLeave}
         ></USOffMapFleetDropZones>
-         <JapanOffMapFleetDropZones
+        <JapanOffMapFleetDropZones
           handleDragEnter={handleOffMapFleetBoxDragEnter}
           handleDragLeave={handleOffMapFleetBoxDragLeave}
         ></JapanOffMapFleetDropZones>
+        <ReorganizationBox side="Japan" enabled={enabledJapanReorgBoxes}></ReorganizationBox>
+        <ReorganizationBox side="US" enabled={enabledUSReorgBoxes}></ReorganizationBox>
+        <JapanReorganizationDropZones></JapanReorganizationDropZones>
+        <USReorganizationDropZones></USReorganizationDropZones>
       </div>
     </>
   )

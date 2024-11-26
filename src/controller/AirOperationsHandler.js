@@ -462,14 +462,13 @@ export function doHangarNight(controller, name, side) {
   const location = controller.getAirUnitLocation(name)
   const carrierName = controller.getCarrierForAirBox(location.boxName)
 
-
   // At night fighters can be moved to CAP box
   const unit = controller.getAirUnitForName(name)
   if (!unit.aircraftUnit.attack) {
     const capBox = controller.getCapBoxForNamedCarrier(carrierName, side)
     destinationsArray.push(capBox)
   }
-  
+
   const destBox = controller.getAirBoxForNamedShip(side, carrierName, "FLIGHT_DECK")
 
   // check there is room on this carrier's flight deck
@@ -791,7 +790,9 @@ export function doCap(controller, name, side) {
 }
 
 export function getStep1Fighters(airUnits) {
-  return airUnits.filter((unit) => unit.aircraftUnit.steps === 1 && unit.aircraftUnit.attack === false)
+  return airUnits.filter(
+    (unit) => unit.aircraftUnit !== undefined && unit.aircraftUnit.steps === 1 && unit.aircraftUnit.attack === false
+  )
 }
 
 export function getStep1DiveBombers(airUnits) {
@@ -856,6 +857,7 @@ function isMidwayBox(box) {
 }
 // toBox is the destination box, hangar for returning strike, flight deck for returning CAP
 // auto - if true automatically reorganise, false return object with reorg possibilities (for UI)
+// null can be passed in for toBox if only want to check within box
 export function checkForReorganization(controller, fromBox, toBox, auto) {
   // 1. For a given box get all the air units in this box
   const airUnits = controller.getAllAirUnitsInBox(fromBox)
@@ -874,7 +876,7 @@ export function checkForReorganization(controller, fromBox, toBox, auto) {
   // Can never reorganize across Midway -> Carrier (since this is never a landing option)
   // But carrier -> Midway is allowed
   if (!toBox || (isMidwayBox(fromBox) && !isMidwayBox(toBox))) {
-    return null
+    return []
   }
 
   const airUnitsToBox = controller.getAllAirUnitsInBox(toBox)

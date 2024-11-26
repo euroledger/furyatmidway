@@ -11,6 +11,7 @@ import {
   moveOrphanedCAPUnitsToEliminatedBoxNight,
   moveOrphanedAirUnitsInReturn1Boxes,
   setValidDestinationBoxesNightOperations,
+  checkForReorganization,
 } from "../../../controller/AirOperationsHandler"
 import HexCommand from "../../../commands/HexCommand"
 
@@ -25,6 +26,11 @@ function AirCounter({ getAirBox, setAirBox, counterData, side }) {
     setAlertShow,
     setEnabledUSBoxes,
     setEnabledJapanBoxes,
+    setEnabledJapanReorgBoxes,
+    setEnabledUSReorgBoxes,
+    setReorgAirUnits,
+    enabledUSReorgBoxes,
+    enabledJapanReorgBoxes,
   } = useContext(BoardContext)
   const [position, setPosition] = useState({
     left: counterData.position.left,
@@ -33,7 +39,40 @@ function AirCounter({ getAirBox, setAirBox, counterData, side }) {
 
   const location = controller.getAirUnitLocation(counterData.name)
 
+  const checkForAirUnitReorganization = () => {
+    if (side === GlobalUnitsModel.Side.JAPAN && enabledJapanReorgBoxes) {
+      setEnabledJapanReorgBoxes(() => false)
+      return
+    }
+    if (side === GlobalUnitsModel.Side.US && enabledUSReorgBoxes) {
+      setEnabledUSReorgBoxes(() => false)
+      return
+    }
+    // disable the "other" side
+    if (side === GlobalUnitsModel.Side.JAPAN) {
+      setEnabledUSReorgBoxes(() => false)
+    }
+    if (side === GlobalUnitsModel.Side.US && enabledUSReorgBoxes) {
+      setEnabledJapanReorgBoxes(() => false)
+    }
+    const location = controller.getAirUnitLocation(counterData.name)
+
+    const reorgUnits = checkForReorganization(controller, location.boxName, null, false)
+    console.log("REORG UNITS=", reorgUnits)
+    if (reorgUnits.length > 0) {
+      setReorgAirUnits(reorgUnits)
+    } else {
+      setReorgAirUnits([])
+    }
+    if (side === GlobalUnitsModel.Side.JAPAN) {
+      setEnabledJapanReorgBoxes(() => true)
+    } else {
+      setEnabledUSReorgBoxes(() => true)
+    }
+  }
   const onDrag = () => {
+    // First Check for possible reorganization
+
     setIsMoveable(true)
     // only the selected (clicked) air unit should be draggable
     setSelected(() => true)
@@ -47,11 +86,11 @@ function AirCounter({ getAirBox, setAirBox, counterData, side }) {
       if (side === GlobalUnitsModel.Side.US && locationCSF && locationCSF.boxName === HexCommand.FLEET_BOX) {
         return
       }
-      if (side === GlobalUnitsModel.Side.JAPAN &&  location1AF && location1AF.boxName === HexCommand.FLEET_BOX) {
+      if (side === GlobalUnitsModel.Side.JAPAN && location1AF && location1AF.boxName === HexCommand.FLEET_BOX) {
         return
       }
     }
-   
+
     if (location.boxName.includes("ELIMINATED")) {
       return
     }
@@ -376,6 +415,8 @@ function AirCounter({ getAirBox, setAirBox, counterData, side }) {
     }
   }
   const handleClick = (e) => {
+    checkForAirUnitReorganization()
+
     if (counterData.side !== GlobalGameState.sideWithInitiative) {
       return
     }

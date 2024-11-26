@@ -473,7 +473,7 @@ function StrikeCounter({ setStrikeGroupPopup, currentUSHex, currentJapanHex, cou
 
   const sg = controller.getStrikeGroupForBox(side, counterData.box)
   if (
-    // sg.attacked === true ||
+    sg.attacked === true || 
     GlobalGameState.gamePhase === GlobalGameState.PHASE.JAPAN_FLEET_MOVEMENT ||
     GlobalGameState.gamePhase === GlobalGameState.PHASE.US_FLEET_MOVEMENT ||
     controller.getAirUnitsInStrikeGroups(sg.box).length === 0

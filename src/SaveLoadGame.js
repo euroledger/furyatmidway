@@ -56,7 +56,6 @@ export function saveGameState(controller, gameId) {
   const jpmaps = controller.getJapanFleetLocations()
   const jpMapText = JSON.stringify(Array.from(jpmaps.entries()))
 
-
   // console.log(usMapText)
   // console.log(jpMapText)
 
@@ -391,6 +390,9 @@ function loadAirUnits(airUnitMap) {
 
     const globalAirUnit = GlobalInit.controller.getAirUnitForName(key)
 
+    globalAirUnit.aircraftUnit.steps = airUnit.counterData._aircraftUnit._steps
+    globalAirUnit.image = airUnit.counterData._image
+
     if (airUnit.counterData._aircraftUnit._moved) {
       globalAirUnit.aircraftUnit.moved = true
     }
@@ -406,12 +408,12 @@ function loadAirUnits(airUnitMap) {
     // // }
     // GlobalGameState.usDMCVFleetPlaced = false
     // GlobalGameState.jpDMCVFleetPlaced = false
-    GlobalGameState.fleetSpeed = 2
-    GlobalGameState.nextMidwayInvasionRoll = GlobalUnitsModel.Side.JAPAN
-    GlobalGameState.dmcvFleetSpeed = 1
-    GlobalGameState.usDMCVCarrier = GlobalUnitsModel.Carrier.HORNET
-    GlobalGameState.midwayGarrisonLevel = 4
-    GlobalGameState.carrierHitsDetermined = false
+    // GlobalGameState.fleetSpeed = 2
+    // GlobalGameState.nextMidwayInvasionRoll = GlobalUnitsModel.Side.JAPAN
+    // GlobalGameState.dmcvFleetSpeed = 1
+    // GlobalGameState.usDMCVCarrier = GlobalUnitsModel.Carrier.HORNET
+    // GlobalGameState.midwayGarrisonLevel = 4
+    // GlobalGameState.carrierHitsDetermined = false
   }
 }
 

@@ -63,6 +63,8 @@ function CarrierDamageDicePanel(props) {
     closeButtonStr,
     closeButtonCallback,
     setDamageMarkerUpdate,
+    damageDone,
+    setDamageDone,
     setDmcvShipMarkerUpdate,
     ...rest
   } = props
@@ -120,7 +122,7 @@ function CarrierDamageDicePanel(props) {
   }
   const currentCarrierHits = controller.getCarrierHits(carrier)
 
-  if ((currentCarrierHits > 0 || GlobalGameState.carrierAttackHits > 1) && GlobalGameState.TESTING !== true) {  
+  if ((currentCarrierHits > 0 || GlobalGameState.carrierAttackHits > 1) && GlobalGameState.TESTING !== true) {
     const damage = autoAllocateDamage(controller)
     GlobalGameState.carrierAttackHits = 0
     sendDamageUpdates(controller, damage, setDamageMarkerUpdate)
@@ -129,20 +131,10 @@ function CarrierDamageDicePanel(props) {
         GlobalGameState.sideWithInitiative === GlobalUnitsModel.Side.US
           ? GlobalUnitsModel.Side.JAPAN
           : GlobalUnitsModel.Side.US
-      sendDMCVUpdate(
-        controller,
-        GlobalGameState.currentCarrierAttackTarget,
-        setDmcvShipMarkerUpdate,
-        sideBeingAttacked
-      )
+      sendDMCVUpdate(controller, GlobalGameState.currentCarrierAttackTarget, setDmcvShipMarkerUpdate, sideBeingAttacked)
     }
-  } else if (GlobalGameState.carrierAttackHits === 0) {
-    showDicePanel = false
-  }
+  } 
 
-  if (GlobalGameState.carrierAttackHits === 0) {
-    showDicePanel = false
-  }
   let isSunk = false
   if (GlobalGameState.currentCarrierAttackTarget !== "" && GlobalGameState.currentCarrierAttackTarget !== undefined) {
     isSunk = controller.isSunk(GlobalGameState.currentCarrierAttackTarget)
@@ -290,7 +282,14 @@ function CarrierDamageDicePanel(props) {
 
       <Modal.Footer style={{ background: `${bg}`, color: "black" }}>
         {numDice > 0 && (
-          <Button ref={button1Ref} disabled={diceButtonDisabled} onClick={() => doRoll()}>
+          <Button
+            ref={button1Ref}
+            disabled={diceButtonDisabled}
+            onClick={() => {
+              setDamageDone()
+              doRoll()
+            }}
+          >
             {diceButtonStr}
           </Button>
         )}

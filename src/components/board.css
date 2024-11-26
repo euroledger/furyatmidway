@@ -26,6 +26,10 @@
   background: rgba(228, 92, 92, 0.8);
 }
 
+.bg-japan-reorg {
+  background: "##122334"
+}
+
 .bg-japan-strike {
   background: rgba(228, 92, 92, 0.4);
 }
@@ -36,4 +40,8 @@
 .zone2 {
   /* background: green;  */
   border: 1px solid rgb(23, 1, 1)
+}
+.zone-reorg {
+  /* background: green;  */
+  border: 1px solid rgb(255, 255, 255)
 }

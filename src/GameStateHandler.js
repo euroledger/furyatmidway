@@ -86,7 +86,8 @@ async function setNextStateFollowingCardPlay({
 }) {
   switch (cardNumber) {
     case -1:
-      GlobalGameState.gamePhase = GlobalGameState.PHASE.CAP_INTERCEPTION
+      // console.log("1 GO TO CAP INTERCEPTION POOOOOOOOOOOOOOOOOOOOOOO")
+      // GlobalGameState.gamePhase = GlobalGameState.PHASE.CAP_INTERCEPTION
       break
 
     case 0:
@@ -237,10 +238,12 @@ async function setNextStateFollowingCardPlay({
       }
       break
     case 13:
+    console.log("END OF 13 CARD")
       setCardNumber(() => -1) // reset for next card play
       if (GlobalGameState.carrierTarget2 !== "" && GlobalGameState.carrierTarget2 !== undefined) {
         GlobalGameState.gamePhase = GlobalGameState.PHASE.AIR_ATTACK_2
       } else {
+        console.log("FUCKETY END OF CARD 13")
         await endOfAirOperation(
           GlobalGameState.sideWithInitiative,
           capAirUnits,
@@ -248,6 +251,7 @@ async function setNextStateFollowingCardPlay({
           setEliminatedUnitsPanelShow
         )
         GlobalGameState.gamePhase = GlobalGameState.PHASE.AIR_OPERATIONS
+        GlobalGameState.updateGlobalState()
       }
       break
     default:
@@ -940,6 +944,8 @@ async function tidyUp(setAirUnitUpdate, setStrikeGroupUpdate) {
 }
 
 export async function endOfAirOperation(side, capAirUnits, setAirUnitUpdate, setEliminatedUnitsPanelShow) {
+  console.log("ARSE END OF AIR OPERATION capAirUnits=", capAirUnits)
+  console.trace()
   if (capAirUnits) {
     await moveCAPtoReturnBox(GlobalInit.controller, capAirUnits, setAirUnitUpdate)
   }
@@ -950,6 +956,8 @@ export async function endOfAirOperation(side, capAirUnits, setAirUnitUpdate, set
   } else {
     return false
   }
+
+
 
   // RESET ELITE PILOTS FOR FUTURE AIR COMBATS
   GlobalGameState.elitePilots = false
@@ -1076,8 +1084,10 @@ export default async function handleAction({
       setAirUnitUpdate,
       setStrikeGroupUpdate,
       setEndOfAirOpAlertShow,
-      setFleetUnitUpdate,
       setEndOfTurnSummaryShow,
+      capAirUnits,
+      setFleetUnitUpdate,
+      setEliminatedUnitsPanelShow,
       midwayDeclarationHandler,
       setUsFleetRegions,
     })
@@ -1548,6 +1558,7 @@ export default async function handleAction({
         setCardNumber(() => 10)
         GlobalGameState.gamePhase = GlobalGameState.PHASE.CARD_PLAY
       } else {
+        console.log("DOING TIDY UP...")
         await tidyUp(setAirUnitUpdate, setStrikeGroupUpdate)
         GlobalGameState.gamePhase = GlobalGameState.PHASE.END_OF_AIR_OPERATION
         setEndOfAirOpAlertShow(true)

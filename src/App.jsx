@@ -129,6 +129,10 @@ export function App() {
   const [japanStrikePanelEnabled, setJapanStrikePanelEnabled] = useState(false)
   const [usStrikePanelEnabled, setUsStrikePanelEnabled] = useState(false)
 
+  const [enabledJapanReorgBoxes, setEnabledJapanReorgBoxes] = useState(false)
+  const [enabledUSReorgBoxes, setEnabledUSReorgBoxes] = useState(false)
+
+  
   useEffect(() => {
     setEnabledJapanBoxes(getJapanEnabledAirBoxes())
   }, [])
@@ -220,6 +224,8 @@ export function App() {
 
   const [capAirUnits, setCapAirUnits] = useState([])
   const [capSteps, setCapSteps] = useState(0)
+
+  const [reorgAirUnits, setReorgAirUnits] = useState([])
 
   const [nightAirUnits, setNightAirUnits] = useState([])
   const [nightLandingDone, setNightLandingDone] = useState(false)
@@ -347,6 +353,8 @@ export function App() {
     if (GlobalGameState.gamePhase === GlobalGameState.PHASE.AIR_OPERATIONS) {
       GlobalGameState.phaseCompleted = false
       GlobalGameState.nextActionButtonDisabled = true
+      setEnabledUSReorgBoxes(false)
+      setEnabledJapanReorgBoxes(false)
       GlobalGameState.updateGlobalState()
     }
   }, [GlobalGameState.gamePhase])
@@ -474,6 +482,7 @@ export function App() {
       setAttackResolutionPanelShow(false)
       setCarrierDamagePanelShow(true)
       setAttackResolved(false)
+      setDamageDone(false)
       GlobalGameState.carrierDamageRoll = undefined
     }
   }, [GlobalGameState.gamePhase])
@@ -854,7 +863,6 @@ export function App() {
           setEnabledJapanFleetBoxes(true)
         }
       } else {
-        console.log("OOOOH dmcvLocation=", dmcvLocation)
         if (dmcvLocation !== undefined && dmcvLocation.currentHex.q === 1) {
           // can move offboard
           setEnabledJapanFleetBoxes(true)
@@ -1294,7 +1302,7 @@ export function App() {
                   setJapanStrikePanelEnabled(() => !japanStrikePanelEnabled)
                 }}
               >
-                Hide SGs
+                Strike
               </Button>
               <Button
                 className="me-1"
@@ -1305,7 +1313,19 @@ export function App() {
                   setEnabledUSFleetBoxes(() => !enabledUSFleetBoxes)
                 }}
               >
-                Hide Boxes
+                Fleet
+              </Button>
+              <Button
+                className="me-1"
+                size="sm"
+                variant="outline-light"
+                onClick={() => {
+                  console.log("POO CLICKETY")
+                  setEnabledJapanReorgBoxes(() => !enabledJapanReorgBoxes)
+                  setEnabledUSReorgBoxes(() => !enabledUSReorgBoxes)
+                }}
+              >
+                Reorg
               </Button>
             </Nav>
 
@@ -1965,11 +1985,11 @@ export function App() {
   function doInitiativeRoll(roll0, roll1) {
     // for testing QUACK
     // doIntiativeRoll(GlobalInit.controller, 6, 1, true) // JAPAN initiative
-    // doIntiativeRoll(GlobalInit.controller, 1, 6, true) // US initiative
+    doIntiativeRoll(GlobalInit.controller, 1, 6, true) // US initiative
 
     // doIntiativeRoll(GlobalInit.controller, 3, 3, true) // tie
 
-    doIntiativeRoll(GlobalInit.controller, roll0, roll1)
+    // doIntiativeRoll(GlobalInit.controller, roll0, roll1)
     GlobalGameState.updateGlobalState()
   }
 
@@ -2132,7 +2152,7 @@ export function App() {
     carrieDamageDiceButtonDisabled =
       oldCarrierHits > 0 ||
       GlobalGameState.carrierAttackHits !== 1 ||
-      (GlobalGameState.carrierAttackHits === 1 && attackResolved)
+      (GlobalGameState.carrierAttackHits === 0 && damageDone)
   }
 
   const totalHits = GlobalGameState.midwayHits + GlobalGameState.totalMidwayHits
@@ -2414,6 +2434,7 @@ export function App() {
           if (capAirUnits.length > 0) {
             sendCapEvent()
           }
+          console.log("POO CAP INTERCEPTION -> FINISHED nextAction()")
           nextAction(e)
         }}
         doRoll={doCAPRolls}
@@ -2583,6 +2604,8 @@ export function App() {
         setDamageMarkerUpdate={setDamageMarkerUpdate}
         setDmcvShipMarkerUpdate={setDmcvShipMarkerUpdate}
         disabled={false}
+        setDamageDone={setDamageDone}
+        damageDone={damageDone}
       ></CarrierDamageDicePanel>
       <MidwayDamageDicePanel
         numDice={1}
@@ -2890,6 +2913,8 @@ export function App() {
                   onDrag,
                   onStop,
                   scale,
+                  setReorgAirUnits,
+                  reorgAirUnits,
                   airUnitUpdate,
                   setCardNumber,
                   setEnabledJapanFleetBoxes,
@@ -2914,6 +2939,10 @@ export function App() {
                   enabledJapanFleetBoxes,
                   setEnabledUSBoxes,
                   setEnabledJapanBoxes,
+                  enabledUSReorgBoxes,
+                  enabledJapanReorgBoxes,
+                  setEnabledJapanReorgBoxes,
+                  setEnabledUSReorgBoxes,
                   setIsMoveable,
                   towedCVSelected,
                   loading,
@@ -2928,6 +2957,8 @@ export function App() {
                   usStrikePanelEnabled={usStrikePanelEnabled}
                   enabledJapanFleetBoxes={enabledJapanFleetBoxes}
                   enabledUSFleetBoxes={enabledUSFleetBoxes}
+                  enabledJapanReorgBoxes={enabledJapanReorgBoxes}
+                  enabledUSReorgBoxes={enabledUSReorgBoxes}
                   setPreviousPosition={setPreviousPosition}
                   previousPosition={previousPosition}
                 />

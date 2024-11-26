@@ -150,8 +150,8 @@ export function doFighterCounterattack(controller, testRolls) {
     }
   }
   // GlobalGameState.dieRolls = 1
-  GlobalGameState.fighterHits = hits
-  // GlobalGameState.fighterHits = 1 // QUACK TESTING ONLY
+  // GlobalGameState.fighterHits = hits
+  GlobalGameState.fighterHits = 2 // QUACK TESTING ONLY
 }
 
 export function getAirUnitOnFlightDeck(controller, carrier, bowOrStern) {
@@ -779,12 +779,12 @@ export function doAttackFireRolls(controller, testRolls) {
     // GlobalGameState.midwayHitsThisAttack = 3
 
   } else {
-    GlobalGameState.carrierAttackHits = hits
-    GlobalGameState.carrierAttackHitsThisAttack = hits
+    // GlobalGameState.carrierAttackHits = hits
+    // GlobalGameState.carrierAttackHitsThisAttack = hits
 
     // QUACK REMOVE TEESTING ONLY
-    // GlobalGameState.carrierAttackHits = 2
-    // GlobalGameState.carrierAttackHitsThisAttack = 2
+    GlobalGameState.carrierAttackHits = 0
+    GlobalGameState.carrierAttackHitsThisAttack = 0
   }
   return hits
 }
@@ -1092,9 +1092,9 @@ export function doCAP(controller, capAirUnits, fightersPresent, testRolls) {
   GlobalGameState.dieRolls = rolls
 
   // QUACK TESTING PUT THIS BACK
-  // GlobalGameState.capHits = 0
+  GlobalGameState.capHits = 2
 
-  GlobalGameState.capHits = hits
+  // GlobalGameState.capHits = hits
 }
 
 export function moveAirUnitToEliminatedBox(controller, airUnit) {
