@@ -1,7 +1,7 @@
 import Controller from "../src/controller/Controller"
 import loadCounters from "../src/CounterLoader"
 import GlobalUnitsModel from "../src/model/GlobalUnitsModel"
-import { createFleetMove } from "./testUtils"
+import { createFleetMove } from "./TestUtils"
 import HexCommand from "../src/commands/HexCommand"
 import GlobalGameState from "../src/model/GlobalGameState"
 import { doCAP, doDamageAllocation, doFighterCounterattack } from "../src/DiceHandler"

@@ -86,8 +86,6 @@ async function setNextStateFollowingCardPlay({
 }) {
   switch (cardNumber) {
     case -1:
-      // console.log("1 GO TO CAP INTERCEPTION POOOOOOOOOOOOOOOOOOOOOOO")
-      // GlobalGameState.gamePhase = GlobalGameState.PHASE.CAP_INTERCEPTION
       break
 
     case 0:
@@ -238,12 +236,10 @@ async function setNextStateFollowingCardPlay({
       }
       break
     case 13:
-    console.log("END OF 13 CARD")
       setCardNumber(() => -1) // reset for next card play
       if (GlobalGameState.carrierTarget2 !== "" && GlobalGameState.carrierTarget2 !== undefined) {
         GlobalGameState.gamePhase = GlobalGameState.PHASE.AIR_ATTACK_2
       } else {
-        console.log("FUCKETY END OF CARD 13")
         await endOfAirOperation(
           GlobalGameState.sideWithInitiative,
           capAirUnits,
@@ -330,7 +326,6 @@ function testForOffMapBoxesJapan(setEnabledJapanFleetBoxes) {
     if (af1Location !== undefined && af1Location.currentHex !== undefined && af1Location.currentHex.q <= 2) {
       // can move offboard
       if (GlobalGameState.gamePhase === GlobalGameState.PHASE.JAPAN_FLEET_MOVEMENT) {
-        console.log("SET THE FUCKERS ENALED")
         setEnabledJapanFleetBoxes(true)
       }
     }
@@ -627,7 +622,6 @@ async function usFleetMovementHandler({ setFleetUnitUpdate }) {
   const update1 = createMapUpdateForFleet(GlobalInit.controller, "CSF", GlobalUnitsModel.Side.US)
   const update2 = createMapUpdateForFleet(GlobalInit.controller, "US-DMCV", GlobalUnitsModel.Side.US)
 
-  console.log("POOOOO 100 update2 (dmcv)=", update2)
   if (update2 !== null) {
     await setFleetUnitUpdate(update2)
   }
@@ -807,7 +801,6 @@ export async function checkFleetsInSameHex({
         }
       }
     } else {
-      console.log("DMCV HAS NOT MOVED! SET REGIONS...")
       setRetreatRegions(usDMCVLocation, setUSMapRegions, "US-DMCV")
       return
     }
@@ -944,8 +937,6 @@ async function tidyUp(setAirUnitUpdate, setStrikeGroupUpdate) {
 }
 
 export async function endOfAirOperation(side, capAirUnits, setAirUnitUpdate, setEliminatedUnitsPanelShow) {
-  console.log("ARSE END OF AIR OPERATION capAirUnits=", capAirUnits)
-  console.trace()
   if (capAirUnits) {
     await moveCAPtoReturnBox(GlobalInit.controller, capAirUnits, setAirUnitUpdate)
   }

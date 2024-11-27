@@ -355,6 +355,8 @@ export function App() {
       GlobalGameState.nextActionButtonDisabled = true
       setEnabledUSReorgBoxes(false)
       setEnabledJapanReorgBoxes(false)
+      setEnabledJapanFleetBoxes(false)
+      setEnabledUSFleetBoxes(false)
       GlobalGameState.updateGlobalState()
     }
   }, [GlobalGameState.gamePhase])
@@ -841,7 +843,6 @@ export function App() {
       setUSMapRegions(usRegion)
     } else if (GlobalGameState.gamePhase === GlobalGameState.PHASE.JAPAN_DMCV_FLEET_MOVEMENT) {
       let jpRegion
-      console.log("BOOOOOOOOOOG 1 IJN DMCV stuff")
       const af1Location = GlobalInit.controller.getFleetLocation("1AF", GlobalUnitsModel.Side.JAPAN)
       const mifLocation = GlobalInit.controller.getFleetLocation("MIF", GlobalUnitsModel.Side.JAPAN)
 
@@ -1320,7 +1321,6 @@ export function App() {
                 size="sm"
                 variant="outline-light"
                 onClick={() => {
-                  console.log("POO CLICKETY")
                   setEnabledJapanReorgBoxes(() => !enabledJapanReorgBoxes)
                   setEnabledUSReorgBoxes(() => !enabledUSReorgBoxes)
                 }}
@@ -1985,11 +1985,11 @@ export function App() {
   function doInitiativeRoll(roll0, roll1) {
     // for testing QUACK
     // doIntiativeRoll(GlobalInit.controller, 6, 1, true) // JAPAN initiative
-    doIntiativeRoll(GlobalInit.controller, 1, 6, true) // US initiative
+    // doIntiativeRoll(GlobalInit.controller, 1, 6, true) // US initiative
 
     // doIntiativeRoll(GlobalInit.controller, 3, 3, true) // tie
 
-    // doIntiativeRoll(GlobalInit.controller, roll0, roll1)
+    doIntiativeRoll(GlobalInit.controller, roll0, roll1)
     GlobalGameState.updateGlobalState()
   }
 
@@ -2434,7 +2434,6 @@ export function App() {
           if (capAirUnits.length > 0) {
             sendCapEvent()
           }
-          console.log("POO CAP INTERCEPTION -> FINISHED nextAction()")
           nextAction(e)
         }}
         doRoll={doCAPRolls}

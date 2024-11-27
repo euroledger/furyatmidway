@@ -12,6 +12,8 @@ import {
   moveOrphanedAirUnitsInReturn1Boxes,
   setValidDestinationBoxesNightOperations,
   checkForReorganization,
+  checkAllBoxesForReorganization,
+  getReorgUnitsCAP,
 } from "../../../controller/AirOperationsHandler"
 import HexCommand from "../../../commands/HexCommand"
 
@@ -57,17 +59,66 @@ function AirCounter({ getAirBox, setAirBox, counterData, side }) {
     }
     const location = controller.getAirUnitLocation(counterData.name)
 
-    const reorgUnits = checkForReorganization(controller, location.boxName, null, false)
-    console.log("REORG UNITS=", reorgUnits)
-    if (reorgUnits.length > 0) {
-      setReorgAirUnits(reorgUnits)
+    // 1. check across boxes first
+    // 1a check cap and cap return boxes separately (they can merge with Flight Deck or Hangar)
+    if (location.boxName !== undefined && location.boxName.includes("CAP")) {
+      const reorgUnits = getReorgUnitsCAP(side, location.boxName, counterData)
+      if (reorgUnits.length > 0) {
+        setReorgAirUnits(reorgUnits)
+        if (side === GlobalUnitsModel.Side.JAPAN) {
+          setEnabledJapanReorgBoxes(() => true)
+        } else {
+          setEnabledUSReorgBoxes(() => true)
+        }
+        return
+      } else {
+        // 2. still check for units in same box even if CAP
+
+        let reorgUnits = checkForReorganization(controller, location.boxName, null, false)
+        if (reorgUnits.length > 0) {
+          setReorgAirUnits(reorgUnits)
+          if (side === GlobalUnitsModel.Side.JAPAN) {
+            setEnabledJapanReorgBoxes(() => true)
+          } else {
+            setEnabledUSReorgBoxes(() => true)
+          }
+          return
+        } else {
+          setReorgAirUnits([])
+        }
+      }
     } else {
-      setReorgAirUnits([])
-    }
-    if (side === GlobalUnitsModel.Side.JAPAN) {
-      setEnabledJapanReorgBoxes(() => true)
-    } else {
-      setEnabledUSReorgBoxes(() => true)
+      if (
+        location.boxName !== undefined &&
+        !location.boxName.includes("HANGAR") &&
+        !location.boxName.includes("FLIGHT")
+      ) {
+        let reorgUnits = checkAllBoxesForReorganization(controller, counterData, location.boxName, side, false)
+        if (reorgUnits.length > 0) {
+          setReorgAirUnits(reorgUnits)
+          if (side === GlobalUnitsModel.Side.JAPAN) {
+            setEnabledJapanReorgBoxes(() => true)
+          } else {
+            setEnabledUSReorgBoxes(() => true)
+          }
+          return
+        } else {
+          setReorgAirUnits([])
+        }
+      }
+      // 2. check for units in same box
+      let reorgUnits = checkForReorganization(controller, location.boxName, null, false)
+      if (reorgUnits.length > 0) {
+        setReorgAirUnits(reorgUnits)
+        if (side === GlobalUnitsModel.Side.JAPAN) {
+          setEnabledJapanReorgBoxes(() => true)
+        } else {
+          setEnabledUSReorgBoxes(() => true)
+        }
+        return
+      } else {
+        setReorgAirUnits([])
+      }
     }
   }
   const onDrag = () => {
@@ -397,15 +448,15 @@ function AirCounter({ getAirBox, setAirBox, counterData, side }) {
         box === GlobalUnitsModel.AirBox.US_TF17_CAP ||
         box === GlobalUnitsModel.AirBox.US_MIDWAY_CAP
       ) {
-        await moveOrphanedCAPUnitsToEliminatedBoxNight(counterData.side)
+        await moveOrphanedCAPUnitsToEliminatedBoxNight(counterData.side, box, counterData)
       }
     }
 
     if (box !== undefined && box.includes("CAP RETURNING")) {
-      await moveOrphanedCAPUnitsToEliminatedBox(counterData.side)
+      await moveOrphanedCAPUnitsToEliminatedBox(counterData.side, box, counterData)
     }
     if (box !== undefined && box.includes("RETURNING (1)")) {
-      await moveOrphanedAirUnitsInReturn1Boxes(counterData.side)
+      await moveOrphanedAirUnitsInReturn1Boxes(counterData.side, box, counterData)
     }
     const destBoxes = controller.getValidAirUnitDestinations(counterData.name)
     if (counterData.side === GlobalUnitsModel.Side.JAPAN) {

@@ -4,7 +4,8 @@ import AirOperationsModel from "../src/model/AirOperationsModel"
 import GlobalUnitsModel from "../src/model/GlobalUnitsModel"
 import GlobalGameState from "../src/model/GlobalGameState"
 import { handleAirUnitMoves, doReturn1 } from "../src/controller/AirOperationsHandler"
-import { createFleetMove } from "./testUtils"
+import { createFleetMove } from "./TestUtils"
+import { moveOrphanedAirUnitsInReturn1Boxes, arse } from "../src/controller/AirOperationsHandler"
 
 describe("Air Operations tests with Preset air unit locations", () => {
   let controller
@@ -326,7 +327,7 @@ describe("Air Operations tests with air unit locations set in tests", () => {
     expect(destinations[0]).toEqual(GlobalUnitsModel.AirBox.US_MIDWAY_HANGAR)
   })
 
-  test("Empty list of Valid Destination Boxes for US Air Unit when both carriers in TF16 are damaged and carrier in TF17 sunk and Midway NOT an option", () => {
+  test("Empty list of Valid Destination Boxes for US Air Unit when both carriers in TF16 are damaged and carrier in TF17 sunk and Midway NOT an option", async () => {
     // Nowhere to land in this scenario
     const etb = counters.get("Enterprise-TBD1")
     controller.addAirUnitToBox(GlobalUnitsModel.AirBox.US_TF16_RETURN1, 0, etb)
@@ -340,9 +341,6 @@ describe("Air Operations tests with air unit locations set in tests", () => {
     doReturn1(controller, etb.name, GlobalUnitsModel.Side.US)
     let destinations = controller.getValidAirUnitDestinations(etb.name)
     expect(destinations.length).toEqual(0)
-
-    const airUnit = controller.getUSAirUnit(etb.name)
-    expect(airUnit.steps).toEqual(0)
   })
 
   test("Empty list of Valid Destination Boxes for US Air Unit when both carriers in TF16 are damaged and carrier in TF17 sunk and Midway IS an option but Midway runway damaged", () => {

@@ -7,10 +7,10 @@ import Reorgaziza from "../buttons/Reorgaziza"
 import GlobalInit from "../../model/GlobalInit"
 
 function USReorganizationDropZones() {
-  const { enabledUSReorgBoxes, reorgAirUnits } = useContext(BoardContext)
-
+  const { enabledUSReorgBoxes, reorgAirUnits, setEnabledJapanReorgBoxes, setEnabledUSReorgBoxes } =
+    useContext(BoardContext)
   if (!enabledUSReorgBoxes) {
-    return []
+    return
   }
 
   const usZones = (
@@ -20,6 +20,8 @@ function USReorganizationDropZones() {
       name="US Fleet Box"
       zones={USReorganizationBoxOffsets}
       enabled={true}
+      setEnabledUSReorgBoxes={setEnabledUSReorgBoxes}
+      setEnabledJapanReorgBoxes={setEnabledJapanReorgBoxes}
       reorgUnits={reorgAirUnits}
       side={GlobalUnitsModel.Side.US}
       dc="drag-drop-zone-fleet zone-reorg bg-us-reorg"

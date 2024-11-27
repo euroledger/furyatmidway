@@ -7,7 +7,7 @@ import {
   handleAirUnitMoves,
   doReturn1,
 } from "../src/controller/AirOperationsHandler"
-import { createFleetMove } from "./testUtils"
+import { createFleetMove } from "./TestUtils"
 
 describe("Air Operations tests with Preset air unit locations", () => {
   let controller
@@ -295,8 +295,5 @@ describe("Air Operations tests with air unit locations set in tests", () => {
     doReturn1(controller, aaf1.name, GlobalUnitsModel.Side.JAPAN)
     let destinations = controller.getValidAirUnitDestinations(aaf1.name)
     expect(destinations.length).toEqual(0)
-
-    const airUnit = controller.getJapanAirUnit(aaf1.name)
-    expect(airUnit.steps).toEqual(0)
   })
 })

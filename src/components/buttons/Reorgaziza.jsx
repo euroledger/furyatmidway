@@ -5,11 +5,21 @@ import JapanReorganizationBoxOffsets from "../draganddrop/JapanReorganizationBox
 import USReorganizationBoxOffsets from "../draganddrop/USReorganizationBoxOffsets"
 import { moveAirUnitToEliminatedBox } from "../../DiceHandler"
 
-function Reorgaziza({ controller, zones, enabled, side, dc, reorgUnits }) {
+function Reorgaziza({
+  controller,
+  zones,
+  enabled,
+  side,
+  dc,
+  reorgUnits,
+}) {
+
   const [elim, setElim] = useState(false)
 
-  const handleClickTwoUnits = (unit, index) => {
-    console.log("Unit=", unit, "index=", index)
+  const handleClick = (unit, index) => {
+    if (elim) {
+      return // already done
+    }
     unit.steps = 0
     moveAirUnitToEliminatedBox(controller, unit)
 
@@ -20,38 +30,11 @@ function Reorgaziza({ controller, zones, enabled, side, dc, reorgUnits }) {
     for (let i = 0; i < reorgUnits.length; i++) {
       const airUnit = reorgUnits[i]
       if (i !== index) {
-        console.log("FLIP", airUnit.name)
         airUnit.aircraftUnit.steps = 2
         const newImage = airUnit.image.replace("back", "front")
         airUnit.image = newImage
         break
       }
-    }
-  }
-
-  const handleClickMultipleUnits = (unit, index) => {
-    console.log("Unit=", unit, "index=", index)
-    unit.steps = 0
-    moveAirUnitToEliminatedBox(controller, unit)
-
-    setElim(true)
-    // get first air unit other than this one and flip it to full strength
-    for (let i = 0; i < reorgUnits.length; i++) {
-      const airUnit = reorgUnits[i]
-      if (i !== index) {
-        console.log("FLIP", airUnit.name)
-        airUnit.aircraftUnit.steps = 2
-        const newImage = airUnit.image.replace("back", "front")
-        airUnit.image = newImage
-        break
-      }
-    }
-  }
-  const handleClick = (unit, index) => {
-    if (reorgUnits.length === 2 || !elim) {
-      handleClickTwoUnits(unit, index)
-    } else {
-      handleClickMultipleUnits(unit, index)
     }
   }
 

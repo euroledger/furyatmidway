@@ -37,7 +37,6 @@ export function saveGameState(controller, gameId) {
 
   const jpStrikeText = JSON.stringify(Array.from(GlobalUnitsModel.jpStrikeGroups.entries()))
 
-  // console.log("+++++++++++++++++++ SAVING SOMETHING WRONG: ", airText)
   const usStrikeText = JSON.stringify(Array.from(GlobalUnitsModel.usStrikeGroups.entries()))
 
   const jpCardText = JSON.stringify(GlobalUnitsModel.jpCards)

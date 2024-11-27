@@ -150,8 +150,8 @@ export function doFighterCounterattack(controller, testRolls) {
     }
   }
   // GlobalGameState.dieRolls = 1
-  // GlobalGameState.fighterHits = hits
-  GlobalGameState.fighterHits = 2 // QUACK TESTING ONLY
+  GlobalGameState.fighterHits = hits
+  // GlobalGameState.fighterHits = 1 // QUACK TESTING ONLY
 }
 
 export function getAirUnitOnFlightDeck(controller, carrier, bowOrStern) {
@@ -779,12 +779,12 @@ export function doAttackFireRolls(controller, testRolls) {
     // GlobalGameState.midwayHitsThisAttack = 3
 
   } else {
-    // GlobalGameState.carrierAttackHits = hits
-    // GlobalGameState.carrierAttackHitsThisAttack = hits
+    GlobalGameState.carrierAttackHits = hits
+    GlobalGameState.carrierAttackHitsThisAttack = hits
 
     // QUACK REMOVE TEESTING ONLY
-    GlobalGameState.carrierAttackHits = 0
-    GlobalGameState.carrierAttackHitsThisAttack = 0
+    // GlobalGameState.carrierAttackHits = 0
+    // GlobalGameState.carrierAttackHitsThisAttack = 0
   }
   return hits
 }
@@ -802,7 +802,7 @@ export function doAAAFireRolls(numDice, testRolls) {
   GlobalGameState.antiaircraftHits = hits
 
   // QUACK TESTING TAKE THIS OUT
-  // GlobalGameState.antiaircraftHits = 1
+  // GlobalGameState.antiaircraftHits = 2
 }
 
 function getFightersForStrikeGroup(controller) {
@@ -1092,12 +1092,13 @@ export function doCAP(controller, capAirUnits, fightersPresent, testRolls) {
   GlobalGameState.dieRolls = rolls
 
   // QUACK TESTING PUT THIS BACK
-  GlobalGameState.capHits = 2
+  // GlobalGameState.capHits = 1
 
-  // GlobalGameState.capHits = hits
+  GlobalGameState.capHits = hits
 }
 
 export function moveAirUnitToEliminatedBox(controller, airUnit) {
+  airUnit.aircraftUnit.steps = 0
   const toBox =
     airUnit.side === GlobalUnitsModel.Side.JAPAN
       ? GlobalUnitsModel.AirBox.JP_ELIMINATED
@@ -1111,7 +1112,7 @@ export function moveAirUnitToEliminatedBox(controller, airUnit) {
       index: -1,
       side: GlobalGameState.sideWithInitiative,
       loading: false,
-    },
+    }
   })
 }
 export function moveAirUnitFromEliminatedBox(controller, side, carrierName, airUnit, setAirUnitUpdate) {

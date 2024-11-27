@@ -7,7 +7,8 @@ import Reorgaziza from "../buttons/Reorgaziza"
 import GlobalInit from "../../model/GlobalInit"
 
 function JapanReorganizationDropZones() {
-  const { enabledJapanReorgBoxes, reorgAirUnits } = useContext(BoardContext)
+  const { enabledJapanReorgBoxes, reorgAirUnits, setEnabledJapanReorgBoxes, setEnabledUSReorgBoxes } =
+    useContext(BoardContext)
 
   if (!enabledJapanReorgBoxes) {
     return []
@@ -21,6 +22,8 @@ function JapanReorganizationDropZones() {
       zones={JapanReorganizationBoxOffsets}
       enabled={true}
       reorgUnits={reorgAirUnits}
+      setEnabledUSReorgBoxes={setEnabledUSReorgBoxes}
+      setEnabledJapanReorgBoxes={setEnabledJapanReorgBoxes}
       side={GlobalUnitsModel.Side.JAPAN}
       dc="drag-drop-zone-fleet zone-reorg bg-japan-reorg"
     ></Reorgaziza>

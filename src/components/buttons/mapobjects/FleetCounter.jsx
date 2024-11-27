@@ -164,8 +164,7 @@ function FleetCounter({
   ) {
     hex = fleetUnitUpdate.position.currentHex
 
-    // console.log("I am", fleetUnitUpdate.name, "side:", side, "-> FLEET UNIT UPDATE, move to", hex.row + ",", hex.col)
-    console.log("I am", fleetUnitUpdate.name, "fleetUnitUpdate=", fleetUnitUpdate)
+    // console.log("I am", fleetUnitUpdate.name, "fleetUnitUpdate=", fleetUnitUpdate)
     if (side === GlobalUnitsModel.Side.US) {
       const locationDMCV = controller.getFleetLocation("US-DMCV", GlobalUnitsModel.Side.US)
       const locationCSF = controller.getFleetLocation("CSF", GlobalUnitsModel.Side.US)
@@ -307,7 +306,6 @@ function FleetCounter({
     const fleetBox = getFleetBox()
     if (fleetBox !== -1) {
       if (counterData.name === "MIF") {
-        console.log("Poo 1")
         const mifLocation = controller.getFleetLocation("MIF", GlobalUnitsModel.Side.JAPAN)
         // possible boxes are enabled due to 1AF being close to edge of map
         if (GlobalGameState.gameTurn === 4) {
@@ -455,8 +453,6 @@ function FleetCounter({
 
     const newMap = new Map(previousPosition).set(counterData.name, position)
     setPreviousPosition(() => newMap)
-    console.log("quack 3")
-
     setPosition({
       initial: false,
       left: currentHex.x + counterData.position.left + counterData.offsets.x + smallOffset.x,
@@ -519,16 +515,12 @@ function FleetCounter({
     // if -7, -7 do -x and +y
     if (smallOffset.x == -7) {
       if (counterData.name === "CSF-JPMAP") {
-        console.log("quack 4")
-
         setPosition({
           ...position,
           left: position.left + smallOffset.x,
           top: position.top - smallOffset.y,
         })
       } else {
-        console.log("quack 5")
-
         setPosition({
           ...position,
           left: position.left - smallOffset.x,

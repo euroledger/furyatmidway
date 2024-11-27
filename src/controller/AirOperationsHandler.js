@@ -114,16 +114,12 @@ export function getValidUSDestinationsCAPNight(controller, parentCarrier, side, 
 function getValidJapanDestinationsRETURN1(controller, parentCarrier, side) {
   let destinationsArray = new Array()
   if (controller.isSunk(parentCarrier)) {
-    // console.log(parentCarrier, "sunk, try other carrier")
     destinationsArray = tryOtherCarrier(controller, parentCarrier, side)
   } else if (controller.isHangarAvailable(parentCarrier)) {
-    // console.log(parentCarrier, " => Hangar avaiable")
 
     const box = controller.getAirBoxForNamedShip(side, parentCarrier, "HANGAR")
     destinationsArray.push(box)
   } else {
-    // console.log(parentCarrier, "=> Hangar NOT avaiable")
-
     destinationsArray = tryOtherCarrier(controller, parentCarrier, side)
     if (destinationsArray.length === 0) {
       destinationsArray = tryOtherTaskForce(controller, parentCarrier, side)
@@ -194,7 +190,6 @@ function tryOtherCarrier(controller, parentCarrier, side, cap) {
   if (controller.isSunk(otherCarrier.name)) {
     // otherwise...try carriers in other task force
     // if no options -> unit is eliminated
-    // console.log(otherCarrier.name,"sunk, try other task force")
     destinationsArray = tryOtherTaskForce(controller, parentCarrier, side)
   } else if (destAvailable) {
     const boxName = !cap ? "HANGAR" : "FLIGHT_DECK"
@@ -263,10 +258,10 @@ export function doReturn1(controller, name, side, useMidway) {
   }
   controller.setValidAirUnitDestinations(name, destinationsArray)
 
-  if (destinationsArray.length === 0) {
-    // no available carrier - unit elimintated
-    controller.setAirUnitEliminated(name, side)
-  }
+  // if (destinationsArray.length === 0) {
+  //   // no available carrier - unit elimintated
+  //   controller.setAirUnitEliminated(name, side)
+  // }
   return destinationsArray
 }
 
@@ -531,7 +526,6 @@ export function delay(ms) {
 }
 
 export async function resetStrikeGroups(controller, side, setStrikeGroupUpdate) {
-  console.log("RESET STRIKE GROUPS...")
   let positions, groups
   if (side === GlobalUnitsModel.Side.JAPAN) {
     positions = japanStrikeGroups.map(({ position }) => position)
@@ -546,7 +540,6 @@ export async function resetStrikeGroups(controller, side, setStrikeGroupUpdate) 
     if (!strikeGroup.attacked) {
       index++
       console.log("SG", strikeGroup.name, "-> HAS NOT ATTACKED -NO RESET!")
-
       continue
     }
     console.log("SG", strikeGroup.name, "-> RESET!")
@@ -623,7 +616,39 @@ export async function moveAirUnitToReturnBox(controller, strikeGroup, unit, side
   })
 }
 
-export async function moveOrphanedAirUnitsInReturn1Boxes(side) {
+export function getReorgUnits(side, box, unit) {
+  let reorgUnits
+  if (side === GlobalUnitsModel.Side.JAPAN) {
+    reorgUnits = checkAllBoxesForReorganization(GlobalInit.controller, unit, box, side, false)
+  } else {
+    reorgUnits = checkAllBoxesForReorganization(GlobalInit.controller, unit, box, side, false)
+  }
+  return reorgUnits
+}
+
+
+export function getReorgUnitsCAP(side, box, unit) {
+  let reorgUnits
+  if (side === GlobalUnitsModel.Side.JAPAN) {
+    reorgUnits = checkAllJapanBoxesForReorganizationCAP(GlobalInit.controller, unit, box, side, false)
+  } else {
+    reorgUnits = checkAllUSBoxesForReorganizationCAP(GlobalInit.controller, unit, box, side, false)
+  }
+  if (reorgUnits === null || reorgUnits === undefined) {
+    return []
+  }
+  return reorgUnits
+}
+
+export async function moveOrphanedAirUnitsInReturn1Boxes(side, box, unit) {
+  // check for possibility of reorganization first, if there is do NOT orphan any units
+  
+  if (box !== undefined) {
+    const reorgUnits = getReorgUnits(side, box, unit)
+    if (reorgUnits.length > 0) {
+      return
+    }
+  }
   const unitsReturning = GlobalInit.controller.getAllAirUnitsInReturn1Boxes(side)
   for (const unit of unitsReturning) {
     await delay(1)
@@ -644,9 +669,20 @@ export async function moveOrphanedAirUnitsInReturn1Boxes(side) {
     }
   }
 }
-export async function moveOrphanedCAPUnitsToEliminatedBoxNight(side) {
+export async function moveOrphanedCAPUnitsToEliminatedBoxNight(side, box, unit) {
+  // check for possibility of reorganization first, if there is do NOT orphan any units
+ 
   const capUnitsReturning = GlobalInit.controller.getAllAirUnitsInCAPBoxes(side)
   for (const unit of capUnitsReturning) {
+
+    if (box !== undefined) {
+      const location = GlobalInit.controller.getAirUnitLocation(unit.name)
+
+      const reorgUnits = getReorgUnitsCAP(side, location.boxName, unit)
+      if (reorgUnits.length > 0) {
+        continue
+      }
+    }
     await delay(1)
     const parentCarrier = GlobalInit.controller.getCarrierForAirUnit(unit.name)
 
@@ -665,7 +701,13 @@ export async function moveOrphanedCAPUnitsToEliminatedBoxNight(side) {
   }
 }
 
-export async function moveOrphanedCAPUnitsToEliminatedBox(side) {
+export async function moveOrphanedCAPUnitsToEliminatedBox(side, box, unit) {
+  if (box !== undefined) {
+    const reorgUnits = getReorgUnits(side, box, unit)
+    if (reorgUnits.length > 0) {
+      return
+    }
+  }
   const capUnitsReturning = GlobalInit.controller.getAllCAPDefendersInCAPReturnBoxes(side)
   for (const unit of capUnitsReturning) {
     await delay(1)
@@ -796,10 +838,9 @@ export function getStep1Fighters(airUnits) {
 }
 
 export function getStep1DiveBombers(airUnits) {
-  return airUnits.filter(
-    (unit) =>
-      unit.aircraftUnit.steps === 1 && unit.aircraftUnit.attack === true && unit.aircraftUnit.diveBomber === true
-  )
+  return airUnits.filter((unit) => {
+    return unit.aircraftUnit.steps === 1 && unit.aircraftUnit.attack === true && unit.aircraftUnit.diveBomber === true
+  })
 }
 
 export function getStep1TorpedoPlanes(airUnits) {
@@ -858,6 +899,7 @@ function isMidwayBox(box) {
 // toBox is the destination box, hangar for returning strike, flight deck for returning CAP
 // auto - if true automatically reorganise, false return object with reorg possibilities (for UI)
 // null can be passed in for toBox if only want to check within box
+
 export function checkForReorganization(controller, fromBox, toBox, auto) {
   // 1. For a given box get all the air units in this box
   const airUnits = controller.getAllAirUnitsInBox(fromBox)
@@ -869,7 +911,9 @@ export function checkForReorganization(controller, fromBox, toBox, auto) {
 
   // 3. if any type has 2 or more units - reorganise these units
   if (step1Fighters.length >= 2 || step1DiveBombers.length >= 2 || step1TorpedoPlanes.length >= 2) {
-    return checkPlanesInBox(step1Fighters, step1DiveBombers, step1TorpedoPlanes, auto)
+    if (toBox === null) {
+      return checkPlanesInBox(step1Fighters, step1DiveBombers, step1TorpedoPlanes, auto)
+    }
   }
 
   // 4. check to see if a reorg can be done in the toBox, then across boxes
@@ -887,6 +931,7 @@ export function checkForReorganization(controller, fromBox, toBox, auto) {
   let step1TorpedoPlanesToBox = getStep1TorpedoPlanes(airUnitsToBox)
 
   if (step1FightersToBox.length >= 2 || step1DiveBombersToBox.length >= 2 || step1TorpedoPlanesToBox.length >= 2) {
+    const buggers =  checkPlanesInBox(step1FightersToBox, step1DiveBombersToBox, step1TorpedoPlanesToBox, auto)
     return checkPlanesInBox(step1FightersToBox, step1DiveBombersToBox, step1TorpedoPlanesToBox, auto)
   }
 
@@ -988,20 +1033,19 @@ export function checkAllJapanBoxesForReorganizationCAP(controller, unit, fromBox
 export function checkAllUSBoxesForReorganizationCAP(controller, unit, fromBox, side, auto) {
   let carrierName = unit.carrier
 
+  let reorgUnitsArray = new Array()
   // check reorg within CAP RETURN box
   let reorgUnits = checkForReorganization(controller, fromBox, null, auto)
 
-  if (reorgUnits) {
+  if (reorgUnits.length > 0) {
     controller.setReorganizationUnits(unit.name, reorgUnits)
-    return
+    reorgUnitsArray = reorgUnitsArray.concat(reorgUnits)
   }
 
   // 1. Same + Other Carrier Flight Deck
 
   const thisTF = controller.getTaskForceForCarrier(carrierName, side)
   const carriersInTF = controller.getAllCarriersInTaskForce(thisTF, side)
-
-  let reorgUnitsArray = new Array()
 
   for (const carrier of carriersInTF) {
     const toBox = controller.getAirBoxForNamedShip(side, carrier.name, "FLIGHT_DECK")
@@ -1011,36 +1055,45 @@ export function checkAllUSBoxesForReorganizationCAP(controller, unit, fromBox, s
       reorgUnitsArray = mergeUnique(reorgUnitsArray, reorgUnits)
     }
   }
-  if (reorgUnitsArray.length > 0) {
-    controller.setReorganizationUnits(unit.name, reorgUnitsArray)
-    return
-  }
+  // if (reorgUnitsArray.length > 0) {
+  //   controller.setReorganizationUnits(unit.name, reorgUnitsArray)
+  //   reorgUnitsArray = reorgUnitsArray.concat(reorgUnits)
+
+  // }
   // 2. Same + Other Carrier Hangar
   for (const carrier of carriersInTF) {
     const toBox = controller.getAirBoxForNamedShip(side, carrier.name, "HANGAR")
-
     reorgUnits = checkForReorganization(controller, fromBox, toBox, auto)
     if (reorgUnits) {
       reorgUnitsArray = mergeUnique(reorgUnitsArray, reorgUnits)
     }
   }
-  if (reorgUnits) {
+  if (reorgUnitsArray.length > 0) {
     controller.setReorganizationUnits(unit.name, reorgUnits)
-    return
+    return reorgUnitsArray
   }
-  return null
+  return []
 }
 
-export function checkAllBoxesForReorganization(controller, unit, fromBox, side, auto) {
-  let carrierName = unit.carrier
+function getCarrierForLocation(controller, name, side) {
+  const { boxName } = controller.getAirUnitLocation(name)
+  const tf = controller.getTaskForceForAirBox(boxName)
+  const carriersInTF = controller.getAllCarriersInTaskForce(tf, side)
+  return carriersInTF[0]
+}
+
+export function checkAllBoxesForReorganization(controller, unit, fromBox, side, auto) {  
+  let carrierForUnit = getCarrierForLocation(controller, unit.name, side)
+
+  const carrierName = carrierForUnit.name
   let toBox = controller.getAirBoxForNamedShip(side, carrierName, "HANGAR")
 
   // check reorg within box
-  let reorgUnits = checkForReorganization(controller, fromBox, null, auto)
+  let reorgUnits = checkForReorganization(controller, fromBox, toBox, auto)
 
   if (reorgUnits) {
     controller.setReorganizationUnits(unit.name, reorgUnits)
-    return
+    return reorgUnits
   }
   // check reorg across boxes
   // 1. Same Carrier
@@ -1049,13 +1102,17 @@ export function checkAllBoxesForReorganization(controller, unit, fromBox, side, 
   if (reorgUnits) {
     controller.setReorganizationUnits(unit.name, reorgUnits)
     if (side === GlobalUnitsModel.Side.JAPAN) {
-      return // Japan air unit must use its own carrier if possible
+      return reorgUnits// Japan air unit must use its own carrier if possible
     }
   }
   // 2. Other Carrier in Same Task Force
   let carrier = controller.getOtherCarrierInTF(carrierName, side)
   if (!carrier) {
-    return
+
+    if (reorgUnits === null) {
+      return []
+    }
+    return reorgUnits
   }
   toBox = controller.getAirBoxForNamedShip(side, carrier.name, "HANGAR")
 
@@ -1066,7 +1123,7 @@ export function checkAllBoxesForReorganization(controller, unit, fromBox, side, 
       reorgUnits2 = mergeUnique(reorgUnits1, reorgUnits2)
     }
     controller.setReorganizationUnits(unit.name, reorgUnits2)
-    return
+    return reorgUnits2
   }
 
   // 3. Other Task Force Carrier(s)
@@ -1084,7 +1141,7 @@ export function checkAllBoxesForReorganization(controller, unit, fromBox, side, 
   if (reorgUnits1) {
     controller.setReorganizationUnits(unit.name, reorgUnits1)
   }
-  return
+  return reorgUnits1
 }
 
 export function setValidDestinationBoxesNightOperations(controller, airUnitName, side, moved) {

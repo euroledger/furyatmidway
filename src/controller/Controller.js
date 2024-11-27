@@ -1598,18 +1598,31 @@ export default class Controller {
   }
 
   numHexesBetweenFleets(fleetA, fleetB) {
+    
     let locationA = this.getFleetLocation(fleetA.name, fleetA.side)
     let locationB = this.getFleetLocation(fleetB.name, fleetB.side)
+
     if (fleetA.name.toUpperCase() === "MIDWAY") {
       locationA = Controller.MIDWAY_HEX
     } else if (fleetB.name.toUpperCase() === "MIDWAY") {
       locationB = Controller.MIDWAY_HEX
     }
 
+    if (
+      locationB === undefined ||
+      locationB.currentHex === undefined ||
+      locationA === undefined ||
+      locationA.currentHex === undefined
+    ) {
+      return NaN
+    }
+  
+
     let hexA = {
       q: locationA.currentHex.q,
       r: locationA.currentHex.r,
     }
+
     let hexB = {
       q: locationB.currentHex.q,
       r: locationB.currentHex.r,

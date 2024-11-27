@@ -264,15 +264,13 @@ describe("US Air Operations: tests for Reorganization", () => {
     controller.addAirUnitToBox(GlobalUnitsModel.AirBox.US_ENTERPRISE_FLIGHT_DECK, 0, ef1)
     controller.addAirUnitToBox(GlobalUnitsModel.AirBox.US_TF16_CAP_RETURN, 0, ef2)
 
-    checkAllUSBoxesForReorganizationCAP(
+    let reorgUnits = checkAllUSBoxesForReorganizationCAP(
       controller,
       ef1,
       GlobalUnitsModel.AirBox.US_TF16_CAP_RETURN,
       GlobalUnitsModel.Side.US,
       false
     )
-
-    let reorgUnits = controller.getReorganizationUnits(ef1.name)
     expect(reorgUnits.length).toEqual(2)
 
     expect(reorgUnits[0].name).toEqual(ef1.name)
@@ -284,7 +282,13 @@ describe("US Air Operations: tests for Reorganization", () => {
 
     controller.addAirUnitToBox(GlobalUnitsModel.AirBox.US_ENTERPRISE_HANGAR, 0, ef1)
 
-    reorgUnits = controller.getReorganizationUnits(ef1.name)
+    reorgUnits = checkAllUSBoxesForReorganizationCAP(
+      controller,
+      ef1,
+      GlobalUnitsModel.AirBox.US_TF16_CAP_RETURN,
+      GlobalUnitsModel.Side.US,
+      false
+    )
     expect(reorgUnits.length).toEqual(2)
 
     expect(reorgUnits[0].name).toEqual(ef1.name)
