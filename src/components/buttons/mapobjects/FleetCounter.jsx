@@ -93,13 +93,6 @@ function FleetCounter({
     const fleetBox = fleetUnitUpdate.position.currentHex.boxIndex
 
     if (test1 && test2) {
-      // console.log(
-      //   "<<<<<<<<< GOT A FUCKER ---> MOVING OFFBOARD->counterData name=",
-      //   counterData.name,
-      //   "side=",
-      //   fleetUnitUpdate.side
-      // )
-
       let from
       if (fleetUnitUpdate.side === GlobalUnitsModel.Side.JAPAN) {
         // set new position according to Japan Fleet Box (index boxIndex) offsets
@@ -171,7 +164,7 @@ function FleetCounter({
       const location1AF = controller.getFleetLocation("1AF-USMAP", GlobalUnitsModel.Side.US)
 
       let dmcv, csf, af1
-      if (locationDMCV !== undefined && locationDMCV !== HexCommand.OFFBOARD) {
+      if (locationDMCV !== undefined && locationDMCV.currentHex !== undefined && locationDMCV !== HexCommand.OFFBOARD) {
         dmcv = distanceBetweenHexes(locationDMCV.currentHex, hex) === 0
       }
       if (locationCSF !== undefined && locationCSF.currentHex !== undefined) {
@@ -547,12 +540,17 @@ function FleetCounter({
     setSmallOffset(smallOffset)
   }
 
-  let zIndex
-  if (counterData.side === GlobalUnitsModel.Side.US) {
-    zIndex = 100
+  let zIndex = 0
+  if (strikeGroupsAtLocation.length > 0 && GlobalGameState.gamePhase !== GlobalGameState.PHASE.RETREAT_US_FLEET) {
+    zIndex = 0
   } else {
-    zIndex = 93
+    if (counterData.side === GlobalUnitsModel.Side.US) {
+      zIndex = 200
+    } else {
+      zIndex = 183
+    }
   }
+
   if (enabled) {
     if (position.currentHex && position.currentHex.boxName === HexCommand.FLEET_BOX) {
       if (side === GlobalUnitsModel.Side.JAPAN) {

@@ -17,6 +17,7 @@ export function saveGameState(controller, gameId) {
       globalState.set(key, val)
     }
   }
+  console.log(">>>>>>>>>> globalState=",globalState)
   let airState = new Map()
   const units = Array.from(GlobalInit.counters.values())
   const airCounters = units.filter((unit) => unit.constructor.name === "AirUnit")
@@ -413,6 +414,13 @@ function loadAirUnits(airUnitMap) {
     // GlobalGameState.usDMCVCarrier = GlobalUnitsModel.Carrier.HORNET
     // GlobalGameState.midwayGarrisonLevel = 4
     // GlobalGameState.carrierHitsDetermined = false
+
+    // GlobalGameState.CSFLeftMap = false
+    // GlobalGameState.AF1LeftMap = false
+    GlobalGameState.winner = ""
+    // GlobalGameState.JP_AF = 6
+    // GlobalGameState.US_CSF = 7
+    // GlobalGameState.US_MIDWAY = 8
   }
 }
 
@@ -478,6 +486,7 @@ export function loadGameStateForId(controller, gameId) {
 
   const global = new Map(JSON.parse(globalState))
 
+
   for (var property in GlobalGameState) {
     const ty = typeof GlobalGameState[property]
 
@@ -485,6 +494,8 @@ export function loadGameStateForId(controller, gameId) {
       GlobalGameState[property] = global.get(property)
     }
   }
+
+
   const airOperationText = gameDetails.airoperations
   GlobalGameState.airOperationPoints = JSON.parse(airOperationText)
 
@@ -575,10 +586,9 @@ export function loadGameStateForId(controller, gameId) {
   }
 
   // QUACK REMOVE ONE CARD AND REPLACE IT WITH ANOTHER
-  // GlobalInit.controller.replaceCardWithOtherCard(4, 9, GlobalUnitsModel.Side.JAPAN)
-
-  // GlobalInit.controller.replaceCardWithOtherCard(1, 2, GlobalUnitsModel.Side.US)
-  GlobalGameState.midwayControl = GlobalUnitsModel.Side.US
+  // GlobalInit.controller.replaceCardWithOtherCard(1, 2, GlobalUnitsModel.Side.JAPAN)
+  GlobalInit.controller.replaceCardWithOtherCard(2, 3, GlobalUnitsModel.Side.US)
+  // GlobalGameState.midwayControl = GlobalUnitsModel.Side.US
   // ------------------------------------------------------
 
   // GlobalInit.controller.setCardPlayed(8, GlobalUnitsModel.Side.US)

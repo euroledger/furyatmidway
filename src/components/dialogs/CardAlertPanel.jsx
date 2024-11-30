@@ -105,7 +105,7 @@ function CardAlertPanel(props) {
       controller.setCardPlayed(8, GlobalUnitsModel.Side.JAPAN)
       setShowCardFooter(() => true)
     } else if (cardNumber === 9) {
-      controller.setCardPlayed(9, GlobalUnitsModel.Side.US)
+      controller.setCardPlayed(9, GlobalUnitsModel.Side.JAPAN)
       setShowCardFooter(() => true)
     } else if (cardNumber === 10) {
       setCarrierPlanesDitchPanelShow(true)

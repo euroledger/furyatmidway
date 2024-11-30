@@ -30,9 +30,9 @@ class ViewEventStrikeGroupMoveHandler {
     let command = new HexCommand(cmdType, counterData.longName, from, to, side)
 
     GlobalGameState.log(`${command.toString()}`)
+
     if (!loading) {
       counterData.moved = true
-
       if (counterData.airOpMoved === undefined) {
         this.controller.setAirOpMoved(counterData)
       }
@@ -40,6 +40,8 @@ class ViewEventStrikeGroupMoveHandler {
       counterData.moved = moved
       counterData.attacked = attacked
     }
+    console.log("counter Data name:", counterData.name, "MOVED=",  counterData.moved)
+
   }
 }
 export default ViewEventStrikeGroupMoveHandler

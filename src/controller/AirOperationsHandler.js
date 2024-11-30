@@ -116,7 +116,6 @@ function getValidJapanDestinationsRETURN1(controller, parentCarrier, side) {
   if (controller.isSunk(parentCarrier)) {
     destinationsArray = tryOtherCarrier(controller, parentCarrier, side)
   } else if (controller.isHangarAvailable(parentCarrier)) {
-
     const box = controller.getAirBoxForNamedShip(side, parentCarrier, "HANGAR")
     destinationsArray.push(box)
   } else {
@@ -290,21 +289,31 @@ export function doStrikeBoxJapan(controller, name, strikeGroup, side) {
   const unit = controller.getAirUnitForName(name)
   const tf = controller.getTaskForceForCarrier(unit.carrier, side)
 
-  // console.log(
-  //   "SG:",
-  //   strikeGroup.name,
-  //   "strikeGroup.airOpMoved=",
-  //   strikeGroup.airOpMoved,
-  //   "strikeGroup.airOpAttacked=",
-  //   strikeGroup.airOpAttacked
-  // )
+  console.log(
+    "SG:",
+    strikeGroup.name,
+    "strikeGroup.airOpMoved=",
+    strikeGroup.airOpMoved,
+    "strikeGroup.airOpAttacked=",
+    strikeGroup.airOpAttacked
+  )
   // Japanese Units must go to return box of parent carrier unless it is damaged
   const parentCarrier = controller.getCarrierForAirUnit(name)
   const hits = controller.getCarrierHits(parentCarrier)
 
+  // If Midway attack always go to Return1 Box
+  console.log("TARGET=", GlobalGameState.taskForceTarget)
   let destArray = new Array()
+
+  if (GlobalGameState.taskForceTarget === GlobalUnitsModel.TaskForce.MIDWAY) {
+    const return1Box = controller.getReturn1AirBoxForNamedTaskForce(side, tf)
+    destArray.push(return1Box)
+    controller.setValidAirUnitDestinations(name, destArray)
+    return
+  }
   if (strikeGroup.airOpAttacked && strikeGroup.airOpMoved === strikeGroup.airOpAttacked) {
     // GOTO RETURN 1 BOX
+    console.log("IN HERE 2")
     const return1Box = controller.getReturn1AirBoxForNamedTaskForce(side, tf)
     destArray.push(return1Box)
 
@@ -321,6 +330,8 @@ export function doStrikeBoxJapan(controller, name, strikeGroup, side) {
       }
     }
   } else if (strikeGroup.attacked && strikeGroup.airOpMoved !== strikeGroup.airOpAttacked) {
+    console.log("IN HERE 3")
+
     // GOTO RETURN 2 BOX
     const return2Box = controller.getReturn2AirBoxForNamedTaskForce(side, tf)
     destArray.push(return2Box)
@@ -626,7 +637,6 @@ export function getReorgUnits(side, box, unit) {
   return reorgUnits
 }
 
-
 export function getReorgUnitsCAP(side, box, unit) {
   let reorgUnits
   if (side === GlobalUnitsModel.Side.JAPAN) {
@@ -642,7 +652,7 @@ export function getReorgUnitsCAP(side, box, unit) {
 
 export async function moveOrphanedAirUnitsInReturn1Boxes(side, box, unit) {
   // check for possibility of reorganization first, if there is do NOT orphan any units
-  
+
   if (box !== undefined) {
     const reorgUnits = getReorgUnits(side, box, unit)
     if (reorgUnits.length > 0) {
@@ -671,10 +681,9 @@ export async function moveOrphanedAirUnitsInReturn1Boxes(side, box, unit) {
 }
 export async function moveOrphanedCAPUnitsToEliminatedBoxNight(side, box, unit) {
   // check for possibility of reorganization first, if there is do NOT orphan any units
- 
+
   const capUnitsReturning = GlobalInit.controller.getAllAirUnitsInCAPBoxes(side)
   for (const unit of capUnitsReturning) {
-
     if (box !== undefined) {
       const location = GlobalInit.controller.getAirUnitLocation(unit.name)
 
@@ -833,20 +842,32 @@ export function doCap(controller, name, side) {
 
 export function getStep1Fighters(airUnits) {
   return airUnits.filter(
-    (unit) => unit.aircraftUnit !== undefined && unit.aircraftUnit.steps === 1 && unit.aircraftUnit.attack === false
+    (unit) =>
+      unit.aircraftUnit !== undefined &&
+      unit.carrier !== GlobalUnitsModel.Carrier.MIDWAY &&
+      unit.aircraftUnit.steps === 1 &&
+      unit.aircraftUnit.attack === false
   )
 }
 
 export function getStep1DiveBombers(airUnits) {
   return airUnits.filter((unit) => {
-    return unit.aircraftUnit.steps === 1 && unit.aircraftUnit.attack === true && unit.aircraftUnit.diveBomber === true
+    return (
+      unit.aircraftUnit.steps === 1 &&
+      unit.carrier !== GlobalUnitsModel.Carrier.MIDWAY &&
+      unit.aircraftUnit.attack === true &&
+      unit.aircraftUnit.diveBomber === true
+    )
   })
 }
 
 export function getStep1TorpedoPlanes(airUnits) {
   return airUnits.filter(
     (unit) =>
-      unit.aircraftUnit.steps === 1 && unit.aircraftUnit.attack === true && unit.aircraftUnit.diveBomber === false
+      unit.aircraftUnit.steps === 1 &&
+      unit.carrier !== GlobalUnitsModel.Carrier.MIDWAY &&
+      unit.aircraftUnit.attack === true &&
+      unit.aircraftUnit.diveBomber === false
   )
 }
 
@@ -931,7 +952,7 @@ export function checkForReorganization(controller, fromBox, toBox, auto) {
   let step1TorpedoPlanesToBox = getStep1TorpedoPlanes(airUnitsToBox)
 
   if (step1FightersToBox.length >= 2 || step1DiveBombersToBox.length >= 2 || step1TorpedoPlanesToBox.length >= 2) {
-    const buggers =  checkPlanesInBox(step1FightersToBox, step1DiveBombersToBox, step1TorpedoPlanesToBox, auto)
+    const buggers = checkPlanesInBox(step1FightersToBox, step1DiveBombersToBox, step1TorpedoPlanesToBox, auto)
     return checkPlanesInBox(step1FightersToBox, step1DiveBombersToBox, step1TorpedoPlanesToBox, auto)
   }
 
@@ -1082,8 +1103,13 @@ function getCarrierForLocation(controller, name, side) {
   return carriersInTF[0]
 }
 
-export function checkAllBoxesForReorganization(controller, unit, fromBox, side, auto) {  
+export function checkAllBoxesForReorganization(controller, unit, fromBox, side, auto) {
   let carrierForUnit = getCarrierForLocation(controller, unit.name, side)
+
+  if (carrierForUnit === undefined) {
+    // all carriers in this TF sunk or DMCV
+    return []
+  }
 
   const carrierName = carrierForUnit.name
   let toBox = controller.getAirBoxForNamedShip(side, carrierName, "HANGAR")
@@ -1091,6 +1117,7 @@ export function checkAllBoxesForReorganization(controller, unit, fromBox, side, 
   // check reorg within box
   let reorgUnits = checkForReorganization(controller, fromBox, toBox, auto)
 
+  console.log("reorgUnits=", reorgUnits)
   if (reorgUnits) {
     controller.setReorganizationUnits(unit.name, reorgUnits)
     return reorgUnits
@@ -1102,13 +1129,12 @@ export function checkAllBoxesForReorganization(controller, unit, fromBox, side, 
   if (reorgUnits) {
     controller.setReorganizationUnits(unit.name, reorgUnits)
     if (side === GlobalUnitsModel.Side.JAPAN) {
-      return reorgUnits// Japan air unit must use its own carrier if possible
+      return reorgUnits // Japan air unit must use its own carrier if possible
     }
   }
   // 2. Other Carrier in Same Task Force
   let carrier = controller.getOtherCarrierInTF(carrierName, side)
   if (!carrier) {
-
     if (reorgUnits === null) {
       return []
     }
@@ -1119,8 +1145,8 @@ export function checkAllBoxesForReorganization(controller, unit, fromBox, side, 
   let reorgUnits2 = checkForReorganization(controller, fromBox, toBox, auto)
 
   if (reorgUnits2) {
-    if (reorgUnits1) {
-      reorgUnits2 = mergeUnique(reorgUnits1, reorgUnits2)
+    if (reorgUnits2) {
+      reorgUnits2 = mergeUnique(reorgUnits, reorgUnits2)
     }
     controller.setReorganizationUnits(unit.name, reorgUnits2)
     return reorgUnits2
@@ -1148,10 +1174,16 @@ export function setValidDestinationBoxesNightOperations(controller, airUnitName,
   controller.setValidAirUnitDestinations(airUnitName, new Array()) // just to be sure last entries are gone
 
   const location = controller.getAirUnitLocation(airUnitName)
-  // Units can move in to hangar and back out again during night operations
-  if (moved && !location.boxName.includes("HANGAR")) {
+
+  // Fighter Units can move in to hangar and back out again during night operations
+  const unit = controller.getAirUnitForName(airUnitName)
+  if (moved && !location.boxName.includes("HANGAR") && unit.aircraftUnit.attack) {
     return
   }
+  if (!moved && location.boxName.includes("HANGAR") && unit.aircraftUnit.attack) {
+    return
+  }
+
   if (location.boxName.includes("RETURNING (1)")) {
     // see if US CSF within two hexes of Midway
     let hexesBetweenMidwayAndCSF = controller.numHexesBetweenFleets(
@@ -1236,6 +1268,7 @@ export function setValidDestinationBoxes(controller, airUnitName, side) {
   }
 
   if (location.boxName.includes("STRIKE")) {
+    console.log("STRIKE UNIT >>>>>>>>>>")
     // get strike group based on location
     if (side === GlobalUnitsModel.Side.JAPAN) {
       const strikeGroup = controller.getStrikeGroupForBox(GlobalUnitsModel.Side.JAPAN, location.boxName)

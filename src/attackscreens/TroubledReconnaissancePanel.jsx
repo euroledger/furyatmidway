@@ -56,7 +56,7 @@ export function TroubledReconnaissanceFooter() {
             marginLeft: "-40px",
           }}
         >
-          {msg} &nbsp;<strong>{GlobalGameState.SearchValue.JP_AF}</strong>&nbsp;
+          {msg} &nbsp;<strong>{GlobalGameState.JP_AF}</strong>&nbsp;
         </p>
       )}
     </>

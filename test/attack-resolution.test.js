@@ -365,7 +365,7 @@ describe("Controller tests", () => {``
     expect(damage.destroyed).toEqual(true)
     expect(GlobalGameState.midwayGarrisonLevel).toEqual(3)
     expect(GlobalGameState.totalMidwayHits).toEqual(3)
-    expect(GlobalGameState.SearchValue.US_MIDWAY).toEqual(0) // base destroyed
+    expect(GlobalGameState.US_MIDWAY).toEqual(0) // base destroyed
 
     expect(GlobalGameState.midwayBox0Damaged).toEqual(true)
     expect(GlobalGameState.midwayBox1Damaged).toEqual(true)

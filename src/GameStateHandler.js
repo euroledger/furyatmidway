@@ -1,7 +1,7 @@
 import GlobalGameState from "./model/GlobalGameState"
 import GlobalInit from "./model/GlobalInit"
 import GlobalUnitsModel from "./model/GlobalUnitsModel"
-import { createFleetUpdate, createMapUpdateForFleet } from "./AirUnitTestData"
+import { createFleetUpdate, createMapUpdateForFleet, createRemoveFleetUpdate } from "./AirUnitTestData"
 import Controller from "./controller/Controller"
 import { setUpAirAttack } from "./controller/AirAttackHandler"
 import {
@@ -188,8 +188,10 @@ async function setNextStateFollowingCardPlay({
       break
     case 7:
       // Troubled Reconnaissance
+      GlobalGameState.isFirstAirOp = true
       GlobalGameState.gamePhase = GlobalGameState.PHASE.AIR_SEARCH
       calcAirOpsPoints({ setSearchValues, setSearchResults, setSearchValuesAlertShow })
+      setSearchValuesAlertShow(true)
       break
 
     case 8:
@@ -206,7 +208,7 @@ async function setNextStateFollowingCardPlay({
       break
     case 10:
       // US Carrier Planes Ditch
-      await tidyUp(setAirUnitUpdate, setStrikeGroupUpdate)
+      await tidyUp(setAirUnitUpdate, setStrikeGroupUpdate, setFleetUnitUpdate)
       GlobalGameState.gamePhase = GlobalGameState.PHASE.END_OF_AIR_OPERATION
       setEndOfAirOpAlertShow(true)
       break
@@ -368,6 +370,19 @@ function goToIJNFleetMovement({
       if (jpDMCVLocation !== undefined && jpDMCVLocation.currentHex !== undefined) {
         jpRegion = removeHexFromRegion(jpRegion, jpDMCVLocation.currentHex)
       }
+      // if (GlobalGameState.midwayAttackDeclaration === true) {
+      //   let newHexArray = new Array()
+
+      //   let hexesInRangeOfMidway = allHexesWithinDistance(Controller.MIDWAY_HEX.currentHex, 5, true)
+      //   for (const hex1 of hexesInRangeOfMidway) {
+      //     for (const hex2 of jpRegion) {
+      //       if (hex2.q === hex1.q && hex2.r === hex1.r) {
+      //         newHexArray.push(hex1)
+      //       }
+      //     }
+      //   }
+      //   jpRegion = newHexArray
+      // }
       setJapanMapRegions(jpRegion)
 
       const jpMIFLocation = GlobalInit.controller.getFleetLocation("MIF", GlobalUnitsModel.Side.JAPAN)
@@ -568,18 +583,36 @@ export function displayAttackTargetPanel(controller) {
   }
 
   if (GlobalGameState.taskForceTarget === GlobalUnitsModel.TaskForce.CARRIER_DIV_1) {
+    if (
+      GlobalGameState.jpDMCVCarrier === GlobalUnitsModel.Carrier.AKAGI ||
+      GlobalGameState.jpDMCVCarrier === GlobalUnitsModel.Carrier.KAGA
+    ) {
+      return false
+    }
     if (controller.isSunk(GlobalUnitsModel.Carrier.AKAGI) || controller.isSunk(GlobalUnitsModel.Carrier.KAGA)) {
       return false
     }
   }
 
   if (GlobalGameState.taskForceTarget === GlobalUnitsModel.TaskForce.CARRIER_DIV_2) {
+    if (
+      GlobalGameState.jpDMCVCarrier === GlobalUnitsModel.Carrier.HIRYU ||
+      GlobalGameState.jpDMCVCarrier === GlobalUnitsModel.Carrier.SORYU
+    ) {
+      return false
+    }
     if (controller.isSunk(GlobalUnitsModel.Carrier.HIRYU) || controller.isSunk(GlobalUnitsModel.Carrier.SORYU)) {
       return false
     }
   }
 
   if (GlobalGameState.taskForceTarget === GlobalUnitsModel.TaskForce.TASK_FORCE_16) {
+    if (
+      GlobalGameState.jpDMCVCarrier === GlobalUnitsModel.Carrier.ENTERPRISE ||
+      GlobalGameState.jpDMCVCarrier === GlobalUnitsModel.Carrier.HORNET
+    ) {
+      return false
+    }
     if (controller.isSunk(GlobalUnitsModel.Carrier.ENTERPRISE) || controller.isSunk(GlobalUnitsModel.Carrier.HORNET)) {
       return false
     }
@@ -925,7 +958,30 @@ async function midwayTidyUp(setJapanStrikePanelEnabled, setUSMapRegions, setStri
   GlobalGameState.dieRolls = []
 }
 
-async function tidyUp(setAirUnitUpdate, setStrikeGroupUpdate) {
+async function tidyUp(setAirUnitUpdate, setStrikeGroupUpdate, setFleetUnitUpdate) {
+  // if all carriers sunk remove fleet marker from map
+  const otherSide =
+    GlobalGameState.sideWithInitiative === GlobalUnitsModel.Side.US
+      ? GlobalUnitsModel.Side.JAPAN
+      : GlobalUnitsModel.Side.US
+
+  if (GlobalInit.controller.allCarriersSunk(otherSide)) {
+    if (otherSide === GlobalUnitsModel.Side.US) {
+      GlobalGameState.allUSCarriersSunk = true
+    } else {
+      GlobalGameState.allJapanCarriersSunk = true
+    }
+    // 1. Create Fleet Update to remove the fleet marker for that side
+    const update1 = createRemoveFleetUpdate(otherSide)
+    setFleetUnitUpdate(update1)
+
+    await delay(1)
+    // 2. Create Fleet Update to remove the fleet marker from the other side's map
+    const update2 = createMapUpdateForFleet(GlobalInit.controller, update1.name, otherSide)
+    setFleetUnitUpdate(update2)
+
+    // 3. Fire state update to display Fleet Removed alert
+  }
   await setStrikeGroupAirUnitsToNotMoved(GlobalGameState.sideWithInitiative, setAirUnitUpdate)
 
   // reset SG attributes to allow that Strike Group and its boxes to be available
@@ -947,8 +1003,6 @@ export async function endOfAirOperation(side, capAirUnits, setAirUnitUpdate, set
   } else {
     return false
   }
-
-
 
   // RESET ELITE PILOTS FOR FUTURE AIR COMBATS
   GlobalGameState.elitePilots = false
@@ -1039,6 +1093,7 @@ export default async function handleAction({
   setSearchValues,
   setSearchResults,
   setSearchValuesAlertShow,
+  setMidwayAttackResolved,
   setJapanStrikePanelEnabled,
   setUsStrikePanelEnabled,
   capSteps,
@@ -1227,7 +1282,10 @@ export default async function handleAction({
     if (GlobalGameState.orphanedAirUnits.length > 0) {
       setEliminatedUnitsPanelShow(true)
     } else {
-      if (GlobalInit.controller.usHandContainsCard(1)) {
+      if (
+        GlobalInit.controller.usHandContainsCard(1) &&
+        GlobalInit.controller.getSunkCarriers(GlobalUnitsModel.Side.US).length > 0
+      ) {
         setCardNumber(() => 1)
         GlobalGameState.gamePhase = GlobalGameState.PHASE.CARD_PLAY
         return
@@ -1309,6 +1367,7 @@ export default async function handleAction({
     }
   } else if (GlobalGameState.gamePhase === GlobalGameState.PHASE.CAP_INTERCEPTION) {
     console.log("STATE CHANGE CAP -> AAA FIRE OR ESCORT COUNTERATTACK OR CAP DAMAGE")
+    setMidwayAttackResolved(true)
 
     if (GlobalGameState.capHits > 0) {
       GlobalGameState.gamePhase = GlobalGameState.PHASE.CAP_DAMAGE_ALLOCATION
@@ -1360,8 +1419,6 @@ export default async function handleAction({
         midwayOrAirOps()
       }
     }
-  } else if (GlobalGameState.gamePhase === GlobalGameState.PHASE.END_OF_MIDWAY_ATTACK) {
-    GlobalGameState.gamePhase = GlobalGameState.PHASE.US_FLEET_MOVEMENT_PLANNING
   } else if (GlobalGameState.gamePhase === GlobalGameState.PHASE.ESCORT_COUNTERATTACK) {
     console.log("END OF ESCORT_COUNTERATTACK")
 
@@ -1407,6 +1464,7 @@ export default async function handleAction({
     }
   } else if (GlobalGameState.gamePhase === GlobalGameState.PHASE.ANTI_AIRCRAFT_FIRE) {
     console.log("END OF ANTI_AIRCRAFT_FIRE")
+    setMidwayAttackResolved(true)
 
     console.log(
       "IN AAA FIRE...GlobalGameState.attackingStepsRemaining=",
@@ -1417,10 +1475,10 @@ export default async function handleAction({
     } else if (GlobalInit.controller.getAttackingStepsRemaining() > 0) {
       let display = displayAttackTargetPanel(GlobalInit.controller)
       if (display) {
-        console.log("GOING TO ATTACK TARGET SELECTION .noooooooooooooooooooooo")
         GlobalGameState.gamePhase = GlobalGameState.PHASE.ATTACK_TARGET_SELECTION
       } else {
         const anyTargets = GlobalInit.controller.autoAssignTargets()
+        console.log("**** QUACK anyTargets=", anyTargets)
         if (anyTargets === null) {
           // no targets (all units sunk)
           await endOfAirOperation(
@@ -1502,7 +1560,12 @@ export default async function handleAction({
     const carrier = GlobalInit.controller.getCarrier(carrierName)
 
     // if carrier is in DMCV fleet and sunk - remove DMCV fleets from map
-    if (carrier.hits > 0 && carrier.hits < 3 && GlobalInit.controller.usHandContainsCard(13)) {
+    if (
+      carrier.hits > 0 &&
+      carrier.hits < 3 &&
+      GlobalGameState.sideWithInitiative === GlobalUnitsModel.Side.US &&
+      GlobalInit.controller.usHandContainsCard(13)
+    ) {
       setCardNumber(() => 13)
       GlobalGameState.gamePhase = GlobalGameState.PHASE.CARD_PLAY
     } else {
@@ -1550,7 +1613,7 @@ export default async function handleAction({
         GlobalGameState.gamePhase = GlobalGameState.PHASE.CARD_PLAY
       } else {
         console.log("DOING TIDY UP...")
-        await tidyUp(setAirUnitUpdate, setStrikeGroupUpdate)
+        await tidyUp(setAirUnitUpdate, setStrikeGroupUpdate, setFleetUnitUpdate)
         GlobalGameState.gamePhase = GlobalGameState.PHASE.END_OF_AIR_OPERATION
         setEndOfAirOpAlertShow(true)
       }

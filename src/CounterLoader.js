@@ -670,7 +670,7 @@ const usAirUnits = [
     side: GlobalUnitsModel.Side.US,
     aircraftUnit: {
       strength: 3,
-      movement: 2,
+      movement: 3,
       attack: true,
       diveBomber: true,
       steps: 2,

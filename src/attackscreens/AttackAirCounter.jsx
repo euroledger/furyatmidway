@@ -49,10 +49,6 @@ function AirAttackCounter({
       // all units allocated a target
       setAttackTargetsSelected(() => true)
     }
-
-
-
-
     const top = size === 1 ? "57%" : "52%"
     let left
     // idx is carrier 1 or 2
@@ -107,6 +103,8 @@ function AirAttackCounter({
     }))
     if (size > 1) {
       setZindex(() => size * 10)
+    } else {
+      setZindex(() => 5)
     }
   }
   if (

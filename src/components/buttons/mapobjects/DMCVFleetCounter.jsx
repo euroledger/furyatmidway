@@ -94,13 +94,6 @@ function DMCVFleetCounter({
     const fleetBox = fleetUnitUpdate.position.currentHex.boxIndex
 
     if (test1 && test2) {
-      // console.log(
-      //   "<<<<<<<<< GOT A (DMCV) FUCKER ---> MOVING OFFBOARD->counterData name=",
-      //   counterData.name,
-      //   "side=",
-      //   fleetUnitUpdate.side
-      // )
-
       let from
       if (fleetUnitUpdate.side === GlobalUnitsModel.Side.JAPAN) {
         // set new position according to Japan Fleet Box (index boxIndex) offsets

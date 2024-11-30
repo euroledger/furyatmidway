@@ -93,7 +93,10 @@ export default class Controller {
       if (this.isSunk(GlobalUnitsModel.Carrier.ENTERPRISE) && this.isSunk(GlobalUnitsModel.Carrier.HORNET)) {
         autoSelectTarget = GlobalUnitsModel.TaskForce.TASK_FORCE_17
       }
-      if (this.isSunk(GlobalUnitsModel.Carrier.YORKTOWN)) {
+      if (
+        this.isSunk(GlobalUnitsModel.Carrier.YORKTOWN) ||
+        GlobalGameState.usDMCVCarrier === GlobalUnitsModel.Carrier.US
+      ) {
         autoSelectTarget = GlobalUnitsModel.TaskForce.TASK_FORCE_16
       }
       // @TODO Add Midway
@@ -207,6 +210,7 @@ export default class Controller {
     let units = new Array()
     for (const unit of defenders) {
       const location = this.getAirUnitLocation(unit.name)
+      console.log("Name:", unit.name, "location:", location.boxName)
       unit.location = location
       if (location.boxName.includes("RETURNING (1)")) {
         units.push(unit)
@@ -233,10 +237,12 @@ export default class Controller {
 
   getAllReducedUnitsForSide(side) {
     const units = this.getAllAirUnits(side)
+    console.log("QUACK 100 units=")
 
     const reducedUnits = units.filter(
       (unit) => unit.aircraftUnit.steps === 1 && unit.carrier !== GlobalUnitsModel.Carrier.MIDWAY
     )
+    console.log("QUACK 200 reducedUnits=")
     return reducedUnits
   }
 
@@ -648,7 +654,7 @@ export default class Controller {
         location.boxName.includes("RETURNING (1)") ||
         location.boxName.includes("STRIKE BOX")
       ) {
-        // console.log("UNIT NOT MOVED:", unit.name, "location=", location.boxName)
+        console.log("UNIT NOT MOVED:", unit.name, "location=", location.boxName)
         return true
       }
     }
@@ -676,6 +682,7 @@ export default class Controller {
     const unitsInGroup = this.getAirUnitsInStrikeGroups(box)
     for (let unit of unitsInGroup) {
       if (unit.aircraftUnit.movement === 2) {
+        console.log("Name of 2 speed fucker:", unit.name)
         return 2
       }
     }
@@ -812,6 +819,42 @@ export default class Controller {
     return false
   }
 
+  getNextAvailableFleetBox(side) {
+    const locations = side === GlobalUnitsModel.Side.JAPAN ? this.getUSFleetLocations() : this.getJapanFleetLocations()
+
+    const takenBoxes = new Array()
+    for (let fleet of locations.keys()) {
+      if (fleet.toUpperCase().includes("MAP") || fleet.includes("SG")) {
+        continue
+      }
+      const location = locations.get(fleet)
+      if (location.boxName === HexCommand.FLEET_BOX) {
+        takenBoxes.push(location.boxIndex)
+      }
+    }
+    const firstBox = 0
+    for (let i = 0; i < takenBoxes.length; i++) {
+      if (!takenBoxes[i].includes(i)) {
+        return i
+      }
+    }
+    return firstBox
+  }
+  allCarriersSunk(side) {
+    let numCarriersSunk = this.getSunkCarriers(side).length
+
+    if (side === GlobalUnitsModel.Side.JAPAN) {
+      if (numCarriersSunk === 4) {
+        return true
+      }
+    } else {
+      if (numCarriersSunk === 3) {
+        return true
+      }
+    }
+    return false
+  }
+
   getSunkCarriers(side) {
     let sunkCarriers = new Array()
     if (side === GlobalUnitsModel.Side.JAPAN) {
@@ -939,10 +982,22 @@ export default class Controller {
     }
 
     if (GlobalGameState.taskForceTarget === GlobalUnitsModel.TaskForce.CARRIER_DIV_1) {
+      if (
+        GlobalGameState.jpDMCVCarrier === GlobalUnitsModel.Carrier.AKAGI &&
+        !this.isSunk(GlobalUnitsModel.Carrier.KAGA)
+      ) {
+        return GlobalUnitsModel.Carrier.KAGA
+      }
       if (this.isSunk(GlobalUnitsModel.Carrier.AKAGI) && !this.isSunk(GlobalUnitsModel.Carrier.KAGA)) {
         return GlobalUnitsModel.Carrier.KAGA
       }
 
+      if (
+        GlobalGameState.jpDMCVCarrier === GlobalUnitsModel.Carrier.KAGA &&
+        !this.isSunk(GlobalUnitsModel.Carrier.AKAGI)
+      ) {
+        return GlobalUnitsModel.Carrier.AKAGI
+      }
       if (!this.isSunk(GlobalUnitsModel.Carrier.AKAGI) && this.isSunk(GlobalUnitsModel.Carrier.KAGA)) {
         return GlobalUnitsModel.Carrier.AKAGI
       }
@@ -950,8 +1005,21 @@ export default class Controller {
     }
 
     if (GlobalGameState.taskForceTarget === GlobalUnitsModel.TaskForce.CARRIER_DIV_2) {
+      if (
+        GlobalGameState.jpDMCVCarrier === GlobalUnitsModel.Carrier.HIRYU &&
+        !this.isSunk(GlobalUnitsModel.Carrier.SORYU)
+      ) {
+        return GlobalUnitsModel.Carrier.SORYU
+      }
       if (this.isSunk(GlobalUnitsModel.Carrier.HIRYU) && !this.isSunk(GlobalUnitsModel.Carrier.SORYU)) {
         return GlobalUnitsModel.Carrier.SORYU
+      }
+
+      if (
+        GlobalGameState.jpDMCVCarrier === GlobalUnitsModel.Carrier.SORYU &&
+        !this.isSunk(GlobalUnitsModel.Carrier.HIRYU)
+      ) {
+        return GlobalUnitsModel.Carrier.HIRYU
       }
 
       if (!this.isSunk(GlobalUnitsModel.Carrier.HIRYU) && this.isSunk(GlobalUnitsModel.Carrier.SORYU)) {
@@ -1260,20 +1328,38 @@ export default class Controller {
   victoryCheck() {
     // @TODO Will need to take account of CVs which have left the map...
 
-    if (GlobalGameState.gameTurn !== 3 && GlobalGameState.gameTurn !== 7) {
-      return null
-    }
+    // if (GlobalGameState.gameTurn !== 3 && GlobalGameState.gameTurn !== 7) {
+    //   return null
+    // }
     const numJapanCVsSunk = this.getSunkCarriers(GlobalUnitsModel.Side.JAPAN).length
     const numUSCVsSunk = this.getSunkCarriers(GlobalUnitsModel.Side.US).length
 
     const numJapanCVsRemaining = 4 - numJapanCVsSunk
     const numUSCVsRemaining = 3 - numUSCVsSunk
+
     GlobalGameState.japanVPs = 0
     GlobalGameState.usVPs = 0
+    GlobalGameState.usVPs += numJapanCVsSunk
+
+    GlobalGameState.japanVPs += numUSCVsSunk
+    if (GlobalGameState.midwayControl === GlobalUnitsModel.Side.US) {
+      GlobalGameState.usVPs += 2
+    } else {
+      GlobalGameState.japanVPs += 2
+    }
+    console.log("GlobalGameState.CSFLeftMap=", GlobalGameState.CSFLeftMap)
+    console.log("GlobalGameState.AF1LeftMap=", GlobalGameState.AF1LeftMap)
+
+    // 1 VP for each unit moved off map
+    if (GlobalGameState.CSFLeftMap) {
+      GlobalGameState.japanVPs++
+      // console.log("QUACK 5 GlobalGameState.japanVPs=", GlobalGameState.japanVPs)
+    }
+    if (GlobalGameState.AF1LeftMap) {
+      GlobalGameState.usVPs++
+    }
 
     if (GlobalGameState.gameTurn === 3) {
-      GlobalGameState.usVPs += numJapanCVsSunk
-      GlobalGameState.japanVPs += numUSCVsSunk
       if (numJapanCVsRemaining === 0 && numUSCVsRemaining !== 0) {
         return GlobalUnitsModel.Side.US
       }
@@ -1288,13 +1374,6 @@ export default class Controller {
         return GlobalUnitsModel.Side.JAPAN
       }
     } else if (GlobalGameState.gameTurn === 7) {
-      if (GlobalGameState.midwayControl === GlobalUnitsModel.Side.US) {
-        GlobalGameState.usVPs += 2
-      } else {
-        GlobalGameState.japanVPs += 2
-      }
-      GlobalGameState.usVPs += numJapanCVsSunk
-      GlobalGameState.japanVPs += numUSCVsSunk
       if (GlobalGameState.usVPs > GlobalGameState.japanVPs) {
         return GlobalUnitsModel.Side.US
       }
@@ -1308,7 +1387,7 @@ export default class Controller {
       }
       return "DRAW"
     }
-    return "None"
+    return ""
   }
   isSunk(name, countTowedAsSunk) {
     if (name === GlobalUnitsModel.Carrier.MIDWAY) {
@@ -1598,7 +1677,6 @@ export default class Controller {
   }
 
   numHexesBetweenFleets(fleetA, fleetB) {
-    
     let locationA = this.getFleetLocation(fleetA.name, fleetA.side)
     let locationB = this.getFleetLocation(fleetB.name, fleetB.side)
 
@@ -1616,7 +1694,6 @@ export default class Controller {
     ) {
       return NaN
     }
-  
 
     let hexA = {
       q: locationA.currentHex.q,
@@ -1647,13 +1724,17 @@ export default class Controller {
     let locations =
       fleetA.side === GlobalUnitsModel.Side.JAPAN ? this.getUSFleetLocations() : this.getJapanFleetLocations()
 
-    const otherSide =
-      fleetA.side === GlobalUnitsModel.Side.JAPAN ? GlobalUnitsModel.Side.JAPAN : GlobalUnitsModel.Side.US
-
     let shortestDist = 100
 
     // if no fleets on the board (for Japan) use Midway instead
-    // @TODO
+    if (fleetA.side === GlobalUnitsModel.Side.JAPAN && this.allCarriersSunk(GlobalUnitsModel.Side.US)) {
+      const hexB = {
+        q: Controller.MIDWAY_HEX.currentHex.q,
+        r: Controller.MIDWAY_HEX.currentHex.r,
+      }
+      const dist = distanceBetweenHexes(hexA, hexB)
+      return dist
+    }
 
     let found = false
     for (let fleet of locations.keys()) {
@@ -1689,17 +1770,13 @@ export default class Controller {
   }
 
   calcSearchResults(distances) {
-    let jpVal = Math.max(1, GlobalGameState.SearchValue.JP_AF - distances.jp_af)
+    let jpVal = Math.max(1, GlobalGameState.JP_AF - distances.jp_af)
 
     jpVal -= GlobalGameState.midwayAirOpsCompleted
     jpVal = Math.max(0, jpVal)
     jpVal = Math.min(4, jpVal)
 
-    let usVal = Math.max(
-      1,
-      GlobalGameState.SearchValue.US_CSF - distances.us_csf,
-      GlobalGameState.SearchValue.US_MIDWAY - distances.us_midway
-    )
+    let usVal = Math.max(1, GlobalGameState.US_CSF - distances.us_csf, GlobalGameState.US_MIDWAY - distances.us_midway)
     usVal = Math.min(4, usVal)
     return {
       JAPAN: jpVal,

@@ -38,8 +38,8 @@ function ReorganizationBox({ side, enabled }) {
           >
             <p
               style={{
-                marginTop: "41px",
-                marginLeft: "50px",
+                marginTop: "-41px",
+                marginLeft: "-10px",
                 backgroundColor: "#104668",
                 display: "block",
                 width: "115px",

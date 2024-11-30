@@ -19,8 +19,8 @@ export function AirReplacementsHeaders({
   }
 
   const msg = "Select a one step air unit to flip to full strength or eliminated air unit to return to hangar"
-
-  if (reducedAirUnits.length === 0 && controller.getAllReducedUnitsForSide(side) > 0) {
+  const redUnits = controller.getAllReducedUnitsForSide(side)
+  if (reducedAirUnits.length === 0 && redUnits.length > 0) {
     const redAirUnits = controller.getAllReducedUnitsForSide(side)
     setReducedAirUnits(() => redAirUnits)
   }
@@ -35,6 +35,11 @@ export function AirReplacementsHeaders({
   // hangar capacity available with button to choose that CV's hangar
 
   const airCounterImage = (airUnit, i) => {
+    
+    if (eliminatedAirUnits.includes(airUnit)) {
+      const newImage = airUnit.image.replace("front", "back")
+      airUnit.image = newImage
+    }
     return (
       <div>
         <input
@@ -71,7 +76,9 @@ export function AirReplacementsHeaders({
 
   const handleClick = (airUnit) => {
     // if this unit has 1 step -> flip to full strength
-    if (airUnit.aircraftUnit.steps === 1) {
+    console.log("SELECTED ->", airUnit.name, "STEPS=", airUnit.aircraftUnit.steps)
+    if (airUnit.aircraftUnit.steps === 1 && !eliminatedAirUnits.includes(airUnit)) {
+      console.log("POO STEPS = 1")
       airUnit.aircraftUnit.steps = 2
       const newImage = airUnit.image.replace("back", "front")
       airUnit.image = newImage
@@ -234,10 +241,9 @@ export function AirReplacementsFooters({
       GlobalUnitsModel.Carrier.YORKTOWN,
       GlobalUnitsModel.Carrier.HORNET,
     ]
-    availableUSCVs = usCVs.filter(
-      (carrier) => {
-        return !controller.isSunk(carrier) && controller.isHangarAvailable(carrier)}
-    )
+    availableUSCVs = usCVs.filter((carrier) => {
+      return !controller.isSunk(carrier) && controller.isHangarAvailable(carrier)
+    })
     if (availableUSCVs.length === 0) {
       msg = "No carriers available to receive replacements"
       setAirReplacementsSelected(true)
@@ -249,9 +255,7 @@ export function AirReplacementsFooters({
       GlobalUnitsModel.Carrier.HIRYU,
       GlobalUnitsModel.Carrier.SORYU,
     ]
-    availableJapanCVs = japanCVs.filter(
-      (carrier) => !controller.isSunk(carrier) && controller.isHangarAvailable(cv)
-    )
+    availableJapanCVs = japanCVs.filter((carrier) => !controller.isSunk(carrier) && controller.isHangarAvailable(cv))
     if (availableJapanCVs.length === 0) {
       msg = "No carriers available to receive replacements"
       setAirReplacementsSelected(true)
@@ -272,11 +276,11 @@ export function AirReplacementsFooters({
     } else if (cv === GlobalUnitsModel.Carrier.HORNET) {
       image = "/images/fleetcounters/soryu.jpg"
     }
-    let buttonDisabled 
+    let buttonDisabled
     if (side === GlobalUnitsModel.Side.US) {
-      buttonDisabled= availableUSCVs.length === 0 || selectedCV != ""
+      buttonDisabled = availableUSCVs.length === 0 || selectedCV != ""
     } else {
-      buttonDisabled= availableJapanCVs.length === 0  || selectedCV != ""
+      buttonDisabled = availableJapanCVs.length === 0 || selectedCV != ""
     }
     return (
       <>
@@ -293,7 +297,7 @@ export function AirReplacementsFooters({
         </div>
         <div
           style={{
-            marginLeft: "53px",
+            marginLeft: "43px",
             marginTop: "20px",
           }}
         >
@@ -306,6 +310,7 @@ export function AirReplacementsFooters({
   }
 
   if (!airReplacementsSelected) {
+    console.log("POO")
     if (side === GlobalUnitsModel.Side.US) {
       availableCVImages = availableUSCVs.map((cv, idx) => {
         return (
@@ -314,9 +319,9 @@ export function AirReplacementsFooters({
           </>
         )
       })
-      if (availableUSCVs.length === 1) {
-        setSelectedCV(availableUSCVs[0])
-      }
+      // if (availableUSCVs.length === 1) {
+      //   setSelectedCV(availableUSCVs[0])
+      // }
     } else {
       availableCVImages = availableJapanCVs.map((cv, idx) => {
         return (

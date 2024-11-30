@@ -78,6 +78,7 @@ export default class GlobalGameState {
   ]
 
   static gameTurn = 1
+  static winner = ""
 
   static currentCarrier = 0
   static currentCarrierDivision = 1
@@ -122,11 +123,8 @@ export default class GlobalGameState {
   static carrierHitsDetermined = false
   
   static midwayInvasionLevel = 5;
-
   static midwayGarrisonLevel = 6;
-
   static nextMidwayInvasionRoll = GlobalUnitsModel.Side.JAPAN
-
   static midwayAttackDeclaration = false
 
   static totalMidwayHits = 0
@@ -166,6 +164,8 @@ export default class GlobalGameState {
   static mifFleetPlaced = false
   static mifFleetMoved = false
 
+  static CSFLeftMap = false
+  static AF1LeftMap = false
 
   static phaseCompleted = false
 
@@ -220,14 +220,15 @@ export default class GlobalGameState {
   static nextAvailableSunkMarker = 0
   
 
+  static allUSCarriersSunk = false
+  static allJapanCarriersSunk = false
+  
   static fleetSpeed = 2
   static dmcvFleetSpeed = 1
 
-  static SearchValue = {
-    JP_AF: 6,
-    US_CSF: 7,
-    US_MIDWAY: 8,
-  }
+  static JP_AF = 6
+  static US_CSF= 7
+  static  US_MIDWAY = 8
 
   static getJapanCarrier = () => {
     return this.JAPAN_CARRIERS[this.setupPhase]

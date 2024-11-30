@@ -2,7 +2,7 @@ import { React, useState, useRef, useEffect } from "react"
 import Button from "react-bootstrap/Button"
 import GlobalUnitsModel from "../model/GlobalUnitsModel"
 
-export function TowedCVHeaders({ controller, setTowedCVSelected }) {
+export function TowedCVHeaders({ controller, setTowedCVSelected, towedCVSelected}) {
   let usEnterprise = {
     image: "/images/fleetcounters/enterprise.jpg",
     name: GlobalUnitsModel.Carrier.ENTERPRISE,
@@ -51,7 +51,9 @@ export function TowedCVHeaders({ controller, setTowedCVSelected }) {
             marginTop: "20px",
           }}
         >
-          <Button onClick={() => handleClick(cv)}>{cv}</Button>
+          <Button disabled={towedCVSelected} style={{
+            minWidth:"100px",
+          }} onClick={() => handleClick(cv)}>{cv}</Button>
         </div>
       </>
     )

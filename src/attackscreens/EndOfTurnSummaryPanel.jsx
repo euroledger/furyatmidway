@@ -18,6 +18,15 @@ export function EndOfTurnSummaryHeaders({ controller }) {
   const numJapanCVsSunk = controller.getSunkCarriers(GlobalUnitsModel.Side.JAPAN).length
   const numUSCVsSunk = controller.getSunkCarriers(GlobalUnitsModel.Side.US).length
 
+  const japanCSFMsg = "CSF Left Map:"
+  const us1AFMsg = "1AF Left Map:"
+
+  const csfLeft = GlobalGameState.CSFLeftMap ? "YES" : "NO"
+  const af1Left = GlobalGameState.AF1LeftMapLeftMap ? "YES" : "NO"
+
+  const csfVPs = GlobalGameState.CSFLeftMap ? 1 : 0
+  const af1VPs = GlobalGameState.AF1LeftMap ? 1 : 0
+
   let japanCVsSunkMsg = ""
   if (numJapanCVsSunk > 0) {
     for (let i = 0; i < japanCVsSunk.length; i++) {
@@ -42,23 +51,26 @@ export function EndOfTurnSummaryHeaders({ controller }) {
 
   const midwayControl = GlobalGameState.midwayControl === GlobalUnitsModel.Side.US ? "US" : "JAPAN"
 
-  const gameContinuesMsg = GlobalGameState.gameTurn === 3 ? "Neither Side has Achieved Victory" : ""
-
-  let winner = "None"
+  GlobalGameState.winner = ""
   if (GlobalGameState.gameTurn === 3 || GlobalGameState.gameTurn === 7) {
-    winner = controller.victoryCheck()
+    GlobalGameState.winner = controller.victoryCheck()
   }
+  let vmsg = ""
 
-  let vmsg = "Automatic Victory"
+  if (GlobalGameState.gameTurn === 3) {
+    vmsg = "Automatic Victory"
+  }
 
   if (GlobalGameState.gameTurn === 7) {
-    vmsg = "Game Result - Winner:"
+    vmsg = "Game Result - GlobalGameState.winner:"
   }
 
+  const gameTurn3Winner = GlobalGameState.gameTurn === 3 && GlobalGameState.winner !== ""
   let imageUS = "/images/usaflag.jpg"
   let imageJP = "/images/japanflag.jpg"
-
-  return (
+  const gameContinuesMsg =
+    GlobalGameState.gameTurn === 3 && GlobalGameState.winner === "" ? "Neither Side has Achieved Victory" : ""
+    return (
     <>
       <div
         style={{
@@ -74,8 +86,7 @@ export function EndOfTurnSummaryHeaders({ controller }) {
             style={{
               color: "white",
               marginLeft: "10px",
-              fontSize: "24px"
-
+              fontSize: "24px",
             }}
           >
             VICTORY POINTS
@@ -91,19 +102,23 @@ export function EndOfTurnSummaryHeaders({ controller }) {
           >
             <img src={imageUS} alt="test" width="80px" height="60px" />
           </div>
-          <div style={{
-            marginLeft: "20px"
-          }}>
-            <p
+          {!gameTurn3Winner && (
+            <div
               style={{
-                color: "white",
-                marginTop: "5px",
-                fontSize: "54px"
+                marginLeft: "20px",
               }}
             >
-              &emsp;<strong>{GlobalGameState.usVPs}</strong>&emsp;
-            </p>
-          </div>
+              <p
+                style={{
+                  color: "white",
+                  marginTop: "5px",
+                  fontSize: "54px",
+                }}
+              >
+                &emsp;<strong>{GlobalGameState.usVPs}</strong>&emsp;
+              </p>
+            </div>
+          )}
         </div>
 
         <div
@@ -133,6 +148,7 @@ export function EndOfTurnSummaryHeaders({ controller }) {
               style={{
                 color: "white",
                 marginTop: "5px",
+                marginLeft: "2px",
               }}
             >
               {usCVMsg} &emsp;
@@ -142,6 +158,32 @@ export function EndOfTurnSummaryHeaders({ controller }) {
               </strong>
               &emsp; <br></br>
             </p>
+
+            <p
+              style={{
+                color: "white",
+                marginTop: "5px",
+                marginLeft: "-4px",
+              }}
+            >
+              {japanCSFMsg}&emsp;
+              {csfLeft}
+              &emsp;&emsp;&emsp;&emsp;<strong>{csfVPs}</strong>
+              <br></br>
+            </p>
+            <p
+              style={{
+                color: "white",
+                marginTop: "5px",
+                marginLeft: "-2px",
+              }}
+            >
+              {us1AFMsg}&emsp;
+              {af1Left}
+              &emsp;&emsp;&emsp;&emsp;<strong>{af1VPs}</strong>
+              <br></br>
+            </p>
+
             <p
               style={{
                 color: "white",
@@ -158,23 +200,8 @@ export function EndOfTurnSummaryHeaders({ controller }) {
             >
               {gameContinuesMsg}
             </p>
-            <p
-              style={{
-                marginTop: "20px",
-                color: "white",
-              }}
-            >
-              Japan VPs:&emsp;<strong>{GlobalGameState.japanVPs}</strong>&emsp;
-            </p>
-            <p
-              style={{
-                marginTop: "5px",
-                color: "white",
-              }}
-            >
-              US VPs:&emsp;<strong>{GlobalGameState.usVPs}</strong>&emsp;
-            </p>
-            {winner && (
+
+            {gameTurn3Winner && (
               <p
                 style={{
                   marginTop: "50px",
@@ -184,12 +211,13 @@ export function EndOfTurnSummaryHeaders({ controller }) {
               >
                 &emsp;
                 <strong>
-                  {vmsg}&nbsp;{winner}
+                  {vmsg}&nbsp;{GlobalGameState.winner}
                 </strong>
                 !!
               </p>
             )}
-            {!winner && (
+
+            {!GlobalGameState.winner && (
               <p
                 style={{
                   display: "flex",
@@ -216,8 +244,7 @@ export function EndOfTurnSummaryHeaders({ controller }) {
             style={{
               color: "white",
               marginLeft: "30px",
-              fontSize: "24px"
-
+              fontSize: "24px",
             }}
           >
             VICTORY POINTS
@@ -233,19 +260,23 @@ export function EndOfTurnSummaryHeaders({ controller }) {
           >
             <img src={imageJP} alt="test" width="80px" height="60px" />
           </div>
-          <div style={{
-            marginLeft: "40px"
-          }}>
-            <p
+          {!gameTurn3Winner && (
+            <div
               style={{
-                color: "white",
-                marginTop: "5px",
-                fontSize: "54px"
+                marginLeft: "40px",
               }}
             >
-              &emsp;<strong>{GlobalGameState.japanVPs}</strong>&emsp;
-            </p>
-          </div>
+              <p
+                style={{
+                  color: "white",
+                  marginTop: "5px",
+                  fontSize: "54px",
+                }}
+              >
+                &emsp;<strong>{GlobalGameState.japanVPs}</strong>&emsp;
+              </p>
+            </div>
+          )}
         </div>
       </div>
     </>

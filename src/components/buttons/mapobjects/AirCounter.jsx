@@ -40,7 +40,6 @@ function AirCounter({ getAirBox, setAirBox, counterData, side }) {
   })
 
   const location = controller.getAirUnitLocation(counterData.name)
-
   const checkForAirUnitReorganization = () => {
     if (side === GlobalUnitsModel.Side.JAPAN && enabledJapanReorgBoxes) {
       setEnabledJapanReorgBoxes(() => false)
@@ -122,12 +121,13 @@ function AirCounter({ getAirBox, setAirBox, counterData, side }) {
     }
   }
   const onDrag = () => {
-    // First Check for possible reorganization
+    const location = controller.getAirUnitLocation(counterData.name)
+
+    console.log("AIR UNIT:", counterData.name, "location=", location)
 
     setIsMoveable(true)
     // only the selected (clicked) air unit should be draggable
     setSelected(() => true)
-    const location = controller.getAirUnitLocation(counterData.name)
 
     const locationCSF = controller.getFleetLocation("CSF", GlobalUnitsModel.Side.US)
     const location1AF = controller.getFleetLocation("1AF", GlobalUnitsModel.Side.JAPAN)
@@ -466,7 +466,10 @@ function AirCounter({ getAirBox, setAirBox, counterData, side }) {
     }
   }
   const handleClick = (e) => {
-    checkForAirUnitReorganization()
+    // do not reorgsanise air units in strike boxes or Midway air units
+    if (!location.boxName.includes("STRIKE") && counterData.carrier !== GlobalUnitsModel.Carrier.MIDWAY) {
+      checkForAirUnitReorganization()
+    }
 
     if (counterData.side !== GlobalGameState.sideWithInitiative) {
       return

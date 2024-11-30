@@ -2,6 +2,7 @@ import GlobalGameState from "../model/GlobalGameState"
 import COMMAND_TYPE from "../commands/COMMAND_TYPE"
 import HexCommand from "../commands/HexCommand"
 import MoveOffMapCommand from "../commands/MoveOffMapCommand"
+import GlobalUnitsModel from "../model/GlobalUnitsModel"
 
 class ViewEventFleetUnitSetupHandler {
   constructor(controller) {
@@ -22,6 +23,15 @@ class ViewEventFleetUnitSetupHandler {
       }
 
       this.controller.setFleetUnitLocation(id, to, side)
+      if (side === GlobalUnitsModel.Side.US && id.includes("CSF")) {
+        if (!this.controller.allCarriersSunk(side)) {
+          GlobalGameState.CSFLeftMap = true
+        }
+      } else {
+        if (!this.controller.allCarriersSunk(side) && id.includes("1AF")) {
+          GlobalGameState.AF1LeftMap = true
+        }
+      }
     } else {
       this.controller.setFleetUnitLocation(id, to, side)
     }

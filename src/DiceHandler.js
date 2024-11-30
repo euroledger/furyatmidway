@@ -37,7 +37,7 @@ export function doTroubledReconnaissanceRoll(controller, roll) {
   let theRoll = roll ?? randomDice(1)
   GlobalGameState.dieRolls = [theRoll]
 
-  GlobalGameState.SearchValue.JP_AF = GlobalGameState.dieRolls[0]
+  GlobalGameState.JP_AF = GlobalGameState.dieRolls[0]
   GlobalGameState.updateGlobalState()
 
   controller.viewEventHandler({
@@ -338,7 +338,7 @@ export function autoAllocateMidwayDamage(controller) {
     damage.box0 = false
     damage.box1 = false
     damage.box2 = false
-    GlobalGameState.SearchValue.US_MIDWAY = 0 // base destroyed
+    GlobalGameState.US_MIDWAY = 0 // base destroyed
     // All units in hangar to eliminated box
   }
 
@@ -775,16 +775,16 @@ export function doAttackFireRolls(controller, testRolls) {
     GlobalGameState.dieRolls = rolls
     doAttackResolutionEvent(controller, hits)
 
-    // GlobalGameState.midwayHits = 3
-    // GlobalGameState.midwayHitsThisAttack = 3
+    // GlobalGameState.midwayHits = 2
+    // GlobalGameState.midwayHitsThisAttack = 2
 
   } else {
     GlobalGameState.carrierAttackHits = hits
     GlobalGameState.carrierAttackHitsThisAttack = hits
 
     // QUACK REMOVE TEESTING ONLY
-    // GlobalGameState.carrierAttackHits = 0
-    // GlobalGameState.carrierAttackHitsThisAttack = 0
+    // GlobalGameState.carrierAttackHits = 1
+    // GlobalGameState.carrierAttackHitsThisAttack = 1
   }
   return hits
 }

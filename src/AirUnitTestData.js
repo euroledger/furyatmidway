@@ -1,7 +1,7 @@
 import JapanAirBoxOffsets from "./components/draganddrop/JapanAirBoxOffsets"
 import GlobalUnitsModel from "./model/GlobalUnitsModel"
-import GlobalInit from "./model/GlobalInit"
 import GlobalGameState from "./model/GlobalGameState"
+import GlobalInit from "./model/GlobalInit"
 import { flatHexToPixel, convertCoords } from "./components/HexUtils"
 import { faL } from "@fortawesome/free-solid-svg-icons"
 import HexCommand from "./commands/HexCommand"
@@ -246,9 +246,30 @@ export function calcStrikeDataUS(unit) {
   return update
 }
 
-export function createRemoveFleetUpdate(controller, name, side) {
-  return HexCommand.OFFBOARD
+export function createRemoveFleetUpdate(side) {
+  let name
+  if (side === GlobalUnitsModel.Side.JAPAN) {
+    name = "1AF"
+  } else {
+    name = "CSF"
+  }
+  const index = GlobalInit.controller.getNextAvailableFleetBox(side)
+  const location = {
+    boxName: HexCommand.FLEET_BOX,
+    boxIndex: index
+  }
+  const update =  {
+    name,
+    position: {
+      currentHex: location,
+    },
+    loading: false,
+    side
+  }
+  console.log("FLEET UPDATE:", update)
+  return update
 }
+
 export function createMapUpdateForFleet(controller, name, side) {
   const location = controller.getFleetLocation(name, side)
 

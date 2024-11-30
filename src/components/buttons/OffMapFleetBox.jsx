@@ -36,7 +36,19 @@ function OffMapFleetBox({ side, enabled }) {
             zIndex: 1
           }}
         >
-          <p style={{ fontSize: "12px" }}>off-map fleets</p>
+          {/* <p style={{ fontSize: "12px" }}>off-map fleets</p> */}
+          <p
+              style={{
+                marginTop: "-41px",
+                marginLeft: "-10px",
+                backgroundColor: "#104668",
+                display: "block",
+                width: "75px",
+                fontSize: "9px",
+              }}
+            >
+              Off-Map Fleet Box
+            </p>
         </div>
       )}
     </>

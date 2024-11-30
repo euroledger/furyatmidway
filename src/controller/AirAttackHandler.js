@@ -13,7 +13,6 @@ import GlobalUnitsModel from "../model/GlobalUnitsModel"
 export function setUpAirAttack(controller, location, strikeGroup, setCardNumber) {
   // create a separate function for attacks on DMCV
 
-
   const side = GlobalGameState.sideWithInitiative
   const locationOfStrikeGroup = controller.getStrikeGroupLocation(strikeGroup.name, side)
 
@@ -32,7 +31,12 @@ export function setUpAirAttack(controller, location, strikeGroup, setCardNumber)
       GlobalGameState.gamePhase = GlobalGameState.PHASE.CARD_PLAY
       setCardNumber(() => 9)
     } else {
-      GlobalGameState.gamePhase = GlobalGameState.PHASE.CAP_INTERCEPTION
+      if (controller.japanHandContainsCard(12)) {
+        setCardNumber(() => 12)
+        GlobalGameState.gamePhase = GlobalGameState.PHASE.CARD_PLAY
+      } else {
+        GlobalGameState.gamePhase = GlobalGameState.PHASE.CAP_INTERCEPTION
+      }
     }
     GlobalGameState.taskForceTarget = GlobalUnitsModel.TaskForce.MIDWAY
   } else {

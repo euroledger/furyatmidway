@@ -5,7 +5,7 @@ import GlobalUnitsModel from "../model/GlobalUnitsModel"
 export function EventCardFooter({ cardNumber, showCardFooter, setShowDice, doCriticalHit, attackResolved }) {
   if (cardNumber === 6 && showCardFooter) {
     setShowDice(false)
-    GlobalGameState.SearchValue.JP_AF = 8
+    GlobalGameState.JP_AF = 8
     return (
       <>
         {showCardFooter && (

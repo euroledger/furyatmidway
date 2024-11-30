@@ -132,7 +132,6 @@ export function App() {
   const [enabledJapanReorgBoxes, setEnabledJapanReorgBoxes] = useState(false)
   const [enabledUSReorgBoxes, setEnabledUSReorgBoxes] = useState(false)
 
-  
   useEffect(() => {
     setEnabledJapanBoxes(getJapanEnabledAirBoxes())
   }, [])
@@ -309,6 +308,7 @@ export function App() {
   const [attackTargetsSelected, setAttackTargetsSelected] = useState(false)
 
   const [attackResolved, setAttackResolved] = useState(false)
+  const [midwayAttackResolved, setMidwayAttackResolved] = useState(false)
 
   const [targetSelected, setTargetSelected] = useState(false)
 
@@ -549,7 +549,7 @@ export function App() {
 
   useEffect(() => {
     if (GlobalGameState.gamePhase === GlobalGameState.PHASE.END_OF_TURN) {
-      GlobalGameState.SearchValue.JP_AF = 6 // in case card 6 was played
+      GlobalGameState.JP_AF = 6 // in case card 6 was played
     }
   }, [GlobalGameState.gamePhase])
 
@@ -590,7 +590,8 @@ export function App() {
       GlobalGameState.fleetSpeed = 4
       GlobalGameState.dmcvFleetSpeed = 2
 
-      if (csfLocation !== undefined && csfLocation.currentHex.q >= 6) {
+      console.log("CSF LOCATION=", csfLocation)
+      if (csfLocation !== undefined && csfLocation.currentHex !== undefined && csfLocation.currentHex.q >= 6) {
         // can move offboard
         if (GlobalGameState.gamePhase === GlobalGameState.PHASE.US_FLEET_MOVEMENT_PLANNING) {
           setEnabledUSFleetBoxes(true)
@@ -684,19 +685,23 @@ export function App() {
     } else {
       GlobalGameState.fleetSpeed = 2
       GlobalGameState.dmcvFleetSpeed = 1
-      if (af1Location !== undefined && af1Location.currentHex!== undefined && af1Location.currentHex.q <= 2) {
+      if (af1Location !== undefined && af1Location.currentHex !== undefined && af1Location.currentHex.q <= 2) {
         // can move offboard
         if (GlobalGameState.gamePhase === GlobalGameState.PHASE.JAPAN_FLEET_MOVEMENT) {
           setEnabledJapanFleetBoxes(true)
         }
       }
-      if (mifLocation !== undefined && mifLocation.currentHex!== undefined && mifLocation.currentHex.q <= 1) {
+      if (mifLocation !== undefined && mifLocation.currentHex !== undefined && mifLocation.currentHex.q <= 1) {
         // can move offboard
         if (GlobalGameState.gamePhase === GlobalGameState.PHASE.JAPAN_FLEET_MOVEMENT) {
           setEnabledJapanFleetBoxes(true)
         }
       }
-      if (ijnDMCVLocation !== undefined && ijnDMCVLocation.currentHex!== undefined && ijnDMCVLocation.currentHex.q <= 1) {
+      if (
+        ijnDMCVLocation !== undefined &&
+        ijnDMCVLocation.currentHex !== undefined &&
+        ijnDMCVLocation.currentHex.q <= 1
+      ) {
         // can move offboard
         if (GlobalGameState.gamePhase === GlobalGameState.PHASE.JAPAN_DMCV_FLEET_MOVEMENT) {
           setEnabledJapanFleetBoxes(true)
@@ -709,7 +714,7 @@ export function App() {
       if (GlobalGameState.jpDMCVFleetPlaced && ijnDMCVLocation.currentHex !== undefined) {
         jpRegion = allHexesWithinDistance(ijnDMCVLocation.currentHex, GlobalGameState.dmcvFleetSpeed, true)
       } else {
-        if (af1Location.currentHex!== undefined) {
+        if (af1Location.currentHex !== undefined) {
           jpRegion = allHexesWithinDistance(af1Location.currentHex, GlobalGameState.dmcvFleetSpeed, true)
         }
       }
@@ -722,7 +727,7 @@ export function App() {
         }
         setJapanMapRegions(jpRegion)
       }
-     
+
       return
     }
     if (GlobalGameState.gamePhase === GlobalGameState.PHASE.JAPAN_FLEET_MOVEMENT && GlobalGameState.gameTurn === 1) {
@@ -735,6 +740,19 @@ export function App() {
       const af1Location = GlobalInit.controller.getFleetLocation("1AF", GlobalUnitsModel.Side.JAPAN)
       if (af1Location.currentHex !== undefined) {
         let regionsMinusAllFleets = allHexesWithinDistance(af1Location.currentHex, GlobalGameState.fleetSpeed, true)
+
+        // if (GlobalGameState.midwayAttackDeclaration === true) {
+        //   let newHexArray = new Array()
+
+        //   let hexesInRangeOfMidway = allHexesWithinDistance(Controller.MIDWAY_HEX.currentHex, 5, true)
+        //   for (const hex of hexesInRangeOfMidway) {
+        //     if (regionsMinusAllFleets.includes(hex)) {
+        //       newHexArray.push(hex)
+        //     }
+        //   }
+        //   regionsMinusAllFleets = newHexArray/
+        // }
+
         setJapanMapRegions(regionsMinusAllFleets)
       }
 
@@ -832,7 +850,6 @@ export function App() {
         if (dmcvLocation !== undefined && dmcvLocation.currentHex.q >= 8) {
           // can move offboard
           setEnabledUSFleetBoxes(true)
-          
         }
       } else {
         if (dmcvLocation !== undefined && dmcvLocation.currentHex.q === 9) {
@@ -859,7 +876,7 @@ export function App() {
       }
       const dmcvLocation = GlobalInit.controller.getFleetLocation("IJN-DMCV", GlobalUnitsModel.Side.JAPAN)
       if (GlobalGameState.gameTurn === 4) {
-        if (dmcvLocation !== undefined && dmcvLocation.currentHex.q <=2) {
+        if (dmcvLocation !== undefined && dmcvLocation.currentHex.q <= 2) {
           // can move offboard
           setEnabledJapanFleetBoxes(true)
         }
@@ -893,6 +910,7 @@ export function App() {
       setJapanMapRegions,
       setJapanMIFMapRegions,
       setJpAlertShow,
+      setMidwayAttackResolved,
       setEndOfAirOpAlertShow,
       setEnabledJapanBoxes,
       setEnabledUSFleetBoxes,
@@ -980,24 +998,37 @@ export function App() {
     return false
   }
   async function endOfMidwayOperation() {
-    if (GlobalGameState.carrierHitsDetermined === false) {
+    let groups = GlobalUnitsModel.jpStrikeGroups
+
+    let index = 0
+    for (let strikeGroup of groups.values()) {
+      if (!strikeGroup.attacked) {
+        index++
+      }
+    }
+    if (index === 0) {
+      console.log("RETURN 1")
       return false
     }
     if (GlobalGameState.midwayAirOpsCompleted < 2 && GlobalInit.controller.getDistanceBetween1AFAndMidway() > 2) {
       return false
     }
-    const returningUnitsNotMoved = GlobalInit.controller.getReturningUnitsNotMoved(GlobalUnitsModel.Side.JAPAN)
-    if (returningUnitsNotMoved) {
+    let unitsReturn1 = GlobalInit.controller.getAirUnitsInStrikeBoxesReadyToReturn(GlobalUnitsModel.Side.JAPAN)
+    console.log("unitsReturn1=", unitsReturn1)
+    if (unitsReturn1.length > 0) {
+      console.log("RETURN 2")
+
       return false
-    } else {
-      await setStrikeGroupAirUnitsToNotMoved(GlobalGameState.sideWithInitiative)
     }
 
     // 2. CHECK ALL INTERCEPTING CAP UNITS HAVE RETURNED TO MIDWAY
     const capUnitsReturning = GlobalInit.controller.getAllCAPDefendersInCAPReturnBoxes(GlobalUnitsModel.Side.US)
     if (capUnitsReturning.length === 0) {
+      console.log("RETURN 3")
       return true
     }
+    console.log("RETURN 4")
+
     return false
   }
 
@@ -1138,34 +1169,60 @@ export function App() {
       GlobalGameState.nextActionButtonDisabled = false
       return
     }
-    let midwayStrikeGroupsReady = true
+
     if (GlobalGameState.gamePhase === GlobalGameState.PHASE.MIDWAY_ATTACK) {
-      midwayStrikeGroupsReady = await midwayStrikeReady()
-    } else {
-      midwayStrikeGroupsReady = false
+      // 1. If AirOps =2 and less than 2 away -> check to see if attacked yet
+
+      if (GlobalGameState.midwayAirOp === 2 || GlobalInit.controller.getDistanceBetween1AFAndMidway() <= 2) {
+        const endOfAirOps = await endOfMidwayOperation()
+        console.log("endofAirOps=", endOfAirOps)
+        if (endOfAirOps) {
+          GlobalGameState.nextActionButtonDisabled = false
+        } else {
+          GlobalGameState.nextActionButtonDisabled = true
+        }
+        if (prevButton !== GlobalGameState.nextActionButtonDisabled) {
+          GlobalGameState.updateGlobalState()
+        }
+        return
+      }
+      // 2. If strike has not moved -> Button Disabled
+      const strikeReady = await midwayStrikeReady()
+      if (!strikeReady) {
+        GlobalGameState.nextActionButtonDisabled = true
+        if (prevButton !== GlobalGameState.nextActionButtonDisabled) {
+          GlobalGameState.updateGlobalState()
+        }
+      } else {
+        // 3. If AirOps = 1 and less than 2 away -> check end of operation
+        if (GlobalGameState.midwayAirOp === 1 && GlobalInit.controller.getDistanceBetween1AFAndMidway() <= 2) {
+          const endOfAirOps = await endOfMidwayOperation()
+          if (endOfAirOps) {
+            GlobalGameState.nextActionButtonDisabled = false
+          } else {
+            GlobalGameState.nextActionButtonDisabled = true
+          }
+          if (prevButton !== GlobalGameState.nextActionButtonDisabled) {
+            GlobalGameState.updateGlobalState()
+          }
+          return
+        } else {
+          GlobalGameState.nextActionButtonDisabled = false
+          if (prevButton !== GlobalGameState.nextActionButtonDisabled) {
+            GlobalGameState.updateGlobalState()
+          }
+        }
+      }
+      return
     }
     let endOfAirOps = false
-    if (GlobalGameState.gamePhase !== GlobalGameState.PHASE.MIDWAY_ATTACK) {
-      if (GlobalGameState.gamePhase === GlobalGameState.PHASE.NIGHT_AIR_OPERATIONS_JAPAN) {
-        endOfAirOps = await endOfMyNightAirOperations(GlobalUnitsModel.Side.JAPAN)
-      } else if (GlobalGameState.gamePhase === GlobalGameState.PHASE.NIGHT_AIR_OPERATIONS_US) {
-        endOfAirOps = await endOfMyNightAirOperations(GlobalUnitsModel.Side.US)
-      } else {
-        endOfAirOps = await endOfMyAirOperation(GlobalGameState.sideWithInitiative)
-      }
+    if (GlobalGameState.gamePhase === GlobalGameState.PHASE.NIGHT_AIR_OPERATIONS_JAPAN) {
+      endOfAirOps = await endOfMyNightAirOperations(GlobalUnitsModel.Side.JAPAN)
+    } else if (GlobalGameState.gamePhase === GlobalGameState.PHASE.NIGHT_AIR_OPERATIONS_US) {
+      endOfAirOps = await endOfMyNightAirOperations(GlobalUnitsModel.Side.US)
     } else {
-      if (GlobalGameState.midwayAirOp === 2 || GlobalInit.controller.getDistanceBetween1AFAndMidway() <= 2) {
-        endOfAirOps = await endOfMidwayOperation()
-      }
+      endOfAirOps = await endOfMyAirOperation(GlobalGameState.sideWithInitiative)
     }
-    // console.log("midwayStrikeGroupsReady=", midwayStrikeGroupsReady)
-    // if (
-    //   !midwayStrikeGroupsReady &&
-    //   GlobalGameState.midwayAirOp === 1 &&
-    //   GlobalInit.controller.getDistanceBetween1AFAndMidway() <= 2
-    // ) {
-    //   GlobalGameState.nextActionButtonDisabled = true
-    // }
     if (endOfAirOps) {
       GlobalGameState.nextActionButtonDisabled = false
     } else {
@@ -1174,13 +1231,7 @@ export function App() {
         GlobalGameState.updateGlobalState()
       }
     }
-    if (
-      midwayStrikeGroupsReady &&
-      GlobalGameState.midwayAirOp === 1 &&
-      GlobalInit.controller.getDistanceBetween1AFAndMidway() > 2
-    ) {
-      GlobalGameState.nextActionButtonDisabled = false
-    }
+
     if (prevButton !== GlobalGameState.nextActionButtonDisabled) {
       GlobalGameState.updateGlobalState()
     }
@@ -1505,8 +1556,16 @@ export function App() {
   }
   let jpAfText, usCsfText, usMidwayText, jpOpsText, usOpsText
   if (searchValues) {
-    jpAfText = `1AF: Closest Fleet ${searchValues.jp_af} hexes away`
-    usCsfText = `CSF: Closest Fleet ${searchValues.us_csf} hexes away`
+    if (GlobalInit.controller.allCarriersSunk(GlobalUnitsModel.Side.US)) {
+      usCsfText = `CSF: Closest Fleet N/A (All US Carriers Sunk)`
+    } else {
+      usCsfText = `CSF: Closest Fleet ${searchValues.us_csf} hexes away`
+    }
+    if (GlobalInit.controller.allCarriersSunk(GlobalUnitsModel.Side.JAPAN)) {
+      jpAfText = `1AF: Closest Fleet N/A (All IJN Carriers Sunk)`
+    } else {
+      jpAfText = `1AF: Closest Fleet ${searchValues.jp_af} hexes away`
+    }
     usMidwayText = `Midway: Closest Fleet ${searchValues.us_midway} hexes away`
 
     const usedPoints = GlobalGameState.midwayAirOpsCompleted
@@ -1703,7 +1762,11 @@ export function App() {
 
   const towedCVHeaders = (
     <>
-      <TowedCVHeaders controller={GlobalInit.controller} setTowedCVSelected={setTowedCVSelected}></TowedCVHeaders>
+      <TowedCVHeaders
+        controller={GlobalInit.controller}
+        towedCVSelected={towedCVSelected}
+        setTowedCVSelected={setTowedCVSelected}
+      ></TowedCVHeaders>
     </>
   )
   const towedCVFooters = (
@@ -2028,11 +2091,11 @@ export function App() {
   function doCounterattackRolls() {
     doFighterCounterattack(GlobalInit.controller)
   }
-
   function doAntiAircraftRolls() {
     doAAAFireRolls(numAAADice)
 
     GlobalGameState.updateGlobalState()
+    setMidwayAttackResolved(() => true)
   }
 
   function doMidwayRoll() {
@@ -2080,6 +2143,7 @@ export function App() {
     const hits = doAttackFireRolls(GlobalInit.controller)
     setCarrierHits(() => hits)
     GlobalGameState.dieRolls = []
+    setMidwayAttackResolved(() => true)
     GlobalGameState.carrierHitsDetermined = true
   }
 
@@ -2135,6 +2199,9 @@ export function App() {
   } else if (GlobalGameState.gamePhase === GlobalGameState.PHASE.AAA_DAMAGE_ALLOCATION) {
     closeDamageButtonDisabled = eliminatedSteps !== GlobalGameState.antiaircraftHits && stepsLeft != 0
   } else if (GlobalGameState.gamePhase === GlobalGameState.PHASE.CARD_PLAY) {
+    if (cardNumber === 1) {
+      closeDamageButtonDisabled = !towedCVSelected
+    }
     if (cardNumber === 11) {
       closeDamageButtonDisabled = eliminatedSteps !== 2 && stepsLeft != 0
     } else if (cardNumber === 10) {
@@ -2204,6 +2271,7 @@ export function App() {
       "Drag the Japanese 1AF Fleet Unit to any hex in the shaded red area of the map, and Japanese MIF Fleet Unit to any white shaded hex"
   }
 
+  const summaryButtonDisabled = GlobalGameState.winner !== ""
   return (
     <>
       <LoadGamePanel
@@ -2716,11 +2784,12 @@ export function App() {
         width={30}
         showDice={true}
         margin={315}
-        nextState={GlobalGameState.PHASE.AIR_SEARCH}
         diceButtonDisabled={GlobalGameState.dieRolls.length !== 0}
         closeButtonDisabled={GlobalGameState.dieRolls.length === 0}
         onHide={(e) => {
           setCardDicePanelShow7(false)
+          GlobalGameState.isFirstAirOp = true
+          nextAction(e)
         }}
         doRoll={doCardRoll}
         disabled={true}
@@ -2868,7 +2937,7 @@ export function App() {
           setEndOfTurnSummaryShow(false)
           nextAction(e)
         }}
-        closeButtonDisabled={false}
+        closeButtonDisabled={summaryButtonDisabled}
       ></LargeDicePanel>
       <GameStatusPanel show={gameStateShow} gameState={gameState} onHide={() => setGameStateShow(false)} />
       <CardPanel show={jpHandShow} side={GlobalUnitsModel.Side.JAPAN} onHide={() => setjpHandShow(false)}></CardPanel>

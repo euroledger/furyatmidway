@@ -98,7 +98,7 @@ class ViewDieRollEventHandler {
     // event contains type and data
     const { roll, side } = event.data
 
-    const message = `Japanese Search Level now ${GlobalGameState.SearchValue.JP_AF}`
+    const message = `Japanese Search Level now ${GlobalGameState.JP_AF}`
     let command = new EventCardDiceCommand(event.type, roll, side, message)
     GlobalGameState.log(`${command.toString()}`)
   }

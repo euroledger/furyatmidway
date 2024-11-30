@@ -39,7 +39,7 @@ describe("Controller tests", () => {
     controller.setCarrierHits(GlobalUnitsModel.Carrier.HORNET, 3)
 
     let winner = controller.victoryCheck()
-    expect(winner).toEqual("None")
+    expect(winner).toEqual("")
   })
 
   test("Turn 3 - 3 IJN Carriers Left, 1 US, Japan Victory", () => {
