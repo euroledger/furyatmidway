@@ -16,7 +16,12 @@ export default class CardModel {
     }
   }
   locationsEqual(locationA, locationB) {
-    if (locationA.currentHex === undefined || locationB.currentHex === undefined) {
+    if (
+      locationA === undefined ||
+      locationA.currentHex === undefined ||
+      locationB == undefined ||
+      locationB.currentHex === undefined
+    ) {
       return false
     }
     return locationA.currentHex.q === locationB.currentHex.q && locationA.currentHex.r === locationB.currentHex.r
@@ -92,24 +97,24 @@ export default class CardModel {
 
     // add 2 for each fleet on the board (one for each map)
     const csfLocation = this.getFleetLocation("CSF", GlobalUnitsModel.Side.US)
-    if (csfLocation && csfLocation.currentHex !==  HexCommand.OFFBOARD) {
-      numFleets +=2
+    if (csfLocation && csfLocation.currentHex !== HexCommand.OFFBOARD) {
+      numFleets += 2
     }
     const usDMCVLocation = this.getFleetLocation("US-DMCV", GlobalUnitsModel.Side.US)
-    if (usDMCVLocation && csfLocation.currentHex !==  HexCommand.OFFBOARD) {
-      numFleets +=2
+    if (usDMCVLocation && csfLocation.currentHex !== HexCommand.OFFBOARD) {
+      numFleets += 2
     }
     const af1Location = this.getFleetLocation("1AF-USMAP", GlobalUnitsModel.Side.US)
-    if (af1Location && af1Location.currentHex !==  HexCommand.OFFBOARD) {
-      numFleets +=2
+    if (af1Location && af1Location.currentHex !== HexCommand.OFFBOARD) {
+      numFleets += 2
     }
     const jpDMCVLocation = this.getFleetLocation("IJN-DMCV-USMAP", GlobalUnitsModel.Side.US)
-    if (jpDMCVLocation && jpDMCVLocation.currentHex !==  HexCommand.OFFBOARD) {
-      numFleets +=2
+    if (jpDMCVLocation && jpDMCVLocation.currentHex !== HexCommand.OFFBOARD) {
+      numFleets += 2
     }
     const mifLocation = this.getFleetLocation("MIF", GlobalUnitsModel.Side.JAPAN)
-    if (mifLocation && mifLocation.currentHex !==  HexCommand.OFFBOARD) {
-      numFleets +=2
+    if (mifLocation && mifLocation.currentHex !== HexCommand.OFFBOARD) {
+      numFleets += 2
     }
     return numFleets
   }

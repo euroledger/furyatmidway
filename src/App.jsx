@@ -16,6 +16,7 @@ import CardPanel from "./components/dialogs/CardPanel"
 import GameStatusPanel from "./components/dialogs/GameStatusPanel"
 import SplashScreen from "./components/dialogs/SplashScreen"
 import Controller from "./controller/Controller"
+import { japanStrikeGroups, usStrikeGroups } from "./CounterLoader"
 import "./style.css"
 import { allCards } from "./CardLoader"
 import {
@@ -373,6 +374,7 @@ export function App() {
 
       setNightLandingDone(false)
       GlobalGameState.sideWithInitiative = side // needed in view event handler
+
       let unitsReturn2 = GlobalInit.controller.getAllAirUnitsInReturn2Boxes(side)
       if (unitsReturn2.length > 0) {
         const steps = GlobalInit.controller.getTotalSteps(unitsReturn2)
@@ -794,8 +796,12 @@ export function App() {
         GlobalGameState.phaseCompleted = true
       }
     } else if (GlobalGameState.gamePhase === GlobalGameState.PHASE.JAPAN_FLEET_MOVEMENT) {
-      setJapanFleetRegions()
-      GlobalGameState.phaseCompleted = GlobalGameState.jpFleetMoved
+      // For now - don't allow IJN Fleet Moves on reload
+
+      // setJapanFleetRegions()
+      // GlobalGameState.phaseCompleted = GlobalGameState.jpFleetMoved
+       GlobalGameState.phaseCompleted = true
+
     } else if (GlobalGameState.gamePhase === GlobalGameState.PHASE.US_FLEET_MOVEMENT) {
       setJapanMapRegions([])
       setJapanMIFMapRegions([])
@@ -1110,6 +1116,9 @@ export function App() {
 
   const getAllAirUnitsRequiringMovesNightAirOperation = (side) => {
     // 1. Units in Return 2 box must attempt night landing
+    let unitsAtSea = GlobalInit.controller.getAllStrikeUnits(side)
+    console.log("unitsAtSea=", unitsAtSea)
+
     let unitsReturn2 = GlobalInit.controller.getAllAirUnitsInReturn2Boxes(side)
 
     // 2. Units in Return 1 box must move to hangar as per normal rules
@@ -1118,7 +1127,7 @@ export function App() {
     // 3. Units in CAP boxes must move to hangar
     const capUnits = GlobalInit.controller.getAllAirUnitsInCAPBoxes(side)
 
-    let units = unitsReturn2.concat(unitsReturn1).concat(capUnits)
+    let units = unitsReturn2.concat(unitsReturn1).concat(capUnits).concat(unitsAtSea)
 
     for (let unit of units) {
       unit.border = true
@@ -1518,6 +1527,7 @@ export function App() {
       setAirUnitUpdate,
       setFleetUnitUpdate,
       setStrikeGroupUpdate,
+      setTowedCVSelected,
       setDamageMarkerUpdate,
       setDmcvShipMarkerUpdate,
       loadState,
@@ -1862,6 +1872,9 @@ export function App() {
       ></AirReplacementsFooters>
     </>
   )
+
+
+  const groups = GlobalUnitsModel.usStrikeGroups
 
   const numAAADice =
     GlobalGameState.taskForceTarget === GlobalUnitsModel.TaskForce.MIDWAY

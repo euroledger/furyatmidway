@@ -142,7 +142,7 @@ export function DMCVCarrierSelectionPanelHeaders({ controller, DMCVCarrierSelect
   )
 }
 
-export function DMCVCarrierSelectionPanelFooters({ controller, setDMCVCarrierSelected, DMCVCarrierSelected, side, doDMCVShipMarkerUpdate }) {
+export function DMCVCarrierSelectionPanelFooters({ controller, DMCVCarrierSelected, side, doDMCVShipMarkerUpdate }) {
   if (DMCVCarrierSelected == "") {
     return
   }

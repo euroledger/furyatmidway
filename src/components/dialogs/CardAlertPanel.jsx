@@ -73,21 +73,25 @@ function CardAlertPanel(props) {
       }
       onHide(e)
     } else if (cardNumber === 4) {
+      let side
       if (controller.usHandContainsCard(4)) {
+        side = GlobalUnitsModel.Side.US
         controller.setCardPlayed(4, GlobalUnitsModel.Side.US)
       } else {
+        side = GlobalUnitsModel.Side.JAPAN
         controller.setCardPlayed(4, GlobalUnitsModel.Side.JAPAN)
       }
 
       // if towed to friendly port has been played, go to SubmarainAlertPanel
       // otherwise straight to SubmarineDamagePanel
+
       if (
-        controller.getCardPlayed(1, GlobalUnitsModel.Side.US) ||
-        controller.getCardPlayed(1, GlobalUnitsModel.Side.JAPAN)
+        side === GlobalUnitsModel.Side.US ||
+        GlobalInit.controller.getCardPlayed(1, GlobalUnitsModel.Side.US) === false
       ) {
-        setSubmarineAlertPanelShow(true)
-      } else {
         setSubmarineDamagePanelShow(true)
+      } else {
+        setSubmarineAlertPanelShow(true)
       }
       onHide(e)
     } else if (cardNumber === 5) {

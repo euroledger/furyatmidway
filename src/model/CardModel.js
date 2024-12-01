@@ -9,15 +9,11 @@ export default class CardModel {
   // if initial, can only draw japan cards
   drawJapanCards(num, initial, testCards) {
     let drawDeck = Array.from(GlobalUnitsModel.cards)
-    console.log("drawDeck=", drawDeck)
     if (initial) {
       drawDeck = drawDeck.filter((card) => {
-        console.log("card side=", card._side)
         return card._side === GlobalUnitsModel.Side.JAPAN
 
       })
-      console.log("JAPAN drawDeck=", drawDeck)
-
     } else {
       // all cards form draw deck, note can draw cards from other side
       drawDeck = Array.from(GlobalUnitsModel.cards)
@@ -30,13 +26,10 @@ export default class CardModel {
       }
       return
     }
-    console.log("num=", num ,"drawDeck=", drawDeck)
-
     for (let i = 0; i < num; i++) {
       if (drawDeck.length > 0) {
         const rn = Math.floor(Math.random() * drawDeck.length)
         const card = drawDeck[rn]
-        console.log("CARD DRAWN:", card)
         drawDeck.splice(rn, 1)
         GlobalUnitsModel.cards = Array.from(GlobalUnitsModel.cards).filter((c) => c._number != card._number)
         GlobalUnitsModel.jpCards.push(card)

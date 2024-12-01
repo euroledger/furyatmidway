@@ -115,7 +115,6 @@ export default class GlobalGameState {
   static carrierTarget1=""
   static carrierTarget2=""
 
-  
   static stateHandler = () => {};
 
   static dieRolls = new Array()
@@ -136,7 +135,6 @@ export default class GlobalGameState {
    
   static jpSeaBattleHits = 0
   static usSeaBattleHits = 0
-
 
   static turnText = [
     "June 4, 1942 Morning",

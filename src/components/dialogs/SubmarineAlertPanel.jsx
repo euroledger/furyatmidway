@@ -2,7 +2,9 @@ import { React, useState } from "react"
 
 import Modal from "react-bootstrap/Modal"
 import Button from "react-bootstrap/Button"
+import GlobalUnitsModel from "../../model/GlobalUnitsModel"
 import "./modal.css"
+import GlobalInit from "../../model/GlobalInit"
 
 function SubmarineAlertPanel(props) {
   const {
@@ -35,16 +37,19 @@ function SubmarineAlertPanel(props) {
   }
 
   const yesHandler = (e) => {
+
     // negate the effects of Card #1 Towed to Friendly Port
 
     let msg = `Carrier ${towedCV} is no longer being towed`
 
     setFooters(
       <div
-        style={{
-          // marginTop: "10px",
-          // marginLeft: "-28px",
-        }}
+        style={
+          {
+            // marginTop: "10px",
+            // marginLeft: "-28px",
+          }
+        }
       >
         <p
           style={{
@@ -54,7 +59,7 @@ function SubmarineAlertPanel(props) {
             color: "white",
           }}
         >
-         {msg}
+          {msg}
         </p>
       </div>
     )
@@ -139,9 +144,11 @@ function SubmarineAlertPanel(props) {
       </Modal.Body>
 
       <Modal.Footer style={{ background: `${bg}`, color: "black" }}>
-        <Button disabled={!closeButtonDisabled} onClick={(e) => yesHandler(e)}>Yes</Button>
+        <Button disabled={!closeButtonDisabled} onClick={(e) => yesHandler(e)}>
+          Yes
+        </Button>
         <Button
-        disabled={!closeButtonDisabled}
+          disabled={!closeButtonDisabled}
           onClick={(e) => {
             noHandler(e)
           }}

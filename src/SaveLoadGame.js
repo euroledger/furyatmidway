@@ -17,7 +17,6 @@ export function saveGameState(controller, gameId) {
       globalState.set(key, val)
     }
   }
-  console.log(">>>>>>>>>> globalState=",globalState)
   let airState = new Map()
   const units = Array.from(GlobalInit.counters.values())
   const airCounters = units.filter((unit) => unit.constructor.name === "AirUnit")
@@ -417,7 +416,9 @@ function loadAirUnits(airUnitMap) {
 
     // GlobalGameState.CSFLeftMap = false
     // GlobalGameState.AF1LeftMap = false
-    GlobalGameState.winner = ""
+
+    // QUACK TEMPORARY
+    // GlobalGameState.winner = ""
     // GlobalGameState.JP_AF = 6
     // GlobalGameState.US_CSF = 7
     // GlobalGameState.US_MIDWAY = 8
@@ -454,13 +455,13 @@ function loadJapanFleetUnits(loadedMap) {
     carrier.hits = loadedFleetUnit._hits
     carrier.bowDamaged = loadedFleetUnit._bowDamaged
     carrier.sternDamaged = loadedFleetUnit._sternDamaged
-    carrier.towed = loadedFleetUnit._towed
     carrier.dmcv = loadedFleetUnit._dmcv
     GlobalUnitsModel.jpFleetUnits.set(key, carrier)
   }
 }
 
 function loadUSFleetUnits(loadedMap) {
+  let cvSelected
   for (let key of loadedMap.keys()) {
     const carrier = GlobalUnitsModel.usFleetUnits.get(key)
     const loadedFleetUnit = loadedMap.get(key)
@@ -469,9 +470,13 @@ function loadUSFleetUnits(loadedMap) {
     carrier.sternDamaged = loadedFleetUnit._sternDamaged
 
     carrier.towed = loadedFleetUnit._towed
+    if (carrier.towed) {
+      cvSelected = carrier.name
+    }
     carrier.dmcv = loadedFleetUnit._dmcv
     GlobalUnitsModel.usFleetUnits.set(key, carrier)
   }
+  return cvSelected
 }
 
 export function loadGameStateForId(controller, gameId) {
@@ -532,10 +537,12 @@ export function loadGameStateForId(controller, gameId) {
   }
 
   const usFleetText = gameDetails.usFleetMap
+  let cvSelected
   if (usFleetText !== undefined) {
     usFleetUnitsMap = new Map(JSON.parse(usFleetText))
-    loadUSFleetUnits(usFleetUnitsMap)
+    cvSelected = loadUSFleetUnits(usFleetUnitsMap)
   }
+
   let jpDamageMarkerUpdates = new Array(),
     usDamageMarkerUpdates = new Array()
   if (jpFleetUnitsMap !== undefined) {
@@ -587,7 +594,7 @@ export function loadGameStateForId(controller, gameId) {
 
   // QUACK REMOVE ONE CARD AND REPLACE IT WITH ANOTHER
   // GlobalInit.controller.replaceCardWithOtherCard(1, 2, GlobalUnitsModel.Side.JAPAN)
-  GlobalInit.controller.replaceCardWithOtherCard(2, 3, GlobalUnitsModel.Side.US)
+  // GlobalInit.controller.replaceCardWithOtherCard(2, 3, GlobalUnitsModel.Side.US)
   // GlobalGameState.midwayControl = GlobalUnitsModel.Side.US
   // ------------------------------------------------------
 
@@ -616,6 +623,7 @@ export function loadGameStateForId(controller, gameId) {
     usDamageMarkerUpdates,
     jpDMCVMarkerUpdates,
     usDMCVMarkerUpdates,
+    cvSelected,
     logItems,
   }
 }

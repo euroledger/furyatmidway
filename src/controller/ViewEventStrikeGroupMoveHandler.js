@@ -40,8 +40,6 @@ class ViewEventStrikeGroupMoveHandler {
       counterData.moved = moved
       counterData.attacked = attacked
     }
-    console.log("counter Data name:", counterData.name, "MOVED=",  counterData.moved)
-
   }
 }
 export default ViewEventStrikeGroupMoveHandler

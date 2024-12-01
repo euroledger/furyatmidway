@@ -123,8 +123,6 @@ function AirCounter({ getAirBox, setAirBox, counterData, side }) {
   const onDrag = () => {
     const location = controller.getAirUnitLocation(counterData.name)
 
-    console.log("AIR UNIT:", counterData.name, "location=", location)
-
     setIsMoveable(true)
     // only the selected (clicked) air unit should be draggable
     setSelected(() => true)

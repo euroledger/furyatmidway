@@ -16,6 +16,7 @@ async function loadHandler({
   setStrikeGroupUpdate,
   setDamageMarkerUpdate,
   setDmcvShipMarkerUpdate,
+  setTowedCVSelected,
   loadState,
   id,
   setLoading,
@@ -34,7 +35,9 @@ async function loadHandler({
     jpDMCVMarkerUpdates,
     usDMCVMarkerUpdates,
     logItems,
+    cvSelected
   } = loadGameStateForId(controller, id)
+  setTowedCVSelected(cvSelected)
   for (const update of airUpdates) {
     await delay(2)
     setAirUnitUpdate(update)

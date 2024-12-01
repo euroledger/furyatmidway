@@ -2,16 +2,13 @@ import React, { useState, useContext, useEffect } from "react"
 import GlobalGameState from "../../model/GlobalGameState"
 import "./button.css"
 import AOPOffsets from "../draganddrop/AopBoxOffsets"
-import { BoardContext } from "../../App"
 import GlobalUnitsModel from "../../model/GlobalUnitsModel"
 export const AOP_MARKER_SIDE = {
   JAPAN: "japan",
   US: "us",
 }
 
-function AOPMarkerButton({ image, side, initialPosition, getZone, zIndex, incrementZIndex }) {
-  const { onDrag, onStop } = useContext(BoardContext)
-
+function AOPMarkerButton({ image, side, initialPosition, zIndex, incrementZIndex }) {
   const [position, setPosition] = useState(initialPosition)
 
   const [japanOps, setJapanOps] = useState(0)

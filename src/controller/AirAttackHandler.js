@@ -40,7 +40,11 @@ export function setUpAirAttack(controller, location, strikeGroup, setCardNumber)
     }
     GlobalGameState.taskForceTarget = GlobalUnitsModel.TaskForce.MIDWAY
   } else {
-    if (controller.japanHandContainsCard(11) && GlobalGameState.gamePhase !== GlobalGameState.PHASE.CARD_PLAY) {
+    if (
+      controller.japanHandContainsCard(11) &&
+      side === GlobalUnitsModel.Side.US && // card 11 only valid for US Strikes
+      GlobalGameState.gamePhase !== GlobalGameState.PHASE.CARD_PLAY
+    ) {
       GlobalGameState.gamePhase = GlobalGameState.PHASE.CARD_PLAY
       setCardNumber(() => 11)
     } else {

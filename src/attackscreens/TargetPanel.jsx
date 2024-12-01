@@ -75,7 +75,7 @@ export function TargetHeaders({ controller, setTargetSelected, setTargetDetermin
     const carrierSternDamaged = controller.getCarrierSternDamaged(carrier)
     const carrierBowDamaged = controller.getCarrierBowDamaged(carrier)
 
-    const carrierSunk = controller.isSunk(carrier)
+    const carrierSunk = controller.isSunk(carrier, true)
     const damageMarker = "/images/markers/damage.png"
     const sunkMarker = "/images/markers/sunk.png"
 

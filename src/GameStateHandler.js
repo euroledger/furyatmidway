@@ -543,11 +543,13 @@ function goToJapanDMCVMovement({
 
 function calcAirOpsPoints({ setSearchValues, setSearchResults, setSearchValuesAlertShow }) {
   const sv = calculateSearchValues(GlobalInit.controller)
+
   const sr = calculateSearchResults(GlobalInit.controller, {
     jp_af: Math.max(0, sv.jp_af),
     us_csf: sv.us_csf,
     us_midway: sv.us_midway,
   })
+
   setSearchValues(sv)
   GlobalGameState.airOperationPoints.japan = sr.JAPAN
   GlobalGameState.airOperationPoints.us = sr.US
@@ -1470,6 +1472,8 @@ export default async function handleAction({
       "IN AAA FIRE...GlobalGameState.attackingStepsRemaining=",
       GlobalInit.controller.getAttackingStepsRemaining()
     )
+
+    console.log("steps left=", GlobalInit.controller.getAttackingStepsRemaining())
     if (GlobalGameState.antiaircraftHits > 0) {
       GlobalGameState.gamePhase = GlobalGameState.PHASE.AAA_DAMAGE_ALLOCATION
     } else if (GlobalInit.controller.getAttackingStepsRemaining() > 0) {
@@ -1478,7 +1482,6 @@ export default async function handleAction({
         GlobalGameState.gamePhase = GlobalGameState.PHASE.ATTACK_TARGET_SELECTION
       } else {
         const anyTargets = GlobalInit.controller.autoAssignTargets()
-        console.log("**** QUACK anyTargets=", anyTargets)
         if (anyTargets === null) {
           // no targets (all units sunk)
           await endOfAirOperation(
@@ -1612,7 +1615,7 @@ export default async function handleAction({
         setCardNumber(() => 10)
         GlobalGameState.gamePhase = GlobalGameState.PHASE.CARD_PLAY
       } else {
-        console.log("DOING TIDY UP...")
+        console.log("+++++++++++++++++++++++++ DOING TIDY UP...")
         await tidyUp(setAirUnitUpdate, setStrikeGroupUpdate, setFleetUnitUpdate)
         GlobalGameState.gamePhase = GlobalGameState.PHASE.END_OF_AIR_OPERATION
         setEndOfAirOpAlertShow(true)
@@ -1620,7 +1623,10 @@ export default async function handleAction({
     }
   } else if (GlobalGameState.gamePhase === GlobalGameState.PHASE.END_OF_AIR_OPERATION) {
     if (endOfTurn()) {
-      if (GlobalInit.controller.usHandContainsCard(1)) {
+      if (
+        GlobalInit.controller.usHandContainsCard(1) &&
+        GlobalInit.controller.getSunkCarriers(GlobalUnitsModel.Side.US).length > 0
+      ) {
         setCardNumber(() => 1)
         GlobalGameState.gamePhase = GlobalGameState.PHASE.CARD_PLAY
         return
