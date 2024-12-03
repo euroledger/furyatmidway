@@ -5,7 +5,7 @@ import GlobalGameState from "../model/GlobalGameState"
 import Controller from "../controller/Controller"
 import { sendDamageUpdates, doCarrierDamageRolls, autoAllocateDamage, sendDMCVUpdate } from "../DiceHandler"
 
-export function SubmarineDamagePanelHeaders({ controller, setDamagedCV, damagedCV, side, damageDone }) {
+export function SubmarineDamagePanelHeaders({ controller, setDamagedCV, damagedCV, side, damageDone, anyTargets }) {
   let usEnterprise = {
     image: "/images/fleetcounters/enterprise.jpg",
     name: GlobalUnitsModel.Carrier.ENTERPRISE,
@@ -216,6 +216,10 @@ export function SubmarineDamagePanelHeaders({ controller, setDamagedCV, damagedC
 
   const sideBeingAttacked = side === GlobalUnitsModel.Side.US ? GlobalUnitsModel.Side.JAPAN : GlobalUnitsModel.Side.US
 
+  if (!anyTargets) {
+    setDamagedCV("NO TARGETS")
+  }
+
   const excludeSunk = !damageDone
 
   let allCarriers = controller.getAllCarriersForSide(sideBeingAttacked, excludeSunk)
@@ -225,6 +229,10 @@ export function SubmarineDamagePanelHeaders({ controller, setDamagedCV, damagedC
   }
 
   const cvImages = allCarriers.map((cv, idx) => {
+    if (cv.name === GlobalUnitsModel.Carrier.MIDWAY) {
+      return <></>
+    }
+
     const carrierSternDamaged = controller.getCarrierSternDamaged(cv.name)
     const carrierBowDamaged = controller.getCarrierBowDamaged(cv.name)
     const sunk = controller.isSunk(cv.name, true)
@@ -269,17 +277,19 @@ export function SubmarineDamagePanelHeaders({ controller, setDamagedCV, damagedC
       >
         <p>{msg}</p>
       </div>
-      <div
-        style={{
-          display: "flex",
-          justifyContent: "center",
-          alignItems: "center",
-          color: "white",
-          marginTop: "50px",
-        }}
-      >
-        {cvImages}
-      </div>
+      {anyTargets && (
+        <div
+          style={{
+            display: "flex",
+            justifyContent: "center",
+            alignItems: "center",
+            color: "white",
+            marginTop: "50px",
+          }}
+        >
+          {cvImages}
+        </div>
+      )}
       <div
         style={{
           marginTop: "10px",
@@ -308,7 +318,7 @@ export function SubmarineDamagePanelFooters({
   setDamageMarkerUpdate,
   setDamageDone,
   damageDone,
-  setDmcvShipMarkerUpdate
+  setDmcvShipMarkerUpdate,
 }) {
   if (damagedCV === "" || GlobalGameState.dieRolls.length === 0) {
     if (damageDone) {

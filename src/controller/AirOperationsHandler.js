@@ -316,6 +316,39 @@ export function doStrikeBoxJapanNight(controller, name, strikeGroup, side) {
   controller.setValidAirUnitDestinations(name, destArray)
 }
 
+export function doStrikeBoxUSNight(controller, name, strikeGroup, side) {
+  // For now
+  // Once a unit has moved into the strike box
+  // disallow further moves
+  controller.setValidAirUnitDestinations(name, new Array())
+
+  // Once strike has finished, set possible return boxes as destinations
+  // some tests do not have strike groups set up, no need for this function
+
+  let destArray = new Array()
+
+  const unit = controller.getAirUnitForName(name)
+  const tf = controller.getTaskForceForCarrier(unit.carrier, side)
+
+  // At night can only go to return2
+
+  // GOTO RETURN 2 BOX
+  const return2Box = controller.getReturn2AirBoxForNamedTaskForce(side, tf)
+  destArray.push(return2Box)
+
+  const otherTF = controller.getOtherTaskForce(tf, side)
+  const carriersInOtherTaskForce = controller.getCarriersInOtherTF(otherTF, side)
+  for (let carrier of carriersInOtherTaskForce) {
+    if (!controller.isSunk(carrier.name) && carrier.hits < 2) {
+      const return2BoxOtherTF = controller.getReturn2AirBoxForNamedTaskForce(side, otherTF)
+      destArray.push(return2BoxOtherTF)
+      break
+    }
+  }
+
+  controller.setValidAirUnitDestinations(name, destArray)
+}
+
 export function doStrikeBoxJapan(controller, name, strikeGroup, side) {
   // For now
   // Once a unit has moved into the strike box
@@ -334,7 +367,9 @@ export function doStrikeBoxJapan(controller, name, strikeGroup, side) {
   //   "strikeGroup.airOpMoved=",
   //   strikeGroup.airOpMoved,
   //   "strikeGroup.airOpAttacked=",
-  //   strikeGroup.airOpAttacked
+  //   strikeGroup.airOpAttacked,
+  //   "strikeGroup.gameTurnMoved=", 
+  //   strikeGroup.gameTurnMoved
   // )
   // Japanese Units must go to return box of parent carrier unless it is damaged
   const parentCarrier = controller.getCarrierForAirUnit(name)
@@ -349,9 +384,8 @@ export function doStrikeBoxJapan(controller, name, strikeGroup, side) {
     controller.setValidAirUnitDestinations(name, destArray)
     return
   }
-  if (strikeGroup.airOpAttacked && strikeGroup.airOpMoved === strikeGroup.airOpAttacked) {
+  if (strikeGroup.airOpAttacked && strikeGroup.airOpMoved === strikeGroup.airOpAttacked && strikeGroup.gameTurnMoved === GlobalGameState.gameTurn) {
     // GOTO RETURN 1 BOX
-    console.log("IN HERE 2")
     const return1Box = controller.getReturn1AirBoxForNamedTaskForce(side, tf)
     destArray.push(return1Box)
 
@@ -367,9 +401,7 @@ export function doStrikeBoxJapan(controller, name, strikeGroup, side) {
         }
       }
     }
-  } else if (strikeGroup.attacked && strikeGroup.airOpMoved !== strikeGroup.airOpAttacked) {
-    console.log("IN HERE 3")
-
+  } else if (strikeGroup.attacked) {
     // GOTO RETURN 2 BOX
     const return2Box = controller.getReturn2AirBoxForNamedTaskForce(side, tf)
     destArray.push(return2Box)
@@ -416,15 +448,13 @@ export function enemyFleetInRangeJapan(controller, distance) {
       return true
     }
   }
-    console.log("locationOfStrikeGroup=", locationOfStrikeGroup)
-    console.log("locationOfMidway=", locationOfMidway)
 
-    distanceToMidway = distanceBetweenHexes(locationOfStrikeGroup.currentHex, locationOfMidway.currentHex)
+  distanceToMidway = distanceBetweenHexes(locationOfStrikeGroup.currentHex, locationOfMidway.currentHex)
 
-    if (distanceToMidway <= distance) {
-      // strike group can move to attack Midway
-      return true
-    }
+  if (distanceToMidway <= distance) {
+    // strike group can move to attack Midway
+    return true
+  }
 }
 
 export function enemyFleetInRangeUS(controller, distance, carrierName) {
@@ -459,7 +489,7 @@ export function enemyFleetInRangeUS(controller, distance, carrierName) {
     }
   }
   if (locationOfEnemyMIF !== undefined && locationOfEnemyMIF.currentHex !== undefined) {
-    distanceToMIF= distanceBetweenHexes(locationOfStrikeGroup.currentHex, locationOfEnemyMIF.currentHex)
+    distanceToMIF = distanceBetweenHexes(locationOfStrikeGroup.currentHex, locationOfEnemyMIF.currentHex)
 
     if (distanceToMIF <= distance) {
       // strike group can move to attack enemy carrier fleet
@@ -561,33 +591,26 @@ export function doFlightDeck(controller, name, side) {
 
   // cannot go to strike box on last air op of GT3 and no fleets in range
   if (side === GlobalUnitsModel.Side.JAPAN) {
-    if (GlobalGameState.gameTurn === 3 && GlobalGameState.airOperationPoints["japan"]  === 1) {
+    if (GlobalGameState.gameTurn === 3 && GlobalGameState.airOperationPoints["japan"] === 1) {
       if (enemyFleetInRangeJapan(controller, 2)) {
-        console.log("SG ALLOWED FOR IJN!!!")
         const strikeBoxes = controller.getStrikeBoxes(name, side)
         destinationsArray = destinationsArray.concat(strikeBoxes)
-      } else {
-        console.log("SG  ***NOT ***ALLOWED FOR IJN!!!")
       }
     } else {
       const strikeBoxes = controller.getStrikeBoxes(name, side)
       destinationsArray = destinationsArray.concat(strikeBoxes)
     }
   } else {
-    if (GlobalGameState.gameTurn === 3 && GlobalGameState.airOperationPoints["us"]  === 1) {
+    if (GlobalGameState.gameTurn === 3 && GlobalGameState.airOperationPoints["us"] === 1) {
       if (enemyFleetInRangeUS(controller, 2, carrierName)) {
-        console.log("SG ALLOWED FOR US!!!")
         const strikeBoxes = controller.getStrikeBoxes(name, side)
         destinationsArray = destinationsArray.concat(strikeBoxes)
-      } else {
-        console.log("SG  ***NOT ***ALLOWED FOR US!!!")
-      }
+      } 
     } else {
       const strikeBoxes = controller.getStrikeBoxes(name, side)
       destinationsArray = destinationsArray.concat(strikeBoxes)
     }
   }
-
 
   //  iii) Hangar
   const hangarBox = controller.getAirBoxForNamedShip(side, carrierName, "HANGAR")
@@ -693,10 +716,8 @@ export async function resetStrikeGroups(controller, side, setStrikeGroupUpdate) 
   for (let strikeGroup of groups.values()) {
     if (!strikeGroup.attacked) {
       index++
-      console.log("SG", strikeGroup.name, "moved=", strikeGroup.moved, "-> HAS NOT ATTACKED -NO RESET!")
       continue
     }
-    console.log("SG", strikeGroup.name, "-> RESET!")
     let update = {
       name: strikeGroup.name,
       position: {

@@ -104,7 +104,7 @@ export function TowedCVHeaders({ controller, setTowedCVSelected, towedCVSelected
 }
 
 export function TowedCVFooters({ controller, towedCVSelected }) {
-  if (towedCVSelected == "") {
+  if (towedCVSelected == "" || towedCVSelected === undefined) {
     return
   }
 

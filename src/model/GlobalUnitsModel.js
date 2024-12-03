@@ -139,6 +139,8 @@ export default class GlobalUnitsModel {
   static taskForce16Map = new Map()
   static taskForce17Map = new Map()
 
+  static midwayAttackGroup = undefined
+  
   static akagiMap = new Map()
   static kagaMap = new Map()
   static hiryuMap = new Map()

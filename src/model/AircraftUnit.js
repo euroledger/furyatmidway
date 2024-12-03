@@ -7,6 +7,7 @@ export default class AircraftUnit {
         this.diveBomber = diveBomber
         this.steps = steps,
         this.moved = moved
+        this.turnmoved = 0
         this.intercepting = intercepting
         this.hitsScored = 0
         this.separated = false
@@ -74,6 +75,14 @@ export default class AircraftUnit {
 
     set moved(m) {
         this._moved = m
+    }
+
+    get turnmoved() {
+        return this._turnmoved
+    }
+
+    set turnmoved(tm) {
+        this._turnmoved = tm
     }
 
     get intercepting() {

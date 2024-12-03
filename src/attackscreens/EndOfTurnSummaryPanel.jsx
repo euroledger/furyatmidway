@@ -54,7 +54,10 @@ export function EndOfTurnSummaryHeaders({ controller }) {
   GlobalGameState.winner = ""
   if (GlobalGameState.gameTurn === 3 || GlobalGameState.gameTurn === 7) {
     GlobalGameState.winner = controller.victoryCheck()
+  } else {
+    controller.calculateVPs()
   }
+
   let vmsg = ""
 
   if (GlobalGameState.gameTurn === 3) {
@@ -62,7 +65,7 @@ export function EndOfTurnSummaryHeaders({ controller }) {
   }
 
   if (GlobalGameState.gameTurn === 7) {
-    vmsg = "Game Result - GlobalGameState.winner:"
+    vmsg = "Result - winner is: "
   }
 
   const gameTurn3Winner = GlobalGameState.gameTurn === 3 && GlobalGameState.winner !== ""
@@ -201,11 +204,11 @@ export function EndOfTurnSummaryHeaders({ controller }) {
               {gameContinuesMsg}
             </p>
 
-            {gameTurn3Winner && (
+            {(gameTurn3Winner || GlobalGameState.gameTurn === 7) && (
               <p
                 style={{
                   marginTop: "50px",
-
+                  marginLeft: "-30px",
                   color: "white",
                 }}
               >

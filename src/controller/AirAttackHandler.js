@@ -58,7 +58,18 @@ export function setUpAirAttack(controller, location, strikeGroup, setCardNumber)
           GlobalGameState.taskForceTarget = GlobalUnitsModel.TaskForce.MIF
         }
       } else {
-        GlobalGameState.gamePhase = GlobalGameState.PHASE.TARGET_DETERMINATION
+        // may have no targets (all enemy carriers sunk/DMCV)
+        const sideBeingAttacked =
+          GlobalGameState.sideWithInitiative === GlobalUnitsModel.Side.US
+            ? GlobalUnitsModel.Side.JAPAN
+            : GlobalUnitsModel.Side.US
+        let anyTargets = controller.anyTargets(sideBeingAttacked)
+        if (anyTargets) {
+          GlobalGameState.gamePhase = GlobalGameState.PHASE.TARGET_DETERMINATION
+        } else {
+          strikeGroup.attacked = true
+          return
+        }
       }
     }
   }

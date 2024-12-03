@@ -990,31 +990,31 @@ const usAirUnits = [
 ]
 
 const jpSGPosition1 = {
-  left: "42.8%",
+  left: "43.3%",
   top: "64%",
 }
 const jpSGPosition2 = {
-  left: "42.8%",
+  left: "43.3%",
   top: "68.2%",
 }
 const jpSGPosition3 = {
-  left: "42.8%",
+  left: "43.3%",
   top: "72.5%",
 }
 const jpSGPosition4 = {
-  left: "42.8%",
+  left: "43.3%",
   top: "77.0%",
 }
 const jpSGPosition5 = {
-  left: "42.8%",
+  left: "43.3%",
   top: "81.5%",
 }
 const jpSGPosition6 = {
-  left: "42.8%",
+  left: "43.3%",
   top: "86.0%",
 }
 const jpSGPosition7 = {
-  left: "42.8%",
+  left: "43.3%",
   top: "90.5%",
 }
 

@@ -101,7 +101,11 @@ export default class CardModel {
       numFleets += 2
     }
     const usDMCVLocation = this.getFleetLocation("US-DMCV", GlobalUnitsModel.Side.US)
-    if (usDMCVLocation && csfLocation.currentHex !== HexCommand.OFFBOARD) {
+    if (
+      usDMCVLocation &&
+      usDMCVLocation.boxName !== HexCommand.FLEET_BOX &&
+      usDMCVLocation.currentHex !== HexCommand.OFFBOARD
+    ) {
       numFleets += 2
     }
     const af1Location = this.getFleetLocation("1AF-USMAP", GlobalUnitsModel.Side.US)
@@ -109,11 +113,15 @@ export default class CardModel {
       numFleets += 2
     }
     const jpDMCVLocation = this.getFleetLocation("IJN-DMCV-USMAP", GlobalUnitsModel.Side.US)
-    if (jpDMCVLocation && jpDMCVLocation.currentHex !== HexCommand.OFFBOARD) {
+    if (
+      jpDMCVLocation &&
+      jpDMCVLocation.boxName !== HexCommand.FLEET_BOX &&
+      jpDMCVLocation.currentHex !== HexCommand.OFFBOARD
+    ) {
       numFleets += 2
     }
     const mifLocation = this.getFleetLocation("MIF", GlobalUnitsModel.Side.JAPAN)
-    if (mifLocation && mifLocation.currentHex !== HexCommand.OFFBOARD) {
+    if (mifLocation && mifLocation.boxName !==HexCommand.FLEET_BOX && mifLocation.currentHex !== HexCommand.OFFBOARD) {
       numFleets += 2
     }
     return numFleets

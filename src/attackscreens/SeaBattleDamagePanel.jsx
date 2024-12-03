@@ -66,6 +66,9 @@ export function SeaBattleDamagePanelHeaders({
   }
 
   const createImage = (carrierName, damageBow, damageStern, sunk, hitsLeft) => {
+    if (carrierName === GlobalUnitsModel.Carrier.MIDWAY) {
+      return
+    }
     let carrier
     let damageMarker = sunk ? "/images/markers/sunk.png" : "/images/markers/damage.png"
     let airImages

@@ -266,7 +266,6 @@ export function createRemoveFleetUpdate(side) {
     loading: false,
     side
   }
-  console.log("FLEET UPDATE:", update)
   return update
 }
 

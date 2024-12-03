@@ -121,6 +121,7 @@ function AirCounter({ getAirBox, setAirBox, counterData, side }) {
     }
   }
   const onDrag = () => {
+
     const location = controller.getAirUnitLocation(counterData.name)
 
     setIsMoveable(true)
@@ -179,10 +180,11 @@ function AirCounter({ getAirBox, setAirBox, counterData, side }) {
       }
     }
 
+
     // Only CAP Units can be moved during the other side's air operation (at the end
     // of all airstrikes to return to carrier)
 
-    if (GlobalGameState.sideWithInitiative !== counterData.side && !location.boxName.includes("CAP RETURNING")) {
+    if (GlobalGameState.sideWithInitiative !== undefined && GlobalGameState.sideWithInitiative !== counterData.side && !location.boxName.includes("CAP RETURNING")) {
       return
     }
     if (
@@ -197,7 +199,6 @@ function AirCounter({ getAirBox, setAirBox, counterData, side }) {
       }
       return
     }
-
     if (
       GlobalGameState.gamePhase === GlobalGameState.PHASE.AIR_OPERATIONS ||
       GlobalGameState.gamePhase === GlobalGameState.PHASE.MIDWAY_ATTACK

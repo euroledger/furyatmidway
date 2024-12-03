@@ -51,7 +51,6 @@ export function doTroubledReconnaissanceRoll(controller, roll) {
 
 export function doNavalBattleRoll(controller, roll0, roll1) {
   let jpRolls, usRolls
-
   if (roll0 && roll1) {
     jpRolls = [roll0]
     usRolls = [roll1]
@@ -60,6 +59,10 @@ export function doNavalBattleRoll(controller, roll0, roll1) {
     jpRolls = [rolls[0]]
     usRolls = [rolls[1]]
   }
+
+  // QUACK FOR TESTING ONLY
+  // jpRolls = 2
+  // usRolls = 6
 
   controller.viewEventHandler({
     type: Controller.EventTypes.NAVAL_BATTLE_ROLL,
@@ -151,7 +154,7 @@ export function doFighterCounterattack(controller, testRolls) {
   }
   // GlobalGameState.dieRolls = 1
   GlobalGameState.fighterHits = hits
-  // GlobalGameState.fighterHits = 1 // QUACK TESTING ONLY
+  // GlobalGameState.fighterHits = 1 // QUACK TESTING ONLY 
 }
 
 export function getAirUnitOnFlightDeck(controller, carrier, bowOrStern) {
@@ -779,12 +782,12 @@ export function doAttackFireRolls(controller, testRolls) {
     // GlobalGameState.midwayHitsThisAttack = 2
 
   } else {
-    GlobalGameState.carrierAttackHits = hits
-    GlobalGameState.carrierAttackHitsThisAttack = hits
+    // GlobalGameState.carrierAttackHits = hits
+    // GlobalGameState.carrierAttackHitsThisAttack = hits
 
     // QUACK REMOVE TEESTING ONLY
-    // GlobalGameState.carrierAttackHits = 1
-    // GlobalGameState.carrierAttackHitsThisAttack = 1
+    GlobalGameState.carrierAttackHits = 2
+    GlobalGameState.carrierAttackHitsThisAttack = 2
   }
   return hits
 }

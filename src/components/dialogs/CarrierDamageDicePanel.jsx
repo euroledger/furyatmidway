@@ -127,13 +127,43 @@ function CarrierDamageDicePanel(props) {
     GlobalGameState.carrierAttackHits = 0
     sendDamageUpdates(controller, damage, setDamageMarkerUpdate)
     if (damage.sunk) {
+
+      // This needs to be done after the DMCV Fleet Marker is removed.
+      // @See handleAction in GameStateHandler
+      // const cv = controller.getCarrier(carrier)
+      // cv.dmcv = false
       const sideBeingAttacked =
         GlobalGameState.sideWithInitiative === GlobalUnitsModel.Side.US
           ? GlobalUnitsModel.Side.JAPAN
           : GlobalUnitsModel.Side.US
-      sendDMCVUpdate(controller, GlobalGameState.currentCarrierAttackTarget, setDmcvShipMarkerUpdate, sideBeingAttacked)
+      if (sideBeingAttacked === GlobalUnitsModel.Side.US) {
+        // console.log(
+        //   "DEBUG DMCV SUNK attack target=",
+        //   GlobalGameState.currentCarrierAttackTarget,
+        //   "US DMCV=",
+        //   GlobalGameState.usDMCVCarrier
+        // )
+        if (GlobalGameState.currentCarrierAttackTarget === GlobalGameState.usDMCVCarrier) {
+          sendDMCVUpdate(
+            controller,
+            GlobalGameState.currentCarrierAttackTarget,
+            setDmcvShipMarkerUpdate,
+            sideBeingAttacked
+          )
+        }
+      }
+      if (sideBeingAttacked === GlobalUnitsModel.Side.JAPAN) {
+        if (GlobalGameState.currentCarrierAttackTarget === GlobalGameState.jpDMCVCarrier) {
+          sendDMCVUpdate(
+            controller,
+            GlobalGameState.currentCarrierAttackTarget,
+            setDmcvShipMarkerUpdate,
+            sideBeingAttacked
+          )
+        }
+      }
     }
-  } 
+  }
 
   let isSunk = false
   if (GlobalGameState.currentCarrierAttackTarget !== "" && GlobalGameState.currentCarrierAttackTarget !== undefined) {

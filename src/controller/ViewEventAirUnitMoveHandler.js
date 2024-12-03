@@ -58,6 +58,7 @@ class ViewEventAirUnitMoveHandler {
       ) {
       } else {
         counterData.aircraftUnit.moved = true
+        counterData.aircraftUnit.turnMoved = GlobalGameState.gameTurn
       }
     }
     counterData.border = undefined

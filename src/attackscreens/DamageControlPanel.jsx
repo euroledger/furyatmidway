@@ -162,14 +162,19 @@ export function DamageControlPanelHeaders({ controller, setDamagedCV, damagedCV,
   }
   let msg = side === GlobalUnitsModel.Side.US ? "" : "(Successful on roll of 1-3 for Japan)"
 
+  if (damagedCV !== "" && damagedCV !== undefined) {
+    msg="Remove 1 hit from Carrier " + damagedCV
+  }
   let damagedCarriers = controller.getDamagedCarriers(side)
   damagedCarriers = damagedCarriers.filter((cv) => !controller.getCarrier(cv).dmcv)
-  if (damagedCarriers.length === 0) {
+  if (damagedCarriers.length === 0 && !japanDamageDone) {
     msg="No Eligible Carriers"
     setDamagedCV("x")
   }
   if (side === GlobalUnitsModel.Side.US && damagedCarriers.length === 1 && damagedCV === "") {
     removeDamageFromCV(damagedCarriers[0])
+    msg="Remove 1 hit from Carrier " + damagedCarriers[0]
+    setJapanDamageDone(true)  
   }
 
   if (side === GlobalUnitsModel.Side.JAPAN && damagedCV !== "" && GlobalGameState.dieRolls[0] <= 3 && !japanDamageDone) {

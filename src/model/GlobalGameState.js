@@ -89,7 +89,7 @@ export default class GlobalGameState {
   static orphanedAirUnits = new Array()
 
   static midwayAirOpsCompleted = 0
-  
+  static midwayAttackResolved = false
   static airOperationPoints = {
     japan: 0,
     us: 0,

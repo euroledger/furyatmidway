@@ -6,6 +6,7 @@ import USAirBoxOffsets from "../../draganddrop/USAirBoxOffsets"
 import "../../board.css"
 import "./counter.css"
 import GlobalInit from "../../../model/GlobalInit"
+import GlobalGameState from "../../../model/GlobalGameState"
 
 function DMCVShipMarker({ counterData }) {
   const { dmcvShipMarkerUpdate } = useContext(BoardContext)

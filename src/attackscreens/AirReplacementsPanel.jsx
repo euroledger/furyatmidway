@@ -76,9 +76,7 @@ export function AirReplacementsHeaders({
 
   const handleClick = (airUnit) => {
     // if this unit has 1 step -> flip to full strength
-    console.log("SELECTED ->", airUnit.name, "STEPS=", airUnit.aircraftUnit.steps)
     if (airUnit.aircraftUnit.steps === 1 && !eliminatedAirUnits.includes(airUnit)) {
-      console.log("POO STEPS = 1")
       airUnit.aircraftUnit.steps = 2
       const newImage = airUnit.image.replace("back", "front")
       airUnit.image = newImage
@@ -242,7 +240,7 @@ export function AirReplacementsFooters({
       GlobalUnitsModel.Carrier.HORNET,
     ]
     availableUSCVs = usCVs.filter((carrier) => {
-      return !controller.isSunk(carrier) && controller.isHangarAvailable(carrier)
+      return !controller.isSunk(carrier, true) && controller.isHangarAvailable(carrier)
     })
     if (availableUSCVs.length === 0) {
       msg = "No carriers available to receive replacements"
@@ -310,7 +308,6 @@ export function AirReplacementsFooters({
   }
 
   if (!airReplacementsSelected) {
-    console.log("POO")
     if (side === GlobalUnitsModel.Side.US) {
       availableCVImages = availableUSCVs.map((cv, idx) => {
         return (
@@ -319,9 +316,6 @@ export function AirReplacementsFooters({
           </>
         )
       })
-      // if (availableUSCVs.length === 1) {
-      //   setSelectedCV(availableUSCVs[0])
-      // }
     } else {
       availableCVImages = availableJapanCVs.map((cv, idx) => {
         return (

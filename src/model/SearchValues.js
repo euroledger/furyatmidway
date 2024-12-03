@@ -11,7 +11,6 @@ export function calculateSearchValues(controller) {
   if (distanceToClosestFleet1AF === undefined) {
     distanceToClosestFleet1AF = 100
   }
-  console.log("distanceToClosestFleetCSF=",distanceToClosestFleetCSF)
 
   return {
     jp_af: distanceToClosestFleet1AF,

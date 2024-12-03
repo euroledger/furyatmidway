@@ -83,27 +83,34 @@ export default class Controller {
   autoSelectTaskForceTarget(sideBeingAttacked) {
     let autoSelectTarget = null
     if (sideBeingAttacked == GlobalUnitsModel.Side.JAPAN) {
-      if (this.isSunk(GlobalUnitsModel.Carrier.AKAGI) && this.isSunk(GlobalUnitsModel.Carrier.KAGA)) {
+      if (
+        (this.isSunk(GlobalUnitsModel.Carrier.AKAGI) ||
+          GlobalGameState.jpDMCVCarrier === GlobalUnitsModel.Carrier.AKAGI) &&
+        (this.isSunk(GlobalUnitsModel.Carrier.KAGA) || GlobalGameState.usDMCVCarrier === GlobalUnitsModel.Carrier.KAGA)
+      ) {
         autoSelectTarget = GlobalUnitsModel.TaskForce.CARRIER_DIV_2
       }
-      if (this.isSunk(GlobalUnitsModel.Carrier.HIRYU) && this.isSunk(GlobalUnitsModel.Carrier.SORYU)) {
+      if (
+        (this.isSunk(GlobalUnitsModel.Carrier.HIRYU) ||
+          GlobalGameState.usDMCVCarrier === GlobalUnitsModel.Carrier.HIRYU) &&
+        (this.isSunk(GlobalUnitsModel.Carrier.SORYU) ||
+          GlobalGameState.usDMCVCarrier === GlobalUnitsModel.Carrier.SORYU)
+      ) {
         autoSelectTarget = GlobalUnitsModel.TaskForce.CARRIER_DIV_1
       }
     } else {
-      console.log("US BEING ATTACKED GlobalGameState.usDMCVCarrier=", GlobalGameState.usDMCVCarrier)
-      console.log(
-        "US BEING ATTACKED this.isSunk(GlobalUnitsModel.Carrier.YORKTOWN)=",
-        this.isSunk(GlobalUnitsModel.Carrier.YORKTOWN, true)
-      )
-
-      if (this.isSunk(GlobalUnitsModel.Carrier.ENTERPRISE, true) && this.isSunk(GlobalUnitsModel.Carrier.HORNET, true)) {
+      if (
+        (this.isSunk(GlobalUnitsModel.Carrier.ENTERPRISE, true) ||
+          GlobalGameState.usDMCVCarrier === GlobalUnitsModel.Carrier.ENTERPRISE) &&
+        (this.isSunk(GlobalUnitsModel.Carrier.HORNET, true) ||
+          GlobalGameState.usDMCVCarrier === GlobalUnitsModel.Carrier.HORNET)
+      ) {
         autoSelectTarget = GlobalUnitsModel.TaskForce.TASK_FORCE_17
       }
       if (
         this.isSunk(GlobalUnitsModel.Carrier.YORKTOWN, true) ||
         GlobalGameState.usDMCVCarrier === GlobalUnitsModel.Carrier.YORKTOWN
       ) {
-        console.log("AUTO TARGET TF16")
         autoSelectTarget = GlobalUnitsModel.TaskForce.TASK_FORCE_16
       }
       // @TODO Add Midway
@@ -348,7 +355,6 @@ export default class Controller {
   getCarrierAirUnitLaunchedFrom(name) {
     const unit = this.getAirUnitForName(name)
     const location = this.getAirUnitLocation(name)
-    // console.log("Air Unit", name, "launched from", location)
 
     let loc = location.boxName
     if (location.boxName.includes("STRIKE")) {
@@ -405,16 +411,30 @@ export default class Controller {
       // If one already exists only allow those boxes as destination
       // 1. Get num strike groups
       //    => if none, we're done
-      //    => If 1, return only those boxes
+      //    => If 1 or more check if any are already set to midway attack group
       if (GlobalGameState.gamePhase === GlobalGameState.PHASE.MIDWAY_ATTACK) {
         const groups = this.getAllStrikeGroups(GlobalUnitsModel.Side.JAPAN)
-        if (groups.length === 1) {
-          strikeBoxes = new Array()
-          const strikeGroup = this.getStrikeGroupForBox(side, groups[0].box)
-          if (!strikeGroup.moved) {
-            strikeBoxes.push(groups[0].box)
+        const found = false
+        for (let group of groups) {
+          if (group.name === GlobalGameState.midwayAttackGroup) {
+            strikeBoxes = new Array()
+            const strikeGroup = this.getStrikeGroupForBox(side, groups[0].box)
+            if (!strikeGroup.moved) {
+              strikeBoxes.push(groups[0].box)
+              found = true
+            }
           }
         }
+        // for (let group of groups) {
+        //   if (group.name !== GlobalGameState.midwayAttackGroup) {
+        //     strikeBoxes = new Array()
+        //     const strikeGroup = this.getStrikeGroupForBox(side, groups[0].box)
+        //     if (!strikeGroup.moved) {
+        //       strikeBoxes.push(groups[0].box)
+        //     }
+        //   }
+        //   return strikeBoxes
+        // }
       }
     }
     return strikeBoxes
@@ -607,28 +627,19 @@ export default class Controller {
       unit.aircraftUnit.moved = false
       this.counters.set(unit.name, unit)
     }
-
-    // const strikeUnits = this.counters.values().filter((unit) => unit.constructor.name === "StrikeGroupUnit")
-
-    // for (const unit of strikeUnits) {
-    //   console.log("JOHN WARK!")
-    //   unit.moved = false
-    //   this.counters.set(unit.name, unit)
-    // }
   }
 
   getAllStrikeUnits(side) {
     // this is used at beginning of night operations
     const units = new Array()
     const strikeGroups = this.getAllStrikeGroups(side)
-    console.log("SGs=", strikeGroups)
     for (const group of strikeGroups) {
       const unitsInGroup = this.getAirUnitsInStrikeGroups(group.box)
       for (const unit of unitsInGroup) {
         // allow new move from strike box to return box (manual)
         units.push(unit)
       }
-    } 
+    }
     return units
   }
   getAirUnitsInStrikeBoxesReadyToReturn(side) {
@@ -705,7 +716,6 @@ export default class Controller {
     const unitsInGroup = this.getAirUnitsInStrikeGroups(box)
     for (let unit of unitsInGroup) {
       if (unit.aircraftUnit.movement === 2) {
-        console.log("Name of 2 speed fucker:", unit.name)
         return 2
       }
     }
@@ -856,11 +866,62 @@ export default class Controller {
     }
     const firstBox = 0
     for (let i = 0; i < takenBoxes.length; i++) {
-      if (!takenBoxes[i].includes(i)) {
+      if (!takenBoxes.includes(i)) {
         return i
       }
     }
     return firstBox
+  }
+
+  anySubmarineTargets(side) {
+    let numCarriersSunk = this.getSunkCarriers(side, true).length
+    if (side === GlobalUnitsModel.Side.JAPAN) {
+      if (numCarriersSunk === 4) {
+        return false
+      }
+      // check if IJN DMCV fleet is off map
+      const jpDMCVLocation = this.getFleetLocation("IJN-DMCV", GlobalUnitsModel.Side.JAPAN)
+      if (numCarriersSunk === 3 && jpDMCVLocation.boxName === HexCommand.FLEET_BOX) {
+        return false
+      }
+    } else {
+      // check if US DMCV fleet is off map
+      const usDMCVLocation = this.getFleetLocation("US-DMCV", GlobalUnitsModel.Side.US)
+      if (numCarriersSunk === 3) {
+        return false
+      }
+      if (numCarriersSunk === 2 && usDMCVLocation.boxName === HexCommand.FLEET_BOX) {
+        return false
+      }
+    }
+    return true
+  }
+  anyTargets(side) {
+    let numCarriersSunk = this.getSunkCarriers(side, true).length
+    if (side === GlobalUnitsModel.Side.JAPAN) {
+      if (numCarriersSunk === 4) {
+        return false
+      }
+      if (
+        numCarriersSunk === 3 &&
+        GlobalGameState.jpDMCVCarrier !== "" &&
+        GlobalGameState.jpDMCVCarrier !== undefined
+      ) {
+        return false
+      }
+    } else {
+      if (numCarriersSunk === 3) {
+        return false
+      }
+      if (
+        numCarriersSunk === 2 &&
+        GlobalGameState.usDMCVCarrier !== "" &&
+        GlobalGameState.usDMCVCarrier !== undefined
+      ) {
+        return false
+      }
+    }
+    return true
   }
   allCarriersSunk(side) {
     let numCarriersSunk = this.getSunkCarriers(side).length
@@ -877,29 +938,29 @@ export default class Controller {
     return false
   }
 
-  getSunkCarriers(side) {
+  getSunkCarriers(side, countTowedAsSunk) {
     let sunkCarriers = new Array()
     if (side === GlobalUnitsModel.Side.JAPAN) {
-      if (this.isSunk(GlobalUnitsModel.Carrier.AKAGI)) {
+      if (this.isSunk(GlobalUnitsModel.Carrier.AKAGI, countTowedAsSunk)) {
         sunkCarriers.push(GlobalUnitsModel.Carrier.AKAGI)
       }
-      if (this.isSunk(GlobalUnitsModel.Carrier.KAGA)) {
+      if (this.isSunk(GlobalUnitsModel.Carrier.KAGA, countTowedAsSunk)) {
         sunkCarriers.push(GlobalUnitsModel.Carrier.KAGA)
       }
-      if (this.isSunk(GlobalUnitsModel.Carrier.HIRYU)) {
+      if (this.isSunk(GlobalUnitsModel.Carrier.HIRYU, countTowedAsSunk)) {
         sunkCarriers.push(GlobalUnitsModel.Carrier.HIRYU)
       }
-      if (this.isSunk(GlobalUnitsModel.Carrier.SORYU)) {
+      if (this.isSunk(GlobalUnitsModel.Carrier.SORYU, countTowedAsSunk)) {
         sunkCarriers.push(GlobalUnitsModel.Carrier.SORYU)
       }
     } else {
-      if (this.isSunk(GlobalUnitsModel.Carrier.ENTERPRISE)) {
+      if (this.isSunk(GlobalUnitsModel.Carrier.ENTERPRISE, countTowedAsSunk)) {
         sunkCarriers.push(GlobalUnitsModel.Carrier.ENTERPRISE)
       }
-      if (this.isSunk(GlobalUnitsModel.Carrier.HORNET)) {
+      if (this.isSunk(GlobalUnitsModel.Carrier.HORNET, countTowedAsSunk)) {
         sunkCarriers.push(GlobalUnitsModel.Carrier.HORNET)
       }
-      if (this.isSunk(GlobalUnitsModel.Carrier.YORKTOWN)) {
+      if (this.isSunk(GlobalUnitsModel.Carrier.YORKTOWN, countTowedAsSunk)) {
         sunkCarriers.push(GlobalUnitsModel.Carrier.YORKTOWN)
       }
     }
@@ -1076,7 +1137,6 @@ export default class Controller {
 
   getAttackingStepsRemaining() {
     const unitsInGroup = this.getAttackingStrikeUnits(true)
-    console.log("unitsInGroup=", unitsInGroup)
     let totalSteps = 0
     const airCounters = unitsInGroup.map((airUnit) => {
       if (!airUnit.aircraftUnit.attack) {
@@ -1348,12 +1408,33 @@ export default class Controller {
     return GlobalGameState.totalMidwayHits >= 3
   }
 
-  victoryCheck() {
-    // @TODO Will need to take account of CVs which have left the map...
+  calculateVPs() {
+    const numJapanCVsSunk = this.getSunkCarriers(GlobalUnitsModel.Side.JAPAN).length
+    const numUSCVsSunk = this.getSunkCarriers(GlobalUnitsModel.Side.US).length
 
-    // if (GlobalGameState.gameTurn !== 3 && GlobalGameState.gameTurn !== 7) {
-    //   return null
-    // }
+    const numJapanCVsRemaining = 4 - numJapanCVsSunk
+    const numUSCVsRemaining = 3 - numUSCVsSunk
+
+    GlobalGameState.japanVPs = 0
+    GlobalGameState.usVPs = 0
+    GlobalGameState.usVPs += numJapanCVsSunk
+
+    GlobalGameState.japanVPs += numUSCVsSunk
+    if (GlobalGameState.midwayControl === GlobalUnitsModel.Side.US) {
+      GlobalGameState.usVPs += 2
+    } else {
+      GlobalGameState.japanVPs += 2
+    }
+
+    // 1 VP for each unit moved off map
+    if (GlobalGameState.CSFLeftMap) {
+      GlobalGameState.japanVPs++
+    }
+    if (GlobalGameState.AF1LeftMap) {
+      GlobalGameState.usVPs++
+    }
+  }
+  victoryCheck() {
     const numJapanCVsSunk = this.getSunkCarriers(GlobalUnitsModel.Side.JAPAN).length
     const numUSCVsSunk = this.getSunkCarriers(GlobalUnitsModel.Side.US).length
 
@@ -1791,10 +1872,10 @@ export default class Controller {
 
   calcSearchResults(distances) {
     let jpVal = Math.max(1, GlobalGameState.JP_AF - distances.jp_af)
+    jpVal = Math.min(4, jpVal)
 
     jpVal -= GlobalGameState.midwayAirOpsCompleted
     jpVal = Math.max(0, jpVal)
-    jpVal = Math.min(4, jpVal)
 
     let usVal = Math.max(1, GlobalGameState.US_CSF - distances.us_csf, GlobalGameState.US_MIDWAY - distances.us_midway)
     usVal = Math.min(4, usVal)

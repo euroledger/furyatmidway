@@ -196,7 +196,12 @@ function FleetCounter({
       const locationMIF = controller.getFleetLocation("MIF", GlobalUnitsModel.Side.JAPAN)
 
       let dmcv, af1, mif
-      if (locationDMCV !== undefined && locationDMCV.currentHex !== undefined && locationDMCV !== HexCommand.OFFBOARD) {
+      if (
+        locationDMCV !== undefined &&
+        locationDMCV.currentHex !== undefined &&
+        locationDMCV !== HexCommand.OFFBOARD &&
+        locationDMCV.boxName !== HexCommand.FLEET_BOX
+      ) {
         dmcv = distanceBetweenHexes(locationDMCV.currentHex, hex) === 0
       }
       if (location1AF !== undefined && location1AF.currentHex !== undefined) {
@@ -339,13 +344,17 @@ function FleetCounter({
       const locationMIF = controller.getFleetLocation("MIF", GlobalUnitsModel.Side.JAPAN)
 
       let dmcv, af1, mif
-      if (locationDMCV !== undefined && locationDMCV !== HexCommand.OFFBOARD) {
+      if (
+        locationDMCV !== undefined &&
+        locationDMCV.boxName !== HexCommand.FLEET_BOX &&
+        locationDMCV !== HexCommand.OFFBOARD
+      ) {
         dmcv = distanceBetweenHexes(locationDMCV.currentHex, hex) === 0
       }
-      if (af1Location !== undefined) {
+      if (af1Location !== undefined && af1Location.boxName !== HexCommand.FLEET_BOX) {
         af1 = distanceBetweenHexes(af1Location.currentHex, hex) === 0
       }
-      if (locationMIF !== undefined) {
+      if (locationMIF !== undefined && locationMIF.boxName !== HexCommand.FLEET_BOX) {
         mif = distanceBetweenHexes(locationMIF.currentHex, hex) === 0
       }
       if (af1) {
@@ -383,12 +392,16 @@ function FleetCounter({
       const location1AF = controller.getFleetLocation("1AF", GlobalUnitsModel.Side.JAPAN)
       const hex = { q: currentHex.q, r: currentHex.r }
 
-      if (counterData.name === "1AF" && locationMIF !== undefined) {
+      if (counterData.name === "1AF" && locationMIF.boxName !== HexCommand.FLEET_BOX && locationMIF !== undefined) {
         if (distanceBetweenHexes(locationMIF.currentHex, hex) === 0) {
           return
         }
       }
-      if (counterData.name === "MIF" && location1AF.currentHex !== undefined) {
+      if (
+        counterData.name === "MIF" &&
+        location1AF.boxName !== HexCommand.FLEET_BOX &&
+        location1AF.currentHex !== undefined
+      ) {
         if (distanceBetweenHexes(location1AF.currentHex, hex) === 0) {
           return
         }
@@ -396,10 +409,13 @@ function FleetCounter({
 
       const csfLocation = controller.getFleetLocation("CSF-JPMAP", GlobalUnitsModel.Side.JAPAN)
       const locationDMCV = controller.getFleetLocation("US-DMCV-JPMAP", GlobalUnitsModel.Side.JAPAN)
-      // const locationMIFjp = controller.getFleetLocation("MIF-JPMAP", GlobalUnitsModel.Side.JAPAN)
 
       let dmcv, csf, mif
-      if (locationDMCV !== undefined && locationDMCV !== HexCommand.OFFBOARD) {
+      if (
+        locationDMCV !== undefined &&
+        locationDMCV !== HexCommand.OFFBOARD &&
+        locationDMCV.boxName !== HexCommand.FLEET_BOX
+      ) {
         dmcv = distanceBetweenHexes(locationDMCV.currentHex, hex) === 0
       }
       if (csfLocation !== undefined && csfLocation.currentHex !== undefined) {

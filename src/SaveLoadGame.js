@@ -396,6 +396,10 @@ function loadAirUnits(airUnitMap) {
       globalAirUnit.aircraftUnit.moved = true
     }
 
+    if (airUnit.counterData._aircraftUnit._turnmoved) {
+      globalAirUnit.aircraftUnit._turnmoved = airUnit.counterData._turnmoved
+    }
+
     // possibly check airUnit parent carrier here
     if (globalAirUnit.carrier !== airUnit.counterData._carrier) {
       globalAirUnit.carrier = airUnit.counterData._carrier
@@ -422,6 +426,9 @@ function loadAirUnits(airUnitMap) {
     // GlobalGameState.JP_AF = 6
     // GlobalGameState.US_CSF = 7
     // GlobalGameState.US_MIDWAY = 8
+    // GlobalGameState.midwayAttackResolved=true
+
+    GlobalGameState.usDMCVCarrier = undefined
   }
 }
 
@@ -441,6 +448,7 @@ function loadJapanStrikeUnits(loadedMap) {
   for (let key of loadedMap.keys()) {
     const sg = GlobalUnitsModel.jpStrikeGroups.get(key)
     const loadedSG = loadedMap.get(key)
+    sg.gameTurnMoved=loadedSG._gameTurnMoved
     sg.moved = loadedSG._moved
     sg.airOpMoved = loadedSG._airOpMoved
     sg.airOpAttacked = loadedSG._airOpAttacked
@@ -593,8 +601,8 @@ export function loadGameStateForId(controller, gameId) {
   }
 
   // QUACK REMOVE ONE CARD AND REPLACE IT WITH ANOTHER
-  // GlobalInit.controller.replaceCardWithOtherCard(1, 2, GlobalUnitsModel.Side.JAPAN)
-  // GlobalInit.controller.replaceCardWithOtherCard(2, 3, GlobalUnitsModel.Side.US)
+  // GlobalInit.controller.replaceCardWithOtherCard(12, 9, GlobalUnitsModel.Side.JAPAN)
+  // GlobalInit.controller.replaceCardWithOtherCard(2, 9, GlobalUnitsModel.Side.US)
   // GlobalGameState.midwayControl = GlobalUnitsModel.Side.US
   // ------------------------------------------------------
 

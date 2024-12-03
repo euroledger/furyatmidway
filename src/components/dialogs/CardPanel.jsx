@@ -4,22 +4,9 @@ import GlobalUnitsModel from "../../model/GlobalUnitsModel"
 import GlobalGameState from "../../model/GlobalGameState"
 import "./modal.css"
 
-function CentredButton() {
-  return (
-    <p
-      style={{
-        display: "flex",
-        justifyContent: "center",
-        alignItems: "center",
-      }}
-    >
-      <Button className="justify-content-center btn btn-success btn-sm" disabled="true" style={{ marginTop: "10px" }}>
-        Play
-      </Button>
-    </p>
-  )
-}
 function CardPanel(props) {
+
+
   const cardArray =
     props.side === GlobalUnitsModel.Side.JAPAN
       ? GlobalUnitsModel.jpCards.map((c) => c._number)

@@ -87,7 +87,7 @@ function CardAlertPanel(props) {
 
       if (
         side === GlobalUnitsModel.Side.US ||
-        GlobalInit.controller.getCardPlayed(1, GlobalUnitsModel.Side.US) === false
+        controller.getCardPlayed(1, GlobalUnitsModel.Side.US) === false
       ) {
         setSubmarineDamagePanelShow(true)
       } else {
@@ -165,6 +165,9 @@ function CardAlertPanel(props) {
     myBigMargin = margin
   }
 
+  if (cardNumber === 0) {
+    return
+  }
   const jpCard = controller.japanHandContainsCard(cardNumber)
   let image = jpCard ? "/images/japanflag.jpg" : "/images/usaflag.jpg"
 
