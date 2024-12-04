@@ -10,7 +10,7 @@ import GlobalUnitsModel from "../model/GlobalUnitsModel"
 export function EndOfTurnSummaryHeaders({ controller }) {
   const japanCVMsg = "IJN CVs Sunk (1 VP each):"
   const usCVMsg = "US CVs Sunk (1 VP each):"
-  const midwayControlMsg = "Side Controlling Midway:"
+  const midwayControlMsg = "Midway Controlled By:"
 
   const japanCVsSunk = controller.getSunkCarriers(GlobalUnitsModel.Side.JAPAN)
   const usCVsSunk = controller.getSunkCarriers(GlobalUnitsModel.Side.US)
@@ -193,7 +193,7 @@ export function EndOfTurnSummaryHeaders({ controller }) {
                 marginTop: "5px",
               }}
             >
-              {midwayControlMsg} &emsp;<strong>{midwayControl}</strong>&emsp; <br></br>
+              {midwayControlMsg}  &nbsp;<strong>{midwayControl}</strong>&nbsp;&nbsp;<strong>    2</strong>&emsp;  <br></br>
             </p>
             <p
               style={{

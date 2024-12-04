@@ -74,7 +74,6 @@ import EliminatedReturningUnits from "./components/dialogs/EliminatedReturningUn
 import CardAlertPanel from "./components/dialogs/CardAlertPanel"
 import { AirOpsHeaders, AirOpsFooters } from "./attackscreens/AirOpsDataPanels"
 import { TargetHeaders, TargetFooters } from "./attackscreens/TargetPanel"
-import { FleetTargetHeaders, FleetTargetFooters } from "./attackscreens/FleetTargetPanel"
 import { AttackTargetHeaders, AttackTargetFooters } from "./attackscreens/AttackTargetPanel"
 import { CAPHeaders, CAPFooters } from "./attackscreens/CAPPanel"
 import NightLandingDicePanel from "./components/dialogs/NightLandingDicePanel"
@@ -110,7 +109,7 @@ import UITester from "./UIEvents/UITester"
 import UITesterHeadless from "./UIEvents/UITesterHeadless"
 
 import { getJapanEnabledAirBoxes, getUSEnabledAirBoxes } from "./AirBoxZoneHandler"
-import handleAction, { calcAirOpsPointsMidway, getFleetsForDMCVSeaBattle } from "./GameStateHandler"
+import handleAction, { calcAirOpsPointsMidway, getFleetsForDMCVSeaBattle, midwayPossible } from "./GameStateHandler"
 import { setStrikeGroupAirUnitsToNotMoved } from "./controller/AirOperationsHandler"
 import { SeaBattleFooters, SeaBattleHeaders } from "./attackscreens/SeaBattlePanel"
 import HexCommand from "./commands/HexCommand"
@@ -496,6 +495,7 @@ export function App() {
     if (GlobalGameState.gamePhase === GlobalGameState.PHASE.MIDWAY_ATTACK) {
       GlobalGameState.dieRolls = []
       GlobalGameState.midwayAttackGroup = undefined
+      GlobalGameState.sideWithInitiative = GlobalUnitsModel.Side.JAPAN
     }
   }, [GlobalGameState.gamePhase])
   useEffect(() => {
@@ -787,7 +787,7 @@ export function App() {
         setCSFAlertShow(true)
       }
     } else if (GlobalGameState.gamePhase === GlobalGameState.PHASE.JAPAN_MIDWAY) {
-      setMidwayDialogShow(true)
+      midwayPossible(setMidwayWarningShow, setMidwayDialogShow)
       GlobalGameState.phaseCompleted = false
     } else if (GlobalGameState.gamePhase === GlobalGameState.PHASE.US_FLEET_MOVEMENT_PLANNING) {
       if (!GlobalGameState.usFleetMoved) {
@@ -1323,8 +1323,6 @@ export function App() {
                   GlobalGameState.usCardsDrawn = true
                   if (GlobalGameState.gamePhase === GlobalGameState.PHASE.US_DRAWS_ONE_CARD) {
                     GlobalInit.controller.drawUSCards(1, false)
-                    // setMidwayDialogShow(true)
-                    // GlobalGameState.gamePhase = GlobalGameState.PHASE.JAPAN_MIDWAY
                     nextAction(e)
                   }
                   if (GlobalGameState.gamePhase === GlobalGameState.PHASE.US_CARD_DRAW) {
@@ -1352,7 +1350,9 @@ export function App() {
                   GlobalGameState.jpCardsDrawn = true
                   if (GlobalGameState.gamePhase === GlobalGameState.PHASE.JAPAN_DRAWS_ONE_CARD) {
                     GlobalInit.controller.drawJapanCards(1, false)
-                    setMidwayDialogShow(true)
+                    // setMidwayDialogShow(true)
+                    midwayPossible(setMidwayWarningShow, setMidwayDialogShow)
+
                     GlobalGameState.gamePhase = GlobalGameState.PHASE.JAPAN_MIDWAY
                   }
                   if (GlobalGameState.gamePhase === GlobalGameState.PHASE.JAPAN_CARD_DRAW) {
@@ -1617,22 +1617,6 @@ export function App() {
   const targetFooters = (
     <>
       <TargetFooters show={targetDetermined}></TargetFooters>
-    </>
-  )
-
-  const fleetTargetHeaders = (
-    <>
-      <FleetTargetHeaders
-        controller={GlobalInit.controller}
-        setTargetSelected={setTargetSelected}
-        setTargetDetermined={setTargetDetermined}
-      ></FleetTargetHeaders>
-    </>
-  )
-
-  const fleetTargetFooters = (
-    <>
-      <FleetTargetFooters show={targetDetermined}></FleetTargetFooters>
     </>
   )
 
@@ -2253,6 +2237,11 @@ export function App() {
       GlobalGameState.carrierAttackHits !== 1 ||
       (GlobalGameState.carrierAttackHits === 0 && damageDone)
   }
+  let damageControlButtonDisabled = (damagedCV === "" && GlobalGameState.dieRolls.length === 0) || GlobalGameState.dieRolls.length > 0
+
+  if (damageControlSide === GlobalUnitsModel.Side.US) {
+    damageControlButtonDisabled  = (damagedCV !== "")
+  }
 
   const totalHits = GlobalGameState.midwayHits + GlobalGameState.totalMidwayHits
   let midwayDamageDiceButtonEnabled = GlobalGameState.midwayHits > 0 && totalHits < 3
@@ -2419,7 +2408,9 @@ export function App() {
         <p>Game Id = {gameSaveID} </p>
       </AlertPanel>
 
-      <AlertPanel show={midwayWarningShow} onHide={() => setMidwayWarningShow(false)}>
+      <AlertPanel show={midwayWarningShow} onHide={(e) => {
+        nextAction(e)
+        setMidwayWarningShow(false)}}>
         <h4 style={{ justifyContent: "center", alignItems: "center" }}>INFO</h4>
         <p>No Midway attack possible</p>
         <p>(No attack aircraft on deck)</p>
@@ -2492,22 +2483,6 @@ export function App() {
           nextAction(e)
         }}
         doRoll={doTargetSelectionRoll}
-        disabled={true}
-      ></DicePanel>
-      <DicePanel
-        show={!testClicked && fleetTargetSelectionPanelShow}
-        headerText="Fleet Target Selection"
-        headers={fleetTargetHeaders}
-        footers={fleetTargetFooters}
-        showDice={false}
-        numDice={0}
-        width={30}
-        margin={315}
-        closeButtonDisabled={!targetSelected}
-        onHide={(e) => {
-          setFleetTargetSelectionPanelShow(false)
-          nextAction(e)
-        }}
         disabled={true}
       ></DicePanel>
       <DicePanel
@@ -2812,6 +2787,7 @@ export function App() {
         closeButtonDisabled={GlobalGameState.dieRolls.length === 0}
         onHide={(e) => {
           setCardDicePanelShow5(false)
+          nextAction(e)
         }}
         doRoll={doCardRoll}
         disabled={true}
@@ -2844,10 +2820,8 @@ export function App() {
         width={30}
         showDice={damageControlSide === GlobalUnitsModel.Side.JAPAN}
         margin={350}
-        diceButtonDisabled={
-          (damagedCV === "" && GlobalGameState.dieRolls.length === 0) || GlobalGameState.dieRolls.length > 0
-        }
-        closeButtonDisabled={damagedCV === ""}
+        diceButtonDisabled={damageControlButtonDisabled}
+        closeButtonDisabled={!damageControlButtonDisabled}
         onHide={(e) => {
           setDamageControlPanelShow(false)
           nextAction(e)

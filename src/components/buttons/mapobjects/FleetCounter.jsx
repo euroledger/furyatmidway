@@ -392,15 +392,15 @@ function FleetCounter({
       const location1AF = controller.getFleetLocation("1AF", GlobalUnitsModel.Side.JAPAN)
       const hex = { q: currentHex.q, r: currentHex.r }
 
-      if (counterData.name === "1AF" && locationMIF.boxName !== HexCommand.FLEET_BOX && locationMIF !== undefined) {
+      if (counterData.name === "1AF" && locationMIF !== undefined && locationMIF.boxName !== HexCommand.FLEET_BOX) {
         if (distanceBetweenHexes(locationMIF.currentHex, hex) === 0) {
           return
         }
       }
       if (
         counterData.name === "MIF" &&
-        location1AF.boxName !== HexCommand.FLEET_BOX &&
-        location1AF.currentHex !== undefined
+        location1AF.currentHex !== undefined &&
+        location1AF.boxName !== HexCommand.FLEET_BOX
       ) {
         if (distanceBetweenHexes(location1AF.currentHex, hex) === 0) {
           return

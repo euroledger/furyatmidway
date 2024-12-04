@@ -124,6 +124,9 @@ export default class CanvasHex extends React.Component {
       return
     }
     for (let hex of hexes) {
+      if (hex === undefined) {
+        continue
+      }
       const { x, y } = flatHexToPixel({ q: hex.q, r: hex.r })
       this.drawAndFillHex(this.canvasCoordinates, { x, y }, color)
     }

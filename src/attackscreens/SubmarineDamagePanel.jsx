@@ -5,7 +5,7 @@ import GlobalGameState from "../model/GlobalGameState"
 import Controller from "../controller/Controller"
 import { sendDamageUpdates, doCarrierDamageRolls, autoAllocateDamage, sendDMCVUpdate } from "../DiceHandler"
 
-export function SubmarineDamagePanelHeaders({ controller, setDamagedCV, damagedCV, side, damageDone, anyTargets }) {
+export function SubmarineDamagePanelHeaders({ controller, setDamagedCV, damagedCV, side, damageDone }) {
   let usEnterprise = {
     image: "/images/fleetcounters/enterprise.jpg",
     name: GlobalUnitsModel.Carrier.ENTERPRISE,
@@ -216,6 +216,7 @@ export function SubmarineDamagePanelHeaders({ controller, setDamagedCV, damagedC
 
   const sideBeingAttacked = side === GlobalUnitsModel.Side.US ? GlobalUnitsModel.Side.JAPAN : GlobalUnitsModel.Side.US
 
+  const anyTargets = controller.anyTargets(side)
   if (!anyTargets) {
     setDamagedCV("NO TARGETS")
   }

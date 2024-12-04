@@ -428,7 +428,7 @@ function loadAirUnits(airUnitMap) {
     // GlobalGameState.US_MIDWAY = 8
     // GlobalGameState.midwayAttackResolved=true
 
-    GlobalGameState.usDMCVCarrier = undefined
+    // GlobalGameState.usDMCVCarrier = undefined
   }
 }
 
@@ -601,8 +601,7 @@ export function loadGameStateForId(controller, gameId) {
   }
 
   // QUACK REMOVE ONE CARD AND REPLACE IT WITH ANOTHER
-  // GlobalInit.controller.replaceCardWithOtherCard(12, 9, GlobalUnitsModel.Side.JAPAN)
-  // GlobalInit.controller.replaceCardWithOtherCard(2, 9, GlobalUnitsModel.Side.US)
+  // GlobalInit.controller.replaceCardWithOtherCard(9, 4, GlobalUnitsModel.Side.JAPAN)
   // GlobalGameState.midwayControl = GlobalUnitsModel.Side.US
   // ------------------------------------------------------
 

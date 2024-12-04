@@ -99,6 +99,8 @@ export function SingleCarrier({ controller }) {
       GlobalGameState.currentCarrierAttackTarget
     )
   }
+  console.log("DEBUG GlobalGameState.currentCarrierAttackTarget=", GlobalGameState.currentCarrierAttackTarget)
+  console.log("DEBUG carrierTarget=", carrierTarget)
 
   const createImage = (image, left, top) => {
     return (
