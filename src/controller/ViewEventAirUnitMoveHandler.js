@@ -32,7 +32,7 @@ class ViewEventAirUnitMoveHandler {
       counterData.launchedFrom = boxName
     }
 
-    // if unit lands on a carrier other than its parent, reset its parent 
+    // if unit lands on a carrier other than its parent, reset its parent
     // this can happen if parent carrier is sunk or damaged
 
     // NEEDS TO BE TESTED
@@ -43,7 +43,6 @@ class ViewEventAirUnitMoveHandler {
       }
     }
 
-
     this.controller.addAirUnitToBox(name, index, counterData)
     let command = new MoveCommand(COMMAND_TYPE.MOVE_AIR_UNIT, counterData.longName, from, to)
 
@@ -51,14 +50,24 @@ class ViewEventAirUnitMoveHandler {
       // CAP returns don't set to moved = true
       // if this is Night Air Operations and the destination is the hangar - do not set to moved as they
       // can move again
+
+      // if this is Night Air Operations and the destination is return2 - as this the rare edge case
+      // of a unit stuck at sea from previous turns
       if (
         (GlobalGameState.gamePhase === GlobalGameState.PHASE.NIGHT_AIR_OPERATIONS_JAPAN ||
           GlobalGameState.gamePhase === GlobalGameState.PHASE.NIGHT_AIR_OPERATIONS_US) &&
-        to.includes("HANGAR")
+        to.includes("RETURNING (2)")
       ) {
+        // do nothing
       } else {
-        counterData.aircraftUnit.moved = true
-        counterData.aircraftUnit.turnMoved = GlobalGameState.gameTurn
+        if (
+          (GlobalGameState.gamePhase === GlobalGameState.PHASE.NIGHT_AIR_OPERATIONS_JAPAN ||
+            GlobalGameState.gamePhase === GlobalGameState.PHASE.NIGHT_AIR_OPERATIONS_US) &&
+          to.includes("HANGAR")
+        ) {
+          counterData.aircraftUnit.moved = true
+          counterData.aircraftUnit.turnMoved = GlobalGameState.gameTurn
+        }
       }
     }
     counterData.border = undefined

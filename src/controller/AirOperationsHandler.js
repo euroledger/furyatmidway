@@ -361,16 +361,16 @@ export function doStrikeBoxJapan(controller, name, strikeGroup, side) {
   const unit = controller.getAirUnitForName(name)
   const tf = controller.getTaskForceForCarrier(unit.carrier, side)
 
-  // console.log(
-  //   "SG:",
-  //   strikeGroup.name,
-  //   "strikeGroup.airOpMoved=",
-  //   strikeGroup.airOpMoved,
-  //   "strikeGroup.airOpAttacked=",
-  //   strikeGroup.airOpAttacked,
-  //   "strikeGroup.gameTurnMoved=", 
-  //   strikeGroup.gameTurnMoved
-  // )
+  console.log(
+    "SG:",
+    strikeGroup.name,
+    "strikeGroup.airOpMoved=",
+    strikeGroup.airOpMoved,
+    "strikeGroup.airOpAttacked=",
+    strikeGroup.airOpAttacked,
+    "strikeGroup.gameTurnMoved=",
+    strikeGroup.gameTurnMoved
+  )
   // Japanese Units must go to return box of parent carrier unless it is damaged
   const parentCarrier = controller.getCarrierForAirUnit(name)
   const hits = controller.getCarrierHits(parentCarrier)
@@ -378,14 +378,28 @@ export function doStrikeBoxJapan(controller, name, strikeGroup, side) {
   // If Midway attack always go to Return1 Box
   let destArray = new Array()
 
-  if (GlobalGameState.taskForceTarget === GlobalUnitsModel.TaskForce.MIDWAY) {
+  // if game turn moved is different to current game turn this is NOT the midway strike
+  // do not check for return
+  if (
+    strikeGroup.gameTurnMoved === GlobalGameState.gameTurn &&
+    GlobalGameState.taskForceTarget === GlobalUnitsModel.TaskForce.MIDWAY
+  ) {
+    console.log("GlobalGameState.midwayAttackGroup=", GlobalGameState.midwayAttackGroup)
+    console.log("I AM SG", strikeGroup.name)
+
     const return1Box = controller.getReturn1AirBoxForNamedTaskForce(side, tf)
     destArray.push(return1Box)
     controller.setValidAirUnitDestinations(name, destArray)
+    console.log("POOOOOOOOOO 2")
     return
   }
-  if (strikeGroup.airOpAttacked && strikeGroup.airOpMoved === strikeGroup.airOpAttacked && strikeGroup.gameTurnMoved === GlobalGameState.gameTurn) {
+  if (
+    strikeGroup.airOpAttacked &&
+    strikeGroup.airOpMoved === strikeGroup.airOpAttacked &&
+    strikeGroup.gameTurnMoved === GlobalGameState.gameTurn
+  ) {
     // GOTO RETURN 1 BOX
+    console.log("QUACK RETURN 1")
     const return1Box = controller.getReturn1AirBoxForNamedTaskForce(side, tf)
     destArray.push(return1Box)
 
@@ -605,7 +619,7 @@ export function doFlightDeck(controller, name, side) {
       if (enemyFleetInRangeUS(controller, 2, carrierName)) {
         const strikeBoxes = controller.getStrikeBoxes(name, side)
         destinationsArray = destinationsArray.concat(strikeBoxes)
-      } 
+      }
     } else {
       const strikeBoxes = controller.getStrikeBoxes(name, side)
       destinationsArray = destinationsArray.concat(strikeBoxes)

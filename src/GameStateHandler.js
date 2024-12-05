@@ -49,7 +49,7 @@ function japanCardDrawHandler({ setUSMapRegions, setCSFAlertShow }) {
   GlobalGameState.phaseCompleted = false
 }
 
-function usCardDrawHandler({ setMidwayDialogShow }) {
+function usCardDrawHandler({ setMidwayDialogShow, setMidwayWarningShow }) {
   if (GlobalGameState.gameTurn != 1) {
     if (GlobalGameState.gameTurn === 2 || GlobalGameState.gameTurn === 4 || GlobalGameState.gameTurn === 6) {
       GlobalGameState.gamePhase = GlobalGameState.PHASE.US_DRAWS_ONE_CARD
@@ -298,6 +298,7 @@ function dmcvState(side) {
   )
 }
 function midwayDeclarationHandler({ setUsFleetRegions }) {
+  console.log("FINISHED MIDWAY DECLARATION...")
   if (dmcvState(GlobalUnitsModel.Side.US)) {
     GlobalGameState.gamePhase = GlobalGameState.PHASE.US_DMCV_FLEET_MOVEMENT_PLANNING
     GlobalGameState.usDMCVFleetMoved = false
@@ -1190,7 +1191,7 @@ export default async function handleAction({
   } else if (GlobalGameState.gamePhase === GlobalGameState.PHASE.US_SETUP_AIR) {
     setupUSAirHandler()
   } else if (GlobalGameState.gamePhase === GlobalGameState.PHASE.US_CARD_DRAW) {
-    usCardDrawHandler({ setCardNumber, setMidwayDialogShow })
+    usCardDrawHandler({ setCardNumber, setMidwayDialogShow, setMidwayWarningShow })
   } else if (GlobalGameState.gamePhase === GlobalGameState.PHASE.CARD_PLAY) {
     setNextStateFollowingCardPlay({
       cardNumber,
@@ -1211,6 +1212,7 @@ export default async function handleAction({
       setMidwayWarningShow, 
     })
   } else if (GlobalGameState.gamePhase === GlobalGameState.PHASE.JAPAN_MIDWAY) {
+    console.log("IN HERE...")
     midwayDeclarationHandler({ setUsFleetRegions })
   } else if (GlobalGameState.gamePhase === GlobalGameState.PHASE.US_DMCV_FLEET_MOVEMENT_PLANNING) {
     usDMCVPlanningHandler({ setUsFleetRegions })

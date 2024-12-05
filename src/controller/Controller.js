@@ -618,15 +618,12 @@ export default class Controller {
     for (const unit of airunits) {
       unit.aircraftUnit.moved = false
       this.counters.set(unit.name, unit)
+      unit.aircraftUnit.hitsScored = 0
     }
   }
   async setAllUnitsToNotMoved() {
     const airunits = this.counters.values().filter((unit) => unit.constructor.name === "AirUnit")
-
-    for (const unit of airunits) {
-      unit.aircraftUnit.moved = false
-      this.counters.set(unit.name, unit)
-    }
+    this.setUnitsToNotMoved(airunits)
   }
 
   getAllStrikeUnits(side) {
@@ -689,6 +686,7 @@ export default class Controller {
         location.boxName.includes("RETURNING (1)") ||
         location.boxName.includes("STRIKE BOX")
       ) {
+        console.log("AIR UNIT NOT MOVED:", unit.name, "LOCATION:", location.boxName)
         return true
       }
     }

@@ -494,6 +494,11 @@ function StrikeCounter({ setStrikeGroupPopup, currentUSHex, currentJapanHex, cou
     if (GlobalGameState.sideWithInitiative !== side) {
       return
     }
+   if (GlobalGameState.gamePhase === GlobalGameState.PHASE.NIGHT_AIR_OPERATIONS_JAPAN) {
+      // rare occasion where SG is at sea from previous turn
+      counterData.attacked = true
+      return
+    }
 
     if (
       GlobalGameState.gamePhase === GlobalGameState.PHASE.AIR_OPERATIONS ||
