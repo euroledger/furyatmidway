@@ -118,6 +118,9 @@ export default App
 
 export const BoardContext = createContext()
 
+const JAPAN_PLAYER=GlobalUnitsModel.TYPE.AI
+const US_PLAYER=GlobalUnitsModel.TYPE.HUMAN
+
 export function App() {
   const [splash, setSplash] = useState(true)
   const [showZones, setShowZones] = useState(true)
