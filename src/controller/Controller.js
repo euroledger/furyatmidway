@@ -686,7 +686,6 @@ export default class Controller {
         location.boxName.includes("RETURNING (1)") ||
         location.boxName.includes("STRIKE BOX")
       ) {
-        console.log("AIR UNIT NOT MOVED:", unit.name, "LOCATION:", location.boxName)
         return true
       }
     }

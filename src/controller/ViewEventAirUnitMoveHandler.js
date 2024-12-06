@@ -56,7 +56,9 @@ class ViewEventAirUnitMoveHandler {
       if (
         (GlobalGameState.gamePhase === GlobalGameState.PHASE.NIGHT_AIR_OPERATIONS_JAPAN ||
           GlobalGameState.gamePhase === GlobalGameState.PHASE.NIGHT_AIR_OPERATIONS_US) &&
-        to.includes("RETURNING (2)")
+        (to.includes("RETURNING (2)") || to.includes("RETURNING (1)"))
+
+        
       ) {
         // do nothing
       } else {
@@ -65,6 +67,8 @@ class ViewEventAirUnitMoveHandler {
             GlobalGameState.gamePhase === GlobalGameState.PHASE.NIGHT_AIR_OPERATIONS_US) &&
           to.includes("HANGAR")
         ) {
+          // do nothing
+        } else {
           counterData.aircraftUnit.moved = true
           counterData.aircraftUnit.turnMoved = GlobalGameState.gameTurn
         }

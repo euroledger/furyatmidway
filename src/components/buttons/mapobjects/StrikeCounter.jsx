@@ -321,7 +321,7 @@ function StrikeCounter({ setStrikeGroupPopup, currentUSHex, currentJapanHex, cou
         distanceToMIF = distanceBetweenHexes(locationOfStrikeGroup.currentHex, locationOfEnemyMIF.currentHex)
         if (distanceToMIF <= speed) {
           // strike group can move to attack enemy carrier fleet
-          usRegion.push(locationOfEnemyDMCV.currentHex)
+          usRegion.push(locationOfEnemyMIF.currentHex)
         }
       }
       if (usRegion.length === 0) {

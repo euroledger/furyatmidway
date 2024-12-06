@@ -3,9 +3,7 @@ import "./cap.css"
 import GlobalGameState from "../model/GlobalGameState"
 import { doDamageAllocation } from "../DiceHandler"
 
-// @TODO Move this into Util file somewhere (or to controller?)
 
-// @TODO extend this component to allow damage to CAP units (in response to fighter escort counterattack)
 export function DamageHeaders({ controller, eliminatedSteps, setEliminatedSteps, setStepsLeft, capAirUnits }) {
   const [elRefs, setElRefs] = useState([])
 

@@ -51,7 +51,7 @@ function EliminatedReturningUnits(props) {
     }
   }, [GlobalGameState.closePanel])
 
-  const bg = "#293a4b"
+  const bg = GlobalGameState.gameTurn === 4 ? "black" :"#293a4b"
 
   let myBigBollocks = "m-width" + GlobalGameState.orphanedAirUnits.length
   let myBigMargin = 0

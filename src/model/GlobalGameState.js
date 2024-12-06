@@ -187,8 +187,7 @@ export default class GlobalGameState {
 
   static logItems = ["Logging begin..."];
 
-  // static gamePhase = this.PHASE.US_SETUP_AIR // tmp: put back to Japan
-  static gamePhase = this.PHASE.JAPAN_SETUP // tmp: put back to Japan
+  static gamePhase = this.PHASE.JAPAN_SETUP 
 
   // static setupPhase = 6; // tmp put back to 0
   static setupPhase = 0; // tmp put back to 0

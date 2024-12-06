@@ -4,7 +4,6 @@ import GameStatePanel from "../leftpanel/GameStatePanel"
 import "./modal.css";
 
 function GameStatusPanel(props) {
-  // TODO set different colors/header for different alert level, info, warning etc
   const bg = "#FFCCCC";
   return (
     <Modal {...props} size="lg" aria-labelledby="contained-modal-title-vcenter" centered>

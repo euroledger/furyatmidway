@@ -4,9 +4,7 @@ import GlobalGameState from "../model/GlobalGameState"
 import { doDamageAllocation } from "../DiceHandler"
 import GlobalUnitsModel from "../model/GlobalUnitsModel"
 
-// @TODO Move this into Util file somewhere (or to controller?)
 
-// @TODO extend this component to allow damage to CAP units (in response to fighter escort counterattack)
 export function EndOfTurnSummaryHeaders({ controller }) {
   const japanCVMsg = "IJN CVs Sunk (1 VP each):"
   const usCVMsg = "US CVs Sunk (1 VP each):"

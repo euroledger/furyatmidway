@@ -3,7 +3,6 @@ import Button from "react-bootstrap/Button";
 import "./modal.css";
 
 function ModalAlert(props) {
-  // TODO set different colors/header for different alert level, info, warning etc
   const bg = "#FFCCCC"
   return (
     <Modal

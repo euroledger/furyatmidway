@@ -2,9 +2,8 @@ import { React, useState } from "react"
 
 import Modal from "react-bootstrap/Modal"
 import Button from "react-bootstrap/Button"
-import GlobalUnitsModel from "../../model/GlobalUnitsModel"
 import "./modal.css"
-import GlobalInit from "../../model/GlobalInit"
+import GlobalGameState from "../../model/GlobalGameState"
 
 function SubmarineAlertPanel(props) {
   const {
@@ -69,7 +68,7 @@ function SubmarineAlertPanel(props) {
     setCloseButtonDisabled(false)
   }
 
-  const bg = "#293a4b"
+  const bg = GlobalGameState.gameTurn === 4 ? "black" :"#293a4b"
 
   let myBigBollocks = "modal-width" + 2
 

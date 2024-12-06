@@ -1,10 +1,10 @@
 import Modal from "react-bootstrap/Modal"
 import Button from "react-bootstrap/Button"
+import GlobalGameState from "../../model/GlobalGameState"
 import "./modal.css"
 
 function YesNoDialog(props) {
-  // TODO set different colors/header for different alert level, info, warning etc
-  const bg = "#293a4b"
+  const bg = GlobalGameState.gameTurn === 4 ? "black" :"#293a4b"
   return (
     <Modal {...props} size="sm" aria-labelledby="contained-modal-title-vcenter" centered>
       <Modal.Body style={{ background: `${bg}`, color: "white" }}>{props.children}</Modal.Body>

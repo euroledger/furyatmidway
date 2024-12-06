@@ -153,7 +153,7 @@ function CardAlertPanel(props) {
     }
   }, [GlobalGameState.closePanel])
 
-  const bg = "#293a4b"
+  const bg = GlobalGameState.gameTurn === 4 ? "black" :"#293a4b"
 
   let myBigBollocks = "modal-width" + 2
 

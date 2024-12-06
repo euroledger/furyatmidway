@@ -392,17 +392,18 @@ function FleetCounter({
       const location1AF = controller.getFleetLocation("1AF", GlobalUnitsModel.Side.JAPAN)
       const hex = { q: currentHex.q, r: currentHex.r }
 
-      if (counterData.name === "1AF" && locationMIF !== undefined && locationMIF.boxName !== HexCommand.FLEET_BOX) {
-        if (distanceBetweenHexes(locationMIF.currentHex, hex) === 0) {
+      if (counterData.name === "1AF" && location1AF !== undefined && location1AF.boxName !== HexCommand.FLEET_BOX) {
+        if (distanceBetweenHexes(location1AF.currentHex, hex) === 0) {
           return
         }
       }
       if (
         counterData.name === "MIF" &&
-        location1AF.currentHex !== undefined &&
-        location1AF.boxName !== HexCommand.FLEET_BOX
+        locationMIF !== undefined &&
+        locationMIF.currentHex !== undefined &&
+        locationMIF.boxName !== HexCommand.FLEET_BOX
       ) {
-        if (distanceBetweenHexes(location1AF.currentHex, hex) === 0) {
+        if (distanceBetweenHexes(locationMIF.currentHex, hex) === 0) {
           return
         }
       }
@@ -561,9 +562,9 @@ function FleetCounter({
     zIndex = 0
   } else {
     if (counterData.side === GlobalUnitsModel.Side.US) {
-      zIndex = 200
+      zIndex = 100
     } else {
-      zIndex = 183
+      zIndex = 100
     }
   }
 
@@ -575,6 +576,7 @@ function FleetCounter({
       if (side === GlobalUnitsModel.Side.US) {
         enabled = enabledUSFleetBoxes
       }
+      zIndex=250
     }
   }
 

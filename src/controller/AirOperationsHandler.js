@@ -21,7 +21,7 @@ function getValidUSDestinationsRETURN1(controller, name, parentCarrier, side, us
   const carriersInTF = controller.getAllCarriersInTaskForce(tf, side)
 
   for (const carrier of carriersInTF) {
-    if (!controller.isSunk(carrier.name) && controller.isHangarAvailable(carrier.name)) {
+    if (!controller.isSunk(carrier.name, true) && controller.isHangarAvailable(carrier.name)) {
       // this unit can go to its parent carrier hangar
       const box = controller.getAirBoxForNamedShip(side, carrier.name, "HANGAR")
       destinationsArray.push(box)
@@ -103,7 +103,7 @@ export function getValidUSDestinationsCAPNight(controller, parentCarrier, side, 
   for (const carrier of carriersInTF) {
     // As this is CAP (Night) -> go to hangar
     // if carrier not at capacity
-    if (!controller.isSunk(carrier.name) && controller.isHangarAvailable(carrier.name)) {
+    if (!controller.isSunk(carrier.name, true) && controller.isHangarAvailable(carrier.name)) {
       const capHangar = controller.getAirBoxForNamedShip(side, carrier.name, "HANGAR")
       destinationsArray.push(capHangar)
     }
@@ -166,7 +166,7 @@ function tryOtherTaskForce(controller, parentCarrier, side, useMidway) {
     carriersInOtherTaskForce.push(GlobalUnitsModel.usFleetUnits.get(GlobalUnitsModel.Carrier.MIDWAY))
   }
   for (const carrier of carriersInOtherTaskForce) {
-    if (!controller.isSunk(carrier.name)) {
+    if (!controller.isSunk(carrier.name, true)) {
       if (controller.isHangarAvailable(carrier.name)) {
         const box = controller.getAirBoxForNamedShip(side, carrier.name, "HANGAR")
 
@@ -361,16 +361,16 @@ export function doStrikeBoxJapan(controller, name, strikeGroup, side) {
   const unit = controller.getAirUnitForName(name)
   const tf = controller.getTaskForceForCarrier(unit.carrier, side)
 
-  console.log(
-    "SG:",
-    strikeGroup.name,
-    "strikeGroup.airOpMoved=",
-    strikeGroup.airOpMoved,
-    "strikeGroup.airOpAttacked=",
-    strikeGroup.airOpAttacked,
-    "strikeGroup.gameTurnMoved=",
-    strikeGroup.gameTurnMoved
-  )
+  // console.log(
+  //   "SG:",
+  //   strikeGroup.name,
+  //   "strikeGroup.airOpMoved=",
+  //   strikeGroup.airOpMoved,
+  //   "strikeGroup.airOpAttacked=",
+  //   strikeGroup.airOpAttacked,
+  //   "strikeGroup.gameTurnMoved=",
+  //   strikeGroup.gameTurnMoved
+  // )
   // Japanese Units must go to return box of parent carrier unless it is damaged
   const parentCarrier = controller.getCarrierForAirUnit(name)
   const hits = controller.getCarrierHits(parentCarrier)
@@ -875,9 +875,9 @@ export async function moveOrphanedCAPUnitsToEliminatedBoxNight(side, box, unit) 
 
     let destinationsArray
     if (side === GlobalUnitsModel.Side.JAPAN) {
-      destinationsArray = getValidJapanDestinationsCAP(GlobalInit.controller, parentCarrier, side)
+      destinationsArray = getValidJapanDestinationsCAPNight(GlobalInit.controller, parentCarrier, side)
     } else {
-      destinationsArray = getValidUSDestinationsCAP(GlobalInit.controller, parentCarrier, side, unit.name)
+      destinationsArray = getValidUSDestinationsCAPNight(GlobalInit.controller, parentCarrier, side, unit.name)
     }
     if (destinationsArray.length === 0) {
       if (!GlobalGameState.orphanedAirUnits.includes(unit)) {
@@ -947,15 +947,22 @@ export async function moveCAPtoReturnBox(controller, capAirUnits, setAirUnitUpda
 
     const parentCarrier = controller.getCarrierForAirUnit(capUnit.name)
     const tf = controller.getTaskForceForCarrier(parentCarrier, sideBeingAttacked)
+    console.log("tf destBox=", tf)
+
     const destBox = controller.getCapReturnAirBoxForNamedTaskForce(sideBeingAttacked, tf)
+    console.log("DEBUG destBox=", destBox)
 
     let position1 = USAirBoxOffsets.find((box) => box.name === destBox)
+    console.log("DEBUG US set position1 to", position1)
 
     if (GlobalGameState.sideWithInitiative === GlobalUnitsModel.Side.US) {
       position1 = JapanAirBoxOffsets.find((box) => box.name === destBox)
+      console.log("DEBUG JAPAN set position1 to", position1)
+
     }
     update.boxName = location.boxName
 
+    console.log("DEBUG air unit=", capUnit.name, "location=", location.boxIndex)
     const index = GlobalInit.controller.getFirstAvailableZone(destBox)
     update.position = position1.offsets[location.boxIndex]
     update.name = capUnit.name
@@ -993,7 +1000,7 @@ export function doCapNight(controller, name, side) {
     destinationsArray = getValidJapanDestinationsCAPNight(controller, parentCarrier, side)
   }
   controller.setValidAirUnitDestinations(name, destinationsArray)
-  return
+  return destinationsArray
 }
 
 // CAP -> CAP RETURN occurs after CAP has intercepted a Strike Group

@@ -1097,23 +1097,17 @@ export function App() {
 
   async function endOfMyAirOperation(side) {
     if (GlobalGameState.gamePhase !== GlobalGameState.PHASE.AIR_OPERATIONS) {
-      console.log("QUACK1")
       return false
     }
     const anyUnitsNotMoved = GlobalInit.controller.getStrikeGroupsNotMoved2(side)
 
     if (anyUnitsNotMoved) {
-      console.log("QUACK2")
-
       return false
     }
 
     // 1. CHECK ALL STRIKE/RETURNING UNITS HAVE MOVED
     const returningUnitsNotMoved = GlobalInit.controller.getReturningUnitsNotMoved(side)
-    console.log("returningUnitsNotMoved=", returningUnitsNotMoved)
     if (returningUnitsNotMoved) {
-      console.log("QUACK3")
-
       return false
     } else {
       await setStrikeGroupAirUnitsToNotMoved(GlobalGameState.sideWithInitiative)
@@ -1128,8 +1122,6 @@ export function App() {
     if (capUnitsReturning.length === 0) {
       return true
     }
-    console.log("QUACK4")
-
     return false
   }
 
@@ -1355,7 +1347,8 @@ export function App() {
                     nextAction(e)
                   }
                   if (GlobalGameState.gamePhase === GlobalGameState.PHASE.US_CARD_DRAW) {
-                    nextAction(e)
+                    console.log("CLOSE CARD SCREEN")
+                    // nextAction(e)
                   }
                   setusHandShow(true)
                 }}
@@ -1382,6 +1375,7 @@ export function App() {
                     // setMidwayDialogShow(true)
                     midwayPossible(setMidwayWarningShow, setMidwayDialogShow)
 
+                    console.log("GOING TO JAPAN MIDWAY")
                     GlobalGameState.gamePhase = GlobalGameState.PHASE.JAPAN_MIDWAY
                   }
                   if (GlobalGameState.gamePhase === GlobalGameState.PHASE.JAPAN_CARD_DRAW) {
