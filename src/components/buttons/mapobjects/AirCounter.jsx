@@ -38,7 +38,6 @@ function AirCounter({ getAirBox, setAirBox, counterData, side }) {
     left: counterData.position.left,
     top: counterData.position.top,
   })
-
   const location = controller.getAirUnitLocation(counterData.name)
   const checkForAirUnitReorganization = () => {
     if (side === GlobalUnitsModel.Side.JAPAN && enabledJapanReorgBoxes) {
@@ -274,7 +273,7 @@ function AirCounter({ getAirBox, setAirBox, counterData, side }) {
       })
     }
   }
-  // This code for air unit updates
+  // HUMAN STUFF
   if (
     counterData.name === airUnitUpdate.name &&
     airUnitUpdate.position != undefined &&
@@ -286,13 +285,14 @@ function AirCounter({ getAirBox, setAirBox, counterData, side }) {
     doUpdate(airUnitUpdate)
   }
 
+  // AI STUFF
   if (
     counterData.name === testUpdate.name &&
     testUpdate.position != undefined &&
     position.left !== testUpdate.position.left + "%" &&
     position.top !== testUpdate.position.top + "%"
   ) {
-    // console.log("I am ", counterData.name," -> AIR UNIT UPDATE = ", testUpdate)
+    // console.log("I am ", counterData.name," -> AIR UNIT (TEST/AI) UPDATE = ", testUpdate)
 
     doUpdate(testUpdate)
   }

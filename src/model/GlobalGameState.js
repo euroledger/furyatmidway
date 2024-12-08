@@ -2,6 +2,7 @@ import GlobalUnitsModel from './GlobalUnitsModel';
 
 export default class GlobalGameState {
 
+  static DELAY = 1
   static PHASE = {
     JAPAN_SETUP: "Japan Setup",
     JAPAN_CARD_DRAW: "Japan Card Draw",
@@ -232,9 +233,14 @@ export default class GlobalGameState {
   }
 
   static getUSCarrier = () => {
+    console.log("this.setupPhase=",this.setupPhase)
     return this.US_CARRIERS[this.setupPhase - 6]
   }
 
+  static usPlayerType = GlobalUnitsModel.TYPE.HUMAN
+  static jpPlayerType = GlobalUnitsModel.TYPE.AI
+
+  static currentPlayer = GlobalUnitsModel.Side.JAPAN
 
   static getSetupMessage = () => {
     return this.SETUP_MESSAGES[this.setupPhase]

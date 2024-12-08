@@ -75,7 +75,6 @@ export default class Controller {
   clearTargetMap() {
     this.targetMap = new Map()
   }
-
   targetMapSize() {
     return Array.from(this.targetMap.keys()).length
   }
