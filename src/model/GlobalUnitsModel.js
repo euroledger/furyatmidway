@@ -10,6 +10,11 @@ export default class GlobalUnitsModel {
     MIDWAY: "Midway",
   }
 
+  static TYPE = {
+    AI: 0,
+    HUMAN: 1
+  }
+  
   static AirBox = {
     OFFBOARD: "OFFBOARD",
     JP_CD1_CAP: "CD1 CAP",

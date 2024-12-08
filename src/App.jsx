@@ -16,8 +16,8 @@ import CardPanel from "./components/dialogs/CardPanel"
 import GameStatusPanel from "./components/dialogs/GameStatusPanel"
 import SplashScreen from "./components/dialogs/SplashScreen"
 import Controller from "./controller/Controller"
-import { japanStrikeGroups, usStrikeGroups } from "./CounterLoader"
 import "./style.css"
+import StateManager from "./model/StateManager"
 import { allCards } from "./CardLoader"
 import {
   doIntiativeRoll,
@@ -118,6 +118,8 @@ export default App
 
 export const BoardContext = createContext()
 
+
+
 export function App() {
   const [splash, setSplash] = useState(true)
   const [showZones, setShowZones] = useState(true)
@@ -198,6 +200,7 @@ export function App() {
 
   const [capInterceptionPanelShow, setCapInterceptionPanelShow] = useState(false)
 
+  const [initComplete, setInitComplete] = useState(false)
   const [nightLandingPanelShow, setNightLandingPanelShow] = useState(false)
 
   const [damageAllocationPanelShow, setDamageAllocationPanelShow] = useState(false)
@@ -600,6 +603,106 @@ export function App() {
     }
   }, [GlobalGameState.gamePhase])
 
+
+  // NEW AI-HUMAN SIDE EFFECTS....
+  useEffect(() => {
+    StateManager.gameStateManager.setStateHandlers(stateObject)
+
+    if (StateManager.gameStateManager.getCurrentPlayer() === GlobalUnitsModel.Side.JAPAN && StateManager.gameStateManager.actionComplete(GlobalUnitsModel.Side.JAPAN ) === false && splash===false) {
+        StateManager.gameStateManager.doAction(GlobalUnitsModel.Side.JAPAN)
+    }
+
+  }, [initComplete])
+
+  useEffect(() => {
+    if (GlobalGameState.gamePhase === GlobalGameState.PHASE.JAPAN_CARD_DRAW) {
+      StateManager.gameStateManager.doAction(GlobalUnitsModel.Side.JAPAN)
+    }
+  }, [GlobalGameState.gamePhase])
+
+  useEffect(() => {
+    if (GlobalGameState.gamePhase === GlobalGameState.PHASE.US_SETUP_FLEET) {
+      GlobalGameState.setupPhase = 5 
+      GlobalGameState.updateGlobalState()
+      GlobalGameState.currentPlayer = GlobalUnitsModel.Side.US
+      if (GlobalGameState.usPlayerType === GlobalUnitsModel.TYPE.HUMAN) {
+        setUSMapRegions(usCSFStartHexes)
+        setCSFAlertShow(true)
+      }
+    }
+  }, [GlobalGameState.gamePhase])
+
+  useEffect(() => {
+    if (GlobalGameState.gamePhase === GlobalGameState.PHASE.US_SETUP_AIR) {
+      GlobalGameState.updateGlobalState()
+    }
+  }, [GlobalGameState.gamePhase])
+  
+  const nextAction = () => {
+    StateManager.gameStateManager.doNextState(GlobalGameState.currentPlayer)
+  }
+  // const nextAction = () => {
+  //   handleAction({
+  //     setUSMapRegions,
+  //     setCSFAlertShow,
+  //     setMidwayDialogShow,
+  //     setMidwayWarningShow,
+  //     setJapanMapRegions,
+  //     setJapanMIFMapRegions,
+  //     setJpAlertShow,
+  //     setEndOfAirOpAlertShow,
+  //     setEnabledJapanBoxes,
+  //     setEnabledUSFleetBoxes,
+  //     setEnabledJapanFleetBoxes,
+  //     setUsFleet,
+  //     setJpFleet,
+  //     setEnabledUSBoxes,
+  //     setInitiativePanelShow,
+  //     setUsFleetRegions,
+  //     setJapanFleetRegions,
+  //     setMidwayNoAttackAlertShow,
+  //     setFleetUnitUpdate,
+  //     setSearchValues,
+  //     setSearchResults,
+  //     setSearchValuesAlertShow,
+  //     setJapanStrikePanelEnabled,
+  //     setUsStrikePanelEnabled,
+  //     capSteps,
+  //     capAirUnits,
+  //     setAirUnitUpdate,
+  //     setStrikeGroupUpdate,
+  //     setEliminatedUnitsPanelShow,
+  //     cardNumber,
+  //     setCardNumber,
+  //     setMidwayDialogShow,
+  //     setEndOfTurnSummaryShow,
+  //     setPreviousPosition,
+  //     previousPosition,
+  //   })
+  // }
+  const stateObject = {
+    // FOR AI AND TESTING
+    setTestClicked,
+    setTestUpdate,
+    setAttackAirCounterUpdate,
+    setFleetUnitUpdate,
+    setStrikeGroupUpdate,
+    nextAction,
+    doInitiativeRoll,
+    setCapAirUnits,
+    setCapSteps,
+    setFightersPresent,
+    getJapanEnabledAirBoxes,
+    getUSEnabledAirBoxes,
+    setEnabledJapanBoxes, 
+    setEnabledUSBoxes,
+    setUSMapRegions,
+    setCSFAlertShow,
+    capAirUnits,
+    capSteps,
+    fightersPresent,
+  }
+
   const onDrag = () => {
     setIsMoveable(true)
   }
@@ -932,67 +1035,13 @@ export function App() {
     setEnabledUSBoxes(() => enabledUSBoxes)
   }
 
-  const nextAction = () => {
-    handleAction({
-      setUSMapRegions,
-      setCSFAlertShow,
-      setMidwayDialogShow,
-      setMidwayWarningShow,
-      setJapanMapRegions,
-      setJapanMIFMapRegions,
-      setJpAlertShow,
-      setEndOfAirOpAlertShow,
-      setEnabledJapanBoxes,
-      setEnabledUSFleetBoxes,
-      setEnabledJapanFleetBoxes,
-      setUsFleet,
-      setJpFleet,
-      setEnabledUSBoxes,
-      setInitiativePanelShow,
-      setUsFleetRegions,
-      setJapanFleetRegions,
-      setMidwayNoAttackAlertShow,
-      setFleetUnitUpdate,
-      setSearchValues,
-      setSearchResults,
-      setSearchValuesAlertShow,
-      setJapanStrikePanelEnabled,
-      setUsStrikePanelEnabled,
-      capSteps,
-      capAirUnits,
-      setAirUnitUpdate,
-      setStrikeGroupUpdate,
-      setEliminatedUnitsPanelShow,
-      cardNumber,
-      setCardNumber,
-      setMidwayDialogShow,
-      setEndOfTurnSummaryShow,
-      setPreviousPosition,
-      previousPosition,
-    })
-  }
+
 
   const testUi = async (e, headless) => {
     if (headless) {
       setTestClicked(true)
 
-      const stateObject = {
-        // FOR AI AND TESTING
-        e,
-        setTestClicked,
-        setTestUpdate,
-        setAttackAirCounterUpdate,
-        setFleetUnitUpdate,
-        setStrikeGroupUpdate,
-        nextAction,
-        doInitiativeRoll,
-        setCapAirUnits,
-        setCapSteps,
-        setFightersPresent,
-        capAirUnits,
-        capSteps,
-        fightersPresent,
-      }
+      
       await UITesterHeadless(stateObject)
     } else {
       setTestyClicked(true)
@@ -1459,7 +1508,7 @@ export function App() {
             </p>
 
             <Nav>
-              <Button
+              {initComplete && (<Button
                 size="sm"
                 className="me-1"
                 variant="secondary"
@@ -1468,7 +1517,17 @@ export function App() {
                 style={{ background: "#9e1527" }}
               >
                 Next Action
-              </Button>
+              </Button>)}
+              {!initComplete && (<Button
+                size="sm"
+                className="me-1"
+                variant="secondary"
+                onClick={(e) => setInitComplete(true)}
+                disabled={false}
+                style={{ background: "#9e1527" }}
+              >
+                Begin
+              </Button>)}
             </Nav>
             {/* {test && (
               <Nav>
@@ -1574,6 +1633,8 @@ export function App() {
       id,
       setLoading,
     })
+    setInitComplete(true)
+
   }
 
   async function loady() {
