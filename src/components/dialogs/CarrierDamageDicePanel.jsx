@@ -127,10 +127,11 @@ function CarrierDamageDicePanel(props) {
     GlobalGameState.carrierAttackHits = 0
     sendDamageUpdates(controller, damage, setDamageMarkerUpdate)
     if (damage.sunk) {
-
+      
       // This needs to be done after the DMCV Fleet Marker is removed.
       // @See handleAction in GameStateHandler
-      // const cv = controller.getCarrier(carrier)
+      const cv = controller.getCarrier(carrier)
+      cv.hits = 3
       // cv.dmcv = false
       const sideBeingAttacked =
         GlobalGameState.sideWithInitiative === GlobalUnitsModel.Side.US
@@ -143,6 +144,7 @@ function CarrierDamageDicePanel(props) {
         //   "US DMCV=",
         //   GlobalGameState.usDMCVCarrier
         // )
+
         if (GlobalGameState.currentCarrierAttackTarget === GlobalGameState.usDMCVCarrier) {
           sendDMCVUpdate(
             controller,
@@ -166,7 +168,7 @@ function CarrierDamageDicePanel(props) {
   }
 
   let isSunk = false
-  if (GlobalGameState.currentCarrierAttackTarget !== "" && GlobalGameState.currentCarrierAttackTarget !== undefined) {
+  if (GlobalGameState.currentCarrierAttackTarget !== "SUNK" && GlobalGameState.currentCarrierAttackTarget !== "" && GlobalGameState.currentCarrierAttackTarget !== undefined) {
     isSunk = controller.isSunk(GlobalGameState.currentCarrierAttackTarget)
   }
   const sunkMsg = `Carrier ${GlobalGameState.currentCarrierAttackTarget} is Sunk!`

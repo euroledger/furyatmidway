@@ -270,7 +270,6 @@ function StrikeCounter({ setStrikeGroupPopup, currentUSHex, currentJapanHex, cou
     }
   }
   function setUSRegions() {
-    console.log("ARISE")
     // if naval strike group - use, counter CSF else use Midway
     // determine this from first air unit
     let usRegion = new Array(),

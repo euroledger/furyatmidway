@@ -1664,7 +1664,7 @@ export default class Controller {
   }
 
   getCarrierHits(name) {
-    if (!name) {
+    if (!name || name === "SUNK") {
       return
     }
     const side = GlobalUnitsModel.carrierSideMap.get(name)

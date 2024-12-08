@@ -32,6 +32,7 @@ export function StrikeLostDamageHeaders({ controller, eliminatedSteps, setElimin
 
   let totalSteps = 0
 
+  console.log("DEBUG AIR UNITS IN GROUP=", unitsInGroup)
   const airCounters = unitsInGroup.map((airUnit, i) => {
     totalSteps += airUnit.aircraftUnit.steps
 

@@ -6,7 +6,7 @@ import Controller from "../controller/Controller"
 import { sendDamageUpdates, doCarrierDamageRolls, autoAllocateDamage, sendDMCVUpdate } from "../DiceHandler"
 
 export function SubmarineDamagePanelHeaders({ controller, setDamagedCV, damagedCV, side, damageDone }) {
-  let usEnterprise = {
+   let usEnterprise = {
     image: "/images/fleetcounters/enterprise.jpg",
     name: GlobalUnitsModel.Carrier.ENTERPRISE,
     buttonStr: "Enterprise",
@@ -380,7 +380,7 @@ export function SubmarineDamagePanelFooters({
   // QUACK FOR TESTING ONLY
   // GlobalGameState.dieRolls = [1]
 
-  let success = side === GlobalUnitsModel.Side.US ? GlobalGameState.dieRolls[0] <= 1 : GlobalGameState.dieRolls[0] <= 3
+  let success = side === GlobalUnitsModel.Side.US ? GlobalGameState.dieRolls[0] <= 1 : GlobalGameState.dieRolls[0] <= 4
   const message1 = success ? side + " Die Roll Successful!" : side + " Die Roll Unsuccessful!"
 
   const carrier = controller.getCarrier(damagedCV)

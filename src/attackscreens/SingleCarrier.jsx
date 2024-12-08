@@ -161,6 +161,9 @@ export function SingleCarrier({ controller }) {
   }
   let c1bowDamage, c1sternDamage
 
+  if (carrierTarget === undefined) {
+    return
+  }
   if (
     GlobalGameState.taskForceTarget !== GlobalUnitsModel.TaskForce.MIF
   ) {

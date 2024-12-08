@@ -246,7 +246,7 @@ export default class BoxModels {
   getAllAirUnitsInBox = (boxName) => {
     const box = this.boxMap.get(boxName)
     if (!box) {
-      return null
+      return []
     }
     return Array.from(box.values()).filter((n) => n)
   }

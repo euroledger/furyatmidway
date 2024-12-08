@@ -172,10 +172,7 @@ function AirCounter({ getAirBox, setAirBox, counterData, side }) {
           setEnabledUSBoxes(() => [])
           return
         }
-        console.log("QUACK 1")
         setValidDestinationBoxesNightOperations(controller, counterData.name, counterData.side)
-        console.log("QUACK 2")
-
         setBoxes(counterData, location.boxName)
         return
       } else {
@@ -450,7 +447,6 @@ function AirCounter({ getAirBox, setAirBox, counterData, side }) {
         box === GlobalUnitsModel.AirBox.US_TF17_CAP ||
         box === GlobalUnitsModel.AirBox.US_MIDWAY_CAP
       ) {
-        console.log("QUACK ORPHANS!")
         await moveOrphanedCAPUnitsToEliminatedBoxNight(counterData.side, box, counterData)
       }
     }
