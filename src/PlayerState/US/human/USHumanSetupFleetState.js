@@ -1,9 +1,9 @@
-import GlobalGameState from "../../model/GlobalGameState"
-import GlobalInit from "../../model/GlobalInit"
-import { delay } from "../../Utils"
-import USSetupAirState from "./USSetupAirState"
+import GlobalGameState from "../../../model/GlobalGameState"
+import GlobalInit from "../../../model/GlobalInit"
+import { delay } from "../../../Utils"
+import USHumanSetupAirState from "./USHumanSetupAirState"
 
-class USSetupFleetState {
+class USHumanSetupFleetState {
   async doAction(stateObject) {
     // const { setTestUpdate } = stateObject
     // let update
@@ -29,8 +29,8 @@ class USSetupFleetState {
     GlobalGameState.usFleetPlaced = true
     setUSMapRegions([])
     GlobalGameState.phaseCompleted = false
-    GlobalGameState.setupPhase = 5
-    return new USSetupAirState()
+    GlobalGameState.setupPhase = 6
+    return new USHumanSetupAirState()
   }
 
   getState() {
@@ -38,4 +38,4 @@ class USSetupFleetState {
   }
 }
 
-export default USSetupFleetState
+export default USHumanSetupFleetState

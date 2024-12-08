@@ -1,0 +1,33 @@
+import GlobalGameState from "../../../model/GlobalGameState"
+import GlobalInit from "../../../model/GlobalInit"
+import USHumanCardDrawState from "../human/USHumanCardDrawState"
+
+class USHumanSetupAirState {
+  async doAction(stateObject) {}
+
+  nextState(stateObject) {
+    GlobalGameState.currentCarrier++
+    GlobalGameState.setupPhase++
+    console.log("QUACK GlobalGameState.setupPhase=", GlobalGameState.setupPhase)
+    GlobalGameState.currentTaskForce =
+      GlobalGameState.currentCarrier <= 1 ? 1 : GlobalGameState.currentCarrier === 2 ? 2 : 3 // 3 is Midway
+    if (GlobalGameState.currentCarrier === 4) {
+      GlobalGameState.gamePhase = GlobalGameState.PHASE.US_CARD_DRAW
+      
+      GlobalGameState.usSetUpComplete = true
+      GlobalInit.controller.drawUSCards(2, true)
+      GlobalGameState.usCardsDrawn = true
+      GlobalGameState.phaseCompleted = false
+      return new USHumanCardDrawState()
+    }
+    console.log(">>>>>>>>> SET GlobalGameState.phaseCompleted to FALSE!")
+    GlobalGameState.phaseCompleted = false
+    return this
+  }
+
+  getState() {
+    return GlobalGameState.PHASE.US_SETUP_AIR
+  }
+}
+
+export default USHumanSetupAirState

@@ -5,7 +5,6 @@ import GlobalUnitsModel from "./model/GlobalUnitsModel"
 
 function getUSSetupZones(box) {
 
-  console.log("POOOOOOOOOOOOOOOO GlobalGameState.getUSCarrier()=", GlobalGameState.getUSCarrier())
   if (
     !box.name.includes(GlobalGameState.getUSCarrier().toUpperCase()) &&
     box.name != GlobalUnitsModel.AirBox.US_TF16_CAP &&

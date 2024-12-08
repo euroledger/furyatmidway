@@ -42,7 +42,7 @@ function japanSetUpHandler() {
 }
 
 function japanCardDrawHandler({ setUSMapRegions, setCSFAlertShow }) {
-  GlobalGameState.gamePhase = GlobalGameState.PHASE.US_SETUP_FLEET
+  // GlobalGameState.gamePhase = GlobalGameState.PHASE.US_SETUP_FLEET
   GlobalGameState.currentCarrier = 0
   setUSMapRegions(usCSFStartHexes)
   setCSFAlertShow(true)

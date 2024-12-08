@@ -233,7 +233,6 @@ export default class GlobalGameState {
   }
 
   static getUSCarrier = () => {
-    console.log("this.setupPhase=",this.setupPhase)
     return this.US_CARRIERS[this.setupPhase - 6]
   }
 

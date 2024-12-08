@@ -15,20 +15,23 @@ class PlayerStateHandler {
     this.actionComplete = ac
   }
 
+  // for restoring objects during load
+  setState(state) {
+    this.currentState = state
+  }
+
   getState() {
     return this.currentState.getState()
   }
 
   async finishStateChange() {
     const { setEnabledJapanBoxes, setEnabledUSBoxes, getJapanEnabledAirBoxes, getUSEnabledAirBoxes } = this.stateObject
-    GlobalGameState.setupPhase++
 
     GlobalGameState.updateGlobalState()
     const enabledBoxes = getJapanEnabledAirBoxes()
     setEnabledJapanBoxes(() => enabledBoxes)
     const enabledUSBoxes = getUSEnabledAirBoxes()
     setEnabledUSBoxes(() => enabledUSBoxes)
-    console.log("GlobalGameState.setupPhase now", GlobalGameState.setupPhase)
   }
 }
 

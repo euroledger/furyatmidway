@@ -1,6 +1,4 @@
-import GlobalGameState from "../../model/GlobalGameState"
-import GlobalUnitsModel from "../../model/GlobalUnitsModel"
-import { usCSFStartHexes } from "../../components/MapRegions"
+import GlobalGameState from "../../../model/GlobalGameState"
 
 class JapanCardDrawState {
   async doAction(stateObject) {
@@ -8,16 +6,11 @@ class JapanCardDrawState {
     this.nextState(stateObject)
   }
 
-  nextState(stateObject) {
+  async nextState(stateObject) {
     console.log("NEXT STATE FROM JAPAN CARD DRAW")
-    const { setUSMapRegions, setCSFAlertShow} = stateObject
 
     GlobalGameState.gamePhase = GlobalGameState.PHASE.US_SETUP_FLEET
     GlobalGameState.currentCarrier = 0
-    // if (GlobalGameState.usPlayerType === GlobalUnitsModel.TYPE.HUMAN) {
-    //     setUSMapRegions(usCSFStartHexes)
-    //     setCSFAlertShow(true)
-    // }
     GlobalGameState.phaseCompleted = false
   }
 

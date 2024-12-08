@@ -167,6 +167,8 @@ export function App() {
   const [saveAlertShow, setSaveAlertShow] = useState(false) // TO DO param should be an object with boolean and alert text
   const [midwayWarningShow, setMidwayWarningShow] = useState(false)
 
+  const [midwayAIInfoShow, setMidwayAIInfoShow] = useState(false)
+
   const [midwayDialogShow, setMidwayDialogShow] = useState(false)
   const [fleetMoveAlertShow, setFleetMoveAlertShow] = useState(false)
   const [midwayNoAttackAlertShow, setMidwayNoAttackAlertShow] = useState(false)
@@ -605,13 +607,24 @@ export function App() {
 
 
   // NEW AI-HUMAN SIDE EFFECTS....
+  // useEffect(() => {
+  //   StateManager.gameStateManager.setStateHandlers(stateObject)
+
+  //   if (StateManager.gameStateManager.getCurrentPlayer() === GlobalUnitsModel.Side.JAPAN && StateManager.gameStateManager.actionComplete(GlobalUnitsModel.Side.JAPAN ) === false && splash===false) {
+  //       StateManager.gameStateManager.doAction(GlobalUnitsModel.Side.JAPAN)
+  //   }
+
+  // }, [initComplete])
+
+  // // NEW AI-HUMAN SIDE EFFECTS....
   useEffect(() => {
+
     StateManager.gameStateManager.setStateHandlers(stateObject)
 
     if (StateManager.gameStateManager.getCurrentPlayer() === GlobalUnitsModel.Side.JAPAN && StateManager.gameStateManager.actionComplete(GlobalUnitsModel.Side.JAPAN ) === false && splash===false) {
         StateManager.gameStateManager.doAction(GlobalUnitsModel.Side.JAPAN)
     }
-
+    console.log("Load Complete, GlobalGameState.gamePhase=", GlobalGameState.gamePhase)
   }, [initComplete])
 
   useEffect(() => {
@@ -635,6 +648,20 @@ export function App() {
   useEffect(() => {
     if (GlobalGameState.gamePhase === GlobalGameState.PHASE.US_SETUP_AIR) {
       GlobalGameState.updateGlobalState()
+    }
+  }, [GlobalGameState.gamePhase])
+
+  useEffect(() => {
+    if (GlobalGameState.gamePhase === GlobalGameState.PHASE.JAPAN_MIDWAY) {
+      StateManager.gameStateManager.setJapanState()
+
+      // only show this for da human
+      // midwayPossible(setMidwayWarningShow, setMidwayDialogShow)
+
+      // call doAction  -> if human this will display the attack dialog 
+      //                -> if AI make the decision and move on (alert needed to inform user of decision)
+      StateManager.gameStateManager.doAction(GlobalUnitsModel.Side.JAPAN)
+
     }
   }, [GlobalGameState.gamePhase])
   
@@ -690,6 +717,7 @@ export function App() {
     nextAction,
     doInitiativeRoll,
     setCapAirUnits,
+    setMidwayAIInfoShow,
     setCapSteps,
     setFightersPresent,
     getJapanEnabledAirBoxes,
@@ -701,6 +729,7 @@ export function App() {
     capAirUnits,
     capSteps,
     fightersPresent,
+    setCardNumber
   }
 
   const onDrag = () => {
@@ -1323,6 +1352,7 @@ export function App() {
       GlobalGameState.nextActionButtonDisabled = false
     } else {
       if (GlobalGameState.nextActionButtonDisabled === false) {
+        console.log("QUACK1")
         GlobalGameState.nextActionButtonDisabled = true
         GlobalGameState.updateGlobalState()
       }
@@ -1383,6 +1413,7 @@ export function App() {
                   !GlobalGameState.usCardsDrawn && GlobalGameState.gamePhase !== GlobalGameState.PHASE.US_CARD_DRAW
                 }
                 onClick={(e) => {
+                  console.log("CLICKETY WOOO")
                   if (
                     GlobalGameState.gamePhase === GlobalGameState.PHASE.US_CARD_DRAW ||
                     GlobalGameState.gamePhase === GlobalGameState.PHASE.US_DRAWS_ONE_CARD
@@ -1396,7 +1427,6 @@ export function App() {
                   }
                   if (GlobalGameState.gamePhase === GlobalGameState.PHASE.US_CARD_DRAW) {
                     console.log("CLOSE CARD SCREEN")
-                    // nextAction(e)
                   }
                   setusHandShow(true)
                 }}
@@ -1427,7 +1457,7 @@ export function App() {
                     GlobalGameState.gamePhase = GlobalGameState.PHASE.JAPAN_MIDWAY
                   }
                   if (GlobalGameState.gamePhase === GlobalGameState.PHASE.JAPAN_CARD_DRAW) {
-                    nextAction(e)
+                    // nextAction(e)
                   }
                   setjpHandShow(true)
                 }}
@@ -2340,6 +2370,8 @@ export function App() {
   let midwayInvasionDiceButtonDisabled =
     GlobalGameState.midwayInvasionLevel === 0 || GlobalGameState.midwayGarrisonLevel === 0
 
+  let mstr = GlobalGameState.midwayAttackDeclaration ? "will" : "will not"
+  let ijnMidwayStr = `IJN ${mstr} attack Midway this turn`  
   let airOpsDiceButtonDisabled =
     GlobalGameState.sideWithInitiative !== undefined &&
     GlobalGameState.sideWithInitiative !== null &&
@@ -2493,6 +2525,17 @@ export function App() {
         <p>Game Id = {gameSaveID} </p>
       </AlertPanel>
 
+      <AlertPanel
+        show={midwayAIInfoShow}
+        onHide={(e) => {
+          nextAction(e)
+          setMidwayAIInfoShow(false)
+        }}
+      >
+        <h4 style={{ justifyContent: "center", alignItems: "center" }}>MIDWAY ATTACK DECISION</h4>
+        <p>{ijnMidwayStr}</p>
+        <p>Press Close to Continue</p>
+      </AlertPanel>
       <AlertPanel
         show={midwayWarningShow}
         onHide={(e) => {
@@ -3047,6 +3090,7 @@ export function App() {
         side={GlobalUnitsModel.Side.US}
         onHide={(e) => {
           setusHandShow(false)
+          nextAction(e)
         }}
       ></CardPanel>
       <TransformWrapper

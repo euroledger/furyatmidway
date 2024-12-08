@@ -1,9 +1,13 @@
 import GlobalGameState from "../model/GlobalGameState"
 import GlobalUnitsModel from "../model/GlobalUnitsModel"
-import JapanAIStateHandler from "./Japan/JapanAIStateHandler"
-import JapanHumanStateHandler from "./Japan/JapanHumanStateHandler"
-import USAIStateHandler from "./US/USAIStateHandler"
-import USHumanStateHandler from "./US/USHumanStateHandler"
+import JapanAIStateHandler from "./Japan/ai/JapanAIStateHandler"
+import JapanHumanStateHandler from "./Japan/human/JapanHumanStateHandler"
+import USAIStateHandler from "./US/ai/USAIStateHandler"
+import USHumanStateHandler from "./US/human/USHumanStateHandler"
+import mapGameStateToUSHumanHandlerState from "./US/human/USHumanStateFactory"
+import mapGameStateToUSAIHandlerState from "./US/ai/USAIStateFactory"
+import mapGameStateToJapanHumanHandlerState from "./Japan/human/JapanHumanStateFactory"
+import mapGameStateToJapanAIHandlerState from "./Japan/ai/JapanAIStateFactory"
 
 class GameStateManager {
   constructor(japanPlayerType, usPlayerType) {
@@ -11,18 +15,51 @@ class GameStateManager {
     this.usPlayerType = usPlayerType
   }
 
+  setJapanState() {
+    let state
+    if (this.japanPlayerType === GlobalUnitsModel.TYPE.AI) {
+        state = mapGameStateToJapanAIHandlerState()
+    } else {
+        state = mapGameStateToJapanHumanHandlerState()
+    }
+    console.log("+++++ NEW Japan STATE OBJECT->", state)
+    if (state) {
+      this.japanStateHandler.setState(state)
+    }
+  }
+
+  setUSState() {
+    let state
+    if (this.usPlayerType === GlobalUnitsModel.TYPE.AI) {
+        state = mapGameStateToUSAIHandlerState()
+    } else {
+        state = mapGameStateToUSHumanHandlerState()
+    }
+    console.log("US STATE OBJECT->", state)
+    if (state) {
+      this.usStateHandler.setState(state)
+    }
+  }
+
   setStateHandlers(stateObject) {
+    console.log("SET STATE HANDLERS QUACK 1")
+
+    // Japan Handlers and Current State
     this.stateObject = stateObject
     if (this.japanPlayerType == GlobalUnitsModel.TYPE.AI) {
       this.japanStateHandler = new JapanAIStateHandler(stateObject)
     } else {
       this.japanStateHandler = new JapanHumanStateHandler(stateObject)
     }
+    this.setJapanState()
+
+    // US Handlers and Current State
     if (this.usPlayerType == GlobalUnitsModel.TYPE.AI) {
       this.usStateHandler = new USAIStateHandler(stateObject)
     } else {
       this.usStateHandler = new USHumanStateHandler(stateObject)
     }
+    this.setUSState()
   }
 
   actionComplete(side) {
@@ -35,7 +72,7 @@ class GameStateManager {
 
   async doAction(side) {
     if (side === GlobalUnitsModel.Side.JAPAN) {
-        console.log("japanStateHandler=", this.japanStateHandler)
+      console.log("japanStateHandler=", this.japanStateHandler)
       await this.japanStateHandler.doAction(this.stateObject)
     } else {
       await this.usStateHandler.doAction(this.stateObject)
@@ -44,10 +81,10 @@ class GameStateManager {
 
   async doNextState(side) {
     if (side === GlobalUnitsModel.Side.JAPAN) {
-      this.japanStateHandler.doNextState()
-      this.japanStateHandler.finishStateChange()
+      await this.japanStateHandler.doNextState()
+      await this.japanStateHandler.finishStateChange()
     } else {
-      this.usStateHandler.doNextState()
+      await this.usStateHandler.doNextState()
       await this.usStateHandler.finishStateChange()
     }
   }
