@@ -143,7 +143,6 @@ export function DamageControlPanelHeaders({ controller, setDamagedCV, damagedCV,
     )
   }
   function removeDamageFromCV(cv) {
-    console.log("REMOVE DAMAGE FROM CARRIER")
     setDamagedCV(cv)
 
     // Either bow or stern or both damaged
@@ -164,9 +163,16 @@ export function DamageControlPanelHeaders({ controller, setDamagedCV, damagedCV,
   }
   let msg = side === GlobalUnitsModel.Side.US ? "" : "(Successful on roll of 1-3 for Japan)"
 
-  if (damagedCV !== "" && damagedCV !== undefined) {
-    msg = "Remove 1 hit from Carrier " + damagedCV
+  if (side === GlobalUnitsModel.Side.JAPAN) {
+    if (damagedCV !== "" && damagedCV !== undefined && GlobalGameState.dieRolls[0] !== undefined) {
+      msg = "Remove 1 hit from Carrier " + damagedCV
+    }
+  } else {
+    if (damagedCV !== "" && damagedCV !== undefined) {
+      msg = "Remove 1 hit from Carrier " + damagedCV
+    }
   }
+
   let damagedCarriers = controller.getDamagedCarriersOneOrTwoHits(side)
   damagedCarriers = damagedCarriers.filter((cv) => !controller.getCarrier(cv).dmcv)
   if (damagedCarriers.length === 0 && !japanDamageDone) {
@@ -189,17 +195,15 @@ export function DamageControlPanelHeaders({ controller, setDamagedCV, damagedCV,
     "japanDamageDone=",
     japanDamageDone
   )
-  if (side === GlobalUnitsModel.Side.JAPAN && GlobalGameState.dieRolls[0] <= 3 && !japanDamageDone) {
+  if (damagedCV !== "" && side === GlobalUnitsModel.Side.JAPAN && GlobalGameState.dieRolls[0] <= 3 && !japanDamageDone) {
     removeDamageFromCV(damagedCV)
     setJapanDamageDone(true)
   }
 
   const handleClick = (cv) => {
     if (side === GlobalUnitsModel.Side.US) {
-      console.log("US SET DAMAGED CV to", cv)
       removeDamageFromCV(cv)
     } else {
-      console.log("IJN SET DAMAGED CV to", cv)
       setDamagedCV(cv)
     }
   }

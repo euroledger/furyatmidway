@@ -55,7 +55,6 @@ function usCardDrawHandler({ setMidwayDialogShow, setMidwayWarningShow, setCardN
       GlobalGameState.gamePhase = GlobalGameState.PHASE.US_DRAWS_ONE_CARD
     }
   } else {
-    console.log("IN HERE...POOPS")
     GlobalGameState.usCardsDrawn = true
     if (GlobalInit.controller.japanHandContainsCard(6)) {
       setCardNumber(() => 6)
@@ -64,7 +63,6 @@ function usCardDrawHandler({ setMidwayDialogShow, setMidwayWarningShow, setCardN
       GlobalGameState.gamePhase = GlobalGameState.PHASE.JAPAN_MIDWAY
       midwayPossible(setMidwayWarningShow, setMidwayDialogShow)
     }
-  
   }
   GlobalGameState.phaseCompleted = true
 }
@@ -95,6 +93,7 @@ async function setNextStateFollowingCardPlay({
 }) {
   GlobalGameState.dieRolls = []
 
+  console.log("PANTS!!!!!!!!!!!!!!!!!")
   switch (cardNumber) {
     case -1:
       break
@@ -117,8 +116,6 @@ async function setNextStateFollowingCardPlay({
         setCardNumber(() => 4)
       } else {
         if (GlobalGameState.gameTurn === 7) {
-          console.log("QUACK 3")
-
           determineMidwayInvasion(setCardNumber)
         } else {
           GlobalGameState.gamePhase = GlobalGameState.PHASE.END_OF_TURN
@@ -134,8 +131,6 @@ async function setNextStateFollowingCardPlay({
         setCardNumber(() => 4)
       } else {
         if (GlobalGameState.gameTurn === 7) {
-          console.log("QUACK 4")
-
           determineMidwayInvasion(setCardNumber)
         } else {
           GlobalGameState.gamePhase = GlobalGameState.PHASE.END_OF_TURN
@@ -149,8 +144,6 @@ async function setNextStateFollowingCardPlay({
         setCardNumber(() => 4)
       } else {
         if (GlobalGameState.gameTurn === 7) {
-          console.log("QUACK 5")
-
           determineMidwayInvasion(setCardNumber)
         } else {
           GlobalGameState.gamePhase = GlobalGameState.PHASE.END_OF_TURN
@@ -161,8 +154,6 @@ async function setNextStateFollowingCardPlay({
 
     case 4:
       if (GlobalGameState.gameTurn === 7) {
-        console.log("QUACK 6")
-
         determineMidwayInvasion(setCardNumber)
       } else {
         // if playing this card has resulted in a DMCV carrier being sunk, need to remove
@@ -246,7 +237,8 @@ async function setNextStateFollowingCardPlay({
       if (GlobalInit.controller.getCardPlayed(11, GlobalUnitsModel.Side.JAPAN)) {
         GlobalGameState.gamePhase = GlobalGameState.PHASE.AIR_OPERATIONS
       } else {
-        setUpAirAttack(GlobalInit.controller, location, GlobalGameState.attackingStrikeGroup, setCardNumber)
+        console.log("SET UP AIR ATTACK! FUCKING SHIT")
+        setUpAirAttack(GlobalInit.controller, location, GlobalGameState.attackingStrikeGroup, setCardNumber, true)
       }
       break
 
@@ -294,9 +286,11 @@ function setupUSAirHandler() {
   GlobalGameState.phaseCompleted = false
 }
 
-
 function dmcvState(side) {
   if (side === GlobalUnitsModel.Side.US) {
+    if (GlobalGameState.usDMCVCarrier==="SUNK") {
+      return false
+    }
     const usDMCVLocation = GlobalInit.controller.getFleetLocation("US-DMCV", GlobalUnitsModel.Side.US)
     if (usDMCVLocation !== undefined && usDMCVLocation.boxName === HexCommand.FLEET_BOX) {
       return false
@@ -305,6 +299,9 @@ function dmcvState(side) {
       (GlobalInit.controller.getDamagedCarriers(side).length > 0 && GlobalGameState.usDMCVFleetPlaced === false) ||
       (usDMCVLocation !== undefined && GlobalGameState.usDMCVFleetPlaced === true) // could be sunk
     )
+  }
+  if (GlobalGameState.jpDMCVCarrier==="SUNK") {
+    return false
   }
   const jpDMCVLocation = GlobalInit.controller.getFleetLocation("IJN-DMCV", GlobalUnitsModel.Side.JAPAN)
 
@@ -1046,9 +1043,15 @@ async function tidyUp(setAirUnitUpdate, setStrikeGroupUpdate, setFleetUnitUpdate
 }
 
 export async function endOfAirOperation(side, capAirUnits, setAirUnitUpdate, setEliminatedUnitsPanelShow) {
-  if (capAirUnits) {
-    await moveCAPtoReturnBox(GlobalInit.controller, capAirUnits, setAirUnitUpdate)
+  if (
+    GlobalGameState.taskForceTarget !== GlobalUnitsModel.TaskForce.JAPAN_DMCV &&
+    GlobalGameState.taskForceTarget !== GlobalUnitsModel.TaskForce.US_DMCV
+  ) {
+    if (capAirUnits) {
+      await moveCAPtoReturnBox(GlobalInit.controller, capAirUnits, setAirUnitUpdate)
+    }
   }
+
   const anySGsNotMoved = GlobalInit.controller.getStrikeGroupsNotMoved2(GlobalGameState.sideWithInitiative)
 
   if (!anySGsNotMoved) {
@@ -1723,7 +1726,6 @@ export default async function handleAction({
   } else if (GlobalGameState.gamePhase === GlobalGameState.PHASE.END_OF_AIR_OPERATION) {
     if (endOfTurn()) {
       if (GlobalGameState.gameTurn === 7) {
-        console.log("QUACK 1")
         determineMidwayInvasion(setCardNumber)
         if (
           GlobalGameState.gamePhase === GlobalGameState.PHASE.MIDWAY_INVASION ||
@@ -1812,7 +1814,6 @@ export default async function handleAction({
     if (GlobalGameState.gameTurn !== 4) {
       GlobalGameState.gamePhase = GlobalGameState.PHASE.JAPAN_MIDWAY
       // setMidwayDialogShow(true)
-      console.log("1 IS MIDWAY POSSIBLE??")
       midwayPossible(setMidwayWarningShow, setMidwayDialogShow)
     } else {
       midwayDeclarationHandler({ setUsFleetRegions })

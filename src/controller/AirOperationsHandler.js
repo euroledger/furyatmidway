@@ -384,13 +384,9 @@ export function doStrikeBoxJapan(controller, name, strikeGroup, side) {
     strikeGroup.gameTurnMoved === GlobalGameState.gameTurn &&
     GlobalGameState.taskForceTarget === GlobalUnitsModel.TaskForce.MIDWAY
   ) {
-    console.log("GlobalGameState.midwayAttackGroup=", GlobalGameState.midwayAttackGroup)
-    console.log("I AM SG", strikeGroup.name)
-
     const return1Box = controller.getReturn1AirBoxForNamedTaskForce(side, tf)
     destArray.push(return1Box)
     controller.setValidAirUnitDestinations(name, destArray)
-    console.log("POOOOOOOOOO 2")
     return
   }
   if (
@@ -399,7 +395,6 @@ export function doStrikeBoxJapan(controller, name, strikeGroup, side) {
     strikeGroup.gameTurnMoved === GlobalGameState.gameTurn
   ) {
     // GOTO RETURN 1 BOX
-    console.log("QUACK RETURN 1")
     const return1Box = controller.getReturn1AirBoxForNamedTaskForce(side, tf)
     destArray.push(return1Box)
 
@@ -538,6 +533,9 @@ export function doStrikeBoxUS(controller, name, side) {
     const otherTF = controller.getOtherTaskForce(tf, side)
     const carriersInOtherTaskForce = controller.getCarriersInOtherTF(otherTF, side)
     for (let carrier of carriersInOtherTaskForce) {
+      if (name.includes("Midway")) {
+        break // prevent Midway planes landing on carriers
+      }
       if (carrier.hits < 2) {
         const return1BoxOtherTF = controller.getReturn1AirBoxForNamedTaskForce(side, otherTF)
         destArray.push(return1BoxOtherTF)
@@ -566,6 +564,9 @@ export function doStrikeBoxUS(controller, name, side) {
       const otherTF = controller.getOtherTaskForce(tf, side)
       const carriersInOtherTaskForce = controller.getCarriersInOtherTF(otherTF, side)
       for (let carrier of carriersInOtherTaskForce) {
+        if (name.includes("Midway")) {
+          break // prevent Midway planes landing on carriers
+        }
         if (carrier.hits < 2) {
           const return2BoxOtherTF = controller.getReturn2AirBoxForNamedTaskForce(side, otherTF)
           destArray.push(return2BoxOtherTF)
@@ -947,10 +948,7 @@ export async function moveCAPtoReturnBox(controller, capAirUnits, setAirUnitUpda
 
     const parentCarrier = controller.getCarrierForAirUnit(capUnit.name)
     const tf = controller.getTaskForceForCarrier(parentCarrier, sideBeingAttacked)
-    console.log("tf destBox=", tf)
-
     const destBox = controller.getCapReturnAirBoxForNamedTaskForce(sideBeingAttacked, tf)
-    console.log("DEBUG destBox=", destBox)
 
     let position1 = USAirBoxOffsets.find((box) => box.name === destBox)
     console.log("DEBUG US set position1 to", position1)

@@ -914,7 +914,6 @@ export function App() {
         setCSFAlertShow(true)
       }
     } else if (GlobalGameState.gamePhase === GlobalGameState.PHASE.JAPAN_MIDWAY) {
-      console.log("POO 1")
       midwayPossible(setMidwayWarningShow, setMidwayDialogShow)
       GlobalGameState.phaseCompleted = false
     } else if (GlobalGameState.gamePhase === GlobalGameState.PHASE.US_FLEET_MOVEMENT_PLANNING) {
@@ -2311,7 +2310,8 @@ export function App() {
   if (
     GlobalGameState.currentCarrierAttackTarget !== GlobalUnitsModel.TaskForce.MIF &&
     GlobalGameState.currentCarrierAttackTarget !== GlobalUnitsModel.TaskForce.JAPAN_DMCV &&
-    GlobalGameState.currentCarrierAttackTarget !== GlobalUnitsModel.TaskForce.US_DMCV
+    GlobalGameState.currentCarrierAttackTarget !== GlobalUnitsModel.TaskForce.US_DMCV &&
+    GlobalGameState.currentCarrierAttackTarget !== undefined
   ) {
     const oldCarrierHits = GlobalInit.controller.getCarrierHits(GlobalGameState.currentCarrierAttackTarget)
     carrieDamageDiceButtonDisabled =
