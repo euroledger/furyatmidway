@@ -42,8 +42,6 @@ class GameStateManager {
   }
 
   setStateHandlers(stateObject) {
-    console.log("SET STATE HANDLERS QUACK 1")
-
     // Japan Handlers and Current State
     this.stateObject = stateObject
     if (this.japanPlayerType == GlobalUnitsModel.TYPE.AI) {

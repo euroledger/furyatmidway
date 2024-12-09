@@ -1352,7 +1352,6 @@ export function App() {
       GlobalGameState.nextActionButtonDisabled = false
     } else {
       if (GlobalGameState.nextActionButtonDisabled === false) {
-        console.log("QUACK1")
         GlobalGameState.nextActionButtonDisabled = true
         GlobalGameState.updateGlobalState()
       }
@@ -1396,16 +1395,19 @@ export function App() {
         midwayMsg = "(Second Air Op)"
       }
     }
+    const font="12px"
     return (
-      <Navbar bg="black" data-bs-theme="dark" fixed="top" className="justify-content-between navbar-fixed-top">
-        <Container>
+      <Navbar  style={{fontSize:font}} bg="black" data-bs-theme="dark" fixed="top" className="justify-content-between navbar-fixed-top">
+        <Container  style={{fontSize:font}} >
           <Navbar.Toggle aria-controls="responsive-navbar-nav" />
           <Navbar.Collapse id="responsive-navbar-nav">
-            <Nav className="mr-auto">
-              <Button className="me-1" size="sm" variant="outline-secondary" onClick={() => setGameStateShow(true)}>
+            <Nav   style={{fontSize:font}} className="mr-auto">
+              <Button  style={{ marginLeft: "-4em", fontSize:font,}}
+                className="me-1" size="sm" variant="outline-secondary" onClick={() => setGameStateShow(true)}>
                 Game State
               </Button>
               <Button
+              style={{fontSize:font}} 
                 className="me-1"
                 size="sm"
                 variant="outline-primary"
@@ -1434,6 +1436,7 @@ export function App() {
                 US Hand
               </Button>
               <Button
+              style={{fontSize:font}} 
                 className="me-1"
                 size="sm"
                 variant="outline-danger"
@@ -1465,6 +1468,7 @@ export function App() {
                 Japan Hand
               </Button>
               <Button
+              style={{fontSize:font}} 
                 className="me-1"
                 size="sm"
                 variant="outline-light"
@@ -1475,6 +1479,7 @@ export function App() {
                 Save Game
               </Button>
               <Button
+              style={{fontSize:font}} 
                 className="me-1"
                 size="sm"
                 variant="outline-light"
@@ -1485,6 +1490,7 @@ export function App() {
                 Strike
               </Button>
               <Button
+              style={{fontSize:font}} 
                 className="me-1"
                 size="sm"
                 variant="outline-light"
@@ -1496,6 +1502,7 @@ export function App() {
                 Fleet
               </Button>
               <Button
+              style={{fontSize:font}} 
                 className="me-1"
                 size="sm"
                 variant="outline-light"
@@ -1539,12 +1546,13 @@ export function App() {
 
             <Nav>
               {initComplete && (<Button
+              
                 size="sm"
                 className="me-1"
                 variant="secondary"
                 onClick={(e) => nextAction(e)}
                 disabled={GlobalGameState.nextActionButtonDisabled}
-                style={{ background: "#9e1527" }}
+                style={{ background: "#9e1527", fontSize: "10px" }}
               >
                 Next Action
               </Button>)}
@@ -1554,49 +1562,20 @@ export function App() {
                 variant="secondary"
                 onClick={(e) => setInitComplete(true)}
                 disabled={false}
-                style={{ background: "#9e1527" }}
+                style={{ background: "#9e1527", fontSize: "10px" }}
               >
-                Begin
+                Japan AI Begin
               </Button>)}
             </Nav>
-            {/* {test && (
-              <Nav>
-                <Button
-                  style={{
-                    marginLeft: "25px",
-                    background: "#9e1527",
-                  }}
-                  size="sm"
-                  className="me-1"
-                  variant="secondary"
-                  onClick={(e) => testUi(e)}
-                >
-                  TEST
-                </Button>
-              </Nav>
-            )}
-            {test && (
-              <Nav>
-                <Button
-                  size="sm"
-                  className="me-1"
-                  variant="secondary"
-                  onClick={(e) => testUi(e, true)}
-                  style={{ background: "#9e1527" }}
-                >
-                  HEADLESS
-                </Button>
-              </Nav>
-            )} */}
-
-            <ButtonGroup className="ms-auto" aria-label="Basic example">
-              <Button className="me-1" size="sm" variant="secondary" onClick={() => zoomIn()}>
+           
+            <ButtonGroup style={{ marginRight: "-3.5em", fontSize:font}} className="ms-auto" aria-label="Basic example">
+              <Button style={{fontSize:font}} className="me-1" size="sm" variant="secondary" onClick={() => zoomIn()}>
                 Zoom In
               </Button>
-              <Button className="me-1" size="sm" variant="secondary" onClick={() => zoomOut()}>
+              <Button style={{fontSize:font}} className="me-1" size="sm" variant="secondary" onClick={() => zoomOut()}>
                 Zoom Out
               </Button>
-              <Button className="me-1" size="sm" variant="secondary" onClick={() => resetTransform()}>
+              <Button style={{fontSize:font}} className="me-1" size="sm" variant="secondary" onClick={() => resetTransform()}>
                 Reset
               </Button>
             </ButtonGroup>

@@ -14,7 +14,6 @@ class USHumanStateHandler extends PlayerStateHandler {
   }
 
   async doNextState() {
-    console.log("ANOTHER FUCK current state=", this.currentState)
     this.currentState = await this.currentState.nextState(this.stateObject)
     console.trace()
     console.log("SET NEXT STATE TO", this.currentState)

@@ -8,7 +8,6 @@ class USHumanSetupAirState {
   nextState(stateObject) {
     GlobalGameState.currentCarrier++
     GlobalGameState.setupPhase++
-    console.log("QUACK GlobalGameState.setupPhase=", GlobalGameState.setupPhase)
     GlobalGameState.currentTaskForce =
       GlobalGameState.currentCarrier <= 1 ? 1 : GlobalGameState.currentCarrier === 2 ? 2 : 3 // 3 is Midway
     if (GlobalGameState.currentCarrier === 4) {
@@ -20,7 +19,6 @@ class USHumanSetupAirState {
       GlobalGameState.phaseCompleted = false
       return new USHumanCardDrawState()
     }
-    console.log(">>>>>>>>> SET GlobalGameState.phaseCompleted to FALSE!")
     GlobalGameState.phaseCompleted = false
     return this
   }
