@@ -494,12 +494,15 @@ export function App() {
       GlobalGameState.carrierAttackHitsThisAttack = 0
       GlobalGameState.dieRolls = []
       GlobalGameState.carrierHitsDetermined = false
+
       GlobalGameState.currentCarrierAttackTarget = GlobalGameState.carrierTarget2
       GlobalGameState.carrierTarget2 = ""
       GlobalGameState.eliminatedAirUnits = new Array()
       setAttackResolutionPanelShow(true)
     }
   }, [GlobalGameState.gamePhase])
+
+  console.log("wanking TARGET TO", GlobalGameState.currentCarrierAttackTarget)
 
   useEffect(() => {
     if (GlobalGameState.gamePhase === GlobalGameState.PHASE.ATTACK_DAMAGE_RESOLUTION) {
@@ -2785,6 +2788,7 @@ export function App() {
         cardNumber={cardNumber}
         eventHandler={cardEventHandler}
         margin={0}
+        setDamagedCV={setDamagedCV}
         setCardDicePanelShow5={setCardDicePanelShow5}
         setCardDicePanelShow7={setCardDicePanelShow7}
         setStrikeLostPanelShow={setStrikeLostPanelShow}

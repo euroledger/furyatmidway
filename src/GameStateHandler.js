@@ -1663,6 +1663,7 @@ export default async function handleAction({
     if (
       GlobalGameState.carrierAttackHitsThisAttack > 0 &&
       GlobalGameState.sideWithInitiative === GlobalUnitsModel.Side.US &&
+      GlobalGameState.taskForceTarget !== GlobalUnitsModel.TaskForce.JAPAN_DMCV &&
       GlobalInit.controller.usHandContainsCard(13)
     ) {
       setCardNumber(() => 13)

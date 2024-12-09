@@ -756,68 +756,6 @@ export default class Controller {
     const x = new Map([...this.targetMap].filter(([_, v]) => v === carrier))
     return Array.from(x.keys())
   }
-
-  getAttackingStepsRemainingTEST() {
-    return 16
-  }
-
-  getAttackingStrikeUnitsTEST(carrierDiv, carrier) {
-    GlobalGameState.currentCarrierAttackTarget = carrier
-    GlobalGameState.taskForceTarget = carrierDiv
-    getTaskForceForCarrierGlobalUnitsModel.Side.JAPAN
-
-    const edb1 = this.counters.get("Enterprise-SBD3-1")
-    const etb = this.counters.get("Enterprise-TBD1")
-    const hotb = this.counters.get("Hornet-TBD1")
-    const kdb = this.counters.get("Kaga-D3A-1")
-    const ktb = this.counters.get("Kaga-B5N-2")
-    const adb = this.counters.get("Akagi-D3A-1")
-    const atb = this.counters.get("Akagi-B5N-2")
-    const haf1 = this.counters.get("Hiryu-A6M-2b-1")
-    const haf2 = this.counters.get("Hiryu-A6M-2b-2")
-    const hdb = this.counters.get("Hiryu-D3A-1")
-    const htb = this.counters.get("Hiryu-B5N-2")
-    const saf1 = this.counters.get("Soryu-A6M-2b-1")
-    const saf2 = this.counters.get("Soryu-A6M-2b-2")
-    const sdb = this.counters.get("Soryu-D3A-1")
-    const stb = this.counters.get("Soryu-B5N-2")
-
-    // this.addAirUnitToBox(GlobalUnitsModel.AirBox.JP_AKAGI_FLIGHT_DECK, 0, adb)
-    // this.addAirUnitToBox(GlobalUnitsModel.AirBox.JP_AKAGI_FLIGHT_DECK, 1, atb)
-    // this.addAirUnitToBox(GlobalUnitsModel.AirBox.JP_KAGA_FLIGHT_DECK, 0, kdb)
-    // this.addAirUnitToBox(GlobalUnitsModel.AirBox.JP_KAGA_FLIGHT_DECK, 1, ktb)
-
-    // this.setCarrierSternDamaged(GlobalUnitsModel.Carrier.ENTERPRISE)
-    // this.setCarrierBowDamaged(GlobalUnitsModel.Carrier.ENTERPRISE)
-
-    this.addAirUnitToBox(GlobalUnitsModel.AirBox.US_ENTERPRISE_FLIGHT_DECK, 0, edb1)
-    this.addAirUnitToBox(GlobalUnitsModel.AirBox.US_ENTERPRISE_FLIGHT_DECK, 1, etb)
-
-    // this.addAirUnitToBox(GlobalUnitsModel.AirBox.US_HORNET_FLIGHT_DECK, 1, hotb)
-
-    // this.setCarrierSternDamaged(GlobalUnitsModel.Carrier.HIRYU)
-    // this.setCarrierBowDamaged(GlobalUnitsModel.Carrier.SORYU)
-
-    // this.setCarrierBowDamaged(GlobalUnitsModel.Carrier.HIRYU)
-    // this.setCarrierSternDamaged(GlobalUnitsModel.Carrier.SORYU)
-
-    kdb.aircraftUnit.steps = 1
-    kdb.image = "/images/aircounters/kaga-d3a-back.png"
-
-    ktb.aircraftUnit.steps = 1
-    ktb.image = "/images/aircounters/kaga-b5n-back.png"
-
-    hdb.aircraftUnit.steps = 1
-    hdb.image = "/images/aircounters/hiryu-d3a-back.png"
-
-    stb.aircraftUnit.steps = 1
-    stb.image = "/images/aircounters/soryu-b5n-back.png"
-    // return [kdb, ktb]
-    return [kdb, ktb, adb, atb, hdb, htb, sdb, stb]
-
-    // return [kdb, ktb, adb, atb]
-  }
-
   attackAircraftOnDeck() {
     const side = GlobalUnitsModel.carrierSideMap.get(GlobalGameState.currentCarrierAttackTarget)
     const flightDeckBox = this.airOperationsModel.getAirBoxForNamedShip(
@@ -921,7 +859,7 @@ export default class Controller {
     return true
   }
   allCarriersSunk(side) {
-    let numCarriersSunk = this.getSunkCarriers(side).length
+    let numCarriersSunk = this.getSunkCarriers(side, true).length
 
     if (side === GlobalUnitsModel.Side.JAPAN) {
       if (numCarriersSunk === 4) {

@@ -45,10 +45,16 @@ export function setUpAirAttack(controller, location, strikeGroup, setCardNumber,
       GlobalGameState.gamePhase = GlobalGameState.PHASE.ANTI_AIRCRAFT_FIRE
       if (fleetTarget.includes("IJN-DMCV")) {
         GlobalGameState.taskForceTarget = GlobalUnitsModel.TaskForce.JAPAN_DMCV
+        GlobalGameState.currentCarrierAttackTarget = GlobalUnitsModel.TaskForce.JAPAN_DMCV
+        console.log("+++++++++++++++++++++++++ SET TARGET TO", GlobalGameState.currentCarrierAttackTarget)
+
       } else if (fleetTarget.includes("US-DMCV")) {
         GlobalGameState.taskForceTarget = GlobalUnitsModel.TaskForce.US_DMCV
+        GlobalGameState.currentCarrierAttackTarget = GlobalUnitsModel.TaskForce.US_DMCV
+        
       } else if (fleetTarget.includes("MIF")) {
         GlobalGameState.taskForceTarget = GlobalUnitsModel.TaskForce.MIF
+        GlobalGameState.currentCarrierAttackTarget = GlobalUnitsModel.TaskForce.MIF
       }
     } else {
       // may have no targets (all enemy carriers sunk/DMCV)
