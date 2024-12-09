@@ -1,6 +1,6 @@
-import GlobalGameState from "../../model/GlobalGameState"
-import PlayerStateHandler from "../PlayerStateHandler"
-
+import GlobalGameState from "../../../model/GlobalGameState"
+import PlayerStateHandler from "../../PlayerStateHandler"
+import USHumanSetupAirState from "../human/USHumanSetupAirState"
 class USAIStateHandler extends PlayerStateHandler {
   constructor(stateObject) {
     super(stateObject,  new USSetupFleetState())
@@ -12,14 +12,10 @@ class USAIStateHandler extends PlayerStateHandler {
 
         // next state is US Air Setup
         // this.currentState = new JapanCardDrawState()
-        this.currentState = new USSetupAirState()
+        this.currentState = new USHumanSetupAirState()
 
     } else if (this.getState() === GlobalGameState.PHASE.US_SETUP_AIR) {
       await this.currentState.doAction(this.stateObject)
-
-      // next state is US Air Setup
-      // this.currentState = new JapanCardDrawState()
-      // this.currentState = new USSetupAirState()
     }
     this.actionComplete = true
   }

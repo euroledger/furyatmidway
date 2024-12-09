@@ -1,11 +1,11 @@
-import GlobalGameState from "../../model/GlobalGameState"
-import { airUnitDataJapan } from "../../AirUnitTestData"
-import GlobalInit from "../../model/GlobalInit"
-import { calcRandomJapanTestData } from "../../AirUnitTestData"
-import JapanAirBoxOffsets from "../../components/draganddrop/JapanAirBoxOffsets"
-import { delay } from "../../Utils"
+import GlobalGameState from "../../../model/GlobalGameState"
+import { airUnitDataJapan } from "../../../AirUnitTestData"
+import GlobalInit from "../../../model/GlobalInit"
+import { calcRandomJapanTestData } from "../../../AirUnitTestData"
+import JapanAirBoxOffsets from "../../../components/draganddrop/JapanAirBoxOffsets"
+import { delay } from "../../../Utils"
 
-class JapanSetupState {
+class JapanAISetupState {
   async doAction(stateObject) {
     const { setTestUpdate } = stateObject
     let update
@@ -21,13 +21,13 @@ class JapanSetupState {
       setTestUpdate(update)
       await delay(GlobalGameState.DELAY)
       if (update.nextAction) {
-        this.nextState()
+        await this.nextState()
       }
       await delay(GlobalGameState.DELAY)
     }
   }
 
-  nextState() {
+  async nextState() {
     if (GlobalGameState.currentCarrier <= 2) {
       GlobalGameState.currentCarrier++
       GlobalGameState.currentCarrierDivision = GlobalGameState.currentCarrier <= 1 ? 1 : 2
@@ -45,4 +45,4 @@ class JapanSetupState {
   }
 }
 
-export default JapanSetupState
+export default JapanAISetupState

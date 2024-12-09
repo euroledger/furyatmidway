@@ -1,10 +1,10 @@
-import GlobalGameState from "../../model/GlobalGameState"
-import PlayerStateHandler from "../PlayerStateHandler"
-import JapanSetupState from "./JapanSetupState"
+import GlobalGameState from "../../../model/GlobalGameState"
+import PlayerStateHandler from "../../PlayerStateHandler"
+import JapanAISetupState from "../ai/JapanAISetupAirState"
 
 class JapanHumanStateHandler extends PlayerStateHandler {
   constructor(stateObject) {
-    super(stateObject, new JapanSetupState(), )
+    super(stateObject, new JapanAISetupState(), )
   }
   getState() {
     return GlobalGameState.PHASE.JAPAN_SETUP

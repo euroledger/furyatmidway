@@ -42,7 +42,7 @@ function japanSetUpHandler() {
 }
 
 function japanCardDrawHandler({ setUSMapRegions, setCSFAlertShow }) {
-  GlobalGameState.gamePhase = GlobalGameState.PHASE.US_SETUP_FLEET
+  // GlobalGameState.gamePhase = GlobalGameState.PHASE.US_SETUP_FLEET
   GlobalGameState.currentCarrier = 0
   setUSMapRegions(usCSFStartHexes)
   setCSFAlertShow(true)
@@ -237,7 +237,6 @@ async function setNextStateFollowingCardPlay({
       if (GlobalInit.controller.getCardPlayed(11, GlobalUnitsModel.Side.JAPAN)) {
         GlobalGameState.gamePhase = GlobalGameState.PHASE.AIR_OPERATIONS
       } else {
-        console.log("SET UP AIR ATTACK! FUCKING SHIT")
         setUpAirAttack(GlobalInit.controller, location, GlobalGameState.attackingStrikeGroup, setCardNumber, true)
       }
       break

@@ -1,6 +1,5 @@
-import GlobalGameState from "../../model/GlobalGameState"
-import PlayerStateHandler from "../PlayerStateHandler"
-import USSetupFleetState from "./USSetupFleetState"
+import PlayerStateHandler from "../../PlayerStateHandler"
+import USSetupFleetState from "./USHumanSetupFleetState"
 
 class USHumanStateHandler extends PlayerStateHandler {
   constructor(stateObject) {
@@ -16,6 +15,7 @@ class USHumanStateHandler extends PlayerStateHandler {
 
   async doNextState() {
     this.currentState = await this.currentState.nextState(this.stateObject)
+    console.trace()
     console.log("SET NEXT STATE TO", this.currentState)
   }
 
