@@ -3,3 +3,7 @@ export function delay(ms) {
     setTimeout(resolve, ms)
   })
 }
+
+export function getRandomElementFrom (array) {
+  return array[Math.floor((Math.random()*array.length))];
+}

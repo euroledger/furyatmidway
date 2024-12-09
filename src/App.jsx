@@ -156,6 +156,8 @@ export function App() {
   const [csfAlertShow, setCSFAlertShow] = useState(false)
 
   const [saveGameShow, setSaveGameShow] = useState(false)
+  const [newGame, setNewGame] = useState(false)
+
   const [gameSaveID, setGameSaveID] = useState("")
   const [gameLoadID, setGameLoadID] = useState("")
 
@@ -507,8 +509,6 @@ export function App() {
     }
   }, [GlobalGameState.gamePhase])
 
-  console.log("wanking TARGET TO", GlobalGameState.currentCarrierAttackTarget)
-
   useEffect(() => {
     if (GlobalGameState.gamePhase === GlobalGameState.PHASE.ATTACK_DAMAGE_RESOLUTION) {
       GlobalGameState.dieRolls = []
@@ -596,17 +596,17 @@ export function App() {
     }
   }, [GlobalGameState.gamePhase])
 
-  useEffect(() => {
-    if (
-      GlobalGameState.gamePhase === GlobalGameState.PHASE.US_FLEET_MOVEMENT_PLANNING ||
-      GlobalGameState.gamePhase === GlobalGameState.PHASE.US_DMCV_FLEET_MOVEMENT_PLANNING ||
-      GlobalGameState.gamePhase === GlobalGameState.PHASE.JAPAN_FLEET_MOVEMENT ||
-      GlobalGameState.gamePhase === GlobalGameState.PHASE.JAPAN_DMCV_FLEET_MOVEMENT
-    ) {
-      GlobalGameState.updateGlobalState()
-      setDMCVCarrierSelected(() => "")
-    }
-  }, [GlobalGameState.gamePhase])
+  // useEffect(() => {
+  //   if (
+  //     GlobalGameState.gamePhase === GlobalGameState.PHASE.US_FLEET_MOVEMENT_PLANNING ||
+  //     GlobalGameState.gamePhase === GlobalGameState.PHASE.US_DMCV_FLEET_MOVEMENT_PLANNING ||
+  //     GlobalGameState.gamePhase === GlobalGameState.PHASE.JAPAN_FLEET_MOVEMENT ||
+  //     GlobalGameState.gamePhase === GlobalGameState.PHASE.JAPAN_DMCV_FLEET_MOVEMENT
+  //   ) {
+  //     GlobalGameState.updateGlobalState()
+  //     setDMCVCarrierSelected(() => "")
+  //   }
+  // }, [GlobalGameState.gamePhase])
 
 
   // NEW AI-HUMAN SIDE EFFECTS....
@@ -622,11 +622,15 @@ export function App() {
   // // NEW AI-HUMAN SIDE EFFECTS....
   useEffect(() => {
 
+    console.log("USE STATE HANDLERS HERE....! stateObject=", stateObject)
     StateManager.gameStateManager.setStateHandlers(stateObject)
 
-    if (StateManager.gameStateManager.getCurrentPlayer() === GlobalUnitsModel.Side.JAPAN && StateManager.gameStateManager.actionComplete(GlobalUnitsModel.Side.JAPAN ) === false && splash===false) {
-        StateManager.gameStateManager.doAction(GlobalUnitsModel.Side.JAPAN)
+    if (newGame) {
+      if (StateManager.gameStateManager.getCurrentPlayer() === GlobalUnitsModel.Side.JAPAN && StateManager.gameStateManager.actionComplete(GlobalUnitsModel.Side.JAPAN ) === false && splash===false) {  
+          StateManager.gameStateManager.doAction(GlobalUnitsModel.Side.JAPAN)
+      }
     }
+    
     console.log("Load Complete, GlobalGameState.gamePhase=", GlobalGameState.gamePhase)
   }, [initComplete])
 
@@ -663,8 +667,45 @@ export function App() {
 
       // call doAction  -> if human this will display the attack dialog 
       //                -> if AI make the decision and move on (alert needed to inform user of decision)
+      console.log("DO THE FUCKING MIDWAY ACTION")
       StateManager.gameStateManager.doAction(GlobalUnitsModel.Side.JAPAN)
 
+    }
+  }, [GlobalGameState.gamePhase])
+
+
+  useEffect(() => {
+    if (
+        GlobalGameState.gamePhase === GlobalGameState.PHASE.JAPAN_FLEET_MOVEMENT ||
+        GlobalGameState.gamePhase === GlobalGameState.PHASE.JAPAN_DMCV_FLEET_MOVEMENT
+        ) {
+      GlobalGameState.currentPlayer = GlobalUnitsModel.Side.JAPAN
+      setDMCVCarrierSelected(() => "")
+      StateManager.gameStateManager.setJapanState()
+      StateManager.gameStateManager.doAction(GlobalUnitsModel.Side.JAPAN)
+    }
+  }, [GlobalGameState.gamePhase])
+
+  useEffect(() => {
+    if (
+        GlobalGameState.gamePhase === GlobalGameState.PHASE.US_FLEET_MOVEMENT_PLANNING ||
+        GlobalGameState.gamePhase === GlobalGameState.PHASE.US_DMCV_FLEET_MOVEMENT_PLANNING
+        ) {
+      GlobalGameState.currentPlayer = GlobalUnitsModel.Side.US
+      setDMCVCarrierSelected(() => "")
+      StateManager.gameStateManager.setUSState()
+      StateManager.gameStateManager.doAction(GlobalUnitsModel.Side.US)
+    }
+  }, [GlobalGameState.gamePhase])
+
+  useEffect(() => {
+    if (
+        GlobalGameState.gamePhase === GlobalGameState.PHASE.US_FLEET_MOVEMENT
+        ) {
+      GlobalGameState.currentPlayer = GlobalUnitsModel.Side.US
+      setDMCVCarrierSelected(() => "")
+      StateManager.gameStateManager.setUSState()
+      StateManager.gameStateManager.doAction(GlobalUnitsModel.Side.US)
     }
   }, [GlobalGameState.gamePhase])
   
@@ -710,38 +751,6 @@ export function App() {
   //     previousPosition,
   //   })
   // }
-  const stateObject = {
-    // FOR AI AND TESTING
-    setTestClicked,
-    setTestUpdate,
-    setAttackAirCounterUpdate,
-    setFleetUnitUpdate,
-    setStrikeGroupUpdate,
-    nextAction,
-    doInitiativeRoll,
-    setCapAirUnits,
-    setMidwayAIInfoShow,
-    setCapSteps,
-    setFightersPresent,
-    getJapanEnabledAirBoxes,
-    getUSEnabledAirBoxes,
-    setEnabledJapanBoxes, 
-    setEnabledUSBoxes,
-    setUSMapRegions,
-    setCSFAlertShow,
-    capAirUnits,
-    capSteps,
-    fightersPresent,
-    setCardNumber
-  }
-
-  const onDrag = () => {
-    setIsMoveable(true)
-  }
-  const onStop = () => {
-    setIsMoveable(false)
-  }
-
   const setUsFleetRegions = () => {
     const csfLocation = GlobalInit.controller.getFleetLocation("CSF", GlobalUnitsModel.Side.US)
     const dmcvLocation = GlobalInit.controller.getFleetLocation("US-DMCV", GlobalUnitsModel.Side.US)
@@ -817,6 +826,44 @@ export function App() {
       }
       setUSMapRegions(usRegion)
     }
+  }
+
+  const stateObject = {
+    // FOR AI AND TESTING
+    setTestClicked,
+    setTestUpdate,
+    setAttackAirCounterUpdate,
+    setFleetUnitUpdate,
+    setStrikeGroupUpdate,
+    nextAction,
+    doInitiativeRoll,
+    setCapAirUnits,
+    setMidwayAIInfoShow,
+    setCapSteps,
+    setFightersPresent,
+    getJapanEnabledAirBoxes,
+    getUSEnabledAirBoxes,
+    setEnabledJapanBoxes, 
+    setEnabledUSBoxes,
+    setUSMapRegions,
+    setUsFleetRegions,
+    setCSFAlertShow,
+    capAirUnits,
+    capSteps,
+    fightersPresent,
+    setCardNumber,
+    setJapanMapRegions,
+    setJapanMIFMapRegions,
+    setJpAlertShow,
+    setEnabledJapanFleetBoxes,
+    setMidwayNoAttackAlertShow,
+  }
+
+  const onDrag = () => {
+    setIsMoveable(true)
+  }
+  const onStop = () => {
+    setIsMoveable(false)
   }
 
   const setJapanFleetRegions = () => {
@@ -1263,7 +1310,9 @@ export function App() {
   if (GlobalGameState.gamePhase === GlobalGameState.PHASE.NIGHT_AIR_OPERATIONS_US) {
     getAllAirUnitsRequiringMovesNightAirOperation(GlobalUnitsModel.Side.US)
   }
+  const csfLocation = GlobalInit.controller.getFleetLocation("CSF", GlobalUnitsModel.Side.US)
 
+  // console.log("--------- CSF LOCATION=", csfLocation)
   const nextActionButtonDisabled = async () => {
     const prevButton = GlobalGameState.nextActionButtonDisabled
 
@@ -1531,6 +1580,8 @@ export function App() {
                 marginLeft: "5px",
                 marginTop: "15px",
                 marginRight: "10px",
+                // fontSize: "14px",
+                color: "white"
               }}
             >
               {GlobalGameState.gamePhase} <br></br>
@@ -1542,6 +1593,8 @@ export function App() {
                 marginLeft: "5px",
                 marginTop: "17px",
                 marginRight: "20px",
+                // fontSize: "14px",
+                color: "white"
               }}
             >
               {GlobalGameState.getSetupMessage()}
@@ -1555,7 +1608,7 @@ export function App() {
                 variant="secondary"
                 onClick={(e) => nextAction(e)}
                 disabled={GlobalGameState.nextActionButtonDisabled}
-                style={{ background: "#9e1527", fontSize: "10px" }}
+                style={{ marginLeft: "80px", background: "#9e1527", fontSize: font }}
               >
                 Next Action
               </Button>)}
@@ -1565,7 +1618,7 @@ export function App() {
                 variant="secondary"
                 onClick={(e) => setInitComplete(true)}
                 disabled={false}
-                style={{ background: "#9e1527", fontSize: "10px" }}
+                style={{ background: "#9e1527", fontSize: font }}
               >
                 Japan AI Begin
               </Button>)}
@@ -1646,15 +1699,16 @@ export function App() {
       setLoading,
     })
     setInitComplete(true)
-
   }
 
+ 
   async function loady() {
     setSplash(false)
     setLoadPanelShow(true)
   }
 
   function splashy() {
+    setNewGame(true)
     setSplash(false)
   }
   // window height

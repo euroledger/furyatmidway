@@ -13,14 +13,17 @@ class JapanAIStateHandler extends PlayerStateHandler {
   }
 
   async doAction() {
+    console.log("QUACK this.stateObject=", this.stateObject)
+    await this.currentState.doAction(this.stateObject)
     if (this.getState() === GlobalGameState.PHASE.JAPAN_SETUP) {
-        await this.currentState.doAction(this.stateObject)
-        this.currentState = new JapanAICardDrawState()
-    } else if (this.getState() === GlobalGameState.PHASE.JAPAN_CARD_DRAW) {
-      await this.currentState.doAction(this.stateObject)
+      this.currentState = new JapanAICardDrawState()
     }
     this.actionComplete = true
     this.finishStateChange()
+  }
+
+  async doNextState() {
+    this.currentState.nextState(this.stateObject)
   }
 }
 

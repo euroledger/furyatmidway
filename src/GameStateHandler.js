@@ -417,19 +417,6 @@ function goToIJNFleetMovement({
       if (jpDMCVLocation !== undefined && jpDMCVLocation.currentHex !== undefined) {
         jpRegion = removeHexFromRegion(jpRegion, jpDMCVLocation.currentHex)
       }
-      // if (GlobalGameState.midwayAttackDeclaration === true) {
-      //   let newHexArray = new Array()
-
-      //   let hexesInRangeOfMidway = allHexesWithinDistance(Controller.MIDWAY_HEX.currentHex, 5, true)
-      //   for (const hex1 of hexesInRangeOfMidway) {
-      //     for (const hex2 of jpRegion) {
-      //       if (hex2.q === hex1.q && hex2.r === hex1.r) {
-      //         newHexArray.push(hex1)
-      //       }
-      //     }
-      //   }
-      //   jpRegion = newHexArray
-      // }
       setJapanMapRegions(jpRegion)
 
       const jpMIFLocation = GlobalInit.controller.getFleetLocation("MIF", GlobalUnitsModel.Side.JAPAN)
@@ -506,6 +493,16 @@ function usFleetMovementPlanningHandler({
     setEnabledUSFleetBoxes,
     setEnabledJapanFleetBoxes,
   })
+}
+
+export function calcAirOpsPointsMidway(distanceFromFleetToMidway) {
+  if (distanceFromFleetToMidway <= 2) {
+    GlobalGameState.airOperationPoints.japan = 1
+  } else if (distanceFromFleetToMidway <= 5) {
+    GlobalGameState.airOperationPoints.japan = 2
+  } else {
+    // error do nothing for now
+  }
 }
 
 async function goToMidwayAttackOrUSFleetMovement({
@@ -603,16 +600,6 @@ function calcAirOpsPoints({ setSearchValues, setSearchResults, setSearchValuesAl
   GlobalGameState.airOperationPoints.us = sr.US
   setSearchResults(sr)
   setSearchValuesAlertShow(true)
-}
-
-export function calcAirOpsPointsMidway(distanceFromFleetToMidway) {
-  if (distanceFromFleetToMidway <= 2) {
-    GlobalGameState.airOperationPoints.japan = 1
-  } else if (distanceFromFleetToMidway <= 5) {
-    GlobalGameState.airOperationPoints.japan = 2
-  } else {
-    // error do nothing for now
-  }
 }
 
 export function displayAttackTargetPanel(controller) {

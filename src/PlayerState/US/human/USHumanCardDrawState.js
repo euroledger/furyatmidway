@@ -1,11 +1,12 @@
 import GlobalGameState from "../../../model/GlobalGameState"
 import GlobalInit from "../../../model/GlobalInit"
-import { delay } from "../../../Utils"
+import GlobalUnitsModel from "../../../model/GlobalUnitsModel"
+import USHumanFleetMovementPlanningState from "./USHumanFleetMovementPlanning"
 
 class USHumanCardDrawState {
   async doAction(stateObject) {}
 
-  nextState(stateObject) {
+  async nextState(stateObject) {
     console.log("MOVE ON FROM CARDS!")
     const { setCardNumber } = stateObject
 
@@ -17,6 +18,7 @@ class USHumanCardDrawState {
       }
     } else {
       GlobalGameState.usCardsDrawn = true
+      GlobalGameState.currentPlayer = GlobalUnitsModel.Side.JAPAN
       if (GlobalInit.controller.japanHandContainsCard(6)) {
         setCardNumber(() => 6)
         GlobalGameState.gamePhase = GlobalGameState.PHASE.CARD_PLAY

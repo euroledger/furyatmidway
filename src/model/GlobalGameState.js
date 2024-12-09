@@ -189,6 +189,7 @@ export default class GlobalGameState {
   static logItems = ["Logging begin..."];
 
   static gamePhase = this.PHASE.JAPAN_SETUP 
+  static temporaryGamePhase = ""
 
   // static setupPhase = 6; // tmp put back to 0
   static setupPhase = 0; // tmp put back to 0

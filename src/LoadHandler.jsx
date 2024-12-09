@@ -101,6 +101,10 @@ async function loadHandler({
     GlobalGameState.log(item)
   }
 
+  console.log("************************ DONE LOADING ^^^^^^^^^^^^^^^^")
+
+  GlobalGameState.gamePhase = GlobalGameState.temporaryGamePhase
+  
   loadState()
   setTestClicked(false)
   setAirUnitUpdate({
@@ -110,6 +114,7 @@ async function loadHandler({
     index: -1,
   })
   setLoading(false)
+  
   // QUACK TEMPORARY UNTIL NEW GAMES WITH THESE ARE SAVED- REMOVE
 
   // GlobalGameState.nextAvailableDamageMarker = 0

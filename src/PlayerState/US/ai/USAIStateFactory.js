@@ -6,6 +6,7 @@ function mapGameStateToUSAIHandlerState() {
     case GlobalGameState.PHASE.US_SETUP_AIR:
       return new USAISetupAirState()
 
+
     default:
   }
 }

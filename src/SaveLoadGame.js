@@ -430,6 +430,7 @@ function loadAirUnits(airUnitMap) {
 
     // GlobalGameState.jpDMCVCarrier = GlobalUnitsModel.Carrier.SORYU
     // GlobalGameState.usDMCVCarrier = undefined
+    GlobalGameState.temporaryGamePhase = GlobalGameState.PHASE.US_FLEET_MOVEMENT_PLANNING
   }
 }
 
@@ -503,6 +504,11 @@ export function loadGameStateForId(controller, gameId) {
 
   for (var property in GlobalGameState) {
     const ty = typeof GlobalGameState[property]
+
+    if (property === "gamePhase") {
+      GlobalGameState.temporaryGamePhase = global.get(property)
+      continue
+    }
 
     if (ty === "number" || ty === "boolean" || ty === "string") {
       GlobalGameState[property] = global.get(property)

@@ -11,11 +11,12 @@ class JapanAIMidwayDeclarationState {
   }
 
   async nextState(stateObject) {
-    console.log("NEXT STATE BOOGERING FROM JAPAN MIDWAY DECLARATION")
+    console.log("NEXT STATE AFTER MIDWAY....")
+    GlobalGameState.gamePhase = GlobalGameState.PHASE.US_FLEET_MOVEMENT_PLANNING
   }
 
   getState() {
-    return GlobalGameState.PHASE.JAPAN_CARD_DRAW
+    return GlobalGameState.PHASE.JAPAN_MIDWAY
   }
 }
 

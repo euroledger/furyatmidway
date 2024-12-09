@@ -35,7 +35,7 @@ class GameStateManager {
     } else {
         state = mapGameStateToUSHumanHandlerState()
     }
-    console.log("US STATE OBJECT->", state)
+    console.log("+++++ NEW US STATE OBJECT->", state)
     if (state) {
       this.usStateHandler.setState(state)
     }
@@ -70,7 +70,7 @@ class GameStateManager {
 
   async doAction(side) {
     if (side === GlobalUnitsModel.Side.JAPAN) {
-      console.log("japanStateHandler=", this.japanStateHandler)
+      console.trace()
       await this.japanStateHandler.doAction(this.stateObject)
     } else {
       await this.usStateHandler.doAction(this.stateObject)
@@ -78,6 +78,7 @@ class GameStateManager {
   }
 
   async doNextState(side) {
+    console.log("NEXT STATE FOR SIDE", side)
     if (side === GlobalUnitsModel.Side.JAPAN) {
       await this.japanStateHandler.doNextState()
       await this.japanStateHandler.finishStateChange()
