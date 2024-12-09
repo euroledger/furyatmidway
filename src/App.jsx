@@ -502,8 +502,6 @@ export function App() {
     }
   }, [GlobalGameState.gamePhase])
 
-  console.log("wanking TARGET TO", GlobalGameState.currentCarrierAttackTarget)
-
   useEffect(() => {
     if (GlobalGameState.gamePhase === GlobalGameState.PHASE.ATTACK_DAMAGE_RESOLUTION) {
       GlobalGameState.dieRolls = []
