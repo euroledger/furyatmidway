@@ -24,6 +24,7 @@ function CardAlertPanel(props) {
     setCarrierPlanesDitchPanelShow,
     setTowedToFriendlyPortPanelShow,
     nextAction,
+    setDamagedCV,
     setAttackResolved,
     setAirReplacementsPanelShow,
     setDamageControlPanelShow,
@@ -91,6 +92,7 @@ function CardAlertPanel(props) {
       ) {
         setSubmarineDamagePanelShow(true)
       } else {
+        setDamagedCV("")
         setSubmarineAlertPanelShow(true)
       }
       onHide(e)

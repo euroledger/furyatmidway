@@ -428,8 +428,8 @@ function loadAirUnits(airUnitMap) {
     // GlobalGameState.US_MIDWAY = 8
     // GlobalGameState.midwayAttackResolved=true
 
-    GlobalGameState.jpDMCVCarrier = undefined
-    GlobalGameState.usDMCVCarrier = undefined
+    // GlobalGameState.jpDMCVCarrier = GlobalUnitsModel.Carrier.SORYU
+    // GlobalGameState.usDMCVCarrier = undefined
   }
 }
 

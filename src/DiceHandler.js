@@ -154,7 +154,7 @@ export function doFighterCounterattack(controller, testRolls) {
   }
   // GlobalGameState.dieRolls = 1
   GlobalGameState.fighterHits = hits
-  // GlobalGameState.fighterHits = 1 // QUACK TESTING ONLY 
+  // GlobalGameState.fighterHits = 1 // QUACK TESTING ONLY
 }
 
 export function getAirUnitOnFlightDeck(controller, carrier, bowOrStern) {
@@ -715,7 +715,11 @@ export function doAttackFireRolls(controller, testRolls) {
   // 2. Determine if any attack aircraft on deck (set dive bomber DRM if so)
   // For Midway all Japanese planes get a -1 DRM
 
-  if (GlobalGameState.currentCarrierAttackTarget !== GlobalUnitsModel.TaskForce.MIF) {
+  if (
+    GlobalGameState.currentCarrierAttackTarget !== GlobalUnitsModel.TaskForce.MIF &&
+    GlobalGameState.currentCarrierAttackTarget !== GlobalUnitsModel.TaskForce.JAPAN_DMCV &&
+    GlobalGameState.currentCarrierAttackTarget !== GlobalUnitsModel.TaskForce.US_DMCV
+  ) {
     if (GlobalGameState.currentCarrierAttackTarget === GlobalUnitsModel.Carrier.MIDWAY) {
       dbDRM = -1
       torpDRM = -1
@@ -780,7 +784,6 @@ export function doAttackFireRolls(controller, testRolls) {
 
     // GlobalGameState.midwayHits = 2
     // GlobalGameState.midwayHitsThisAttack = 2
-
   } else {
     GlobalGameState.carrierAttackHits = hits
     GlobalGameState.carrierAttackHitsThisAttack = hits
@@ -1115,7 +1118,7 @@ export function moveAirUnitToEliminatedBox(controller, airUnit) {
       index: -1,
       side: GlobalGameState.sideWithInitiative,
       loading: false,
-    }
+    },
   })
 }
 export function moveAirUnitFromEliminatedBox(controller, side, carrierName, airUnit, setAirUnitUpdate) {

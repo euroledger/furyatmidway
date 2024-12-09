@@ -304,7 +304,7 @@ export function doStrikeBoxJapanNight(controller, name, strikeGroup, side) {
   if (hits !== 0) {
     // parent carrier damaged - allow other TF as well
     const otherTF = controller.getOtherTaskForce(tf, side)
-    const carriersInOtherTaskForce = controller.getCarriersInOtherTF(otherTF, side)
+    const carriersInOtherTaskForce = controller.getCarriersInOtherTF(tf, side)
     for (let carrier of carriersInOtherTaskForce) {
       if (!controller.isSunk(carrier.name) && carrier.hits < 2) {
         const return2BoxOtherTF = controller.getReturn2AirBoxForNamedTaskForce(side, otherTF)
@@ -337,7 +337,7 @@ export function doStrikeBoxUSNight(controller, name, strikeGroup, side) {
   destArray.push(return2Box)
 
   const otherTF = controller.getOtherTaskForce(tf, side)
-  const carriersInOtherTaskForce = controller.getCarriersInOtherTF(otherTF, side)
+  const carriersInOtherTaskForce = controller.getCarriersInOtherTF(tf, side)
   for (let carrier of carriersInOtherTaskForce) {
     if (!controller.isSunk(carrier.name) && carrier.hits < 2) {
       const return2BoxOtherTF = controller.getReturn2AirBoxForNamedTaskForce(side, otherTF)
@@ -401,7 +401,7 @@ export function doStrikeBoxJapan(controller, name, strikeGroup, side) {
     if (hits !== 0) {
       // parent carrier damaged - allow other TF as well
       const otherTF = controller.getOtherTaskForce(tf, side)
-      const carriersInOtherTaskForce = controller.getCarriersInOtherTF(otherTF, side)
+      const carriersInOtherTaskForce = controller.getCarriersInOtherTF(tf, side)
       for (let carrier of carriersInOtherTaskForce) {
         if (!controller.isSunk(carrier.name) && carrier.hits < 2) {
           const return1BoxOtherTF = controller.getReturn1AirBoxForNamedTaskForce(side, otherTF)
@@ -411,15 +411,22 @@ export function doStrikeBoxJapan(controller, name, strikeGroup, side) {
       }
     }
   } else if (strikeGroup.attacked) {
+    console.log("LOOK FOR RETURN2 BOX")
     // GOTO RETURN 2 BOX
     const return2Box = controller.getReturn2AirBoxForNamedTaskForce(side, tf)
     destArray.push(return2Box)
 
     if (hits !== 0) {
+      console.log("OTHER GUYS")
       // parent carrier damaged - allow other TF as well
       const otherTF = controller.getOtherTaskForce(tf, side)
-      const carriersInOtherTaskForce = controller.getCarriersInOtherTF(otherTF, side)
+      console.log("TRY TF", otherTF)
+
+      const carriersInOtherTaskForce = controller.getCarriersInOtherTF(tf, side)
+      console.log("OTHER FUCKERS->", carriersInOtherTaskForce)
+
       for (let carrier of carriersInOtherTaskForce) {
+        console.log("TRY CARRIER", carrier)
         if (!controller.isSunk(carrier.name) && carrier.hits < 2) {
           const return2BoxOtherTF = controller.getReturn2AirBoxForNamedTaskForce(side, otherTF)
           destArray.push(return2BoxOtherTF)
@@ -531,7 +538,7 @@ export function doStrikeBoxUS(controller, name, side) {
     const return1Box = controller.getReturn1AirBoxForNamedTaskForce(side, tf)
     destArray.push(return1Box)
     const otherTF = controller.getOtherTaskForce(tf, side)
-    const carriersInOtherTaskForce = controller.getCarriersInOtherTF(otherTF, side)
+    const carriersInOtherTaskForce = controller.getCarriersInOtherTF(tf, side)
     for (let carrier of carriersInOtherTaskForce) {
       if (name.includes("Midway")) {
         break // prevent Midway planes landing on carriers
@@ -562,7 +569,7 @@ export function doStrikeBoxUS(controller, name, side) {
     // Do not allow other TF return boxes for Midway aircraft
     if (tf !== GlobalUnitsModel.TaskForce.MIDWAY) {
       const otherTF = controller.getOtherTaskForce(tf, side)
-      const carriersInOtherTaskForce = controller.getCarriersInOtherTF(otherTF, side)
+      const carriersInOtherTaskForce = controller.getCarriersInOtherTF(tf, side)
       for (let carrier of carriersInOtherTaskForce) {
         if (name.includes("Midway")) {
           break // prevent Midway planes landing on carriers
