@@ -16,6 +16,8 @@ class JapanAIStateHandler extends PlayerStateHandler {
     console.log("QUACK this.stateObject=", this.stateObject)
     await this.currentState.doAction(this.stateObject)
     if (this.getState() === GlobalGameState.PHASE.JAPAN_SETUP) {
+      console.log("QUACK 3", this.currentState)
+
       this.currentState = new JapanAICardDrawState()
     }
     this.actionComplete = true

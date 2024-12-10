@@ -1260,12 +1260,7 @@ export default async function handleAction({
     }
   } else if (GlobalGameState.gamePhase === GlobalGameState.PHASE.US_FLEET_MOVEMENT) {
     usFleetMovementHandler({
-      setFleetUnitUpdate,
-      setCardNumber,
-      setSearchValues,
-      setSearchResults,
-      setSearchValuesAlertShow,
-      previousPosition,
+      setFleetUnitUpdate
     })
 
     const { numFleetsInSameHexAsCSF, numFleetsInSameHexAsUSDMCV } = GlobalInit.controller.opposingFleetsInSameHex()

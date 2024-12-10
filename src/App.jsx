@@ -358,18 +358,6 @@ export function App() {
   }, [GlobalGameState.gamePhase])
 
   useEffect(() => {
-    if (GlobalGameState.gamePhase === GlobalGameState.PHASE.AIR_OPERATIONS) {
-      GlobalGameState.phaseCompleted = false
-      GlobalGameState.nextActionButtonDisabled = true
-      setEnabledUSReorgBoxes(false)
-      setEnabledJapanReorgBoxes(false)
-      setEnabledJapanFleetBoxes(false)
-      setEnabledUSFleetBoxes(false)
-      GlobalGameState.updateGlobalState()
-    }
-  }, [GlobalGameState.gamePhase])
-
-  useEffect(() => {
     if (
       GlobalGameState.gamePhase === GlobalGameState.PHASE.NIGHT_AIR_OPERATIONS_JAPAN ||
       GlobalGameState.gamePhase === GlobalGameState.PHASE.NIGHT_AIR_OPERATIONS_US
@@ -460,22 +448,24 @@ export function App() {
     }
   }, [GlobalGameState.gamePhase])
 
-  useEffect(() => {
-    if (GlobalGameState.gamePhase === GlobalGameState.PHASE.AIR_SEARCH && GlobalGameState.isFirstAirOp) {
-      setSearchValuesAlertShow(true)
-      GlobalGameState.isFirstAirOp = false
-    }
-  }, [GlobalGameState.gamePhase])
+  // useEffect(() => {
+  //   if (GlobalGameState.gamePhase === GlobalGameState.PHASE.AIR_SEARCH && GlobalGameState.isFirstAirOp) {
+  //     setSearchValuesAlertShow(true)
+  //     GlobalGameState.isFirstAirOp = false
+  //   }
+  // }, [GlobalGameState.gamePhase])
 
   useEffect(() => {
     if (GlobalGameState.gamePhase === GlobalGameState.PHASE.CARD_PLAY) {
       setEliminatedSteps(0)
-      if (cardNumber === 2) {
+      if (cardNumber === 2 || cardNumber === 4) {
         setDamagedCV("")
+        GlobalGameState.dieRolls = []
       }
       if (cardNumber !== 0 && cardNumber !== -1) {
         setCardAlertPanelShow(true)
       } else {
+        console.log("USE EFFECT NEXT ACTION HERE ************************>>>>>>>>>>>>>>>>>>>>>>>>>")
         nextAction()
       }
     }
@@ -654,6 +644,7 @@ export function App() {
 
   useEffect(() => {
     if (GlobalGameState.gamePhase === GlobalGameState.PHASE.US_SETUP_AIR) {
+      StateManager.gameStateManager.setUSState()
       GlobalGameState.updateGlobalState()
     }
   }, [GlobalGameState.gamePhase])
@@ -667,7 +658,6 @@ export function App() {
 
       // call doAction  -> if human this will display the attack dialog 
       //                -> if AI make the decision and move on (alert needed to inform user of decision)
-      console.log("DO THE FUCKING MIDWAY ACTION")
       StateManager.gameStateManager.doAction(GlobalUnitsModel.Side.JAPAN)
 
     }
@@ -709,7 +699,40 @@ export function App() {
     }
   }, [GlobalGameState.gamePhase])
   
+  useEffect(() => {
+    if (GlobalGameState.gamePhase === GlobalGameState.PHASE.AIR_SEARCH && GlobalGameState.isFirstAirOp) {
+      GlobalGameState.isFirstAirOp = false
+      if (GlobalGameState.currentPlayer === GlobalUnitsModel.Side.US) {
+        StateManager.gameStateManager.setUSState()
+      } else {
+        StateManager.gameStateManager.setJapanState()
+      }
+    }
+  }, [GlobalGameState.gamePhase])
+
+  useEffect(() => {
+    if (GlobalGameState.gamePhase === GlobalGameState.PHASE.AIR_OPERATIONS) {
+      console.log("^^^^^^^^^^^ HATS OFF ! BEGIN FUCKING AIR OPS!side with Initiative=", GlobalGameState.sideWithInitiative)
+      GlobalGameState.phaseCompleted = false
+      GlobalGameState.nextActionButtonDisabled = true
+      setEnabledUSReorgBoxes(false)
+      setEnabledJapanReorgBoxes(false)
+      setEnabledJapanFleetBoxes(false)
+      setEnabledUSFleetBoxes(false)
+      GlobalGameState.updateGlobalState()
+      if (GlobalGameState.sideWithInitiative === GlobalUnitsModel.Side.US) {
+        StateManager.gameStateManager.setUSState()
+        StateManager.gameStateManager.doAction(GlobalUnitsModel.Side.US)
+      } else {
+        StateManager.gameStateManager.setJapanState()
+        StateManager.gameStateManager.doAction(GlobalUnitsModel.Side.JAPAN)
+      }
+      
+    }
+  }, [GlobalGameState.gamePhase])
+
   const nextAction = () => {
+    
     StateManager.gameStateManager.doNextState(GlobalGameState.currentPlayer)
   }
   // const nextAction = () => {
@@ -836,6 +859,7 @@ export function App() {
     setFleetUnitUpdate,
     setStrikeGroupUpdate,
     nextAction,
+    setJapanStrikePanelEnabled,
     doInitiativeRoll,
     setCapAirUnits,
     setMidwayAIInfoShow,
@@ -857,6 +881,14 @@ export function App() {
     setJpAlertShow,
     setEnabledJapanFleetBoxes,
     setMidwayNoAttackAlertShow,
+    setFleetUnitUpdate, 
+    setJpFleet,
+    setUsFleet,
+    setSearchValues,
+    setSearchResults,
+    setSearchValuesAlertShow,
+    setUsStrikePanelEnabled,
+    setJapanStrikePanelEnabled
   }
 
   const onDrag = () => {
@@ -1616,7 +1648,9 @@ export function App() {
                 size="sm"
                 className="me-1"
                 variant="secondary"
-                onClick={(e) => setInitComplete(true)}
+                onClick={(e) =>{
+                  GlobalGameState.gamePhase = GlobalGameState.PHASE.JAPAN_SETUP
+                  setInitComplete(true)}}
                 disabled={false}
                 style={{ background: "#9e1527", fontSize: font }}
               >
@@ -2198,13 +2232,20 @@ export function App() {
     doCVDamageControl(roll)
   }
 
+
   function doCardRoll(roll) {
     if (cardNumber === 5) {
       doNavalBombardmentRoll(GlobalInit.controller, roll)
+
+      if (GlobalGameState.midwayGarrisonLevel <= 3) {
+        // Midway Base Destroyed
+        allMidwayBoxesDamaged(GlobalInit.controller, setDamageMarkerUpdate)
+      }
     } else if (cardNumber === 7) {
       doTroubledReconnaissanceRoll(GlobalInit.controller, roll)
     }
   }
+
   function doSeaBattleRoll(roll0, roll1) {
     doNavalBattleRoll(GlobalInit.controller, roll0, roll1)
   }
@@ -2447,6 +2488,7 @@ export function App() {
     (damagedCV === "" && GlobalGameState.dieRolls.length === 0) ||
     GlobalGameState.dieRolls.length > 0 ||
     damagedCV === "NO TARGETS"
+
 
   const summaryButtonDisabled = GlobalGameState.winner !== ""
   return (

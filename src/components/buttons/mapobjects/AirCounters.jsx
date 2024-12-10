@@ -5,7 +5,6 @@ import GlobalGameState from "../../../model/GlobalGameState"
 import GlobalUnitsModel from "../../../model/GlobalUnitsModel"
 import { BoardContext } from "../../../App"
 
-
 function AirCounters({ controller, onDrag, onStop, getAirBox, setAirBox, counterData, airUnitUpdate, setAlertShow }) {
   const { loading } = useContext(BoardContext)
   const counters = Array.from(counterData.values())
@@ -13,10 +12,12 @@ function AirCounters({ controller, onDrag, onStop, getAirBox, setAirBox, counter
   const airunits = counters.filter((unit) => unit.constructor.name === "AirUnit")
 
   const airCounters = airunits.map((airUnit) => {
-
     const location = controller.getAirUnitLocation(airUnit.name)
 
-    if (location.boxName === GlobalUnitsModel.AirBox.JP_ELIMINATED || location.boxName === GlobalUnitsModel.AirBox.US_ELIMINATED) {
+    if (
+      location.boxName === GlobalUnitsModel.AirBox.JP_ELIMINATED ||
+      location.boxName === GlobalUnitsModel.AirBox.US_ELIMINATED
+    ) {
       return
     }
     if (airUnit.side === GlobalUnitsModel.Side.JAPAN) {
@@ -32,7 +33,7 @@ function AirCounters({ controller, onDrag, onStop, getAirBox, setAirBox, counter
       if (
         !GlobalGameState.usSetUpComplete &&
         (carrierIndex > GlobalGameState.currentCarrier ||
-          GlobalGameState.gamePhase !== GlobalGameState.PHASE.US_SETUP_AIR)
+          (GlobalGameState.gamePhase !== GlobalGameState.PHASE.US_SETUP_AIR && GlobalGameState.gamePhase !== "LOADING"))
       ) {
         return
       }

@@ -12,6 +12,8 @@ class USAIStateHandler extends PlayerStateHandler {
 
         // next state is US Air Setup
         // this.currentState = new JapanCardDrawState()
+        console.log("QUACK 4", this.currentState)
+
         this.currentState = new USHumanSetupAirState()
 
     } else if (this.getState() === GlobalGameState.PHASE.US_SETUP_AIR) {

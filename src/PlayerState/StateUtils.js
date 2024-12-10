@@ -3,8 +3,19 @@ import GlobalInit from "../model/GlobalInit"
 import GlobalUnitsModel from "../model/GlobalUnitsModel"
 import { allHexesWithinDistance, removeHexFromRegion } from "../components/HexUtils"
 import { createMapUpdateForFleet } from "../AirUnitTestData"
+import { calculateSearchResults, calculateSearchValues } from "../model/SearchValues"
 import { delay } from "../Utils"
 export const DELAY_MS = 1
+
+export function calcAirOpsPointsMidway(distanceFromFleetToMidway) {
+  if (distanceFromFleetToMidway <= 2) {
+    GlobalGameState.airOperationPoints.japan = 1
+  } else if (distanceFromFleetToMidway <= 5) {
+    GlobalGameState.airOperationPoints.japan = 2
+  } else {
+    // error do nothing for now
+  }
+}
 
 export function goToDMCVState(side) {
   if (side === GlobalUnitsModel.Side.US) {
@@ -32,6 +43,21 @@ export function goToDMCVState(side) {
     (GlobalInit.controller.getDamagedCarriers(side).length > 0 && GlobalGameState.jpDMCVFleetPlaced === false) ||
     (jpDMCVLocation !== undefined && GlobalGameState.jpDMCVFleetPlaced === true)
   )
+}
+
+export function calcAirOpsPoints({ setSearchValues, setSearchResults }) {
+  const sv = calculateSearchValues(GlobalInit.controller)
+
+  const sr = calculateSearchResults(GlobalInit.controller, {
+    jp_af: Math.max(0, sv.jp_af),
+    us_csf: sv.us_csf,
+    us_midway: sv.us_midway,
+  })
+
+  setSearchValues(sv)
+  GlobalGameState.airOperationPoints.japan = sr.JAPAN
+  GlobalGameState.airOperationPoints.us = sr.US
+  setSearchResults(sr)
 }
 
 function testForOffMapBoxesJapan(setEnabledJapanFleetBoxes) {
@@ -108,7 +134,6 @@ export function initialiseIJNFleetMovement({
   setUSMapRegions,
   setJapanMapRegions,
   setJapanMIFMapRegions,
-  setJpAlertShow,
   setEnabledJapanFleetBoxes,
 }) {
   testForOffMapBoxesJapan(setEnabledJapanFleetBoxes)
@@ -148,7 +173,6 @@ export function initialiseIJNFleetMovement({
       setJapanMapRegions(japanAF1StartHexesNoMidway)
     }
   }
-  setJpAlertShow(true)
   GlobalGameState.phaseCompleted = false
 }
 
@@ -200,4 +224,74 @@ export async function goToMidwayAttackOrUSFleetMovement({
     setFleetUnitUpdate(update3)
   }
   await delay(1)
+}
+
+export async function usFleetMovementHandler({ setFleetUnitUpdate }) {
+  const update1 = createMapUpdateForFleet(GlobalInit.controller, "CSF", GlobalUnitsModel.Side.US)
+  const update2 = createMapUpdateForFleet(GlobalInit.controller, "US-DMCV", GlobalUnitsModel.Side.US)
+
+  if (update2 !== null) {
+    await setFleetUnitUpdate(update2)
+  }
+  await delay(1)
+
+  if (update1 !== null) {
+    await setFleetUnitUpdate(update1)
+  }
+  await delay(1)
+
+  GlobalGameState.updateGlobalState()
+}
+
+export async function getFleetsForCSFSeaBattle({ setJpFleet, setUsFleet }) {
+  const csfLocation = GlobalInit.controller.getFleetLocation("CSF", GlobalUnitsModel.Side.US)
+
+  let fleetsInSameHexAsCSF = new Array()
+  if (csfLocation !== undefined) {
+    fleetsInSameHexAsCSF = GlobalInit.controller.getAllFleetsInLocation(csfLocation, GlobalUnitsModel.Side.US, false)
+    if (fleetsInSameHexAsCSF.length === 2) {
+      setUsFleet("CSF")
+      if (fleetsInSameHexAsCSF[0].name === "CSF") {
+        setJpFleet(fleetsInSameHexAsCSF[1].name)
+      } else {
+        setJpFleet(fleetsInSameHexAsCSF[0].name)
+      }
+    }
+  }
+  return fleetsInSameHexAsCSF
+}
+export async function usFleetMovementNextStateHandler({
+  setJpFleet,
+  setUsFleet,
+  setCardNumber,
+  setSearchValues,
+  setSearchResults,
+  setSearchValuesAlertShow,
+}) {
+  const { numFleetsInSameHexAsCSF, numFleetsInSameHexAsUSDMCV } = GlobalInit.controller.opposingFleetsInSameHex()
+  if (GlobalGameState.gameTurn === 4) {
+    if (numFleetsInSameHexAsCSF === 2 || numFleetsInSameHexAsUSDMCV === 2) {
+      if (numFleetsInSameHexAsCSF === 2) {
+        GlobalGameState.gamePhase = GlobalGameState.PHASE.NIGHT_BATTLES_1
+        getFleetsForCSFSeaBattle({ setJpFleet, setUsFleet })
+      } else if (numFleetsInSameHexAsUSDMCV === 2) {
+        GlobalGameState.gamePhase = GlobalGameState.PHASE.NIGHT_BATTLES_2
+      }
+    } else {
+      // no sea battle -> go straight to night air operations
+      GlobalGameState.gamePhase = GlobalGameState.PHASE.NIGHT_AIR_OPERATIONS_JAPAN
+    }
+  } else {
+    if (numFleetsInSameHexAsCSF === 2 || numFleetsInSameHexAsUSDMCV === 2) {
+      GlobalGameState.gamePhase = GlobalGameState.PHASE.RETREAT_US_FLEET
+    } else {
+      if (GlobalInit.controller.usHandContainsCard(7)) {
+        setCardNumber(() => 7)
+        GlobalGameState.gamePhase = GlobalGameState.PHASE.CARD_PLAY
+      } else {
+        calcAirOpsPoints({ setSearchValues, setSearchResults })
+        GlobalGameState.gamePhase = GlobalGameState.PHASE.AIR_SEARCH
+      }
+    }
+  }
 }

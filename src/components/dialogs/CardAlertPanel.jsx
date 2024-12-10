@@ -136,7 +136,6 @@ function CardAlertPanel(props) {
     setThisCard(cardNumber)
     setButtonPressed(() => true)
     eventHandler(cardNumber)
-    controller.setCardPlayed(cardNumber)
   }
 
   // useEffect(() => {

@@ -430,7 +430,7 @@ function loadAirUnits(airUnitMap) {
 
     // GlobalGameState.jpDMCVCarrier = GlobalUnitsModel.Carrier.SORYU
     // GlobalGameState.usDMCVCarrier = undefined
-    GlobalGameState.temporaryGamePhase = GlobalGameState.PHASE.US_FLEET_MOVEMENT_PLANNING
+    // GlobalGameState.temporaryGamePhase = GlobalGameState.PHASE.US_FLEET_MOVEMENT_PLANNING
   }
 }
 
@@ -450,7 +450,7 @@ function loadJapanStrikeUnits(loadedMap) {
   for (let key of loadedMap.keys()) {
     const sg = GlobalUnitsModel.jpStrikeGroups.get(key)
     const loadedSG = loadedMap.get(key)
-    sg.gameTurnMoved=loadedSG._gameTurnMoved
+    sg.gameTurnMoved = loadedSG._gameTurnMoved
     sg.moved = loadedSG._moved
     sg.airOpMoved = loadedSG._airOpMoved
     sg.airOpAttacked = loadedSG._airOpAttacked
@@ -501,12 +501,12 @@ export function loadGameStateForId(controller, gameId) {
 
   const global = new Map(JSON.parse(globalState))
 
-
+  let tempState
   for (var property in GlobalGameState) {
     const ty = typeof GlobalGameState[property]
 
     if (property === "gamePhase") {
-      GlobalGameState.temporaryGamePhase = global.get(property)
+      tempState = global.get(property)
       continue
     }
 
@@ -514,7 +514,7 @@ export function loadGameStateForId(controller, gameId) {
       GlobalGameState[property] = global.get(property)
     }
   }
-
+  GlobalGameState.temporaryGamePhase = tempState
 
   const airOperationText = gameDetails.airoperations
   GlobalGameState.airOperationPoints = JSON.parse(airOperationText)

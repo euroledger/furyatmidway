@@ -12,7 +12,6 @@ class USHumanFleetMovementPlanningState {
   async nextState(stateObject) {
     const { setUSMapRegions} = stateObject
     setUSMapRegions([])
-    console.log("BUG DECISION FOR BUGS fleet planning next state bollocks")
     if (goToDMCVState(GlobalUnitsModel.Side.JAPAN)) {
         GlobalGameState.gamePhase = GlobalGameState.PHASE.JAPAN_DMCV_FLEET_MOVEMENT
     } else {

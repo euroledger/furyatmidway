@@ -11,11 +11,15 @@ class USHumanStateHandler extends PlayerStateHandler {
   
   async doAction() {
     // human stuff here, e.g., set map regions, display dialog etc
-    this.currentState.doAction(this.stateObject)
+    console.log("DO HUMAN STUFF HERE-> :-)")
+    await this.currentState.doAction(this.stateObject)
   }
 
   async doNextState() {
+    console.log("BISCUITS: this.currentState=", this.currentState)
     this.currentState = await this.currentState.nextState(this.stateObject)
+    console.log("BISCUITS 2 AFTER: this.currentState=", this.currentState)
+
   }
 
 }

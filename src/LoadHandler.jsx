@@ -21,6 +21,7 @@ async function loadHandler({
   id,
   setLoading,
 }) {
+  GlobalGameState.gamePhase = "LOADING"
   setTestClicked(true)
   console.log("Load game from local storage")
   setSplash(false)
@@ -35,11 +36,12 @@ async function loadHandler({
     jpDMCVMarkerUpdates,
     usDMCVMarkerUpdates,
     logItems,
-    cvSelected
+    cvSelected,
   } = loadGameStateForId(controller, id)
   setTowedCVSelected(cvSelected)
   for (const update of airUpdates) {
     await delay(2)
+    console.log(">>> AIR UPDATE namae:", update.name)
     setAirUnitUpdate(update)
     await delay(2)
   }
@@ -49,7 +51,6 @@ async function loadHandler({
     setFleetUnitUpdate(update)
     await delay(1)
   }
-  
 
   for (const update of jpfleetUpdates) {
     await delay(1)
@@ -95,16 +96,19 @@ async function loadHandler({
     setDmcvShipMarkerUpdate(update)
     await delay(1)
   }
-  
+
   GlobalGameState.logItems = new Array()
   for (let item of logItems.values()) {
     GlobalGameState.log(item)
   }
 
-  console.log("************************ DONE LOADING ^^^^^^^^^^^^^^^^")
+  console.log(
+    "************************ DONE LOADING ^^^^^^^^^^^^^^^^ set game phase to",
+    GlobalGameState.temporaryGamePhase
+  )
 
   GlobalGameState.gamePhase = GlobalGameState.temporaryGamePhase
-  
+
   loadState()
   setTestClicked(false)
   setAirUnitUpdate({
@@ -114,7 +118,7 @@ async function loadHandler({
     index: -1,
   })
   setLoading(false)
-  
+
   // QUACK TEMPORARY UNTIL NEW GAMES WITH THESE ARE SAVED- REMOVE
 
   // GlobalGameState.nextAvailableDamageMarker = 0

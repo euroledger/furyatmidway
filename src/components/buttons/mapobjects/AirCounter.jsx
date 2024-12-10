@@ -119,8 +119,11 @@ function AirCounter({ getAirBox, setAirBox, counterData, side }) {
       }
     }
   }
-  const onDrag = () => {
 
+  // if (airUnitUpdate.name === "Enterprise-SBD3-2") {
+  //   console.log("QUACK 2 FOR UPDATE airUnitUpdate=", airUnitUpdate)
+  // }
+  const onDrag = () => {
     const location = controller.getAirUnitLocation(counterData.name)
 
     setIsMoveable(true)
@@ -179,11 +182,14 @@ function AirCounter({ getAirBox, setAirBox, counterData, side }) {
       }
     }
 
-
     // Only CAP Units can be moved during the other side's air operation (at the end
     // of all airstrikes to return to carrier)
 
-    if (GlobalGameState.sideWithInitiative !== undefined && GlobalGameState.sideWithInitiative !== counterData.side && !location.boxName.includes("CAP RETURNING")) {
+    if (
+      GlobalGameState.sideWithInitiative !== undefined &&
+      GlobalGameState.sideWithInitiative !== counterData.side &&
+      !location.boxName.includes("CAP RETURNING")
+    ) {
       return
     }
     if (
@@ -270,16 +276,25 @@ function AirCounter({ getAirBox, setAirBox, counterData, side }) {
       })
     }
   }
+
   // HUMAN STUFF
-  if (
+  const doUpdatePoo =
     counterData.name === airUnitUpdate.name &&
     airUnitUpdate.position != undefined &&
     position.left !== airUnitUpdate.position.left + "%" &&
     position.top !== airUnitUpdate.position.top + "%"
-  ) {
-    // console.log("I am ", counterData.name," -> AIR UNIT UPDATE = ", testUpdate)
+  if (doUpdatePoo) {
+    console.log("quack I am ", counterData.name, " -> HUMAN SHIT AIR UNIT UPDATE = ", testUpdate)
 
     doUpdate(airUnitUpdate)
+  } else {
+    // console.log("Name:", counterData.name, " airUnitUpdate.position=",  airUnitUpdate.position)
+  }
+  if (airUnitUpdate.name === "Enterprise-SBD3-2") {
+    // console.log("QUACK 3 counterData.name=", counterData.name)
+    // console.log("QUACK 3 airUnitUpdate.name=", airUnitUpdate.name)
+    // console.log("QUACK 3 airUnitUpdate.position != undefined=", airUnitUpdate.position != undefined)
+    // console.log("QUACK 3 position.left !== airUnitUpdate.position.left=", position.left !== airUnitUpdate.position.left)
   }
 
   // AI STUFF
@@ -289,7 +304,7 @@ function AirCounter({ getAirBox, setAirBox, counterData, side }) {
     position.left !== testUpdate.position.left + "%" &&
     position.top !== testUpdate.position.top + "%"
   ) {
-    // console.log("I am ", counterData.name," -> AIR UNIT (TEST/AI) UPDATE = ", testUpdate)
+    console.log("I am ", counterData.name, " -> AIR UNIT (TEST/AI) UPDATE = ", testUpdate)
 
     doUpdate(testUpdate)
   }

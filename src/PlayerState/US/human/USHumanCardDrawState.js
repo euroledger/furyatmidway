@@ -19,12 +19,12 @@ class USHumanCardDrawState {
     } else {
       GlobalGameState.usCardsDrawn = true
       GlobalGameState.currentPlayer = GlobalUnitsModel.Side.JAPAN
-      if (GlobalInit.controller.japanHandContainsCard(6)) {
-        setCardNumber(() => 6)
-        GlobalGameState.gamePhase = GlobalGameState.PHASE.CARD_PLAY
-      } else {
+      // if (GlobalInit.controller.japanHandContainsCard(6)) {
+      //   setCardNumber(() => 6)
+      //   GlobalGameState.gamePhase = GlobalGameState.PHASE.CARD_PLAY
+      // } else {
         GlobalGameState.gamePhase = GlobalGameState.PHASE.JAPAN_MIDWAY
-      }
+      // }
     }
     GlobalGameState.phaseCompleted = true
     GlobalGameState.setupPhase++
