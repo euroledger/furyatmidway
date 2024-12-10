@@ -679,6 +679,7 @@ export function doHangarNight(controller, name, side) {
 }
 
 export function doHangar(controller, name, side) {
+  console.log("HANGAR for", side)
   const location = controller.getAirUnitLocation(name)
   const carrierName = controller.getCarrierForAirBox(location.boxName)
   controller.setValidAirUnitDestinations(name, new Array())
@@ -689,6 +690,7 @@ export function doHangar(controller, name, side) {
   // check there is room on this carrier's flight deck
   const destAvailable = controller.isFlightDeckAvailable(carrierName, side, true)
 
+  console.log("destAvailable=", destAvailable)
   if (!destAvailable) {
     return
   }
@@ -957,6 +959,10 @@ export async function moveCAPtoReturnBox(controller, capAirUnits, setAirUnitUpda
     const tf = controller.getTaskForceForCarrier(parentCarrier, sideBeingAttacked)
     const destBox = controller.getCapReturnAirBoxForNamedTaskForce(sideBeingAttacked, tf)
 
+    console.log("DEBUG capUnit=", capUnit)
+    console.log("DEBUG parentCarrier=", parentCarrier)
+    console.log("DEBUG tf=", tf)
+    console.log("DEBUG destBox=", destBox)
     let position1 = USAirBoxOffsets.find((box) => box.name === destBox)
     console.log("DEBUG US set position1 to", position1)
 

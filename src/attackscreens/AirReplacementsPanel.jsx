@@ -35,7 +35,6 @@ export function AirReplacementsHeaders({
   // hangar capacity available with button to choose that CV's hangar
 
   const airCounterImage = (airUnit, i) => {
-    
     if (eliminatedAirUnits.includes(airUnit)) {
       const newImage = airUnit.image.replace("front", "back")
       airUnit.image = newImage
@@ -253,7 +252,9 @@ export function AirReplacementsFooters({
       GlobalUnitsModel.Carrier.HIRYU,
       GlobalUnitsModel.Carrier.SORYU,
     ]
-    availableJapanCVs = japanCVs.filter((carrier) => !controller.isSunk(carrier) && controller.isHangarAvailable(cv))
+    availableJapanCVs = japanCVs.filter(
+      (carrier) => !controller.isSunk(carrier) && controller.isHangarAvailable(carrier)
+    )
     if (availableJapanCVs.length === 0) {
       msg = "No carriers available to receive replacements"
       setAirReplacementsSelected(true)

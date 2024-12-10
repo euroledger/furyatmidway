@@ -121,7 +121,6 @@ function AirCounter({ getAirBox, setAirBox, counterData, side }) {
     }
   }
   const onDrag = () => {
-
     const location = controller.getAirUnitLocation(counterData.name)
 
     setIsMoveable(true)
@@ -203,6 +202,7 @@ function AirCounter({ getAirBox, setAirBox, counterData, side }) {
       GlobalGameState.gamePhase === GlobalGameState.PHASE.AIR_OPERATIONS ||
       GlobalGameState.gamePhase === GlobalGameState.PHASE.MIDWAY_ATTACK
     ) {
+      console.log("SET VALID STUFF 1")
       setValidDestinationBoxes(controller, counterData.name, counterData.side)
     }
     setBoxes(counterData, location.boxName)
@@ -484,6 +484,8 @@ function AirCounter({ getAirBox, setAirBox, counterData, side }) {
       GlobalGameState.gamePhase === GlobalGameState.PHASE.AIR_OPERATIONS ||
       GlobalGameState.gamePhase === GlobalGameState.PHASE.MIDWAY_ATTACK
     ) {
+      console.log("SET VALID STUFF 2")
+
       setValidDestinationBoxes(controller, counterData.name, counterData.side)
     }
     setBoxes(counterData, location.boxName)

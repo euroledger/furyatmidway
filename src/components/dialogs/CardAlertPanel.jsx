@@ -68,10 +68,17 @@ function CardAlertPanel(props) {
     } else if (cardNumber === 3) {
       setAirReplacementsPanelShow(true)
       if (controller.usHandContainsCard(3)) {
+        console.log("******** US PLAYS CARD 3 *********")
         controller.setCardPlayed(3, GlobalUnitsModel.Side.US)
       } else {
+        console.log("******** JAOAN PLAYS CARD 3 *********")
+
         controller.setCardPlayed(3, GlobalUnitsModel.Side.JAPAN)
       }
+      console.log("usCardsPlayed=", GlobalUnitsModel.usCardsPlayed )
+      console.log("jpCardsPlayed=", GlobalUnitsModel.jpCardsPlayed )
+
+
       onHide(e)
     } else if (cardNumber === 4) {
       let side
@@ -136,7 +143,6 @@ function CardAlertPanel(props) {
     setThisCard(cardNumber)
     setButtonPressed(() => true)
     eventHandler(cardNumber)
-    controller.setCardPlayed(cardNumber)
   }
 
   // useEffect(() => {

@@ -430,6 +430,8 @@ function loadAirUnits(airUnitMap) {
 
     // GlobalGameState.jpDMCVCarrier = GlobalUnitsModel.Carrier.SORYU
     // GlobalGameState.usDMCVCarrier = undefined
+
+    // GlobalGameState.midwayGarrisonLevel = 4
   }
 }
 
@@ -449,7 +451,7 @@ function loadJapanStrikeUnits(loadedMap) {
   for (let key of loadedMap.keys()) {
     const sg = GlobalUnitsModel.jpStrikeGroups.get(key)
     const loadedSG = loadedMap.get(key)
-    sg.gameTurnMoved=loadedSG._gameTurnMoved
+    sg.gameTurnMoved = loadedSG._gameTurnMoved
     sg.moved = loadedSG._moved
     sg.airOpMoved = loadedSG._airOpMoved
     sg.airOpAttacked = loadedSG._airOpAttacked
@@ -500,7 +502,6 @@ export function loadGameStateForId(controller, gameId) {
 
   const global = new Map(JSON.parse(globalState))
 
-
   for (var property in GlobalGameState) {
     const ty = typeof GlobalGameState[property]
 
@@ -508,7 +509,6 @@ export function loadGameStateForId(controller, gameId) {
       GlobalGameState[property] = global.get(property)
     }
   }
-
 
   const airOperationText = gameDetails.airoperations
   GlobalGameState.airOperationPoints = JSON.parse(airOperationText)
@@ -603,6 +603,8 @@ export function loadGameStateForId(controller, gameId) {
 
   // QUACK REMOVE ONE CARD AND REPLACE IT WITH ANOTHER
   // GlobalInit.controller.replaceCardWithOtherCard(6, 9, GlobalUnitsModel.Side.JAPAN)
+  // GlobalInit.controller.replaceCardWithOtherCard(6, 7, GlobalUnitsModel.Side.US)
+
   // GlobalGameState.midwayControl = GlobalUnitsModel.Side.US
   // ------------------------------------------------------
 

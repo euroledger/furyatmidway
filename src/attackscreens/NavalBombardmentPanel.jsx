@@ -43,7 +43,7 @@ export function NavalBombardmentFooter() {
 
   let msg = "Midway Garrison Reduced to"
   if (GlobalGameState.dieRolls[0] === 1) {
-    "No Change to Midway Garrison Level; Stays at"
+    msg = "No Change to Midway Garrison Level; Stays at"
   }
   return (
     <>

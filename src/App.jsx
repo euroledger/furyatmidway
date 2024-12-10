@@ -51,6 +51,7 @@ import {
   doMidwayDamage,
   autoAllocateMidwayDamage,
   sendDMCVUpdate,
+  allMidwayBoxesDamaged
 } from "./DiceHandler"
 import { determineAllUnitsDeployedForCarrier } from "./controller/AirUnitSetupHandler"
 
@@ -463,8 +464,9 @@ export function App() {
   useEffect(() => {
     if (GlobalGameState.gamePhase === GlobalGameState.PHASE.CARD_PLAY) {
       setEliminatedSteps(0)
-      if (cardNumber === 2) {
+      if (cardNumber === 2 || cardNumber === 4) {
         setDamagedCV("")
+        GlobalGameState.dieRolls = []
       }
       if (cardNumber !== 0 && cardNumber !== -1) {
         setCardAlertPanelShow(true)
@@ -1873,7 +1875,6 @@ export function App() {
       <EscortFooters></EscortFooters>
     </>
   )
-
   const airReplacementsHeaders = (
     <>
       <AirReplacementsHeaders
@@ -2075,6 +2076,11 @@ export function App() {
   function doCardRoll(roll) {
     if (cardNumber === 5) {
       doNavalBombardmentRoll(GlobalInit.controller, roll)
+
+      if (GlobalGameState.midwayGarrisonLevel <= 3) {
+        // Midway Base Destroyed
+        allMidwayBoxesDamaged(GlobalInit.controller, setDamageMarkerUpdate)
+      }
     } else if (cardNumber === 7) {
       doTroubledReconnaissanceRoll(GlobalInit.controller, roll)
     }

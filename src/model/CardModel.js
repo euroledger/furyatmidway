@@ -123,6 +123,8 @@ export default class CardModel {
       GlobalUnitsModel.jpCardsPlayed.push(cardNum)
     } else {
       GlobalUnitsModel.usCards = GlobalUnitsModel.usCards.filter((card) => card._number !== cardNum)
+      console.trace()
+      console.log("QUACK 299 side=", side)
       GlobalUnitsModel.usCardsPlayed.push(cardNum)
     }
   }
@@ -131,6 +133,7 @@ export default class CardModel {
     if (side === GlobalUnitsModel.Side.JAPAN) {
       return GlobalUnitsModel.jpCardsPlayed.includes(cardNum)
     } else {
+      console.log("GET CARD PLAYED US, card:", cardNum, "usCardsPlayed=", GlobalUnitsModel.usCardsPlayed )
       return GlobalUnitsModel.usCardsPlayed.includes(cardNum)
     }
   }

@@ -1340,7 +1340,7 @@ export default class Controller {
   }
 
   isMidwayBaseDestroyed() {
-    return GlobalGameState.totalMidwayHits >= 3
+    return GlobalGameState.totalMidwayHits >= 3 || GlobalGameState.midwayGarrisonLevel <= 3
   }
 
   calculateVPs() {
@@ -1459,6 +1459,7 @@ export default class Controller {
       if (GlobalGameState.midwayBox1Damaged) hits++
       if (GlobalGameState.midwayBox2Damaged) hits++
     }
+    console.log("HITS=", hits)
     // return false if both slots either damaged or occupied by an air unit
     const flightDeckBox = this.airOperationsModel.getAirBoxForNamedShip(side, carrierName, "FLIGHT")
 
