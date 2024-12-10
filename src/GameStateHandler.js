@@ -93,7 +93,6 @@ async function setNextStateFollowingCardPlay({
 }) {
   GlobalGameState.dieRolls = []
 
-  console.log("PANTS!!!!!!!!!!!!!!!!!")
   switch (cardNumber) {
     case -1:
       break
@@ -465,14 +464,6 @@ function japanDMCVPlanningHandler({
     setJpAlertShow,
     setEnabledJapanFleetBoxes,
   })
-
-  // if DMCV placed but not moved stay in this state otherwise move on
-  // if (GlobalGameState.jpDMCVFleetPlaced && !GlobalGameState.jpDMCVFleetMoved) {
-  //   console.log("MORE IJN...")
-  //   setJapanFleetRegions()
-  // } else {
-  // goToMidwayAttackOrUSFleetMovement({ setMidwayNoAttackAlertShow, setJapanMapRegions, setFleetUnitUpdate })
-  // }
 }
 function usFleetMovementPlanningHandler({
   setJapanFleetRegions,
@@ -1221,7 +1212,6 @@ export default async function handleAction({
       setMidwayWarningShow,
     })
   } else if (GlobalGameState.gamePhase === GlobalGameState.PHASE.JAPAN_MIDWAY) {
-    console.log("IN HERE...")
     midwayDeclarationHandler({ setUsFleetRegions })
   } else if (GlobalGameState.gamePhase === GlobalGameState.PHASE.US_DMCV_FLEET_MOVEMENT_PLANNING) {
     usDMCVPlanningHandler({ setUsFleetRegions })

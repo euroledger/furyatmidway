@@ -465,7 +465,6 @@ export function App() {
       if (cardNumber !== 0 && cardNumber !== -1) {
         setCardAlertPanelShow(true)
       } else {
-        console.log("USE EFFECT NEXT ACTION HERE ************************>>>>>>>>>>>>>>>>>>>>>>>>>")
         nextAction()
       }
     }
@@ -612,7 +611,6 @@ export function App() {
   // // NEW AI-HUMAN SIDE EFFECTS....
   useEffect(() => {
 
-    console.log("USE STATE HANDLERS HERE....! stateObject=", stateObject)
     StateManager.gameStateManager.setStateHandlers(stateObject)
 
     if (newGame) {
@@ -621,7 +619,6 @@ export function App() {
       }
     }
     
-    console.log("Load Complete, GlobalGameState.gamePhase=", GlobalGameState.gamePhase)
   }, [initComplete])
 
   useEffect(() => {
@@ -712,7 +709,6 @@ export function App() {
 
   useEffect(() => {
     if (GlobalGameState.gamePhase === GlobalGameState.PHASE.AIR_OPERATIONS) {
-      console.log("^^^^^^^^^^^ HATS OFF ! BEGIN FUCKING AIR OPS!side with Initiative=", GlobalGameState.sideWithInitiative)
       GlobalGameState.phaseCompleted = false
       GlobalGameState.nextActionButtonDisabled = true
       setEnabledUSReorgBoxes(false)
@@ -1178,7 +1174,6 @@ export function App() {
     // TODO
     // check if 1st air op and no attack units on flight deck...allow next action
 
-    // console.log("GlobalGameState.midwayAttackResolved=",GlobalGameState.midwayAttackResolved)
     if (GlobalGameState.midwayAttackResolved) {
       return true
     }
@@ -1344,7 +1339,6 @@ export function App() {
   }
   const csfLocation = GlobalInit.controller.getFleetLocation("CSF", GlobalUnitsModel.Side.US)
 
-  // console.log("--------- CSF LOCATION=", csfLocation)
   const nextActionButtonDisabled = async () => {
     const prevButton = GlobalGameState.nextActionButtonDisabled
 
@@ -1390,7 +1384,6 @@ export function App() {
 
       if (GlobalGameState.midwayAirOp === 2 || GlobalInit.controller.getDistanceBetween1AFAndMidway() <= 2) {
         const endOfAirOps = await endOfMidwayOperation()
-        // console.log("endofAirOps=", endOfAirOps)
         if (endOfAirOps) {
           GlobalGameState.nextActionButtonDisabled = false
         } else {
@@ -1430,7 +1423,6 @@ export function App() {
       endOfAirOps = await endOfMyNightAirOperations(GlobalUnitsModel.Side.US)
     } else {
       endOfAirOps = await endOfMyAirOperation(GlobalGameState.sideWithInitiative)
-      // console.log("endOfAirOps=", endOfAirOps)
     }
     if (endOfAirOps) {
       GlobalGameState.nextActionButtonDisabled = false
@@ -1499,7 +1491,6 @@ export function App() {
                   !GlobalGameState.usCardsDrawn && GlobalGameState.gamePhase !== GlobalGameState.PHASE.US_CARD_DRAW
                 }
                 onClick={(e) => {
-                  console.log("CLICKETY WOOO")
                   if (
                     GlobalGameState.gamePhase === GlobalGameState.PHASE.US_CARD_DRAW ||
                     GlobalGameState.gamePhase === GlobalGameState.PHASE.US_DRAWS_ONE_CARD
@@ -1510,9 +1501,6 @@ export function App() {
                   if (GlobalGameState.gamePhase === GlobalGameState.PHASE.US_DRAWS_ONE_CARD) {
                     GlobalInit.controller.drawUSCards(1, false)
                     nextAction(e)
-                  }
-                  if (GlobalGameState.gamePhase === GlobalGameState.PHASE.US_CARD_DRAW) {
-                    console.log("CLOSE CARD SCREEN")
                   }
                   setusHandShow(true)
                 }}

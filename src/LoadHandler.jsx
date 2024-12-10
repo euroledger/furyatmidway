@@ -41,7 +41,6 @@ async function loadHandler({
   setTowedCVSelected(cvSelected)
   for (const update of airUpdates) {
     await delay(2)
-    console.log(">>> AIR UPDATE namae:", update.name)
     setAirUnitUpdate(update)
     await delay(2)
   }

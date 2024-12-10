@@ -17,7 +17,6 @@ class PlayerStateHandler {
 
   // for restoring objects during load
   setState(state) {
-    console.log("QUACK 1", state)
     this.currentState = state
   }
 

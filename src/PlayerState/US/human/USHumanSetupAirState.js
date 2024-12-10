@@ -7,8 +7,6 @@ class USHumanSetupAirState {
 
   nextState(stateObject) {
     GlobalGameState.currentCarrier++
-    console.log("POOOOOOOOOOOOOO currentCarrier now",GlobalGameState.currentCarrier )
-
     GlobalGameState.setupPhase++
     GlobalGameState.currentTaskForce =
       GlobalGameState.currentCarrier <= 1 ? 1 : GlobalGameState.currentCarrier === 2 ? 2 : 3 // 3 is Midway

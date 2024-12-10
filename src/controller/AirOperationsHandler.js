@@ -411,22 +411,15 @@ export function doStrikeBoxJapan(controller, name, strikeGroup, side) {
       }
     }
   } else if (strikeGroup.attacked) {
-    console.log("LOOK FOR RETURN2 BOX")
     // GOTO RETURN 2 BOX
     const return2Box = controller.getReturn2AirBoxForNamedTaskForce(side, tf)
     destArray.push(return2Box)
 
     if (hits !== 0) {
-      console.log("OTHER GUYS")
       // parent carrier damaged - allow other TF as well
       const otherTF = controller.getOtherTaskForce(tf, side)
-      console.log("TRY TF", otherTF)
-
       const carriersInOtherTaskForce = controller.getCarriersInOtherTF(tf, side)
-      console.log("OTHER FUCKERS->", carriersInOtherTaskForce)
-
       for (let carrier of carriersInOtherTaskForce) {
-        console.log("TRY CARRIER", carrier)
         if (!controller.isSunk(carrier.name) && carrier.hits < 2) {
           const return2BoxOtherTF = controller.getReturn2AirBoxForNamedTaskForce(side, otherTF)
           destArray.push(return2BoxOtherTF)

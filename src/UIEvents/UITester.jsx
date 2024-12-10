@@ -150,8 +150,6 @@ async function doTargetSelection(defendingSide) {
   }
   GlobalGameState.updateGlobalState()
 
-  console.log("SELECTED TARGET =", GlobalGameState.testTarget)
-
   await delay(500)
 
   GlobalGameState.rollDice = true
@@ -371,7 +369,6 @@ async function doAttackResolution() {
 }
 
 async function doCarrierDamage() {
-  console.log("IN HERE...")
   // CARRIER DAMAGE SCREEN
   await delay(100)
   GlobalGameState.closePanel = false

@@ -120,9 +120,6 @@ function AirCounter({ getAirBox, setAirBox, counterData, side }) {
     }
   }
 
-  // if (airUnitUpdate.name === "Enterprise-SBD3-2") {
-  //   console.log("QUACK 2 FOR UPDATE airUnitUpdate=", airUnitUpdate)
-  // }
   const onDrag = () => {
     const location = controller.getAirUnitLocation(counterData.name)
 
@@ -289,12 +286,6 @@ function AirCounter({ getAirBox, setAirBox, counterData, side }) {
     doUpdate(airUnitUpdate)
   } else {
     // console.log("Name:", counterData.name, " airUnitUpdate.position=",  airUnitUpdate.position)
-  }
-  if (airUnitUpdate.name === "Enterprise-SBD3-2") {
-    // console.log("QUACK 3 counterData.name=", counterData.name)
-    // console.log("QUACK 3 airUnitUpdate.name=", airUnitUpdate.name)
-    // console.log("QUACK 3 airUnitUpdate.position != undefined=", airUnitUpdate.position != undefined)
-    // console.log("QUACK 3 position.left !== airUnitUpdate.position.left=", position.left !== airUnitUpdate.position.left)
   }
 
   // AI STUFF

@@ -46,8 +46,6 @@ export function setUpAirAttack(controller, location, strikeGroup, setCardNumber,
       if (fleetTarget.includes("IJN-DMCV")) {
         GlobalGameState.taskForceTarget = GlobalUnitsModel.TaskForce.JAPAN_DMCV
         GlobalGameState.currentCarrierAttackTarget = GlobalUnitsModel.TaskForce.JAPAN_DMCV
-        console.log("+++++++++++++++++++++++++ SET TARGET TO", GlobalGameState.currentCarrierAttackTarget)
-
       } else if (fleetTarget.includes("US-DMCV")) {
         GlobalGameState.taskForceTarget = GlobalUnitsModel.TaskForce.US_DMCV
         GlobalGameState.currentCarrierAttackTarget = GlobalUnitsModel.TaskForce.US_DMCV
