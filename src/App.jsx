@@ -1997,6 +1997,7 @@ export function App() {
         totalHits={carrierHits}
         attackResolved={attackResolved}
         setAttackResolved={setAttackResolved}
+        setFleetUnitUpdate={setFleetUnitUpdate}
       ></AttackResolutionFooters>
     </>
   )

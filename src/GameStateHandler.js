@@ -159,7 +159,7 @@ async function setNextStateFollowingCardPlay({
         // if playing this card has resulted in a DMCV carrier being sunk, need to remove
         // the DMCV Fleet from the map
         const carrier = GlobalInit.controller.getCarrier(GlobalGameState.currentCarrierAttackTarget)
-        if (carrier.dmcv && GlobalInit.controller.isSunk(carrier.name)) {
+        if (carrier && carrier.dmcv && GlobalInit.controller.isSunk(carrier.name)) {
           await removeDMCVFleetForCarrier(carrier.side, setFleetUnitUpdate)
         }
 
@@ -288,7 +288,7 @@ function setupUSAirHandler() {
 
 function dmcvState(side) {
   if (side === GlobalUnitsModel.Side.US) {
-    if (GlobalGameState.usDMCVCarrier===undefined) {
+    if (GlobalGameState.usDMCVCarrier === undefined) {
       return false
     }
     const usDMCVLocation = GlobalInit.controller.getFleetLocation("US-DMCV", GlobalUnitsModel.Side.US)
@@ -300,7 +300,7 @@ function dmcvState(side) {
       (usDMCVLocation !== undefined && GlobalGameState.usDMCVFleetPlaced === true) // could be sunk
     )
   }
-  if (GlobalGameState.jpDMCVCarrier===undefined) {
+  if (GlobalGameState.jpDMCVCarrier === undefined) {
     return false
   }
   const jpDMCVLocation = GlobalInit.controller.getFleetLocation("IJN-DMCV", GlobalUnitsModel.Side.JAPAN)
@@ -671,6 +671,60 @@ export function displayAttackTargetPanel(controller) {
   return true
 }
 
+
+export async function removeMIFFleet(setFleetUnitUpdate) {
+  const index1 = GlobalInit.controller.getNextAvailableFleetBox(GlobalUnitsModel.Side.JAPAN)
+  const index2 = GlobalInit.controller.getNextAvailableFleetBox(GlobalUnitsModel.Side.US)
+
+  let update1 = {
+    name:"MIF",
+    position: {
+      currentHex: {
+        boxName: HexCommand.FLEET_BOX,
+        boxIndex: index1
+      },
+    },
+    initial: false,
+    loading: false,
+    side: GlobalUnitsModel.Side.JAPAN
+  }
+
+  let update2 = {
+    name:"MIF-USMAP",
+    position: {
+      currentHex: {
+        boxName: HexCommand.FLEET_BOX,
+        boxIndex: index2
+      },
+    },
+    initial: false,
+    loading: false,
+    side: GlobalUnitsModel.Side.US
+  }
+  // update1.position.currentHex.boxName = HexCommand.FLEET_BOX
+  // update1.name = "MIF"
+  // update1.side = GlobalUnitsModel.Side.JAPAN
+
+  // update2.position.currentHex.boxName = HexCommand.FLEET_BOX
+  // update2.name = "MIF-USMAP"
+  // update2.side = GlobalUnitsModel.Side.US
+
+
+  // update1.initial = false
+  // update2.initial = false
+
+  // update1.loading = false
+  // update2.loading = false
+
+  setFleetUnitUpdate(update1)
+  await delay(1)
+  setFleetUnitUpdate(update2)
+  await delay(1)
+  setFleetUnitUpdate({
+    name: "",
+    position: {},
+  }) // reset to avoid updates causing problems for other markers
+}
 async function removeDMCVFleetForCarrier(side, setFleetUnitUpdate) {
   let update1 = {
     position: {},
@@ -704,9 +758,9 @@ async function removeDMCVFleetForCarrier(side, setFleetUnitUpdate) {
 
 async function usFleetMovementHandler({ setFleetUnitUpdate }) {
   const update1 = createMapUpdateForFleet(GlobalInit.controller, "CSF", GlobalUnitsModel.Side.US)
-  let update2=null
+  let update2 = null
   if (GlobalUnitsModel.usDMCVCarrier !== undefined) {
-    update2 = createMapUpdateForFleet(GlobalInit.controller, "US-DMCV", GlobalUnitsModel.Side.US)    
+    update2 = createMapUpdateForFleet(GlobalInit.controller, "US-DMCV", GlobalUnitsModel.Side.US)
   }
 
   if (update2 !== null) {

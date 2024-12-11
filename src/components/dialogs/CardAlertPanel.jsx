@@ -82,6 +82,7 @@ function CardAlertPanel(props) {
       onHide(e)
     } else if (cardNumber === 4) {
       let side
+      setDamagedCV("")
       if (controller.usHandContainsCard(4)) {
         side = GlobalUnitsModel.Side.US
         controller.setCardPlayed(4, GlobalUnitsModel.Side.US)
@@ -99,7 +100,6 @@ function CardAlertPanel(props) {
       ) {
         setSubmarineDamagePanelShow(true)
       } else {
-        setDamagedCV("")
         setSubmarineAlertPanelShow(true)
       }
       onHide(e)
