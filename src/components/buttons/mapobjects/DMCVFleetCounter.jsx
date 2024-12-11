@@ -426,7 +426,7 @@ function DMCVFleetCounter({
       const csfLocation = controller.getFleetLocation("CSF-JPMAP", GlobalUnitsModel.Side.JAPAN)
       const locationDMCV = controller.getFleetLocation("US-DMCV-JPMAP", GlobalUnitsModel.Side.JAPAN)
       let dmcv, csf
-      if (locationDMCV !== undefined) {
+      if (locationDMCV !== undefined && locationDMCV.currentHex !== undefined) {
         dmcv = distanceBetweenHexes(locationDMCV.currentHex, hex) === 0
       }
       if (csfLocation !== undefined) {

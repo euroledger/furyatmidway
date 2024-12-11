@@ -339,6 +339,11 @@ export function SubmarineDamagePanelFooters({
       const sideBeingAttacked =
         side === GlobalUnitsModel.Side.US ? GlobalUnitsModel.Side.JAPAN : GlobalUnitsModel.Side.US
 
+        if (sideBeingAttacked === GlobalUnitsModel.Side.US) {
+          GlobalGameState.usDMCVCarrier = undefined
+        } else {
+          GlobalGameState.jpDMCVCarrier = undefined
+        }
       sendDMCVUpdate(controller, GlobalGameState.currentCarrierAttackTarget, setDmcvShipMarkerUpdate, sideBeingAttacked)
     }
     // ---- END ---
