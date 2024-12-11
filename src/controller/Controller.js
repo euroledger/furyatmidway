@@ -1339,7 +1339,7 @@ export default class Controller {
   }
 
   isMidwayBaseDestroyed() {
-    return GlobalGameState.totalMidwayHits >= 3
+    return GlobalGameState.totalMidwayHits >= 3 || GlobalGameState.midwayGarrisonLevel <= 3
   }
 
   calculateVPs() {
