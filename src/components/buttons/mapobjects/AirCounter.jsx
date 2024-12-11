@@ -447,6 +447,7 @@ function AirCounter({ getAirBox, setAirBox, counterData, side }) {
         box === GlobalUnitsModel.AirBox.US_TF17_CAP ||
         box === GlobalUnitsModel.AirBox.US_MIDWAY_CAP
       ) {
+        console.log("MOVE ORPHAN!!!! name=", counterData.name)
         await moveOrphanedCAPUnitsToEliminatedBoxNight(counterData.side, box, counterData)
       }
     }

@@ -159,8 +159,10 @@ export function DMCVCarrierSelectionPanelFooters({ controller, DMCVCarrierSelect
   }
   carrierUnit.dmcv = true
 
-  carrierUnit.taskForce =
-    side === GlobalUnitsModel.Side.JAPAN ? GlobalUnitsModel.TaskForce.JAPAN_DMCV : GlobalUnitsModel.TaskForce.US_DMCV
+  // QUACK BUG DEC 10 this may have side effects
+  // Otherwise causes orphaned units
+  // carrierUnit.taskForce =
+  //   side === GlobalUnitsModel.Side.JAPAN ? GlobalUnitsModel.TaskForce.US_DMCV : GlobalUnitsModel.TaskForce.JAPAN_DMCV
 
   const message1 = "CV Selected: "
   return (

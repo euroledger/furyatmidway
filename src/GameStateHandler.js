@@ -288,7 +288,7 @@ function setupUSAirHandler() {
 
 function dmcvState(side) {
   if (side === GlobalUnitsModel.Side.US) {
-    if (GlobalGameState.usDMCVCarrier==="SUNK") {
+    if (GlobalGameState.usDMCVCarrier===undefined) {
       return false
     }
     const usDMCVLocation = GlobalInit.controller.getFleetLocation("US-DMCV", GlobalUnitsModel.Side.US)
@@ -300,7 +300,7 @@ function dmcvState(side) {
       (usDMCVLocation !== undefined && GlobalGameState.usDMCVFleetPlaced === true) // could be sunk
     )
   }
-  if (GlobalGameState.jpDMCVCarrier==="SUNK") {
+  if (GlobalGameState.jpDMCVCarrier===undefined) {
     return false
   }
   const jpDMCVLocation = GlobalInit.controller.getFleetLocation("IJN-DMCV", GlobalUnitsModel.Side.JAPAN)
@@ -704,7 +704,10 @@ async function removeDMCVFleetForCarrier(side, setFleetUnitUpdate) {
 
 async function usFleetMovementHandler({ setFleetUnitUpdate }) {
   const update1 = createMapUpdateForFleet(GlobalInit.controller, "CSF", GlobalUnitsModel.Side.US)
-  const update2 = createMapUpdateForFleet(GlobalInit.controller, "US-DMCV", GlobalUnitsModel.Side.US)
+  let update2=null
+  if (GlobalUnitsModel.usDMCVCarrier !== undefined) {
+    update2 = createMapUpdateForFleet(GlobalInit.controller, "US-DMCV", GlobalUnitsModel.Side.US)    
+  }
 
   if (update2 !== null) {
     await setFleetUnitUpdate(update2)

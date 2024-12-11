@@ -75,7 +75,6 @@ export default class Controller {
   clearTargetMap() {
     this.targetMap = new Map()
   }
-
   targetMapSize() {
     return Array.from(this.targetMap.keys()).length
   }
@@ -1340,7 +1339,7 @@ export default class Controller {
   }
 
   isMidwayBaseDestroyed() {
-    return GlobalGameState.totalMidwayHits >= 3 || GlobalGameState.midwayGarrisonLevel <= 3
+    return GlobalGameState.totalMidwayHits >= 3
   }
 
   calculateVPs() {
@@ -1459,7 +1458,6 @@ export default class Controller {
       if (GlobalGameState.midwayBox1Damaged) hits++
       if (GlobalGameState.midwayBox2Damaged) hits++
     }
-    console.log("HITS=", hits)
     // return false if both slots either damaged or occupied by an air unit
     const flightDeckBox = this.airOperationsModel.getAirBoxForNamedShip(side, carrierName, "FLIGHT")
 
@@ -1890,8 +1888,6 @@ export default class Controller {
     }
 
     // if the two totals are equal winner is the side with higher air ops
-    // console.log("japanDieRoll = ", japanDieRoll, "usDieRoll = ", usDieRoll)
-    // console.log("japan air ops = ", GlobalGameState.airOperationPoints.japan, "us air ops = ", GlobalGameState.airOperationPoints.us)
     if (GlobalGameState.airOperationPoints.japan > GlobalGameState.airOperationPoints.us) {
       return GlobalUnitsModel.Side.JAPAN
     } else if (GlobalGameState.airOperationPoints.us > GlobalGameState.airOperationPoints.japan) {

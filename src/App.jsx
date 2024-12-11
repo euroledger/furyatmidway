@@ -624,7 +624,7 @@ export function App() {
           setEnabledUSFleetBoxes(true)
         }
       }
-      if (dmcvLocation !== undefined && dmcvLocation.currentHex.q >= 8) {
+      if (dmcvLocation !== undefined && dmcvLocation.currentHex !== undefined && dmcvLocation.currentHex.q >= 8) {
         // can move offboard
         if (GlobalGameState.gamePhase === GlobalGameState.PHASE.US_DMCV_FLEET_MOVEMENT_PLANNING) {
           setEnabledUSFleetBoxes(true)
@@ -675,7 +675,7 @@ export function App() {
         // both fleets have been removed from the map
         return
       }
-      if (GlobalGameState.usDMCVFleetPlaced && dmcvLocation !== undefined) {
+      if (GlobalGameState.usDMCVFleetPlaced && dmcvLocation !== undefined && dmcvLocation.currentHex !== undefined ) {
         usRegion = allHexesWithinDistance(dmcvLocation.currentHex, GlobalGameState.dmcvFleetSpeed, true)
       } else {
         usRegion = allHexesWithinDistance(csfLocation.currentHex, GlobalGameState.dmcvFleetSpeed, true)
