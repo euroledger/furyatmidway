@@ -782,8 +782,8 @@ export function doAttackFireRolls(controller, testRolls) {
     GlobalGameState.dieRolls = rolls
     doAttackResolutionEvent(controller, hits)
 
-    GlobalGameState.midwayHits = 1
-    GlobalGameState.midwayHitsThisAttack = 1
+    // GlobalGameState.midwayHits = 1
+    // GlobalGameState.midwayHitsThisAttack = 1
   } else {
     GlobalGameState.carrierAttackHits = hits
     GlobalGameState.carrierAttackHitsThisAttack = hits

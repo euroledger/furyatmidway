@@ -506,6 +506,7 @@ export function App() {
 
   useEffect(() => {
     if (GlobalGameState.gamePhase === GlobalGameState.PHASE.ATTACK_DAMAGE_RESOLUTION) {
+      setCarrierHits(-1)
       GlobalGameState.dieRolls = []
       setAttackResolutionPanelShow(false)
       setCarrierDamagePanelShow(true)
@@ -2266,11 +2267,12 @@ export function App() {
       GlobalGameState.carrierAttackHits !== 1 ||
       (GlobalGameState.carrierAttackHits === 0 && damageDone)
   }
+  let damagedCarriers = GlobalInit.controller.getDamagedCarriersOneOrTwoHits(GlobalUnitsModel.Side.US)
   let damageControlButtonDisabled =
     (damagedCV === "" && GlobalGameState.dieRolls.length === 0) || GlobalGameState.dieRolls.length > 0
 
   if (damageControlSide === GlobalUnitsModel.Side.US) {
-    damageControlButtonDisabled = damagedCV !== ""
+    damageControlButtonDisabled = damagedCV !== "" || damagedCarriers.length === 0
   }
 
   const totalHits = GlobalGameState.midwayHits + GlobalGameState.totalMidwayHits

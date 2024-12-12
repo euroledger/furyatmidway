@@ -773,6 +773,12 @@ export async function resetStrikeGroups(controller, side, setStrikeGroupUpdate) 
     controller.setStrikeGroupLocation(strikeGroup.name, GlobalUnitsModel.AirBox.OFFBOARD, side)
     controller.removeStrikeGroupFromLocation(strikeGroup.name, side)
     controller.addAirUnitToBox(GlobalUnitsModel.AirBox.OFFBOARD, 0, strikeGroup)
+
+    if (strikeGroup.side === GlobalUnitsModel.Side.JAPAN) {
+      GlobalUnitsModel.jpStrikeGroups.delete(strikeGroup)
+    } else {
+      GlobalUnitsModel.usStrikeGroups.delete(strikeGroup)
+    }
     index++
 
     setStrikeGroupUpdate({

@@ -988,7 +988,10 @@ export default class Controller {
       return GlobalGameState.currentCarrierAttackTarget
     }
     if (GlobalGameState.taskForceTarget === GlobalUnitsModel.TaskForce.TASK_FORCE_17) {
-      if (this.isSunk(GlobalUnitsModel.Carrier.YORKTOWN)) {
+      if (
+        this.isSunk(GlobalUnitsModel.Carrier.YORKTOWN) ||
+        GlobalGameState.usDMCVCarrier === GlobalUnitsModel.Carrier.YORKTOWN
+      ) {
         return null
       }
       return GlobalUnitsModel.Carrier.YORKTOWN
@@ -1000,22 +1003,18 @@ export default class Controller {
 
     if (GlobalGameState.taskForceTarget === GlobalUnitsModel.TaskForce.CARRIER_DIV_1) {
       if (
-        GlobalGameState.jpDMCVCarrier === GlobalUnitsModel.Carrier.AKAGI &&
+        (this.isSunk(GlobalUnitsModel.Carrier.AKAGI) ||
+          GlobalGameState.jpDMCVCarrier === GlobalUnitsModel.Carrier.AKAGI) &&
         !this.isSunk(GlobalUnitsModel.Carrier.KAGA)
       ) {
         return GlobalUnitsModel.Carrier.KAGA
       }
-      if (this.isSunk(GlobalUnitsModel.Carrier.AKAGI) && !this.isSunk(GlobalUnitsModel.Carrier.KAGA)) {
-        return GlobalUnitsModel.Carrier.KAGA
-      }
 
       if (
-        GlobalGameState.jpDMCVCarrier === GlobalUnitsModel.Carrier.KAGA &&
+        (this.isSunk(GlobalUnitsModel.Carrier.KAGA) ||
+          GlobalGameState.jpDMCVCarrier === GlobalUnitsModel.Carrier.KAGA) &&
         !this.isSunk(GlobalUnitsModel.Carrier.AKAGI)
       ) {
-        return GlobalUnitsModel.Carrier.AKAGI
-      }
-      if (!this.isSunk(GlobalUnitsModel.Carrier.AKAGI) && this.isSunk(GlobalUnitsModel.Carrier.KAGA)) {
         return GlobalUnitsModel.Carrier.AKAGI
       }
       return null
@@ -1023,34 +1022,37 @@ export default class Controller {
 
     if (GlobalGameState.taskForceTarget === GlobalUnitsModel.TaskForce.CARRIER_DIV_2) {
       if (
-        GlobalGameState.jpDMCVCarrier === GlobalUnitsModel.Carrier.HIRYU &&
+        (this.isSunk(GlobalUnitsModel.Carrier.HIRYU) ||
+          GlobalGameState.jpDMCVCarrier === GlobalUnitsModel.Carrier.HIRYU) &&
         !this.isSunk(GlobalUnitsModel.Carrier.SORYU)
       ) {
         return GlobalUnitsModel.Carrier.SORYU
       }
-      if (this.isSunk(GlobalUnitsModel.Carrier.HIRYU) && !this.isSunk(GlobalUnitsModel.Carrier.SORYU)) {
-        return GlobalUnitsModel.Carrier.SORYU
-      }
 
       if (
-        GlobalGameState.jpDMCVCarrier === GlobalUnitsModel.Carrier.SORYU &&
+        (this.isSunk(GlobalUnitsModel.Carrier.SORYU) ||
+          GlobalGameState.jpDMCVCarrier === GlobalUnitsModel.Carrier.SORYU) &&
         !this.isSunk(GlobalUnitsModel.Carrier.HIRYU)
       ) {
-        return GlobalUnitsModel.Carrier.HIRYU
-      }
-
-      if (!this.isSunk(GlobalUnitsModel.Carrier.HIRYU) && this.isSunk(GlobalUnitsModel.Carrier.SORYU)) {
         return GlobalUnitsModel.Carrier.HIRYU
       }
       return null
     }
 
     if (GlobalGameState.taskForceTarget === GlobalUnitsModel.TaskForce.TASK_FORCE_16) {
-      if (this.isSunk(GlobalUnitsModel.Carrier.ENTERPRISE) && !this.isSunk(GlobalUnitsModel.Carrier.HORNET)) {
+      if (
+        (this.isSunk(GlobalUnitsModel.Carrier.ENTERPRISE) ||
+          GlobalGameState.usDMCVCarrier === GlobalUnitsModel.Carrier.ENTERPRISE) &&
+        !this.isSunk(GlobalUnitsModel.Carrier.HORNET)
+      ) {
         return GlobalUnitsModel.Carrier.HORNET
       }
 
-      if (!this.isSunk(GlobalUnitsModel.Carrier.ENTERPRISE) && this.isSunk(GlobalUnitsModel.Carrier.HORNET)) {
+      if (
+        !this.isSunk(GlobalUnitsModel.Carrier.ENTERPRISE) &&
+        (this.isSunk(GlobalUnitsModel.Carrier.HORNET) ||
+          GlobalGameState.usDMCVCarrier === GlobalUnitsModel.Carrier.HORNET)
+      ) {
         return GlobalUnitsModel.Carrier.ENTERPRISE
       }
       return null
@@ -1059,6 +1061,7 @@ export default class Controller {
 
   autoAssignTargets() {
     let carrierAttackTarget = this.getTargetForAttack()
+    console.log("carrierAttackTarget=", carrierAttackTarget)
     if (carrierAttackTarget === null) {
       return null
     }
