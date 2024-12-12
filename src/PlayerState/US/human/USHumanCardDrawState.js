@@ -7,8 +7,6 @@ class USHumanCardDrawState {
   async doAction(stateObject) {}
 
   async nextState(stateObject) {
-    console.log("MOVE ON FROM CARDS!")
-    const { setCardNumber } = stateObject
 
     if (GlobalGameState.gameTurn != 1) {
       if (GlobalGameState.gameTurn === 2 || GlobalGameState.gameTurn === 4 || GlobalGameState.gameTurn === 6) {

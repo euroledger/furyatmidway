@@ -3,9 +3,7 @@ import USHumanAirSearchState from "./USHumanAirSearchState"
 import { calcAirOpsPoints } from "../../StateUtils"
 
 class USHumanCardPlayState {
-  async doAction(stateObject) {
-    const { setJapanStrikePanelEnabled, setUSMapRegions } = stateObject
-    
+  async doAction(stateObject) {    
   }
 
   async nextState(stateObject) {

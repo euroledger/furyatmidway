@@ -1,5 +1,5 @@
 import GlobalGameState from "../../../model/GlobalGameState"
-import USAISetupAirState from "./USSetupAirState"
+import USAISetupAirState from "./USAISetupAirState"
 
 function mapGameStateToUSAIHandlerState() {
   switch (GlobalGameState.gamePhase) {

@@ -106,6 +106,9 @@ async function loadHandler({
     GlobalGameState.temporaryGamePhase
   )
 
+  console.log(
+    "************************ JAPAN PLAYER TYPE=", GlobalGameState.jpPlayerType),
+
   GlobalGameState.gamePhase = GlobalGameState.temporaryGamePhase
 
   loadState()

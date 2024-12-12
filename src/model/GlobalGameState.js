@@ -237,8 +237,8 @@ export default class GlobalGameState {
     return this.US_CARRIERS[this.setupPhase - 6]
   }
 
-  static usPlayerType = GlobalUnitsModel.TYPE.HUMAN
-  static jpPlayerType = GlobalUnitsModel.TYPE.AI
+  static usPlayerType = -1
+  static jpPlayerType = -1
 
   static currentPlayer = GlobalUnitsModel.Side.JAPAN
 

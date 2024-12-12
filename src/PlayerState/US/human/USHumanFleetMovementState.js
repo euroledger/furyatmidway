@@ -1,6 +1,7 @@
 import GlobalGameState from "../../../model/GlobalGameState"
 import GlobalUnitsModel from "../../../model/GlobalUnitsModel"
 import { usFleetMovementHandler, usFleetMovementNextStateHandler } from "../../StateUtils"
+import USHumanAirSearchState from "./USHumanAirSearchState"
 import USHumanCardPlayState from "./USHumanCardPlayState"
 
 class USHumanFleetMovementState {
@@ -36,7 +37,8 @@ class USHumanFleetMovementState {
     if (GlobalGameState.gamePhase === GlobalGameState.PHASE.AIR_SEARCH) {
       setSearchValuesAlertShow(true)
       GlobalGameState.currentPlayer = GlobalUnitsModel.Side.US
-    } else {
+      return new USHumanAirSearchState()
+    } else if (GlobalGameState.gamePhase === GlobalGameState.PHASE.CARD_PLAY) {
       console.log("NOW GLOBAL GAME STATE game phase=", GlobalGameState.gamePhase)
       return new USHumanCardPlayState()
     }

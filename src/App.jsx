@@ -500,6 +500,7 @@ export function App() {
 
   useEffect(() => {
     if (GlobalGameState.gamePhase === GlobalGameState.PHASE.ATTACK_DAMAGE_RESOLUTION) {
+      setCarrierHits(-1)
       GlobalGameState.dieRolls = []
       setAttackResolutionPanelShow(false)
       setCarrierDamagePanelShow(true)
@@ -627,21 +628,37 @@ export function App() {
     }
   }, [GlobalGameState.gamePhase])
 
+  
+  useEffect(() => {
+    if (GlobalGameState.gamePhase === GlobalGameState.PHASE.US_CARD_DRAW) {
+      console.log("STATE US CARD DRAW woooooooooooooooooooof")
+      StateManager.gameStateManager.setUSState()
+      StateManager.gameStateManager.doAction(GlobalUnitsModel.Side.US)
+    }
+  }, [GlobalGameState.gamePhase])
+
+  useEffect(() => {
+    if (GlobalGameState.gamePhase === GlobalGameState.PHASE.JAPAN_SETUP) {
+      StateManager.gameStateManager.setJapanState()
+      GlobalGameState.updateGlobalState()
+    }
+  }, [GlobalGameState.gamePhase])
+
   useEffect(() => {
     if (GlobalGameState.gamePhase === GlobalGameState.PHASE.US_SETUP_FLEET) {
+      console.log("US SETUP FLEET ****************>>>>>>>>>>>>>>>>>>>>>>>")
       GlobalGameState.setupPhase = 5 
       GlobalGameState.updateGlobalState()
       GlobalGameState.currentPlayer = GlobalUnitsModel.Side.US
-      if (GlobalGameState.usPlayerType === GlobalUnitsModel.TYPE.HUMAN) {
-        setUSMapRegions(usCSFStartHexes)
-        setCSFAlertShow(true)
-      }
+      StateManager.gameStateManager.setUSState()
+      StateManager.gameStateManager.doAction(GlobalUnitsModel.Side.US)
     }
   }, [GlobalGameState.gamePhase])
 
   useEffect(() => {
     if (GlobalGameState.gamePhase === GlobalGameState.PHASE.US_SETUP_AIR) {
       StateManager.gameStateManager.setUSState()
+      StateManager.gameStateManager.doAction(GlobalUnitsModel.Side.US)
       GlobalGameState.updateGlobalState()
     }
   }, [GlobalGameState.gamePhase])
@@ -1721,9 +1738,10 @@ export function App() {
       setLoading,
     })
     setInitComplete(true)
+    StateManager.gameStateManager.setPlayerStates(GlobalGameState.jpPlayerType, GlobalGameState.usPlayerType)
   }
 
- 
+
   async function loady() {
     setSplash(false)
     setLoadPanelShow(true)
@@ -1731,7 +1749,13 @@ export function App() {
 
   function splashy() {
     setNewGame(true)
+    StateManager.gameStateManager.setPlayerStates(GlobalGameState.jpPlayerType, GlobalGameState.usPlayerType)
+    GlobalGameState.gamePhase = GlobalGameState.PHASE.JAPAN_SETUP
+    GlobalGameState.sideWithInitiative = GlobalUnitsModel.Side.JAPAN
     setSplash(false)
+    if (GlobalGameState.jpPlayerType === GlobalUnitsModel.TYPE.HUMAN) {
+      setInitComplete(true)
+    }
   }
   // window height
   const height = window.innerHeight
@@ -2144,6 +2168,7 @@ export function App() {
         totalHits={carrierHits}
         attackResolved={attackResolved}
         setAttackResolved={setAttackResolved}
+        setFleetUnitUpdate={setFleetUnitUpdate}
       ></AttackResolutionFooters>
     </>
   )
@@ -2240,7 +2265,7 @@ export function App() {
   // console.log("GlobalUnitsModel.usStrikeGroups=", GlobalUnitsModel.usStrikeGroups)
   function doInitiativeRoll(roll0, roll1) {
     // for testing QUACK
-    // doIntiativeRoll(GlobalInit.controller, 6, 1, true) // JAPAN initiative
+    doIntiativeRoll(GlobalInit.controller, 6, 1, true) // JAPAN initiative
     // doIntiativeRoll(GlobalInit.controller, 1, 6, true) // US initiative
 
     // doIntiativeRoll(GlobalInit.controller, 3, 3, true) // tie
@@ -2414,11 +2439,12 @@ export function App() {
       GlobalGameState.carrierAttackHits !== 1 ||
       (GlobalGameState.carrierAttackHits === 0 && damageDone)
   }
+  let damagedCarriers = GlobalInit.controller.getDamagedCarriersOneOrTwoHits(GlobalUnitsModel.Side.US)
   let damageControlButtonDisabled =
     (damagedCV === "" && GlobalGameState.dieRolls.length === 0) || GlobalGameState.dieRolls.length > 0
 
   if (damageControlSide === GlobalUnitsModel.Side.US) {
-    damageControlButtonDisabled = damagedCV !== ""
+    damageControlButtonDisabled = damagedCV !== "" || damagedCarriers.length === 0
   }
 
   const totalHits = GlobalGameState.midwayHits + GlobalGameState.totalMidwayHits

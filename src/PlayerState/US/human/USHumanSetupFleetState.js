@@ -1,26 +1,13 @@
 import GlobalGameState from "../../../model/GlobalGameState"
-import GlobalInit from "../../../model/GlobalInit"
-import { delay } from "../../../Utils"
 import USHumanSetupAirState from "./USHumanSetupAirState"
+import { usCSFStartHexes } from "../../../components/MapRegions"
 
 class USHumanSetupFleetState {
   async doAction(stateObject) {
-    // const { setTestUpdate } = stateObject
-    // let update
-    // for (const unit of airUnitDataJapan) {
-    //   update = calcRandomJapanTestData(unit, GlobalInit.controller)
-    //   if (!update) {
-    //     continue
-    //   }
-    //   update.index = GlobalInit.controller.getFirstAvailableZone(update.boxName)
-    //   let position1 = JapanAirBoxOffsets.find((box) => box.name === update.boxName)
-    //   update.position = position1.offsets[update.index]
-    //   setTestUpdate(update)
-    //   await delay(GlobalGameState.DELAY)
-    //   if (update.nextAction) {
-    //     this.nextState()
-    //   }
-    // }
+    const { setUSMapRegions, setCSFAlertShow } = stateObject
+
+    setUSMapRegions(usCSFStartHexes)
+    setCSFAlertShow(true)
   }
 
   nextState(stateObject) {

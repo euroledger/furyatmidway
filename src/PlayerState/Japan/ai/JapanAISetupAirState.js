@@ -1,7 +1,7 @@
 import GlobalGameState from "../../../model/GlobalGameState"
-import { airUnitDataJapan } from "../../../AirUnitTestData"
+import { airUnitDataJapan } from "../../../AirUnitData"
 import GlobalInit from "../../../model/GlobalInit"
-import { calcRandomJapanTestData } from "../../../AirUnitTestData"
+import { calcRandomJapanTestData } from "../../../AirUnitData"
 import JapanAirBoxOffsets from "../../../components/draganddrop/JapanAirBoxOffsets"
 import { delay } from "../../../Utils"
 

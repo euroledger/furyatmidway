@@ -7,10 +7,10 @@ import {
   calcTestDataUS,
   createFleetUpdate,
   calcStrikeDataUS,
-} from "../AirUnitTestData"
+} from "../AirUnitData"
 import JapanAirBoxOffsets from "../components/draganddrop/JapanAirBoxOffsets"
 import USAirBoxOffsets from "../components/draganddrop/USAirBoxOffsets"
-import { airUnitDataJapan, airUnitDataUS, airUnitsToStrikeGroupsUS, createStrikeGroupUpdate } from "../AirUnitTestData"
+import { airUnitDataJapan, airUnitDataUS, airUnitsToStrikeGroupsUS, createStrikeGroupUpdate } from "../AirUnitData"
 import GlobalUnitsModel from "../model/GlobalUnitsModel"
 import {
   getValidJapanDestinationsCAP,

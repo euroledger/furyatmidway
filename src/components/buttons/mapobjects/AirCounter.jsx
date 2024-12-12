@@ -140,6 +140,7 @@ function AirCounter({ getAirBox, setAirBox, counterData, side }) {
       }
     }
 
+
     if (location.boxName.includes("ELIMINATED")) {
       return
     }
@@ -183,12 +184,14 @@ function AirCounter({ getAirBox, setAirBox, counterData, side }) {
     // of all airstrikes to return to carrier)
 
     if (
-      GlobalGameState.sideWithInitiative !== undefined &&
+      GlobalGameState.gamePhase === GlobalGameState.PHASE.JAPAN_SETUP || 
+     (GlobalGameState.sideWithInitiative !== undefined &&
       GlobalGameState.sideWithInitiative !== counterData.side &&
-      !location.boxName.includes("CAP RETURNING")
+      !location.boxName.includes("CAP RETURNING"))
     ) {
       return
     }
+
     if (
       counterData.aircraftUnit.moved ||
       GlobalGameState.gamePhase === GlobalGameState.PHASE.JAPAN_SETUP ||
@@ -226,14 +229,6 @@ function AirCounter({ getAirBox, setAirBox, counterData, side }) {
     }))
 
     if (
-      //  GlobalGameState.gamePhase === GlobalGameState.PHASE.AIR_OPERATIONS ||
-      //  GlobalGameState.gamePhase === GlobalGameState.PHASE.MIDWAY_ATTACK ||
-      //  GlobalGameState.gamePhase === GlobalGameState.PHASE.AAA_DAMAGE_ALLOCATION ||
-      //  GlobalGameState.gamePhase === GlobalGameState.PHASE.ANTI_AIRCRAFT_FIRE ||
-      //  GlobalGameState.gamePhase === GlobalGameState.PHASE.ESCORT_COUNTERATTACK ||
-      //  GlobalGameState.gamePhase === GlobalGameState.PHASE.ESCORT_DAMAGE_ALLOCATION ||
-      //  GlobalGameState.gamePhase === GlobalGameState.PHASE.ATTACK_TARGET_SELECTION ||
-      //  GlobalGameState.gamePhase === GlobalGameState.PHASE.AIR_SEARCH ||
       GlobalGameState.gamePhase !== GlobalGameState.PHASE.JAPAN_SETUP &&
       GlobalGameState.gamePhase !== GlobalGameState.PHASE.US_SETUP_AIR
     ) {
@@ -281,7 +276,7 @@ function AirCounter({ getAirBox, setAirBox, counterData, side }) {
     position.left !== airUnitUpdate.position.left + "%" &&
     position.top !== airUnitUpdate.position.top + "%"
   if (doUpdatePoo) {
-    console.log("quack I am ", counterData.name, " -> HUMAN SHIT AIR UNIT UPDATE = ", testUpdate)
+    // console.log("I am ", counterData.name, " -> HUMAN AIR UNIT UPDATE = ", testUpdate)
 
     doUpdate(airUnitUpdate)
   } else {
@@ -295,7 +290,7 @@ function AirCounter({ getAirBox, setAirBox, counterData, side }) {
     position.left !== testUpdate.position.left + "%" &&
     position.top !== testUpdate.position.top + "%"
   ) {
-    console.log("I am ", counterData.name, " -> AIR UNIT (TEST/AI) UPDATE = ", testUpdate)
+    // console.log("I am ", counterData.name, " -> AIR UNIT (TEST/AI) UPDATE = ", testUpdate)
 
     doUpdate(testUpdate)
   }

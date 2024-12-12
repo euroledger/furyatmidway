@@ -10,13 +10,16 @@ import mapGameStateToJapanHumanHandlerState from "./Japan/human/JapanHumanStateF
 import mapGameStateToJapanAIHandlerState from "./Japan/ai/JapanAIStateFactory"
 
 class GameStateManager {
-  constructor(japanPlayerType, usPlayerType) {
+
+  setPlayerStates(japanPlayerType, usPlayerType) {
+    console.log("SET US PLAYER TYPE TO", usPlayerType)
     this.japanPlayerType = japanPlayerType
     this.usPlayerType = usPlayerType
   }
 
   setJapanState() {
     let state
+    console.log("MAP game state:", GlobalGameState.gamePhase)
     if (this.japanPlayerType === GlobalUnitsModel.TYPE.AI) {
         state = mapGameStateToJapanAIHandlerState()
     } else {
@@ -30,6 +33,7 @@ class GameStateManager {
 
   setUSState() {
     let state
+    console.log("this.usPlayerType=", this.usPlayerType)
     if (this.usPlayerType === GlobalUnitsModel.TYPE.AI) {
         state = mapGameStateToUSAIHandlerState()
     } else {
@@ -71,6 +75,7 @@ class GameStateManager {
   async doAction(side) {
     if (side === GlobalUnitsModel.Side.JAPAN) {
       console.trace()
+      console.log("++++ doAction firing +++")
       await this.japanStateHandler.doAction(this.stateObject)
     } else {
       await this.usStateHandler.doAction(this.stateObject)

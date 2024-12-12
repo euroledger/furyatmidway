@@ -1,9 +1,12 @@
 import GlobalGameState from "../../../model/GlobalGameState"
 import GlobalInit from "../../../model/GlobalInit"
 import USHumanCardDrawState from "./USHumanCardDrawState"
+import { usCSFStartHexes } from "../../../components/MapRegions"
 
 class USHumanSetupAirState {
-  async doAction(stateObject) {}
+  async doAction(stateObject) {
+   
+  }
 
   nextState(stateObject) {
     GlobalGameState.currentCarrier++

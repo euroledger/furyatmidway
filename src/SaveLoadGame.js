@@ -17,6 +17,7 @@ export function saveGameState(controller, gameId) {
       globalState.set(key, val)
     }
   }
+
   let airState = new Map()
   const units = Array.from(GlobalInit.counters.values())
   const airCounters = units.filter((unit) => unit.constructor.name === "AirUnit")

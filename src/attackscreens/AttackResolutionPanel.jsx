@@ -2,15 +2,12 @@ import { React } from "react"
 import "./cap.css"
 import GlobalGameState from "../model/GlobalGameState"
 import GlobalUnitsModel from "../model/GlobalUnitsModel"
-import { SingleCarrier } from "./SingleCarrier"
+import { removeMIFFleet } from "../GameStateHandler"
 
-export function AttackResolutionHeaders() {
-  
-}
+export function AttackResolutionHeaders() {}
 
-export function AttackResolutionFooters({ totalHits, attackResolved, setAttackResolved }) {
+export function AttackResolutionFooters({ totalHits, attackResolved, setAttackResolved, setFleetUnitUpdate }) {
   // const show = GlobalGameState.dieRolls.length > 0
-
 
   const show = true
   const hits = totalHits === -1 ? "" : totalHits
@@ -19,17 +16,37 @@ export function AttackResolutionFooters({ totalHits, attackResolved, setAttackRe
   let isMIFtheTarget = GlobalGameState.currentCarrierAttackTarget === GlobalUnitsModel.TaskForce.MIF
 
   let mifMsg = ""
+  let milStr = ""
   if (isMIFtheTarget && !attackResolved && GlobalGameState.dieRolls.length > 0) {
     setAttackResolved(true)
-    GlobalGameState.midwayInvasionLevel-= totalHits === -1 ? 0 : totalHits
+    GlobalGameState.midwayInvasionLevel -= totalHits === -1 ? 0 : totalHits
+
+    if (GlobalGameState.midwayInvasionLevel < 0) {
+      GlobalGameState.midwayInvasionLevel = 0
+    }
+    console.log("DEBUG CHECK MIF FOR SUNK")
+    if (GlobalGameState.midwayInvasionLevel === 0) {
+      console.log("DEBUG SUNK REMOVE MIF FLEET")
+      removeMIFFleet(setFleetUnitUpdate)
+    }
+
   }
-  if (isMIFtheTarget) {
+  if (isMIFtheTarget && GlobalGameState.dieRolls.length > 0) {
+    milStr = "" + GlobalGameState.midwayInvasionLevel
+
     if (totalHits > 0) {
       mifMsg = "Midway Invasion Force reduced to"
     } else {
       mifMsg = "Midway Invasion Force remains at"
     }
   }
+  // if (isMIFtheTarget && !attackResolved) {
+  //   if (totalHits > 0) {
+  //     mifMsg = "Midway Invasion Force reduced to"
+  //   } else {
+  //     mifMsg = "Midway Invasion Force remains at"
+  //   }
+  // }
 
   return (
     <>
@@ -70,7 +87,7 @@ export function AttackResolutionFooters({ totalHits, attackResolved, setAttackRe
                 </p>
               </div>
             )}
-             {isMIFtheTarget && (
+            {isMIFtheTarget && (
               <div
                 style={{
                   color: "white",
@@ -80,7 +97,7 @@ export function AttackResolutionFooters({ totalHits, attackResolved, setAttackRe
                 }}
               >
                 <p>
-                  {mifMsg} &nbsp;<strong>{GlobalGameState.midwayInvasionLevel}</strong>&nbsp;
+                  {mifMsg} &nbsp;<strong>{milStr}</strong>&nbsp;
                 </p>
               </div>
             )}

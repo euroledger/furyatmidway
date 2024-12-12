@@ -2,7 +2,7 @@ import GlobalGameState from "../model/GlobalGameState"
 import GlobalInit from "../model/GlobalInit"
 import GlobalUnitsModel from "../model/GlobalUnitsModel"
 import { allHexesWithinDistance, removeHexFromRegion } from "../components/HexUtils"
-import { createMapUpdateForFleet } from "../AirUnitTestData"
+import { createMapUpdateForFleet } from "../AirUnitData"
 import { calculateSearchResults, calculateSearchValues } from "../model/SearchValues"
 import { delay } from "../Utils"
 export const DELAY_MS = 1

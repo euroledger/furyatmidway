@@ -580,6 +580,9 @@ function FleetCounter({
     }
   }
 
+  // if (counterData.name.includes("CSF")) {
+  //   console.log("FLEET:", counterData.name, "enabled=", enabled)
+  // }
   return (
     <div>
       {enabled && (

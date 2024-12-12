@@ -1,7 +1,7 @@
 import GlobalGameState from "../../../model/GlobalGameState"
 import { delay } from "../../../DiceHandler"
 import { DELAY_MS, goToMidwayAttackOrUSFleetMovement } from "../../StateUtils"
-import { createFleetUpdate } from "../../../AirUnitTestData"
+import { createFleetUpdate } from "../../../AirUnitData"
 import { moveJapan1AFFleet } from "../../../UIEvents/AI/JapanFleetMovementBot"
 
 class JapanAIFleetMovementState {

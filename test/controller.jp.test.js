@@ -1,8 +1,6 @@
 import Controller from "../src/controller/Controller"
 import GlobalUnitsModel from "../src/model/GlobalUnitsModel"
 import loadCounters from "../src/CounterLoader"
-import calcRandomTestData from "../src/AirUnitTestData"
-import { airUnitData } from "../src/AirUnitTestData"
 
 describe("Controller tests", () => {
   let controller

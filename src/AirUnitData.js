@@ -77,6 +77,244 @@ export const airUnitDataJapan = [
   },
 ]
 
+const US_TF16_CAP = 0
+const US_ENTERPRISE_FLIGHT_DECK = 1
+const US_ENTERPRISE_HANGAR = 2
+const US_HORNET_FLIGHT_DECK = 3
+const US_HORNET_HANGAR = 4
+const US_TF17_CAP = 5
+const US_YORKTOWN_FLIGHT_DECK = 6
+const US_YORKTOWN_HANGAR = 7
+
+export const carrierBoxArray = [
+  GlobalUnitsModel.AirBox.US_TF16_CAP,
+  GlobalUnitsModel.AirBox.US_ENTERPRISE_FLIGHT_DECK,
+  GlobalUnitsModel.AirBox.US_ENTERPRISE_HANGAR,
+  GlobalUnitsModel.AirBox.US_HORNET_FLIGHT_DECK,
+  GlobalUnitsModel.AirBox.US_HORNET_HANGAR,
+  GlobalUnitsModel.AirBox.US_TF17_CAP,
+  GlobalUnitsModel.AirBox.US_YORKTOWN_FLIGHT_DECK,
+  GlobalUnitsModel.AirBox.US_YORKTOWN_HANGAR,
+]
+
+function getRandomElementFrom(items) {
+  var item = items[Math.floor(Math.random() * items.length)]
+
+  return item
+}
+
+const enterpriseBoxes = [US_TF16_CAP, US_ENTERPRISE_FLIGHT_DECK, US_ENTERPRISE_HANGAR]
+const hornetBoxes = [US_TF16_CAP, US_HORNET_FLIGHT_DECK, US_HORNET_HANGAR]
+const yorktownBoxes = [US_TF17_CAP, US_YORKTOWN_FLIGHT_DECK, US_YORKTOWN_HANGAR]
+
+let enterpriseFlightDeckSlotsLeft = 2
+let hornetFlightDeckSlotsLeft = 2
+let yorktownFlightDeckSlotsLeft = 2
+
+export function generateRandomUSAirSetup() {
+  // Enterprise Fighters
+  const ef1 = getRandomElementFrom(enterpriseBoxes)
+  if (ef1 === US_ENTERPRISE_FLIGHT_DECK) {
+    enterpriseFlightDeckSlotsLeft--
+  }
+  // console.log(
+  //   "ENTERPRISE FIGHTER 1 GOES TO",
+  //   carrierBoxArray[ef1],
+  //   " => FLIGHT DECK SLOTS LEFT=",
+  //   enterpriseFlightDeckSlotsLeft
+  // )
+
+  let ef2
+  if (ef1 === US_ENTERPRISE_FLIGHT_DECK) {
+    ef2 = getRandomElementFrom([US_TF16_CAP, US_ENTERPRISE_HANGAR]) // avoid both fighters on flight deck at start - bonkers
+  } else {
+    ef2 = getRandomElementFrom([US_TF16_CAP, US_ENTERPRISE_FLIGHT_DECK])
+  }
+  if (ef2 === US_ENTERPRISE_FLIGHT_DECK) {
+    enterpriseFlightDeckSlotsLeft--
+  }
+  // console.log(
+  //   "ENTERPRISE FIGHTER 2 GOES TO",
+  //   carrierBoxArray[ef2],
+  //   " => FLIGHT DECK SLOTS LEFT=",
+  //   enterpriseFlightDeckSlotsLeft
+  // )
+
+  // Enterprise DiveBombers
+  let ed1
+  if (enterpriseFlightDeckSlotsLeft === 0) {
+    ed1 = US_ENTERPRISE_HANGAR
+  } else {
+    ed1 = getRandomElementFrom([US_ENTERPRISE_FLIGHT_DECK, US_ENTERPRISE_HANGAR])
+    if (ed1 === US_ENTERPRISE_FLIGHT_DECK) {
+      enterpriseFlightDeckSlotsLeft--
+    }
+  }
+  // console.log(
+  //   "ENTERPRISE DB 1 GOES TO",
+  //   carrierBoxArray[ed1],
+  //   " => FLIGHT DECK SLOTS LEFT=",
+  //   enterpriseFlightDeckSlotsLeft
+  // )
+  let ed2
+  if (enterpriseFlightDeckSlotsLeft === 0) {
+    ed2 = US_ENTERPRISE_HANGAR
+  } else {
+    ed2 = getRandomElementFrom([US_ENTERPRISE_FLIGHT_DECK, US_ENTERPRISE_HANGAR])
+    if (ed2 === US_ENTERPRISE_FLIGHT_DECK) {
+      enterpriseFlightDeckSlotsLeft--
+    }
+  }
+  // console.log(
+  //   "ENTERPRISE DB 2 GOES TO",
+  //   carrierBoxArray[ed2],
+  //   " => FLIGHT DECK SLOTS LEFT=",
+  //   enterpriseFlightDeckSlotsLeft
+  // )
+
+  // Enterprise TorpedoPlanes
+  let et1
+  if (enterpriseFlightDeckSlotsLeft === 0) {
+    et1 = US_ENTERPRISE_HANGAR
+  } else {
+    et1 = US_ENTERPRISE_FLIGHT_DECK
+  }
+
+  // console.log("ENTERPRISE TB GOES TO", carrierBoxArray[et1])
+
+  // Hornet Fighters
+  const hf1 = getRandomElementFrom([US_TF16_CAP, US_HORNET_FLIGHT_DECK])
+  if (hf1 === US_HORNET_FLIGHT_DECK) {
+    hornetFlightDeckSlotsLeft--
+  }
+
+  // console.log(
+  //   "HORNET FIGHTER 1 GOES TO",
+  //   carrierBoxArray[hf1],
+  //   " => FLIGHT DECK SLOTS LEFT=",
+  //   hornetFlightDeckSlotsLeft
+  // )
+  let hf2
+  if (hf1 === US_HORNET_FLIGHT_DECK) {
+    hf2 = getRandomElementFrom([US_TF16_CAP, US_HORNET_HANGAR]) // avoid both fighters on flight deck at start - bonkers
+  } else {
+    hf2 = getRandomElementFrom([US_TF16_CAP, US_HORNET_FLIGHT_DECK])
+  }
+  if (hf2 === US_HORNET_FLIGHT_DECK) {
+    hornetFlightDeckSlotsLeft--
+  }
+  // console.log(
+  //   "HORNET FIGHTER 2 GOES TO",
+  //   carrierBoxArray[hf2],
+  //   " => FLIGHT DECK SLOTS LEFT=",
+  //   hornetFlightDeckSlotsLeft
+  // )
+
+  // Hornet DiveBombers
+  let hd1
+  if (hornetFlightDeckSlotsLeft === 0) {
+    hd1 = US_HORNET_HANGAR
+  } else {
+    hd1 = getRandomElementFrom([US_HORNET_FLIGHT_DECK, US_HORNET_HANGAR])
+    if (hd1 === US_HORNET_FLIGHT_DECK) {
+      hornetFlightDeckSlotsLeft--
+    }
+  }
+  // console.log("HORNET DB 1 GOES TO", carrierBoxArray[hd1], " => FLIGHT DECK SLOTS LEFT=", hornetFlightDeckSlotsLeft)
+  let hd2
+  if (hornetFlightDeckSlotsLeft === 0) {
+    hd2 = US_HORNET_HANGAR
+  } else {
+    hd2 = getRandomElementFrom([US_HORNET_FLIGHT_DECK, US_HORNET_HANGAR])
+    if (hd2 === US_HORNET_FLIGHT_DECK) {
+      hornetFlightDeckSlotsLeft--
+    }
+  }
+  // console.log("HORNET DB 2 GOES TO", carrierBoxArray[hd2], " => FLIGHT DECK SLOTS LEFT=", hornetFlightDeckSlotsLeft)
+  // Hornet TorpedoPlanes
+  let ht1
+  if (hornetFlightDeckSlotsLeft === 0) {
+    ht1 = US_HORNET_HANGAR
+  } else {
+    ht1 = US_HORNET_FLIGHT_DECK
+  }
+
+  // console.log("HORNET TB GOES TO", carrierBoxArray[ht1])
+  // Yorktown Fighters
+  const yf1 = getRandomElementFrom([US_TF17_CAP, US_YORKTOWN_FLIGHT_DECK])
+  if (yf1 === US_YORKTOWN_FLIGHT_DECK) {
+    yorktownFlightDeckSlotsLeft--
+  }
+  // console.log(
+  //   "YORKTOWN FIGHTER 1 GOES TO",
+  //   carrierBoxArray[yf1],
+  //   " => FLIGHT DECK SLOTS LEFT=",
+  //   yorktownFlightDeckSlotsLeft
+  // )
+  let yf2
+  if (yf1 === US_YORKTOWN_FLIGHT_DECK) {
+    yf2 = getRandomElementFrom([US_TF17_CAP, US_YORKTOWN_HANGAR]) // avoid both fighters on flight deck at start - bonkers
+  } else {
+    yf2 = getRandomElementFrom([US_TF17_CAP, US_YORKTOWN_FLIGHT_DECK])
+  }
+  if (yf2 === US_YORKTOWN_FLIGHT_DECK) {
+    yorktownFlightDeckSlotsLeft--
+  }
+  // console.log(
+  //   "YORKTOWN FIGHTER 2 GOES TO",
+  //   carrierBoxArray[yf2],
+  //   " => FLIGHT DECK SLOTS LEFT=",
+  //   yorktownFlightDeckSlotsLeft
+  // )
+
+  // Yorktown DiveBombers
+  let yd1
+  if (yorktownFlightDeckSlotsLeft === 0) {
+    yd1 = US_YORKTOWN_HANGAR
+  } else {
+    yd1 = getRandomElementFrom([US_YORKTOWN_FLIGHT_DECK, US_YORKTOWN_HANGAR])
+    if (yd1 === US_YORKTOWN_FLIGHT_DECK) {
+      yorktownFlightDeckSlotsLeft--
+    }
+  }
+  // console.log("YORKTOWN DB 1 GOES TO", carrierBoxArray[yd1], " => FLIGHT DECK SLOTS LEFT=", yorktownFlightDeckSlotsLeft)
+  let yd2
+  if (yorktownFlightDeckSlotsLeft === 0) {
+    yd2 = US_YORKTOWN_HANGAR
+  } else {
+    yd2 = getRandomElementFrom([US_YORKTOWN_FLIGHT_DECK, US_YORKTOWN_HANGAR])
+    if (yd2 === US_YORKTOWN_FLIGHT_DECK) {
+      yorktownFlightDeckSlotsLeft--
+    }
+  }
+
+  // console.log("YORKTOWN DB 2 GOES TO", carrierBoxArray[yd2], " => FLIGHT DECK SLOTS LEFT=", yorktownFlightDeckSlotsLeft)
+
+  // Yorktown TorpedoPlanes
+  let yt1
+  if (yorktownFlightDeckSlotsLeft === 0) {
+    yt1 = US_YORKTOWN_HANGAR
+  } else {
+    yt1 = US_YORKTOWN_FLIGHT_DECK
+  }
+  // console.log("YORKTOWN TB GOES TO", carrierBoxArray[yt1])
+  return [
+    [ef1, ef2, ed1, ed2, et1],
+    [hf1, hf2, hd1, hd2, ht1],
+    [yf1, yf2, yd1, yd2, yt1],
+  ]
+
+  // return [ef1, ef2, ed1, ed2, et1, hf1, hf2, hd1, hd2, ht1]
+}
+const strategy1 = [0, 1, 1, 2, 2, 0, 3, 3, 4, 4, 5, 5, 6, 7, 6] // standard fighter-DB strike groups
+const strategy2 = [0, 0, 1, 2, 1, 0, 0, 3, 4, 3, 5, 6, 6, 7, 7] // defensive all fighters in CAP
+const strategy3 = [0, 1, 1, 2, 2, 0, 0, 3, 4, 3, 5, 6, 6, 7, 7] // mixture of above two
+// const strategy4 = generateRandomUSAirSetup()
+
+export const USAirStrategies = []
+
+export const tf17carrierBoxArray = []
+
 export const airUnitDataUS = [
   {
     name: "Enterprise-F4F4-1",
@@ -256,15 +494,15 @@ export function createRemoveFleetUpdate(side) {
   const index = GlobalInit.controller.getNextAvailableFleetBox(side)
   const location = {
     boxName: HexCommand.FLEET_BOX,
-    boxIndex: index
+    boxIndex: index,
   }
-  const update =  {
+  const update = {
     name,
     position: {
       currentHex: location,
     },
     loading: false,
-    side
+    side,
   }
   return update
 }
@@ -294,12 +532,12 @@ export function createMapUpdateForFleet(controller, name, side) {
   }
   if (location.boxName == HexCommand.FLEET_BOX) {
     return {
-      name:otherName,
+      name: otherName,
       position: {
         currentHex: location,
       },
       loading: false,
-      side
+      side,
     }
   }
   return createFleetUpdate(otherName, location.currentHex.q, location.currentHex.r)
@@ -341,8 +579,8 @@ export function createStrikeGroupUpdate(name, q, r) {
   return convertHex(name, q, r)
 }
 
-export function getFleetUnitUpdateUS(name) {
-  return createFleetUpdate(name, 6, 1)
+export function getFleetUnitUpdateUS(name, q, r) {
+  return createFleetUpdate(name, q, r)
 }
 
 export function calcRandomJapanTestData(unit, controller) {
