@@ -1,6 +1,7 @@
 import GlobalUnitsModel from "../../model/GlobalUnitsModel"
 import GlobalGameState from "../../model/GlobalGameState"
 import { generateRandomUSAirSetup } from "../../AirUnitData"
+import { getRandomElementFrom } from "../../AirUnitData"
 
 export function selectUSDefendingCAPUnits(controller, stateObject) {
   const { setCapAirUnits, setFightersPresent, setCapSteps } = stateObject
@@ -48,41 +49,64 @@ export function selectUSDefendingCAPUnits(controller, stateObject) {
   return { steps, selectedCapUnits, fighters }
 }
 
-export const strategy1 = [
+export const AIR_STRATEGIES = new Array()
+
+AIR_STRATEGIES.push([
   [0, 1, 1, 2, 2],
   [0, 3, 3, 4, 4],
   [5, 5, 6, 7, 6],
-] // standard fighter-DB strike groups
+]) // standard aggressive fighter-DB strike groups
 
-export const strategy2 = [
+AIR_STRATEGIES.push([
   [0, 0, 1, 2, 1],
   [0, 0, 3, 4, 3],
   [5, 6, 6, 7, 7],
-] // defensive all fighters in CAP
+]) // standard defensive all fighters in CAP
 
-export const strategy3 = [
+AIR_STRATEGIES.push([
   [0, 1, 1, 2, 2],
   [0, 0, 3, 4, 3],
   [5, 6, 6, 7, 7],
-] // mixture of above two
+]) // mixture of above two
 
-export const strategy4 = [
+AIR_STRATEGIES.push([
   [0, 0, 2, 2, 2],
   [0, 0, 4, 4, 4],
   [5, 5, 7, 7, 7],
-] // ultra defensive all fighters in CAP, all attack aircraft in hangars
+]) // ultra defensive all fighters in CAP, all attack aircraft in hangars
 
-export const strategy5 = [
+AIR_STRATEGIES.push([
   [1, 2, 1, 2, 2],
   [3, 4, 3, 4, 4],
   [6, 7, 6, 7, 7],
-] // ultra aggressive no fighters in CAP, all attack aircraft either on fligth deck or hangar
+]) // ultra aggressive no fighters in CAP, all attack aircraft either on fligth deck or hangar
 
-const strategy6 = generateRandomUSAirSetup()
+const randomStrategy = generateRandomUSAirSetup()
+
+// Q-Learning. Greedy Evaluation.
+// Set epsilon to initial 0.5, choose randomly policy pi = p(1-epsilon) as either a a) strategy 1-5 or b) random setup.
+// As exploration reveals rewards for each policy, add new policies and lower epsilon
+
+
 // pick one of the Air strategies, return 2d array of starting air boxes
-const airStrategy = strategy6 //  @TODO randomize
+
+const EPSILON = 0.5
+const r = Math.random()
+let presetStrategy = getRandomElementFrom(AIR_STRATEGIES)
+
 
 export function getAirSetupBoxes(carrier) {
+
+  // if r < epsilon choose random setup
+  // else choose one of the pre-set strategies
+
+  let airStrategy
+  if (r < EPSILON) {
+    airStrategy = randomStrategy
+  } else {
+    airStrategy = presetStrategy
+  }
+
   switch (carrier) {
     case GlobalUnitsModel.Carrier.ENTERPRISE:
       return airStrategy[0]

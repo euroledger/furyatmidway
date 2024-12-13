@@ -39,7 +39,6 @@ class GameStateManager {
     } else {
         state = mapGameStateToUSHumanHandlerState()
     }
-    console.trace()
     console.log("+++++ NEW US STATE OBJECT->", state)
     if (state) {
       this.usStateHandler.setState(state)
@@ -75,7 +74,6 @@ class GameStateManager {
 
   async doAction(side) {
     if (side === GlobalUnitsModel.Side.JAPAN) {
-      console.trace()
       console.log("++++ doAction firing +++")
       await this.japanStateHandler.doAction(this.stateObject)
     } else {

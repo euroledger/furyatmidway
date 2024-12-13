@@ -47,6 +47,7 @@ class USAISetupAirState {
         await this.nextState()
         i = 0
       }
+      await delay(GlobalGameState.DELAY)
     }
   }
 

@@ -97,11 +97,13 @@ export const carrierBoxArray = [
   GlobalUnitsModel.AirBox.US_YORKTOWN_HANGAR,
 ]
 
-function getRandomElementFrom(items) {
+export function getRandomElementFrom(items) {
   var item = items[Math.floor(Math.random() * items.length)]
 
   return item
 }
+
+
 
 let enterpriseFlightDeckSlotsLeft = 2
 let hornetFlightDeckSlotsLeft = 2
