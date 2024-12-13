@@ -1,7 +1,8 @@
 import GlobalUnitsModel from "../../model/GlobalUnitsModel"
 import GlobalGameState from "../../model/GlobalGameState"
+import { generateRandomUSAirSetup } from "../../AirUnitData"
 
-export function selectUSDefendingCAPUnits(controller, stateObject ) {
+export function selectUSDefendingCAPUnits(controller, stateObject) {
   const { setCapAirUnits, setFightersPresent, setCapSteps } = stateObject
 
   const sideBeingAttacked =
@@ -45,4 +46,49 @@ export function selectUSDefendingCAPUnits(controller, stateObject ) {
   // console.log("CAP Selection - number of Steps =", steps)
   // console.log("CAP Selection - fighters present =", fighters)
   return { steps, selectedCapUnits, fighters }
+}
+
+export const strategy1 = [
+  [0, 1, 1, 2, 2],
+  [0, 3, 3, 4, 4],
+  [5, 5, 6, 7, 6],
+] // standard fighter-DB strike groups
+
+export const strategy2 = [
+  [0, 0, 1, 2, 1],
+  [0, 0, 3, 4, 3],
+  [5, 6, 6, 7, 7],
+] // defensive all fighters in CAP
+
+export const strategy3 = [
+  [0, 1, 1, 2, 2],
+  [0, 0, 3, 4, 3],
+  [5, 6, 6, 7, 7],
+] // mixture of above two
+
+export const strategy4 = [
+  [0, 0, 2, 2, 2],
+  [0, 0, 4, 4, 4],
+  [5, 5, 7, 7, 7],
+] // ultra defensive all fighters in CAP, all attack aircraft in hangars
+
+export const strategy5 = [
+  [1, 2, 1, 2, 2],
+  [3, 4, 3, 4, 4],
+  [6, 7, 6, 7, 7],
+] // ultra aggressive no fighters in CAP, all attack aircraft either on fligth deck or hangar
+
+const strategy6 = generateRandomUSAirSetup()
+// pick one of the Air strategies, return 2d array of starting air boxes
+const airStrategy = strategy6 //  @TODO randomize
+
+export function getAirSetupBoxes(carrier) {
+  switch (carrier) {
+    case GlobalUnitsModel.Carrier.ENTERPRISE:
+      return airStrategy[0]
+    case GlobalUnitsModel.Carrier.HORNET:
+      return airStrategy[1]
+    case GlobalUnitsModel.Carrier.YORKTOWN:
+      return airStrategy[2]
+  }
 }

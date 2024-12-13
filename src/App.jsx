@@ -178,6 +178,7 @@ export function App() {
   const [searchValues, setSearchValues] = useState({})
   const [searchResults, setSearchResults] = useState({})
 
+  const [clickedOnSomething, setClickedOnSomething] = useState(false)
   const [alertShow, setAlertShow] = useState(false) // TO DO param should be an object with boolean and alert text
   const [jpHandShow, setjpHandShow] = useState(false)
   const [usHandShow, setusHandShow] = useState(false)
@@ -631,7 +632,6 @@ export function App() {
   
   useEffect(() => {
     if (GlobalGameState.gamePhase === GlobalGameState.PHASE.US_CARD_DRAW) {
-      console.log("STATE US CARD DRAW woooooooooooooooooooof")
       StateManager.gameStateManager.setUSState()
       StateManager.gameStateManager.doAction(GlobalUnitsModel.Side.US)
     }
@@ -639,6 +639,7 @@ export function App() {
 
   useEffect(() => {
     if (GlobalGameState.gamePhase === GlobalGameState.PHASE.JAPAN_SETUP) {
+      console.log("JAPAN SETUP")
       StateManager.gameStateManager.setJapanState()
       GlobalGameState.updateGlobalState()
     }
@@ -646,7 +647,6 @@ export function App() {
 
   useEffect(() => {
     if (GlobalGameState.gamePhase === GlobalGameState.PHASE.US_SETUP_FLEET) {
-      console.log("US SETUP FLEET ****************>>>>>>>>>>>>>>>>>>>>>>>")
       GlobalGameState.setupPhase = 5 
       GlobalGameState.updateGlobalState()
       GlobalGameState.currentPlayer = GlobalUnitsModel.Side.US
@@ -2053,6 +2053,7 @@ export function App() {
         setShowCarrierDisplay={setShowCarrierDisplay}
         airReplacementsSelected={airReplacementsSelected}
         setAirReplacementsSelected={setAirReplacementsSelected}
+        setClickedOnSomething={setClickedOnSomething}
         setSelectedAirUnit={setSelectedAirUnit}
       ></AirReplacementsHeaders>
     </>
@@ -2062,6 +2063,7 @@ export function App() {
     <>
       <AirReplacementsFooters
         controller={GlobalInit.controller}
+        clickedOnSomething={clickedOnSomething}
         setAirReplacementsSelected={setAirReplacementsSelected}
         showCarrierDisplay={showCarrierDisplay}
         selectedAirUnit={selectedAirUnit}
@@ -2070,9 +2072,7 @@ export function App() {
       ></AirReplacementsFooters>
     </>
   )
-
-  const groups = GlobalUnitsModel.usStrikeGroups
-
+  
   const numAAADice =
     GlobalGameState.taskForceTarget === GlobalUnitsModel.TaskForce.MIDWAY
       ? Math.ceil(GlobalGameState.midwayGarrisonLevel / 2)

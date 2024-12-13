@@ -7,6 +7,8 @@ import { delay } from "../../../Utils"
 
 class JapanAISetupState {
   async doAction(stateObject) {
+    console.log("*** JAPAN AI do air setup...for carrier:", GlobalGameState.JAPAN_CARRIERS[GlobalGameState.currentCarrier])
+
     const { setTestUpdate } = stateObject
     let update
     for (const unit of airUnitDataJapan) {

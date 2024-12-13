@@ -413,27 +413,21 @@ export default class Controller {
       //    => If 1 or more check if any are already set to midway attack group
       if (GlobalGameState.gamePhase === GlobalGameState.PHASE.MIDWAY_ATTACK) {
         const groups = this.getAllStrikeGroups(GlobalUnitsModel.Side.JAPAN)
-        const found = false
+
+        if (GlobalGameState.midwayAttackGroup === undefined && groups.length > 0) {
+          GlobalGameState.midwayAttackGroup = groups[0].name
+        }
         for (let group of groups) {
           if (group.name === GlobalGameState.midwayAttackGroup) {
             strikeBoxes = new Array()
             const strikeGroup = this.getStrikeGroupForBox(side, groups[0].box)
             if (!strikeGroup.moved) {
               strikeBoxes.push(groups[0].box)
-              found = true
+              GlobalGameState.midwayAttackGroup = group.name
+              break
             }
           }
         }
-        // for (let group of groups) {
-        //   if (group.name !== GlobalGameState.midwayAttackGroup) {
-        //     strikeBoxes = new Array()
-        //     const strikeGroup = this.getStrikeGroupForBox(side, groups[0].box)
-        //     if (!strikeGroup.moved) {
-        //       strikeBoxes.push(groups[0].box)
-        //     }
-        //   }
-        //   return strikeBoxes
-        // }
       }
     }
     return strikeBoxes

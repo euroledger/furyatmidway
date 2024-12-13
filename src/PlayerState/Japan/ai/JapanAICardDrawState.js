@@ -1,6 +1,6 @@
 import GlobalGameState from "../../../model/GlobalGameState"
 
-class JapanCardDrawState {
+class JapanAICardDrawState {
   async doAction(stateObject) {
     console.log("DO CARD ACTION")
     this.nextState(stateObject)
@@ -19,4 +19,4 @@ class JapanCardDrawState {
   }
 }
 
-export default JapanCardDrawState
+export default JapanAICardDrawState

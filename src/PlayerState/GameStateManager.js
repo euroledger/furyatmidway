@@ -39,6 +39,7 @@ class GameStateManager {
     } else {
         state = mapGameStateToUSHumanHandlerState()
     }
+    console.trace()
     console.log("+++++ NEW US STATE OBJECT->", state)
     if (state) {
       this.usStateHandler.setState(state)

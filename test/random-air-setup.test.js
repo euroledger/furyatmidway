@@ -22,9 +22,5 @@ describe("Anti-Aircraft Fire tests", () => {
     yair.forEach((element) => {
       expect([5, 6, 7]).toContain(element)
     })
-    console.log("US AIR OPENING SETUP ->")
-    console.log(eair)
-    console.log(hair)
-    console.log(yair)
   })
 })

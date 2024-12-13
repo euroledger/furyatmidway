@@ -32,9 +32,6 @@ class ViewEventStrikeGroupMoveHandler {
     GlobalGameState.log(`${command.toString()}`)
 
     if (!loading) {
-      if (GlobalGameState.gamePhase === GlobalGameState.PHASE.MIDWAY_ATTACK) {
-        GlobalGameState.midwayAttackGroup = counterData.name
-      }
       counterData.moved = true
       if (counterData.airOpMoved === undefined) {
         this.controller.setAirOpMoved(counterData)

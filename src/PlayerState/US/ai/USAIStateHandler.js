@@ -14,9 +14,11 @@ class USAIStateHandler extends PlayerStateHandler {
 
     //     // next state is US Fleet Setup
     //     this.currentState = new USAISetupFleetState()
-    // } else if (this.getState() === GlobalGameState.PHASE.US_SETUP_AIR) {
-    //   await this.currentState.doAction(this.stateObject)
-    // }
+    if (this.getState() === GlobalGameState.PHASE.US_SETUP_AIR) {
+      await this.currentState.doAction(this.stateObject)
+      await this.currentState.nextState()
+      return
+    }
     this.actionComplete = true
     await this.currentState.doAction(this.stateObject)
 

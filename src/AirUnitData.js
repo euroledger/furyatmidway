@@ -103,17 +103,13 @@ function getRandomElementFrom(items) {
   return item
 }
 
-const enterpriseBoxes = [US_TF16_CAP, US_ENTERPRISE_FLIGHT_DECK, US_ENTERPRISE_HANGAR]
-const hornetBoxes = [US_TF16_CAP, US_HORNET_FLIGHT_DECK, US_HORNET_HANGAR]
-const yorktownBoxes = [US_TF17_CAP, US_YORKTOWN_FLIGHT_DECK, US_YORKTOWN_HANGAR]
-
 let enterpriseFlightDeckSlotsLeft = 2
 let hornetFlightDeckSlotsLeft = 2
 let yorktownFlightDeckSlotsLeft = 2
 
 export function generateRandomUSAirSetup() {
   // Enterprise Fighters
-  const ef1 = getRandomElementFrom(enterpriseBoxes)
+  const ef1 = getRandomElementFrom([US_TF16_CAP, US_ENTERPRISE_FLIGHT_DECK])
   if (ef1 === US_ENTERPRISE_FLIGHT_DECK) {
     enterpriseFlightDeckSlotsLeft--
   }
@@ -160,9 +156,13 @@ export function generateRandomUSAirSetup() {
   if (enterpriseFlightDeckSlotsLeft === 0) {
     ed2 = US_ENTERPRISE_HANGAR
   } else {
-    ed2 = getRandomElementFrom([US_ENTERPRISE_FLIGHT_DECK, US_ENTERPRISE_HANGAR])
-    if (ed2 === US_ENTERPRISE_FLIGHT_DECK) {
-      enterpriseFlightDeckSlotsLeft--
+    if (enterpriseFlightDeckSlotsLeft === 2) {
+      ed2 = US_ENTERPRISE_FLIGHT_DECK
+    } else {
+      ed2 = getRandomElementFrom([US_ENTERPRISE_FLIGHT_DECK, US_ENTERPRISE_HANGAR])
+      if (ed2 === US_ENTERPRISE_FLIGHT_DECK) {
+        enterpriseFlightDeckSlotsLeft--
+      }
     }
   }
   // console.log(
@@ -225,9 +225,13 @@ export function generateRandomUSAirSetup() {
   if (hornetFlightDeckSlotsLeft === 0) {
     hd2 = US_HORNET_HANGAR
   } else {
-    hd2 = getRandomElementFrom([US_HORNET_FLIGHT_DECK, US_HORNET_HANGAR])
-    if (hd2 === US_HORNET_FLIGHT_DECK) {
-      hornetFlightDeckSlotsLeft--
+    if (hornetFlightDeckSlotsLeft === 2) {
+      hd2 = US_HORNET_FLIGHT_DECK
+    } else {
+      hd2 = getRandomElementFrom([US_HORNET_FLIGHT_DECK, US_HORNET_HANGAR])
+      if (hd2 === US_HORNET_FLIGHT_DECK) {
+        hornetFlightDeckSlotsLeft--
+      }
     }
   }
   // console.log("HORNET DB 2 GOES TO", carrierBoxArray[hd2], " => FLIGHT DECK SLOTS LEFT=", hornetFlightDeckSlotsLeft)
@@ -282,9 +286,13 @@ export function generateRandomUSAirSetup() {
   if (yorktownFlightDeckSlotsLeft === 0) {
     yd2 = US_YORKTOWN_HANGAR
   } else {
-    yd2 = getRandomElementFrom([US_YORKTOWN_FLIGHT_DECK, US_YORKTOWN_HANGAR])
-    if (yd2 === US_YORKTOWN_FLIGHT_DECK) {
-      yorktownFlightDeckSlotsLeft--
+    if (yorktownFlightDeckSlotsLeft === 2) {
+      yd2 = US_YORKTOWN_FLIGHT_DECK
+    } else {
+      yd2 = getRandomElementFrom([US_YORKTOWN_FLIGHT_DECK, US_YORKTOWN_HANGAR])
+      if (yd2 === US_YORKTOWN_FLIGHT_DECK) {
+        yorktownFlightDeckSlotsLeft--
+      }
     }
   }
 
@@ -303,13 +311,7 @@ export function generateRandomUSAirSetup() {
     [hf1, hf2, hd1, hd2, ht1],
     [yf1, yf2, yd1, yd2, yt1],
   ]
-
-  // return [ef1, ef2, ed1, ed2, et1, hf1, hf2, hd1, hd2, ht1]
 }
-const strategy1 = [0, 1, 1, 2, 2, 0, 3, 3, 4, 4, 5, 5, 6, 7, 6] // standard fighter-DB strike groups
-const strategy2 = [0, 0, 1, 2, 1, 0, 0, 3, 4, 3, 5, 6, 6, 7, 7] // defensive all fighters in CAP
-const strategy3 = [0, 1, 1, 2, 2, 0, 0, 3, 4, 3, 5, 6, 6, 7, 7] // mixture of above two
-// const strategy4 = generateRandomUSAirSetup()
 
 export const USAirStrategies = []
 
