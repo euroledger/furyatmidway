@@ -8,6 +8,7 @@ class ViewEventStrikeGroupMoveHandler {
     this.controller = controller
   }
   handleEvent(event) {
+    console.log("POO MOVE SG")
     const { initial, counterData, from, to, side, loading, moved, attacked } = event.data
 
     // add strike group to map holding name -> current Hex
@@ -32,9 +33,6 @@ class ViewEventStrikeGroupMoveHandler {
     GlobalGameState.log(`${command.toString()}`)
 
     if (!loading) {
-      if (GlobalGameState.gamePhase === GlobalGameState.PHASE.MIDWAY_ATTACK) {
-        GlobalGameState.midwayAttackGroup = counterData.name
-      }
       counterData.moved = true
       if (counterData.airOpMoved === undefined) {
         this.controller.setAirOpMoved(counterData)

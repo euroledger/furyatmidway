@@ -9,6 +9,7 @@ export function AirReplacementsHeaders({
   setShowCarrierDisplay,
   setAirReplacementsSelected,
   setSelectedAirUnit,
+  setClickedOnSomething
 }) {
   const [reducedAirUnits, setReducedAirUnits] = useState([])
   const [elimSelected, setElimSelected] = useState(false)
@@ -74,11 +75,13 @@ export function AirReplacementsHeaders({
   })
 
   const handleClick = (airUnit) => {
+    setClickedOnSomething(true)
     // if this unit has 1 step -> flip to full strength
     if (airUnit.aircraftUnit.steps === 1 && !eliminatedAirUnits.includes(airUnit)) {
       airUnit.aircraftUnit.steps = 2
       const newImage = airUnit.image.replace("back", "front")
       airUnit.image = newImage
+      console.log("QUACK 1")
       setAirReplacementsSelected(true)
       return
     }
@@ -216,6 +219,7 @@ export function AirReplacementsFooters({
   selectedAirUnit,
   airReplacementsSelected,
   setAirUnitUpdate,
+  clickedOnSomething
 }) {
   const [selectedCV, setSelectedCV] = useState("")
 
@@ -241,8 +245,9 @@ export function AirReplacementsFooters({
     availableUSCVs = usCVs.filter((carrier) => {
       return !controller.isSunk(carrier, true) && controller.isHangarAvailable(carrier)
     })
-    if (availableUSCVs.length === 0) {
+    if (clickedOnSomething && availableUSCVs.length === 0) {
       msg = "No carriers available to receive replacements"
+      console.log("QUACK 2")
       setAirReplacementsSelected(true)
     }
   } else {
@@ -255,8 +260,9 @@ export function AirReplacementsFooters({
     availableJapanCVs = japanCVs.filter(
       (carrier) => !controller.isSunk(carrier) && controller.isHangarAvailable(carrier)
     )
-    if (availableJapanCVs.length === 0) {
+    if (clickedOnSomething && availableJapanCVs.length === 0) {
       msg = "No carriers available to receive replacements"
+      console.log("QUACK 3")
       setAirReplacementsSelected(true)
     }
   }
@@ -331,7 +337,11 @@ export function AirReplacementsFooters({
     }
   }
 
+  if (airReplacementsSelected) {
+    console.log("WE SELECTED A UNIT!")
+  }
   if (selectedCV && showCarrierDisplay && !airReplacementsSelected) {
+    console.log("QUACK 4")
     setAirReplacementsSelected(true)
     moveAirUnitFromEliminatedBox(controller, side, selectedCV, selectedAirUnit, setAirUnitUpdate)
   }

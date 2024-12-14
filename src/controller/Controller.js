@@ -362,6 +362,7 @@ export default class Controller {
     return this.getCarrierForAirBox(loc)
   }
   getStrikeBoxes(name, side) {
+    console.log("BOLLOCKS 1")
     const unit = this.getAirUnitForName(name)
     let strikeBoxes = Object.values(this.airOperationsModel.getStrikeBoxesForSide(side))
 
@@ -406,6 +407,8 @@ export default class Controller {
         return carriers.includes(carrier) || carriers.length === 0
       })
     } else {
+      console.log("BOLLOCKS 2")
+
       // If this is Japan Midway attack, only allow one strike group.
       // If one already exists only allow those boxes as destination
       // 1. Get num strike groups
@@ -413,14 +416,23 @@ export default class Controller {
       //    => If 1 or more check if any are already set to midway attack group
       if (GlobalGameState.gamePhase === GlobalGameState.PHASE.MIDWAY_ATTACK) {
         const groups = this.getAllStrikeGroups(GlobalUnitsModel.Side.JAPAN)
-        const found = false
+        console.log("BOLLOCKS 3 groups=",groups)
+
+        if (GlobalGameState.midwayAttackGroup === undefined && groups.length > 0) {
+          GlobalGameState.midwayAttackGroup = groups[0].name
+        }
         for (let group of groups) {
+          console.log("MIDWAY ATTACK found group:", group.name)
+          console.log("GlobalGameState.midwayAttackGroup:", GlobalGameState.midwayAttackGroup)
+
           if (group.name === GlobalGameState.midwayAttackGroup) {
             strikeBoxes = new Array()
             const strikeGroup = this.getStrikeGroupForBox(side, groups[0].box)
             if (!strikeGroup.moved) {
               strikeBoxes.push(groups[0].box)
-              found = true
+              console.log("POOOOOOO SET GlobalGameState.midwayAttackGroup TO", group.name)
+              GlobalGameState.midwayAttackGroup = group.name
+              break
             }
           }
         }

@@ -149,6 +149,8 @@ export function App() {
 
   const [isMoveable, setIsMoveable] = useState(false)
   const [scale, setScale] = useState(1)
+  const [clickedOnSomething, setClickedOnSomething] = useState(false)
+
   const [testClicked, setTestClicked] = useState(false)
   const [testyClicked, setTestyClicked] = useState(false)
 
@@ -251,6 +253,7 @@ export function App() {
   const [jpFleet, setJpFleet] = useState("")
   const [usFleet, setUsFleet] = useState("")
 
+  console.log("POOOOOOOOOO BRUTE airReplacementsSelected=",airReplacementsSelected)
   const [airUnitUpdate, setAirUnitUpdate] = useState({
     unit: {},
     position: {},
@@ -1883,6 +1886,7 @@ export function App() {
         setShowCarrierDisplay={setShowCarrierDisplay}
         airReplacementsSelected={airReplacementsSelected}
         setAirReplacementsSelected={setAirReplacementsSelected}
+        setClickedOnSomething={setClickedOnSomething}
         setSelectedAirUnit={setSelectedAirUnit}
       ></AirReplacementsHeaders>
     </>
@@ -1892,6 +1896,7 @@ export function App() {
     <>
       <AirReplacementsFooters
         controller={GlobalInit.controller}
+        clickedOnSomething={clickedOnSomething}
         setAirReplacementsSelected={setAirReplacementsSelected}
         showCarrierDisplay={showCarrierDisplay}
         selectedAirUnit={selectedAirUnit}
