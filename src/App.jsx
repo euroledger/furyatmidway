@@ -253,7 +253,6 @@ export function App() {
   const [jpFleet, setJpFleet] = useState("")
   const [usFleet, setUsFleet] = useState("")
 
-  console.log("POOOOOOOOOO BRUTE airReplacementsSelected=",airReplacementsSelected)
   const [airUnitUpdate, setAirUnitUpdate] = useState({
     unit: {},
     position: {},
@@ -2786,6 +2785,7 @@ export function App() {
         setSubmarineAlertPanelShow={setSubmarineAlertPanelShow}
         onHide={(e) => {
           setSubmarineAlertPanelShow(false)
+          nextAction(e)
         }}
         nextAction={nextAction}
         width={30}
