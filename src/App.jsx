@@ -2273,7 +2273,7 @@ export function App() {
   }
   let damagedCarriers = GlobalInit.controller.getDamagedCarriersOneOrTwoHits(GlobalUnitsModel.Side.US)
   let damageControlButtonDisabled =
-    (damagedCV === "" && GlobalGameState.dieRolls.length === 0) || GlobalGameState.dieRolls.length > 0
+    (damagedCV=== "x") || (damagedCV === "" && GlobalGameState.dieRolls.length === 0) || GlobalGameState.dieRolls.length > 0
 
   if (damageControlSide === GlobalUnitsModel.Side.US) {
     damageControlButtonDisabled = damagedCV !== "" || damagedCarriers.length === 0
@@ -2861,7 +2861,7 @@ export function App() {
         headers={damageControlHeaders}
         footers={damageControlFooters}
         width={30}
-        showDice={damageControlSide === GlobalUnitsModel.Side.JAPAN}
+        showDice={damagedCV !== "x" && damageControlSide === GlobalUnitsModel.Side.JAPAN}
         margin={350}
         diceButtonDisabled={damageControlButtonDisabled}
         closeButtonDisabled={!damageControlButtonDisabled}

@@ -68,17 +68,10 @@ function CardAlertPanel(props) {
     } else if (cardNumber === 3) {
       setAirReplacementsPanelShow(true)
       if (controller.usHandContainsCard(3)) {
-        console.log("******** US PLAYS CARD 3 *********")
         controller.setCardPlayed(3, GlobalUnitsModel.Side.US)
       } else {
-        console.log("******** JAOAN PLAYS CARD 3 *********")
-
         controller.setCardPlayed(3, GlobalUnitsModel.Side.JAPAN)
       }
-      console.log("usCardsPlayed=", GlobalUnitsModel.usCardsPlayed )
-      console.log("jpCardsPlayed=", GlobalUnitsModel.jpCardsPlayed )
-
-
       onHide(e)
     } else if (cardNumber === 4) {
       let side
@@ -115,7 +108,7 @@ function CardAlertPanel(props) {
       controller.setCardPlayed(7, GlobalUnitsModel.Side.US)
       onHide(e)
     } else if (cardNumber === 8) {
-      controller.setCardPlayed(8, GlobalUnitsModel.Side.JAPAN)
+      controller.setCardPlayed(8, GlobalUnitsModel.Side.US)
       setShowCardFooter(() => true)
     } else if (cardNumber === 9) {
       controller.setCardPlayed(9, GlobalUnitsModel.Side.JAPAN)
@@ -134,7 +127,7 @@ function CardAlertPanel(props) {
       // onHide(e)
     } else if (cardNumber === 13) {
       setAttackResolved(() => false)
-      controller.setCardPlayed(13, GlobalUnitsModel.Side.JAPAN)
+      controller.setCardPlayed(13, GlobalUnitsModel.Side.US)
       setShowCardFooter(() => true)
     } else {
       setShowCardFooter(() => true)
