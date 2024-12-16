@@ -236,6 +236,8 @@ export function App() {
   const [nightSteps, setNightSteps] = useState(0)
   const [nightStepsLost, setNightStepsLost] = useState([])
 
+  const [headerText, setHeaderText] = useState("")
+
   const [escortSteps, setEscortSteps] = useState(0)
 
   const [showCarrierDisplay, setShowCarrierDisplay] = useState(false)
@@ -466,6 +468,8 @@ export function App() {
   useEffect(() => {
     if (GlobalGameState.gamePhase === GlobalGameState.PHASE.CARD_PLAY) {
       setEliminatedSteps(0)
+      setHeaderText("Possible Card Play: Card #" + cardNumber)
+      
       if (cardNumber === 2 || cardNumber === 4) {
         setDamagedCV("")
         GlobalGameState.dieRolls = []
@@ -2793,7 +2797,8 @@ export function App() {
       <CardAlertPanel
         show={!testClicked && cardAlertPanelShow}
         controller={GlobalInit.controller}
-        headerText={"Possible Card Play: Card #" + cardNumber}
+        headerText={headerText}
+        setHeaderText={setHeaderText}
         headers={cardAlertHeaders}
         setShowCardFooter={setShowCardFooter}
         footers={cardAlertFooters}

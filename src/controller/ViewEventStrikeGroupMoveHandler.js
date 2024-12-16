@@ -8,7 +8,6 @@ class ViewEventStrikeGroupMoveHandler {
     this.controller = controller
   }
   handleEvent(event) {
-    console.log("POO MOVE SG")
     const { initial, counterData, from, to, side, loading, moved, attacked } = event.data
 
     // add strike group to map holding name -> current Hex

@@ -129,14 +129,12 @@ function getValidJapanDestinationsRETURN1(controller, parentCarrier, side) {
 
 export function getValidJapanDestinationsCAPNight(controller, parentCarrier, side) {
   let destinationsArray = new Array()
-  console.log("parentCarrier=", parentCarrier, "hangar avialable=", controller.isHangarAvailable(parentCarrier))
 
   if (controller.getCarrierHits(parentCarrier) < 2 && controller.isHangarAvailable(parentCarrier)) {
     const capHangar = controller.getAirBoxForNamedShip(side, parentCarrier, "HANGAR")
     destinationsArray.push(capHangar)
     return destinationsArray
   }
-  console.log("TRY OTHER CARRIER")
   destinationsArray = destinationsArray.concat(tryOtherCarrierCAPNight(controller, parentCarrier, side))
   return destinationsArray
 }
@@ -225,7 +223,6 @@ function tryOtherCarrierCAP(controller, parentCarrier, side) {
 function tryOtherCarrierCAPNight(controller, parentCarrier, side) {
   let destinationsArray = new Array()
   const otherCarrier = controller.getOtherCarrierInTF(parentCarrier, side)
-  console.log("OTHER CARRIER=", otherCarrier)
   if (!otherCarrier) {
     return destinationsArray // empty list, eg TF 17 has no other carrier
   }
@@ -233,9 +230,6 @@ function tryOtherCarrierCAPNight(controller, parentCarrier, side) {
   if (controller.isSunk(otherCarrier.name)) {
     return destinationsArray
   }
-
-  console.log("OTHER CARRIER HANGAR AVAILABLE=", controller.isHangarAvailable(otherCarrier.name))
-
   if (controller.isHangarAvailable(otherCarrier.name)) {
     const capHangar = controller.getAirBoxForNamedShip(side, otherCarrier.name, "HANGAR")
     destinationsArray.push(capHangar)
@@ -684,7 +678,6 @@ export function doHangarNight(controller, name, side) {
 }
 
 export function doHangar(controller, name, side) {
-  console.log("HANGAR for", side)
   const location = controller.getAirUnitLocation(name)
   const carrierName = controller.getCarrierForAirBox(location.boxName)
   controller.setValidAirUnitDestinations(name, new Array())
@@ -695,7 +688,6 @@ export function doHangar(controller, name, side) {
   // check there is room on this carrier's flight deck
   const destAvailable = controller.isFlightDeckAvailable(carrierName, side, true)
 
-  console.log("destAvailable=", destAvailable)
   if (!destAvailable) {
     return
   }
@@ -902,7 +894,6 @@ export async function moveOrphanedCAPUnitsToEliminatedBoxNight(side, box, unit) 
     }
     if (destinationsArray.length === 0) {
       if (!GlobalGameState.orphanedAirUnits.includes(unit)) {
-        console.log("GOT A POOR LITTLE ORPHAN!")
         GlobalGameState.orphanedAirUnits.push(unit)
       }
       moveAirUnitToEliminatedBox(GlobalInit.controller, unit)

@@ -10,6 +10,7 @@ function CardAlertPanel(props) {
   const {
     controller,
     headerText,
+    setHeaderText,
     headers,
     footers,
     setShowCardFooter,
@@ -87,10 +88,7 @@ function CardAlertPanel(props) {
       // if towed to friendly port has been played, go to SubmarainAlertPanel
       // otherwise straight to SubmarineDamagePanel
 
-      if (
-        side === GlobalUnitsModel.Side.US ||
-        controller.getCardPlayed(1, GlobalUnitsModel.Side.US) === false
-      ) {
+      if (side === GlobalUnitsModel.Side.US || controller.getCardPlayed(1, GlobalUnitsModel.Side.US) === false) {
         setSubmarineDamagePanelShow(true)
       } else {
         setSubmarineAlertPanelShow(true)
@@ -101,6 +99,7 @@ function CardAlertPanel(props) {
       controller.setCardPlayed(5, GlobalUnitsModel.Side.JAPAN)
       onHide(e)
     } else if (cardNumber === 6) {
+      setHeaderText("CARD #6 PLAYED")
       controller.setCardPlayed(6, GlobalUnitsModel.Side.JAPAN)
       setShowCardFooter(() => true)
     } else if (cardNumber === 7) {
@@ -154,7 +153,7 @@ function CardAlertPanel(props) {
     }
   }, [GlobalGameState.closePanel])
 
-  const bg = GlobalGameState.gameTurn === 4 ? "black" :"#293a4b"
+  const bg = GlobalGameState.gameTurn === 4 ? "black" : "#293a4b"
 
   let myBigBollocks = "modal-width" + 2
 
@@ -169,7 +168,8 @@ function CardAlertPanel(props) {
   if (cardNumber === 0) {
     return
   }
-  const jpCard = controller.japanHandContainsCard(cardNumber)
+  const jpCard =
+    controller.japanHandContainsCard(cardNumber) || controller.getCardPlayed(cardNumber, GlobalUnitsModel.Side.JAPAN)
   let image = jpCard ? "/images/japanflag.jpg" : "/images/usaflag.jpg"
 
   return (
