@@ -295,3 +295,140 @@ export async function usFleetMovementNextStateHandler({
     }
   }
 }
+
+export function isMidwayAttackPossible() {
+  // if there are no attack planes on deck cannot attack Midway
+  const attackUnitsOnDeck = GlobalInit.controller.getAllUnitsOnJapaneseFlightDecks(false)
+  if (attackUnitsOnDeck.length === 0) {
+    GlobalGameState.midwayAttackDeclaration = false
+    return false
+  } else {
+    return true
+  }
+}
+
+const canUSDMCVMoveOffBoard = (dmcvLocation) => {
+  let canMoveOffBoard
+  if (dmcvLocation !== undefined && dmcvLocation.currentHex !== undefined && dmcvLocation.currentHex.q === 9) {
+    // can move offboard
+    if (GlobalGameState.gamePhase === GlobalGameState.PHASE.US_DMCV_FLEET_MOVEMENT_PLANNING) {
+      canMoveOffBoard = true
+    }
+  }
+  return canMoveOffBoard
+}
+const canCSFMoveOffBoard = (csfLocation) => {
+  let canMoveOffBoard
+  if (GlobalGameState.gameTurn === 4) {
+    GlobalGameState.fleetSpeed = 4
+    GlobalGameState.dmcvFleetSpeed = 2
+  } else {
+    GlobalGameState.fleetSpeed = 2
+    GlobalGameState.dmcvFleetSpeed = 1
+  }
+
+  if (csfLocation !== undefined && csfLocation.currentHex !== undefined && csfLocation.currentHex.q >= 6) {
+    // can move offboard
+    if (GlobalGameState.gamePhase === GlobalGameState.PHASE.US_FLEET_MOVEMENT_PLANNING) {
+      canMoveOffBoard = true
+    }
+  }
+  return canMoveOffBoard
+}
+
+export const getUSFleetRegions = () => {
+  const csfLocation = GlobalInit.controller.getFleetLocation("CSF", GlobalUnitsModel.Side.US)
+  const usDMCVLocation = GlobalInit.controller.getFleetLocation("US-DMCV", GlobalUnitsModel.Side.US)
+
+  let canCSFMoveFleetOffBoard = canCSFMoveOffBoard(csfLocation)
+  let canUSDMCVMoveFleetOffBoard = canUSDMCVMoveOffBoard(usDMCVLocation)
+
+  let usCSFRegions, usDMCVRegions
+  if (GlobalGameState.gamePhase === GlobalGameState.PHASE.US_FLEET_MOVEMENT_PLANNING) {
+    GlobalGameState.phaseCompleted = true // may just want to skip any fleet movement (leave fleet where it is)
+    if (csfLocation.currentHex !== undefined) {
+      let regionsMinusAllFleets = allHexesWithinDistance(csfLocation.currentHex, GlobalGameState.fleetSpeed, true)
+
+      // remove hex with IJN DMCV
+      // if (GlobalGameState.gameTurn !== 4) {
+      if (usDMCVLocation !== undefined && usDMCVLocation.currentHex !== undefined) {
+        regionsMinusAllFleets = removeHexFromRegion(regionsMinusAllFleets, usDMCVLocation.currentHex)
+      }
+      // }
+      usCSFRegions = regionsMinusAllFleets
+    }
+  } else if (GlobalGameState.gamePhase === GlobalGameState.PHASE.US_DMCV_FLEET_MOVEMENT_PLANNING) {
+    const csfLocation = GlobalInit.controller.getFleetLocation("CSF", GlobalUnitsModel.Side.US)
+
+    if (
+      csfLocation.currentHex === undefined &&
+      (dmcvLocation.currentHex === undefined || dmcvLocation.boxName !== HexCommand.FLEET_BOX)
+    ) {
+      // both fleets have been removed from the map
+      return {}
+    }
+    if (GlobalGameState.usDMCVFleetPlaced && dmcvLocation !== undefined) {
+      usDMCVRegions = allHexesWithinDistance(dmcvLocation.currentHex, GlobalGameState.dmcvFleetSpeed, true)
+    } else {
+      usDMCVRegions
+    }
+    if (csfLocation.currentHex !== undefined) {
+      usDMCVRegions = removeHexFromRegion(usRegion, csfLocation.currentHex)
+    }
+  }
+  return { canCSFMoveFleetOffBoard, canUSDMCVMoveFleetOffBoard, usCSFRegions, usDMCVRegions }
+}
+
+export async function setNextStateFollowingCardPlay(stateObject) {
+  const { cardNumber, setCardNumber } = stateObject
+  GlobalGameState.dieRolls = []
+
+  switch (cardNumber) {
+    case -1:
+      break
+
+    case 6:
+      // High Speed Reconnaissance
+      if (GlobalGameState.gameTurn === 1) {
+        GlobalGameState.usCardsDrawn = true
+        if (isMidwayAttackPossible()) {
+          console.log("%%%%%%%%%%% QUACK 1 %%%%%%%%%%%%")
+          GlobalGameState.gamePhase = GlobalGameState.PHASE.JAPAN_MIDWAY
+          return
+        }
+      }
+      if (
+        (GlobalGameState.gameTurn === 4 || GlobalGameState.gameTurn === 7) &&
+        GlobalInit.controller.japanHandContainsCard(5)
+      ) {
+        // Now check for possible play of card 5
+        setCardNumber(() => 5)
+      } else {
+        setCardNumber(() => 0) // reset for next card play
+        if (GlobalGameState.gameTurn === 2 || GlobalGameState.gameTurn === 4 || GlobalGameState.gameTurn === 6) {
+          GlobalGameState.gamePhase = GlobalGameState.PHASE.US_DRAWS_ONE_CARD
+        }
+        if (GlobalGameState.gameTurn === 3 || GlobalGameState.gameTurn === 5 || GlobalGameState.gameTurn === 7) {
+          GlobalGameState.gamePhase = GlobalGameState.PHASE.JAPAN_DRAWS_ONE_CARD
+          GlobalGameState.phaseCompleted = false
+        }
+      }
+      break
+      setCardNumber(() => -1) // reset for next card play
+      if (GlobalGameState.carrierTarget2 !== "" && GlobalGameState.carrierTarget2 !== undefined) {
+        GlobalGameState.gamePhase = GlobalGameState.PHASE.AIR_ATTACK_2
+      } else {
+        await endOfAirOperation(
+          GlobalGameState.sideWithInitiative,
+          capAirUnits,
+          setAirUnitUpdate,
+          setEliminatedUnitsPanelShow
+        )
+        GlobalGameState.gamePhase = GlobalGameState.PHASE.AIR_OPERATIONS
+        GlobalGameState.updateGlobalState()
+      }
+      break
+    default:
+      console.log("ERROR unknown card number: ", cardNumber)
+  }
+}

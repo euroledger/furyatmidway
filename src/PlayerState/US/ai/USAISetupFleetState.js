@@ -2,7 +2,7 @@ import GlobalGameState from "../../../model/GlobalGameState"
 import GlobalInit from "../../../model/GlobalInit"
 import { delay } from "../../../Utils"
 import USAISetupAirState from "./USAISetupAirState"
-import { moveUSCSFFleet } from "../../../UIEvents/AI/USFleetMovementBot"
+import { placeUSCSFFleetAction } from "../../../UIEvents/AI/USFleetMovementBot"
 import { getFleetUnitUpdateUS } from "../../../AirUnitData"
 
 class USAISetupFleetState {
@@ -11,7 +11,7 @@ class USAISetupFleetState {
     console.log("US FLEET SETUP -> NOW FOR THE US AI TO EARN ITS MONEY -> AIR SETUP TIME!!!!!!!!!!!")
 
     // let update = getFleetUnitUpdateUS("CSF")
-    const startingPosition = moveUSCSFFleet()
+    const startingPosition = placeUSCSFFleetAction()
     let usFleetMove = getFleetUnitUpdateUS("CSF", startingPosition.q, startingPosition.r)
     setFleetUnitUpdate(usFleetMove)
   

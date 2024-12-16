@@ -17,7 +17,9 @@ class GameStateManager {
     this.usPlayerType = usPlayerType
   }
 
-  setJapanState() {
+  setJapanState(stateObject) {
+    this.stateObject = stateObject
+    console.log("NANNY POOP 2 stateObject=", this.stateObject)
     let state
     console.log("MAP game state:", GlobalGameState.gamePhase)
     if (this.japanPlayerType === GlobalUnitsModel.TYPE.AI) {
@@ -26,14 +28,16 @@ class GameStateManager {
         state = mapGameStateToJapanHumanHandlerState()
     }
     console.log("+++++ NEW Japan STATE OBJECT->", state)
+
     if (state) {
       this.japanStateHandler.setState(state)
     }
   }
 
-  setUSState() {
+  setUSState(stateObject) {
+    this.stateObject = stateObject
+
     let state
-    console.log("this.usPlayerType=", this.usPlayerType)
     if (this.usPlayerType === GlobalUnitsModel.TYPE.AI) {
         state = mapGameStateToUSAIHandlerState()
     } else {
@@ -47,12 +51,15 @@ class GameStateManager {
 
   setStateHandlers(stateObject) {
     // Japan Handlers and Current State
+    console.log("BAD JAPAN set stateObject to", stateObject)
     this.stateObject = stateObject
     if (this.japanPlayerType == GlobalUnitsModel.TYPE.AI) {
       this.japanStateHandler = new JapanAIStateHandler(stateObject)
     } else {
       this.japanStateHandler = new JapanHumanStateHandler(stateObject)
     }
+    console.log("WOOF 99")
+
     this.setJapanState()
 
     // US Handlers and Current State
@@ -72,9 +79,10 @@ class GameStateManager {
     }
   }
 
-  async doAction(side) {
+  async doAction(side, stateObject) {
+    this.stateObject = stateObject
     if (side === GlobalUnitsModel.Side.JAPAN) {
-      console.log("++++ doAction firing +++")
+      console.log("++++ doAction firing +++ this.stateObject=", this.stateObject)
       await this.japanStateHandler.doAction(this.stateObject)
     } else {
       await this.usStateHandler.doAction(this.stateObject)

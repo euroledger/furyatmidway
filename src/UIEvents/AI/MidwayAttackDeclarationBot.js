@@ -1,7 +1,7 @@
 import GlobalUnitsModel from "../../model/GlobalUnitsModel"
 import GlobalGameState from "../../model/GlobalGameState"
 
-function midwayAttackDecision(controller) {
+function midwayAttackDecisionAction(controller) {
   
   // AI DECISION, whether to attack Midway
 
@@ -15,4 +15,4 @@ function midwayAttackDecision(controller) {
   // 4. Random Factor
 }
 
-export default midwayAttackDecision
+export default midwayAttackDecisionAction

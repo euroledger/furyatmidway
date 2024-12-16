@@ -12,8 +12,9 @@ class JapanAIStateHandler extends PlayerStateHandler {
     return this.currentState.getState()
   }
 
-  async doAction() {
-    await this.currentState.doAction(this.stateObject)
+  async doAction(stateObject) {
+    await this.currentState.doAction(stateObject)
+    this.stateObject = stateObject
     if (this.getState() === GlobalGameState.PHASE.JAPAN_SETUP) {
       this.currentState = new JapanAICardDrawState()
     }

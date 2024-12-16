@@ -2,6 +2,7 @@ import GlobalGameState from "../../../model/GlobalGameState"
 import JapanAIMidwayDeclarationState from "./JapanAIMidwayDeclarationState"
 import JapanAISetupAirState from "./JapanAISetupAirState"
 import JapanAIFleetMovementState from "./JapanAIFleetMovementState"
+import JapanAICardPlayState from "./JapanAICardPlayState"
 
 function mapGameStateToJapanAIHandlerState() {
   switch (GlobalGameState.gamePhase) {
@@ -13,6 +14,10 @@ function mapGameStateToJapanAIHandlerState() {
 
     case GlobalGameState.PHASE.JAPAN_FLEET_MOVEMENT:
       return new JapanAIFleetMovementState()
+
+    case GlobalGameState.PHASE.CARD_PLAY:
+      return new JapanAICardPlayState()
+
     default:
   }
 }

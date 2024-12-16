@@ -1,13 +1,16 @@
 import GlobalGameState from "../../../model/GlobalGameState"
 import GlobalInit from "../../../model/GlobalInit"
-import midwayAttackDecision from "../../../UIEvents/AI/MidwayAttackDeclarationBot"
+import GlobalUnitsModel from "../../../model/GlobalUnitsModel"
+import midwayAttackDecisionAction from "../../../UIEvents/AI/MidwayAttackDeclarationBot"
 
 class JapanAIMidwayDeclarationState {
   async doAction(stateObject) {
     const { setMidwayAIInfoShow } = stateObject
     console.log("DO MIDWAY DECLARATION ACTION")
-    midwayAttackDecision(GlobalInit.controller)
-    setMidwayAIInfoShow(true)
+    midwayAttackDecisionAction(GlobalInit.controller)
+    if (GlobalGameState.usPlayerType === GlobalUnitsModel.TYPE.HUMAN) {
+      setMidwayAIInfoShow(true)
+    }
   }
 
   async nextState(stateObject) {

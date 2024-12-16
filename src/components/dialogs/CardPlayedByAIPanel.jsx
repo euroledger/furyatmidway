@@ -6,7 +6,7 @@ import GlobalGameState from "../../model/GlobalGameState"
 import "./modal.css"
 import GlobalUnitsModel from "../../model/GlobalUnitsModel"
 
-function CardAlertPanel(props) {
+function CardPlayedByAIPanel(props) {
   const {
     controller,
     headerText,
@@ -33,24 +33,20 @@ function CardAlertPanel(props) {
     setSubmarineDamagePanelShow,
     ...rest
   } = props
-  const [buttonPressed, setButtonPressed] = useState(false)
   const [thisCard, setThisCard] = useState(0)
 
-  const button1Ref = useRef(null)
-  const button2Ref = useRef(null)
-  const button3Ref = useRef(null)
-
-  const closeButtonStr = buttonPressed ? "Close" : "No"
-
   if (thisCard !== cardNumber) {
-    setButtonPressed(false)
     setThisCard(cardNumber)
   }
-  const noHandler = (e) => {
+  const closeHandler = (e) => {
     // setButtonPressed(() => false)
     setShowCardFooter(false)
     onHide(e)
-    nextAction()
+  }
+
+  if (cardNumber === 6) {
+    setHeaderText("CARD #6 PLAYED")
+    setShowCardFooter(() => true)
   }
 
   const yesHandler = (e) => {
@@ -137,21 +133,6 @@ function CardAlertPanel(props) {
     eventHandler(cardNumber)
   }
 
-  // useEffect(() => {
-  //   if (button1Ref.current) {
-  //     if (GlobalGameState.rollDice === true) {
-  //       button1Ref.current.click()
-  //     }
-  //   }
-  // }, [GlobalGameState.rollDice])
-
-  useEffect(() => {
-    if (button2Ref.current) {
-      if (GlobalGameState.closePanel === true) {
-        button2Ref.current.click()
-      }
-    }
-  }, [GlobalGameState.closePanel])
 
   const bg = GlobalGameState.gameTurn === 4 ? "black" : "#293a4b"
 
@@ -236,23 +217,17 @@ function CardAlertPanel(props) {
       </Modal.Body>
 
       <Modal.Footer style={{ background: `${bg}`, color: "black" }}>
-        {!buttonPressed && (
-          <Button ref={button1Ref} onClick={(e) => yesHandler(e)}>
-            Yes
-          </Button>
-        )}
         <Button
-          ref={button2Ref}
           disabled={false}
           onClick={(e) => {
-            noHandler(e)
+            closeHandler(e)
           }}
         >
-          {closeButtonStr}
+          Close
         </Button>
       </Modal.Footer>
     </Modal>
   )
 }
 
-export default CardAlertPanel
+export default CardPlayedByAIPanel

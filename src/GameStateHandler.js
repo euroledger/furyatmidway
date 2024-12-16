@@ -93,7 +93,6 @@ async function setNextStateFollowingCardPlay({
 }) {
   GlobalGameState.dieRolls = []
 
-  console.log("PANTS!!!!!!!!!!!!!!!!!")
   switch (cardNumber) {
     case -1:
       break

@@ -51,7 +51,7 @@ class USAISetupAirState {
     }
   }
 
-  nextState(stateObject) {
+  async nextState(stateObject) {
     GlobalGameState.currentCarrier++
     GlobalGameState.setupPhase++
     GlobalGameState.currentTaskForce =

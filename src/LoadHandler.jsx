@@ -40,9 +40,9 @@ async function loadHandler({
   } = loadGameStateForId(controller, id)
   setTowedCVSelected(cvSelected)
   for (const update of airUpdates) {
-    await delay(2)
+    await delay(1)
     setAirUnitUpdate(update)
-    await delay(2)
+    await delay(1)
   }
 
   for (const update of usfleetUpdates) {

@@ -2,14 +2,13 @@ import GlobalGameState from "../../../model/GlobalGameState"
 import GlobalInit from "../../../model/GlobalInit"
 import JapanHumanCardDrawState from "./JapanHumanCardDrawState"
 
-
 class JapanHumanSetupAirState {
   async doAction(stateObject) {
+    console.log("BIG CHIPS AND POO stateObject=", stateObject)
     const { getJapanEnabledAirBoxes, setEnabledJapanBoxes } = stateObject
 
     const enabledBoxes = getJapanEnabledAirBoxes()
     setEnabledJapanBoxes(() => enabledBoxes)
-    
   }
 
   async nextState() {
@@ -21,6 +20,7 @@ class JapanHumanSetupAirState {
       GlobalInit.controller.drawJapanCards(3, true)
       GlobalGameState.jpCardsDrawn = true
       GlobalGameState.setupPhase++
+      GlobalGameState.phaseCompleted = false
       return new JapanHumanCardDrawState()
     }
     GlobalGameState.phaseCompleted = false

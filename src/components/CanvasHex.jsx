@@ -13,7 +13,6 @@ const FLAT = 1
 
 const hexType = FLAT
 
-
 export default class CanvasHex extends React.Component {
   constructor(props) {
     super(props)

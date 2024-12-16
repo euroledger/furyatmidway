@@ -1,7 +1,7 @@
 import GlobalUnitsModel from "../../model/GlobalUnitsModel"
 import GlobalGameState from "../../model/GlobalGameState"
 
-export function selectLossesFromCAP(controller, stateObject) {
+export function selectLossesFromCAPAction(controller, stateObject) {
   let numStrikeUnits = GlobalInit.controller.getAttackingStrikeUnits()
   // AI DECISION, which units to take losses from
   let hitsToAllocate = GlobalGameState.capHits

@@ -99,12 +99,33 @@ export const coordsOnMap = (q, r) => {
   }
   return true
 }
+
+export const mapIndexToHex = (i) => {
+  const hexes = getAllHexes()
+  return hexes.find((h)=> h.index = i)
+}
+
+export const mapHexToIndex = (q,r) => {
+  const hexes = getAllHexes()
+  return hexes.find((h)=> h.q === q && h.r === r)
+}
+
+export const mapIndexesToHexes = (indexArray) => {
+  return indexArray.map((element) => mapIndexToHex(element.index))
+}
+
+export const mapHexesToIndexes= (hexArray) => {
+  return hexArray.map((element) => mapHexToIndex(element.q, element.r))
+}
+
 export const getAllHexes = () => {
   const allHexes = new Array()
+  let index = 0
   for (let q = 1; q < 10; q++) {
     for (let r = -3; r < 7; r++) {
       if (coordsOnMap(q, r)) {
-        allHexes.push({ q, r })
+        allHexes.push({ index, q, r })
+        index++
       }
     }
   }

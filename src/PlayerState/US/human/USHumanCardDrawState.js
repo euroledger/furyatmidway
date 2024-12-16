@@ -1,12 +1,12 @@
 import GlobalGameState from "../../../model/GlobalGameState"
 import GlobalInit from "../../../model/GlobalInit"
 import GlobalUnitsModel from "../../../model/GlobalUnitsModel"
-import USHumanFleetMovementPlanningState from "./USHumanFleetMovementPlanning"
 
 class USHumanCardDrawState {
   async doAction(stateObject) {}
 
   async nextState(stateObject) {
+    const { setCardNumber } = stateObject
 
     if (GlobalGameState.gameTurn != 1) {
       if (GlobalGameState.gameTurn === 2 || GlobalGameState.gameTurn === 4 || GlobalGameState.gameTurn === 6) {
@@ -17,12 +17,15 @@ class USHumanCardDrawState {
     } else {
       GlobalGameState.usCardsDrawn = true
       GlobalGameState.currentPlayer = GlobalUnitsModel.Side.JAPAN
-      // if (GlobalInit.controller.japanHandContainsCard(6)) {
-      //   setCardNumber(() => 6)
-      //   GlobalGameState.gamePhase = GlobalGameState.PHASE.CARD_PLAY
-      // } else {
+      if (GlobalInit.controller.japanHandContainsCard(6) && GlobalGameState.gameTurn !== 4) {
+        // card 6 cannot be played at night
+        setCardNumber(() => 6)
+        GlobalGameState.gamePhase = GlobalGameState.PHASE.CARD_PLAY
+      } else {
+        console.log("%%%%%%%%%%% QUACK 3 %%%%%%%%%%%%")
+
         GlobalGameState.gamePhase = GlobalGameState.PHASE.JAPAN_MIDWAY
-      // }
+      }
     }
     GlobalGameState.phaseCompleted = true
     GlobalGameState.setupPhase++

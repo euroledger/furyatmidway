@@ -10,10 +10,10 @@ class JapanHumanStateHandler extends PlayerStateHandler {
     return GlobalGameState.PHASE.JAPAN_SETUP
   }
 
-  async doAction() {
+  async doAction(stateObject) {
     // do nothing (human does stuff)
-    console.log("HUMAN STATE HANDLER now firing do action for state", this.currentState)
-    await this.currentState.doAction(this.stateObject)
+    console.log("HUMAN STATE HANDLER now firing do action for stateObject", stateObject)
+    await this.currentState.doAction(stateObject)
 
   }
 

@@ -8,19 +8,19 @@ class USAIStateHandler extends PlayerStateHandler {
     super(stateObject,  new USAISetupFleetState())
   }
 
-  async doAction() {
+  async doAction(stateObject) {
     // if (this.getState() === GlobalGameState.PHASE.US_SETUP_FLEET) {
     //     await this.currentState.doAction(this.stateObject)
 
     //     // next state is US Fleet Setup
     //     this.currentState = new USAISetupFleetState()
     if (this.getState() === GlobalGameState.PHASE.US_SETUP_AIR) {
-      await this.currentState.doAction(this.stateObject)
-      await this.currentState.nextState()
+      await this.currentState.doAction(stateObject)
+      await this.currentState.nextState(stateObject)
       return
     }
     this.actionComplete = true
-    await this.currentState.doAction(this.stateObject)
+    await this.currentState.doAction(stateObject)
 
   }
 }
