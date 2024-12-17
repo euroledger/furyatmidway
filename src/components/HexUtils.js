@@ -99,6 +99,14 @@ export const coordsOnMap = (q, r) => {
   }
   return true
 }
+
+export const sameHex = (hexA, hexB) => {
+    if (hexA === undefined || hexB === undefined) {
+      return false
+    }
+    return hexA.q === hexB.q && hexA.r === hexB.r
+  
+}
 export const getAllHexes = () => {
   const allHexes = new Array()
   for (let q = 1; q < 10; q++) {

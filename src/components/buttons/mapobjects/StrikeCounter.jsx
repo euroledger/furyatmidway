@@ -171,6 +171,14 @@ function StrikeCounter({ setStrikeGroupPopup, currentUSHex, currentJapanHex, cou
     ) {
       setCurrentHex(locationOfStrikeGroup)
 
+      // hack to make sure midway attack group is set, fuck knows where we did this before
+      if (GlobalGameState.gamePhase === GlobalGameState.PHASE.MIDWAY_ATTACK) {
+        const groups = controller.getAllStrikeGroups(GlobalUnitsModel.Side.JAPAN)
+        if (GlobalGameState.midwayAttackGroup === undefined && groups.length > 0) {
+          GlobalGameState.midwayAttackGroup = groups[0].name
+        }
+      }
+
       if (
         GlobalGameState.gamePhase === GlobalGameState.PHASE.MIDWAY_ATTACK &&
         counterData.name !== GlobalGameState.midwayAttackGroup
@@ -493,7 +501,7 @@ function StrikeCounter({ setStrikeGroupPopup, currentUSHex, currentJapanHex, cou
     if (GlobalGameState.sideWithInitiative !== side) {
       return
     }
-   if (GlobalGameState.gamePhase === GlobalGameState.PHASE.NIGHT_AIR_OPERATIONS_JAPAN) {
+    if (GlobalGameState.gamePhase === GlobalGameState.PHASE.NIGHT_AIR_OPERATIONS_JAPAN) {
       // rare occasion where SG is at sea from previous turn
       counterData.attacked = true
       return

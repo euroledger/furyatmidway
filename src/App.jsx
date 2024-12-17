@@ -520,8 +520,7 @@ export function App() {
       setDamageDone(false)
       GlobalGameState.carrierDamageRoll = undefined
     }
-  }, [GlobalGameState.gamePhase])
-
+  }, [GlobalGameState.gamePhase])  
   useEffect(() => {
     if (GlobalGameState.gamePhase === GlobalGameState.PHASE.MIDWAY_ATTACK) {
       GlobalGameState.dieRolls = []
@@ -1036,6 +1035,7 @@ export function App() {
 
     let midwaySGMoved = false
     for (let sg of strikeGroups) {
+      midwaySGMoved = sg.moved
       if (sg.moved !== true) {
         return false // if strike group has not moved we're not ready
       }
@@ -1204,6 +1204,16 @@ export function App() {
       return
     }
     if (GlobalGameState.gamePhase === GlobalGameState.PHASE.JAPAN_FLEET_MOVEMENT) {
+
+      if (GlobalGameState.midwayAttackDeclaration) {
+        // only allow end of phase if 1AF is within 5 hexes of Midway
+        if (GlobalInit.controller.getDistanceBetween1AFAndMidway() <= 5) {
+          GlobalGameState.nextActionButtonDisabled = false
+        } else {
+          GlobalGameState.nextActionButtonDisabled = true
+        }
+        return
+      }
       if (GlobalGameState.gameTurn < 4) {
         if (GlobalGameState.jpFleetPlaced) {
           GlobalGameState.nextActionButtonDisabled = false
@@ -1236,7 +1246,7 @@ export function App() {
       }
       // 2. If AirOps =2 or less than 2 away -> check to see if attacked yet
 
-      if (GlobalGameState.midwayAirOp === 2 || GlobalInit.controller.getDistanceBetween1AFAndMidway() <= 2) {
+      if (GlobalGameState.midwayAirOp === 2 || GlobalInit.controller.getDistanceBetween1AFAndMidway() <= 3) {
         const endOfAirOps = await endOfMidwayOperation()
         // console.log("endofAirOps=", endOfAirOps)
         if (endOfAirOps) {
@@ -1262,6 +1272,8 @@ export function App() {
           }
           return
         } else {
+          console.log("QUACK 4")
+
           GlobalGameState.nextActionButtonDisabled = false
           if (prevButton !== GlobalGameState.nextActionButtonDisabled) {
             GlobalGameState.updateGlobalState()

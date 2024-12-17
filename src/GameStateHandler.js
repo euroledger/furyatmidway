@@ -116,7 +116,7 @@ async function setNextStateFollowingCardPlay({
         setCardNumber(() => 4)
       } else {
         if (GlobalGameState.gameTurn === 7) {
-          determineMidwayInvasion(setCardNumber)
+          determineMidwayInvasion(setCardNumber,setEndOfTurnSummaryShow, 1)
         } else {
           GlobalGameState.gamePhase = GlobalGameState.PHASE.END_OF_TURN
           setEndOfTurnSummaryShow(true)
@@ -125,13 +125,16 @@ async function setNextStateFollowingCardPlay({
       break
 
     case 2:
+      console.log("PANTS 1")
       if (GlobalInit.controller.usHandContainsCard(3) || GlobalInit.controller.japanHandContainsCard(3)) {
         setCardNumber(() => 3)
       } else if (GlobalInit.controller.usHandContainsCard(4) || GlobalInit.controller.japanHandContainsCard(4)) {
         setCardNumber(() => 4)
       } else {
         if (GlobalGameState.gameTurn === 7) {
-          determineMidwayInvasion(setCardNumber)
+          console.log("PANTS 2")
+
+          determineMidwayInvasion(setCardNumber, setEndOfTurnSummaryShow, 2)
         } else {
           GlobalGameState.gamePhase = GlobalGameState.PHASE.END_OF_TURN
           setEndOfTurnSummaryShow(true)
@@ -144,7 +147,7 @@ async function setNextStateFollowingCardPlay({
         setCardNumber(() => 4)
       } else {
         if (GlobalGameState.gameTurn === 7) {
-          determineMidwayInvasion(setCardNumber)
+          determineMidwayInvasion(setCardNumber,setEndOfTurnSummaryShow, 3)
         } else {
           GlobalGameState.gamePhase = GlobalGameState.PHASE.END_OF_TURN
           setEndOfTurnSummaryShow(true)
@@ -154,7 +157,7 @@ async function setNextStateFollowingCardPlay({
 
     case 4:
       if (GlobalGameState.gameTurn === 7) {
-        determineMidwayInvasion(setCardNumber)
+        determineMidwayInvasion(setCardNumber, setEndOfTurnSummaryShow, 4)
       } else {
         // if playing this card has resulted in a DMCV carrier being sunk, need to remove
         // the DMCV Fleet from the map
@@ -427,19 +430,21 @@ function goToIJNFleetMovement({
       if (jpDMCVLocation !== undefined && jpDMCVLocation.currentHex !== undefined) {
         jpRegion = removeHexFromRegion(jpRegion, jpDMCVLocation.currentHex)
       }
-      // if (GlobalGameState.midwayAttackDeclaration === true) {
-      //   let newHexArray = new Array()
 
-      //   let hexesInRangeOfMidway = allHexesWithinDistance(Controller.MIDWAY_HEX.currentHex, 5, true)
-      //   for (const hex1 of hexesInRangeOfMidway) {
-      //     for (const hex2 of jpRegion) {
-      //       if (hex2.q === hex1.q && hex2.r === hex1.r) {
-      //         newHexArray.push(hex1)
-      //       }
-      //     }
-      //   }
-      //   jpRegion = newHexArray
-      // }
+      // If Midway attack declared, 1AF must move to within 5 hexes
+      if (GlobalGameState.midwayAttackDeclaration === true) {
+        let newHexArray = new Array()
+
+        let hexesInRangeOfMidway = allHexesWithinDistance(Controller.MIDWAY_HEX.currentHex, 5, true)
+        for (const hex1 of hexesInRangeOfMidway) {
+          for (const hex2 of jpRegion) {
+            if (hex2.q === hex1.q && hex2.r === hex1.r) {
+              newHexArray.push(hex1)
+            }
+          }
+        }
+        jpRegion = newHexArray
+      }
       setJapanMapRegions(jpRegion)
 
       const jpMIFLocation = GlobalInit.controller.getFleetLocation("MIF", GlobalUnitsModel.Side.JAPAN)
@@ -601,8 +606,10 @@ function goToJapanDMCVMovement({
 }
 
 function calcAirOpsPoints({ setSearchValues, setSearchResults, setSearchValuesAlertShow }) {
+  // work out distances between fleets
   const sv = calculateSearchValues(GlobalInit.controller)
 
+  // use distances to calculate Ops Points
   const sr = calculateSearchResults(GlobalInit.controller, {
     jp_af: Math.max(0, sv.jp_af),
     us_csf: sv.us_csf,
@@ -1175,9 +1182,10 @@ function midwayOrAirOps() {
   }
 }
 
-function determineMidwayInvasion(setCardNumber) {
+function determineMidwayInvasion(setCardNumber,setEndOfTurnSummaryShow, currentCardNumber) {
   // before midway invasion, check cards playable at end of turn
   if (
+    currentCardNumber !== 1 && 
     GlobalInit.controller.usHandContainsCard(1) &&
     GlobalInit.controller.getSunkCarriers(GlobalUnitsModel.Side.US).length > 0
   ) {
@@ -1185,17 +1193,18 @@ function determineMidwayInvasion(setCardNumber) {
     GlobalGameState.gamePhase = GlobalGameState.PHASE.CARD_PLAY
     return
   }
-  if (GlobalInit.controller.usHandContainsCard(2) || GlobalInit.controller.japanHandContainsCard(2)) {
+  if (currentCardNumber !== 2 && GlobalInit.controller.usHandContainsCard(2) || GlobalInit.controller.japanHandContainsCard(2)) {
     setCardNumber(() => 2)
+    console.log("FUCKETY")
     GlobalGameState.gamePhase = GlobalGameState.PHASE.CARD_PLAY
     return
   }
-  if (GlobalInit.controller.usHandContainsCard(3) || GlobalInit.controller.japanHandContainsCard(3)) {
+  if (currentCardNumber !== 3 && GlobalInit.controller.usHandContainsCard(3) || GlobalInit.controller.japanHandContainsCard(3)) {
     setCardNumber(() => 3)
     GlobalGameState.gamePhase = GlobalGameState.PHASE.CARD_PLAY
     return
   }
-  if (GlobalInit.controller.usHandContainsCard(4) || GlobalInit.controller.japanHandContainsCard(4)) {
+  if (currentCardNumber !== 4 && GlobalInit.controller.usHandContainsCard(4) || GlobalInit.controller.japanHandContainsCard(4)) {
     setCardNumber(() => 4)
     GlobalGameState.gamePhase = GlobalGameState.PHASE.CARD_PLAY
     return
@@ -1206,6 +1215,7 @@ function determineMidwayInvasion(setCardNumber) {
   // MIF Regions set separately
   if (jpMIFLocation !== undefined && jpMIFLocation.boxName !== HexCommand.FLEET_BOX) {
     const distance = distanceBetweenHexes(jpMIFLocation.currentHex, Controller.MIDWAY_HEX.currentHex)
+    console.log("MUGS distance=", distance)
     if (distance === 1) {
       if (GlobalInit.controller.usHandContainsCard(8)) {
         setCardNumber(() => 8)
@@ -1214,9 +1224,13 @@ function determineMidwayInvasion(setCardNumber) {
         GlobalGameState.gamePhase = GlobalGameState.PHASE.MIDWAY_INVASION
       }
     } else {
+      console.log("FUCKING END YOU CUNT 1")
+      setEndOfTurnSummaryShow(true)
       GlobalGameState.gamePhase = GlobalGameState.PHASE.END_OF_GAME
     }
   } else {
+    console.log("FUCKING END YOU CUNT 2")
+    setEndOfTurnSummaryShow(true)
     GlobalGameState.gamePhase = GlobalGameState.PHASE.END_OF_GAME
   }
 }
@@ -1740,6 +1754,7 @@ export default async function handleAction({
       GlobalGameState.carrierAttackHitsThisAttack > 0 &&
       GlobalGameState.sideWithInitiative === GlobalUnitsModel.Side.US &&
       GlobalGameState.taskForceTarget !== GlobalUnitsModel.TaskForce.JAPAN_DMCV &&
+      GlobalInit.controller.getDamagedCarriersOneOrTwoHits().length > 0 &&
       GlobalInit.controller.usHandContainsCard(13)
     ) {
       setCardNumber(() => 13)
@@ -1803,7 +1818,7 @@ export default async function handleAction({
   } else if (GlobalGameState.gamePhase === GlobalGameState.PHASE.END_OF_AIR_OPERATION) {
     if (endOfTurn()) {
       if (GlobalGameState.gameTurn === 7) {
-        determineMidwayInvasion(setCardNumber)
+        determineMidwayInvasion(setCardNumber, setEndOfTurnSummaryShow)
         if (
           GlobalGameState.gamePhase === GlobalGameState.PHASE.MIDWAY_INVASION ||
           GlobalGameState.gamePhase === GlobalGameState.PHASE.CARD_PLAY
@@ -1853,7 +1868,7 @@ export default async function handleAction({
         setCardNumber(() => 6)
         GlobalGameState.gamePhase = GlobalGameState.PHASE.CARD_PLAY
       } else {
-        determineMidwayInvasion(setCardNumber)
+        determineMidwayInvasion(setCardNumber, setEndOfTurnSummaryShow)
       }
     } else {
       GlobalGameState.gameTurn++

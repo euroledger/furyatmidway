@@ -565,8 +565,9 @@ export function doStrikeBoxUS(controller, name, side) {
     const return2Box = controller.getReturn2AirBoxForNamedTaskForce(side, tf)
 
     destArray.push(return2Box)
-    // Do not allow other TF return boxes for Midway aircraft
-    if (tf !== GlobalUnitsModel.TaskForce.MIDWAY) {
+    // Do not allow other TF return boxes for Midway aircraft (unless this is a carrier unit based on Midway)
+    const usCarrierUnitBasedOnMidway = controller.isCarrierUnit(name)
+    if (tf !== GlobalUnitsModel.TaskForce.MIDWAY || usCarrierUnitBasedOnMidway) {
       const otherTF = controller.getOtherTaskForce(tf, side)
       const carriersInOtherTaskForce = controller.getCarriersInOtherTF(tf, side)
       for (let carrier of carriersInOtherTaskForce) {

@@ -416,7 +416,7 @@ export default class Controller {
 
         if (GlobalGameState.midwayAttackGroup === undefined && groups.length > 0) {
           GlobalGameState.midwayAttackGroup = groups[0].name
-        }
+        } 
         for (let group of groups) {
           if (group.name === GlobalGameState.midwayAttackGroup) {
             strikeBoxes = new Array()
@@ -983,6 +983,12 @@ export default class Controller {
       }
     }
     return damagedCarriers
+  }
+  isCarrierUnit(name) {
+    if (name.includes("Hornet") || name.includes("Enterprise") || name.includes("Yorktown")) {
+      return true
+    }
+    return false
   }
   getTargetForAttack() {
     if (
