@@ -115,6 +115,9 @@ function getValidJapanDestinationsRETURN1(controller, parentCarrier, side) {
   let destinationsArray = new Array()
   if (controller.isSunk(parentCarrier)) {
     destinationsArray = tryOtherCarrier(controller, parentCarrier, side)
+    if (destinationsArray.length === 0) {
+      destinationsArray = tryOtherTaskForce(controller, parentCarrier, side)
+    }
   } else if (controller.isHangarAvailable(parentCarrier)) {
     const box = controller.getAirBoxForNamedShip(side, parentCarrier, "HANGAR")
     destinationsArray.push(box)
@@ -867,6 +870,7 @@ export async function moveOrphanedAirUnitsInReturn1Boxes(side, box, unit) {
     }
     if (destinationsArray.length === 0) {
       GlobalGameState.orphanedAirUnits.push(unit)
+      console.log("POO 2")
       moveAirUnitToEliminatedBox(GlobalInit.controller, unit)
     }
   }
