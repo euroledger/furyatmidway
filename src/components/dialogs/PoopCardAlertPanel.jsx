@@ -6,11 +6,10 @@ import GlobalGameState from "../../model/GlobalGameState"
 import "./modal.css"
 import GlobalUnitsModel from "../../model/GlobalUnitsModel"
 
-function CardPlayedByAIPanel(props) {
+function PoopCardAlertPanel(props) {
   const {
     controller,
     headerText,
-    show,
     setHeaderText,
     headers,
     footers,
@@ -34,30 +33,30 @@ function CardPlayedByAIPanel(props) {
     setSubmarineDamagePanelShow,
     ...rest
   } = props
-
-  if (!show) {
-    return
-  }
-
+  const [buttonPressed, setButtonPressed] = useState(false)
   const [thisCard, setThisCard] = useState(0)
+
+  const button1Ref = useRef(null)
+  const button2Ref = useRef(null)
+  const button3Ref = useRef(null)
+
+  const closeButtonStr = buttonPressed ? "Close" : "No"
+
   if (thisCard !== cardNumber) {
+    setButtonPressed(false)
     setThisCard(cardNumber)
   }
+  const noHandler = (e) => {
+    setShowCardFooter(false)
+    onHide(e)
+    nextAction()
+  }
+
   const closeHandler = (e) => {
-    // setButtonPressed(() => false)
     setShowCardFooter(false)
     onHide(e)
   }
 
-  if (cardNumber === 6) {
-    setHeaderText("CARD #6 PLAYED")
-    setShowCardFooter(() => true)
-  }
-
-  if (cardNumber === 7) {
-    setHeaderText("CARD #7 PLAYED")
-    setShowCardFooter(() => true)
-  }
   const bg = GlobalGameState.gameTurn === 4 ? "black" : "#293a4b"
 
   let myBigBollocks = "modal-width" + 2
@@ -73,11 +72,11 @@ function CardPlayedByAIPanel(props) {
   if (cardNumber === 0) {
     return
   }
+
   const jpCard =
     controller.japanHandContainsCard(cardNumber) || controller.getCardPlayed(cardNumber, GlobalUnitsModel.Side.JAPAN)
-  let image = jpCard ? "/images/japanflag.jpg" : "/images/usaflag.jpg"
 
-  console.log("RETURN SOME STUFF")
+  let image = jpCard ? "/images/japanflag.jpg" : "/images/usaflag.jpg"
   return (
     <Modal
       {...rest}
@@ -155,4 +154,4 @@ function CardPlayedByAIPanel(props) {
   )
 }
 
-export default CardPlayedByAIPanel
+export default PoopCardAlertPanel

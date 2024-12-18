@@ -1,3 +1,8 @@
+
+export const convertHexCoords = (hex) => {
+  return convertCoords(hex.q, hex.r)
+}
+
 export const convertCoords = (q, r) => {
   const r1 = q >= 2 ? r + Math.floor(q / 2) : r
 
@@ -40,6 +45,25 @@ export const distanceBetweenHexes = (a, b) => {
 
   const { q, r, s } = cubeSubtract(hexA, hexB)
   return (Math.abs(q) + Math.abs(r) + Math.abs(s)) / 2
+}
+
+
+export const mapIndexToHex = (i) => {
+  const hexes = getAllHexes()
+  return hexes.find((h)=> h.index = i)
+}
+
+export const mapHexToIndex = (q,r) => {
+  const hexes = getAllHexes()
+  return hexes.find((h)=> h.q === q && h.r === r)
+}
+
+export const mapIndexesToHexes = (indexArray) => {
+  return indexArray.map((element) => mapIndexToHex(element.index))
+}
+
+export const mapHexesToIndexes= (hexArray) => {
+  return hexArray.map((element) => mapHexToIndex(element.q, element.r))
 }
 
 export const areCoordinatesOnMap = (q, r) => {
@@ -100,31 +124,20 @@ export const coordsOnMap = (q, r) => {
   return true
 }
 
-export const mapIndexToHex = (i) => {
-  const hexes = getAllHexes()
-  return hexes.find((h)=> h.index = i)
+export const sameHex = (hexA, hexB) => {
+    if (hexA === undefined || hexB === undefined) {
+      return false
+    }
+    return hexA.q === hexB.q && hexA.r === hexB.r
+  
 }
-
-export const mapHexToIndex = (q,r) => {
-  const hexes = getAllHexes()
-  return hexes.find((h)=> h.q === q && h.r === r)
-}
-
-export const mapIndexesToHexes = (indexArray) => {
-  return indexArray.map((element) => mapIndexToHex(element.index))
-}
-
-export const mapHexesToIndexes= (hexArray) => {
-  return hexArray.map((element) => mapHexToIndex(element.q, element.r))
-}
-
 export const getAllHexes = () => {
   const allHexes = new Array()
   let index = 0
   for (let q = 1; q < 10; q++) {
     for (let r = -3; r < 7; r++) {
       if (coordsOnMap(q, r)) {
-        allHexes.push({ index, q, r })
+        allHexes.push({ q, r, index })
         index++
       }
     }

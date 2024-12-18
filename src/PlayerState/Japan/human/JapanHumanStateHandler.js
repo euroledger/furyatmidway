@@ -14,6 +14,7 @@ class JapanHumanStateHandler extends PlayerStateHandler {
     // do nothing (human does stuff)
     console.log("HUMAN STATE HANDLER now firing do action for stateObject", stateObject)
     await this.currentState.doAction(stateObject)
+    this.stateObject = stateObject
 
   }
 

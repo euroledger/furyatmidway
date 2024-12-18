@@ -5,6 +5,8 @@ import { allHexesWithinDistance, removeHexFromRegion } from "../components/HexUt
 import { createMapUpdateForFleet } from "../AirUnitData"
 import { calculateSearchResults, calculateSearchValues } from "../model/SearchValues"
 import { delay } from "../Utils"
+import { japanAF1StartHexesMidway, japanAF1StartHexesNoMidway } from "../components/MapRegions"
+import HexCommand from "../commands/HexCommand"
 export const DELAY_MS = 1
 
 export function calcAirOpsPointsMidway(distanceFromFleetToMidway) {
@@ -176,6 +178,26 @@ export function initialiseIJNFleetMovement({
   GlobalGameState.phaseCompleted = false
 }
 
+export async function usFleetMovementHandler({ setFleetUnitUpdate }) {
+  const update1 = createMapUpdateForFleet(GlobalInit.controller, "CSF", GlobalUnitsModel.Side.US)
+  let update2 = null
+  if (GlobalUnitsModel.usDMCVCarrier !== undefined) {
+    update2 = createMapUpdateForFleet(GlobalInit.controller, "US-DMCV", GlobalUnitsModel.Side.US)
+  }
+
+  if (update2 !== null) {
+    await setFleetUnitUpdate(update2)
+  }
+  await delay(1)
+
+  if (update1 !== null) {
+    await setFleetUnitUpdate(update1)
+  }
+  await delay(1)
+
+  GlobalGameState.updateGlobalState()
+}
+
 export async function goToMidwayAttackOrUSFleetMovement({
   setMidwayNoAttackAlertShow,
   setJapanMapRegions,
@@ -226,23 +248,6 @@ export async function goToMidwayAttackOrUSFleetMovement({
   await delay(1)
 }
 
-export async function usFleetMovementHandler({ setFleetUnitUpdate }) {
-  const update1 = createMapUpdateForFleet(GlobalInit.controller, "CSF", GlobalUnitsModel.Side.US)
-  const update2 = createMapUpdateForFleet(GlobalInit.controller, "US-DMCV", GlobalUnitsModel.Side.US)
-
-  if (update2 !== null) {
-    await setFleetUnitUpdate(update2)
-  }
-  await delay(1)
-
-  if (update1 !== null) {
-    await setFleetUnitUpdate(update1)
-  }
-  await delay(1)
-
-  GlobalGameState.updateGlobalState()
-}
-
 export async function getFleetsForCSFSeaBattle({ setJpFleet, setUsFleet }) {
   const csfLocation = GlobalInit.controller.getFleetLocation("CSF", GlobalUnitsModel.Side.US)
 
@@ -260,13 +265,22 @@ export async function getFleetsForCSFSeaBattle({ setJpFleet, setUsFleet }) {
   }
   return fleetsInSameHexAsCSF
 }
+export function displayScreen() {
+  if (
+    GlobalGameState.jpPlayerType === GlobalUnitsModel.TYPE.AI &&
+    GlobalGameState.usPlayerType === GlobalUnitsModel.TYPE.AI &&
+    GlobalGameState.replay === false
+  ) {
+    return false
+  }
+  return true
+}
 export async function usFleetMovementNextStateHandler({
   setJpFleet,
   setUsFleet,
   setCardNumber,
   setSearchValues,
   setSearchResults,
-  setSearchValuesAlertShow,
 }) {
   const { numFleetsInSameHexAsCSF, numFleetsInSameHexAsUSDMCV } = GlobalInit.controller.opposingFleetsInSameHex()
   if (GlobalGameState.gameTurn === 4) {
@@ -379,8 +393,68 @@ export const getUSFleetRegions = () => {
   return { canCSFMoveFleetOffBoard, canUSDMCVMoveFleetOffBoard, usCSFRegions, usDMCVRegions }
 }
 
+export function goToIJNFleetMovement({
+  setUSMapRegions,
+  setJapanMapRegions,
+  setJapanMIFMapRegions,
+  setJpAlertShow,
+  setEnabledJapanFleetBoxes,
+}) {
+  testForOffMapBoxesJapan(setEnabledJapanFleetBoxes)
+  setUSMapRegions([])
+  // if this is not turn 1 derive japan regions from position of fleet(s)
+  if (GlobalGameState.gameTurn !== 1) {
+    const locationOfCarrier = GlobalInit.controller.getFleetLocation("1AF", GlobalUnitsModel.Side.JAPAN)
+    if (locationOfCarrier !== undefined && locationOfCarrier.currentHex !== undefined) {
+      // IJN 1AF Fleet is not allowed to move to same hex as other fleets, remove IJN-DMCV hex from region
+      let jpRegion = allHexesWithinDistance(locationOfCarrier.currentHex, GlobalGameState.fleetSpeed, true)
+      const jpDMCVLocation = GlobalInit.controller.getFleetLocation("IJN-DMCV", GlobalUnitsModel.Side.JAPAN)
+
+      if (jpDMCVLocation !== undefined && jpDMCVLocation.currentHex !== undefined) {
+        jpRegion = removeHexFromRegion(jpRegion, jpDMCVLocation.currentHex)
+      }
+      if (GlobalGameState.midwayAttackDeclaration === true) {
+        let newHexArray = new Array()
+
+        let hexesInRangeOfMidway = allHexesWithinDistance(Controller.MIDWAY_HEX.currentHex, 5, true)
+        for (const hex1 of hexesInRangeOfMidway) {
+          for (const hex2 of jpRegion) {
+            if (hex2.q === hex1.q && hex2.r === hex1.r) {
+              newHexArray.push(hex1)
+            }
+          }
+        }
+        jpRegion = newHexArray
+      }
+      setJapanMapRegions(jpRegion)
+
+      const jpMIFLocation = GlobalInit.controller.getFleetLocation("MIF", GlobalUnitsModel.Side.JAPAN)
+
+      // MIF Regions set separately
+      if (jpMIFLocation !== undefined && jpMIFLocation.currentHex !== undefined) {
+        jpRegion = allHexesWithinDistance(jpMIFLocation.currentHex, GlobalGameState.dmcvFleetSpeed, true)
+        if (jpDMCVLocation !== undefined && jpDMCVLocation.currentHex !== undefined) {
+          jpRegion = removeHexFromRegion(jpRegion, jpDMCVLocation.currentHex)
+        }
+        setJapanMIFMapRegions(jpRegion)
+      }
+      if (GlobalGameState.gameTurn === 4) {
+        // Initial placement of MIF
+        setJapanMIFMapRegions(japanMIFStartHexes)
+      }
+    }
+  } else {
+    if (GlobalGameState.midwayAttackDeclaration === true) {
+      setJapanMapRegions(japanAF1StartHexesMidway)
+    } else {
+      setJapanMapRegions(japanAF1StartHexesNoMidway)
+    }
+  }
+  setJpAlertShow(true)
+  GlobalGameState.phaseCompleted = false
+}
 export async function setNextStateFollowingCardPlay(stateObject) {
-  const { cardNumber, setCardNumber } = stateObject
+  const { cardNumber, setCardNumber, setSearchValues, setSearchResults } = stateObject
   GlobalGameState.dieRolls = []
 
   switch (cardNumber) {
@@ -392,7 +466,6 @@ export async function setNextStateFollowingCardPlay(stateObject) {
       if (GlobalGameState.gameTurn === 1) {
         GlobalGameState.usCardsDrawn = true
         if (isMidwayAttackPossible()) {
-          console.log("%%%%%%%%%%% QUACK 1 %%%%%%%%%%%%")
           GlobalGameState.gamePhase = GlobalGameState.PHASE.JAPAN_MIDWAY
           return
         }
@@ -413,20 +486,11 @@ export async function setNextStateFollowingCardPlay(stateObject) {
           GlobalGameState.phaseCompleted = false
         }
       }
-      break
-      setCardNumber(() => -1) // reset for next card play
-      if (GlobalGameState.carrierTarget2 !== "" && GlobalGameState.carrierTarget2 !== undefined) {
-        GlobalGameState.gamePhase = GlobalGameState.PHASE.AIR_ATTACK_2
-      } else {
-        await endOfAirOperation(
-          GlobalGameState.sideWithInitiative,
-          capAirUnits,
-          setAirUnitUpdate,
-          setEliminatedUnitsPanelShow
-        )
-        GlobalGameState.gamePhase = GlobalGameState.PHASE.AIR_OPERATIONS
-        GlobalGameState.updateGlobalState()
-      }
+    case 7:
+      // Troubled Reconnaissance
+      GlobalGameState.isFirstAirOp = true
+      GlobalGameState.gamePhase = GlobalGameState.PHASE.AIR_SEARCH
+      calcAirOpsPoints({ setSearchValues, setSearchResults })
       break
     default:
       console.log("ERROR unknown card number: ", cardNumber)

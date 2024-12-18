@@ -8,16 +8,16 @@ class JapanHumanCardPlayState {
 
 
   async doAction(stateObject) {
-    const { cardNumber } = stateObject
-
-   console.log("JAPAN POSSIBLE CARD PLAY HUMAN side, cardNumber=", cardNumber)
-  
+    const { cardNumber, setCardAlertPanelShow } = stateObject
+   setCardAlertPanelShow(true)
 
     // this.nextState(stateObject)
   }
 
   async nextState(stateObject) {
-    console.log("NEXT STATE FROM JAPAN CARD PLAY")
+    const { cardNumber, setCardAlertPanelShow } = stateObject
+
+    console.log("GRABBAGE NEXT STATE FROM JAPAN CARD PLAY cardNumber=", cardNumber)
     await setNextStateFollowingCardPlay(stateObject)
   }
 

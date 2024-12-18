@@ -3,6 +3,8 @@ import GlobalUnitsModel from './GlobalUnitsModel';
 export default class GlobalGameState {
 
   static DELAY = 1
+  static replay = false
+  
   static PHASE = {
     JAPAN_SETUP: "Japan Setup",
     JAPAN_CARD_DRAW: "Japan Card Draw",

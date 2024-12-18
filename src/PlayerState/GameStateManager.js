@@ -58,8 +58,6 @@ class GameStateManager {
     } else {
       this.japanStateHandler = new JapanHumanStateHandler(stateObject)
     }
-    console.log("WOOF 99")
-
     this.setJapanState()
 
     // US Handlers and Current State

@@ -1,16 +1,35 @@
 import GlobalGameState from "../../../model/GlobalGameState"
 import GlobalUnitsModel from "../../../model/GlobalUnitsModel"
+import GlobalInit from "../../../model/GlobalInit"
 import { goToDMCVState } from "../../StateUtils"
 import { getUSFleetRegions } from "../../StateUtils"
 import { doUSFleetMovementAction } from "../../../UIEvents/AI/USFleetMovementBot"
+import { convertHexCoords } from "../../../components/HexUtils"
+import { createFleetUpdate } from "../../../AirUnitData"
+import { delay } from "../../../Utils"
+import { DELAY_MS } from "../../StateUtils"
 
 class USAIFleetMovementPlanningState {
   async doAction(stateObject) {
-    const  { canCSFMoveFleetOffBoard, usCSFRegions } = getUSFleetRegions()
+    const { setFleetUnitUpdate } = stateObject
+    const { canCSFMoveFleetOffBoard, usCSFRegions } = getUSFleetRegions()
 
-    console.log(">>>>>>>>>> HEX REGIONS FOR CSF:", usCSFRegions)
-    const destinatio = doUSFleetMovementAction(usCSFRegions, canCSFMoveFleetOffBoard)
-    console.log("US FLEET DESTINATION:", destination)
+    // @TODO vary the start location and opening move according to
+    // Fleet Strategy, game state and IJN Fleet Location
+
+    const csfLocation = GlobalInit.controller.getFleetLocation("CSF", GlobalUnitsModel.Side.US)
+
+    const destination = doUSFleetMovementAction(usCSFRegions, canCSFMoveFleetOffBoard)
+
+    const c = convertHexCoords(destination)
+    console.log("US FLEET DESTINATION:", c)
+
+    const usFleetMove = createFleetUpdate("CSF", destination.q, destination.r)
+    setFleetUnitUpdate(usFleetMove)
+
+    await delay(DELAY_MS)
+
+    this.nextState(stateObject)
   }
 
   dmcvState(side) {
@@ -18,7 +37,7 @@ class USAIFleetMovementPlanningState {
       return false
     }
     const jpDMCVLocation = GlobalInit.controller.getFleetLocation("IJN-DMCV", GlobalUnitsModel.Side.JAPAN)
-  
+
     if (jpDMCVLocation !== undefined && jpDMCVLocation.boxName === HexCommand.FLEET_BOX) {
       return false
     }
@@ -28,11 +47,13 @@ class USAIFleetMovementPlanningState {
     )
   }
   async nextState(stateObject) {
+    console.log("GOOD POINT")
     if (goToDMCVState(GlobalUnitsModel.Side.JAPAN)) {
-        GlobalGameState.gamePhase = GlobalGameState.PHASE.JAPAN_DMCV_FLEET_MOVEMENT
+      GlobalGameState.gamePhase = GlobalGameState.PHASE.JAPAN_DMCV_FLEET_MOVEMENT
     } else {
-        GlobalGameState.gamePhase = GlobalGameState.PHASE.JAPAN_FLEET_MOVEMENT
+      GlobalGameState.gamePhase = GlobalGameState.PHASE.JAPAN_FLEET_MOVEMENT
     }
+    GlobalGameState.updateGlobalState()
   }
 
   getState() {

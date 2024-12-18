@@ -3,6 +3,7 @@ import JapanHumanSetupAirState from "./JapanHumanSetupAirState"
 import JapanHumanMidwayDeclarationState from "./JapanHumanMidwayDeclarationState"
 import JapanHumanCardPlayState from "./JapanHumanCardPlayState"
 import JapanHumanCardDrawState from "./JapanHumanCardDrawState"
+import JapanHumanFleetMovementState from "./JapanHumanFleetMovementState"
 
 function mapGameStateToJapanHumanHandlerState() {
   switch (GlobalGameState.gamePhase) {
@@ -17,6 +18,10 @@ function mapGameStateToJapanHumanHandlerState() {
 
     case GlobalGameState.PHASE.CARD_PLAY:
       return new JapanHumanCardPlayState()
+
+    case GlobalGameState.PHASE.JAPAN_FLEET_MOVEMENT:
+      return new JapanHumanFleetMovementState()
+
     default:
   }
 }

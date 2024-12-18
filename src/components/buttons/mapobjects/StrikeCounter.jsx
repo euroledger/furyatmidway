@@ -170,7 +170,14 @@ function StrikeCounter({ setStrikeGroupPopup, currentUSHex, currentJapanHex, cou
         GlobalGameState.airOpJapan !== counterData.airOpMoved)
     ) {
       setCurrentHex(locationOfStrikeGroup)
-
+       // hack to make sure midway attack group is set, fuck knows where we did this before
+       if (GlobalGameState.gamePhase === GlobalGameState.PHASE.MIDWAY_ATTACK) {
+        const groups = controller.getAllStrikeGroups(GlobalUnitsModel.Side.JAPAN)
+        if (GlobalGameState.midwayAttackGroup === undefined && groups.length > 0) {
+          console.log("POOGY VERY 10000")
+          GlobalGameState.midwayAttackGroup = groups[0].name
+        }
+      }
       if (
         GlobalGameState.gamePhase === GlobalGameState.PHASE.MIDWAY_ATTACK &&
         counterData.name !== GlobalGameState.midwayAttackGroup

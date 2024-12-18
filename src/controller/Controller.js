@@ -792,11 +792,11 @@ export default class Controller {
         takenBoxes.push(location.boxIndex)
       }
     }
-    const firstBox = 0
-    for (let i = 0; i < takenBoxes.length; i++) {
+    let firstBox = 0
+    for (let i = 0; i < 5; i++) {
       if (!takenBoxes.includes(i)) {
         return i
-      }
+      } 
     }
     return firstBox
   }
@@ -1212,6 +1212,13 @@ export default class Controller {
     return this.boxModel.getAirUnitLocation(airUnitName)
   }
 
+  isCarrierUnit(name) {
+    if (name.includes("Hornet") || name.includes("Enterprise") || name.includes("Yorktown")) {
+      return true
+    }
+    return false
+  }
+  
   opposingFleetsInSameHex() {
     const csfLocation = this.getFleetLocation("CSF", GlobalUnitsModel.Side.US)
     const usDMCVLocation = this.getFleetLocation("US-DMCV", GlobalUnitsModel.Side.US)

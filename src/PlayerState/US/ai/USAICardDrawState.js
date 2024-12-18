@@ -25,8 +25,7 @@ class USAICardDrawState {
         setCardNumber(() => 6)
         GlobalGameState.gamePhase = GlobalGameState.PHASE.CARD_PLAY
       } else {
-        console.log("GO TO JAPAN MIDWAY DECLARATION")
-        console.log("%%%%%%%%%%% QUACK 2 %%%%%%%%%%%%")
+     
         GlobalGameState.gamePhase = GlobalGameState.PHASE.JAPAN_MIDWAY
         GlobalGameState.updateGlobalState()
       }

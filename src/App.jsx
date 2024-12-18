@@ -19,7 +19,7 @@ import Controller from "./controller/Controller"
 import "./style.css"
 import StateManager from "./model/StateManager"
 import { allCards } from "./CardLoader"
-import CardPlayedByAIPanel from "./components/dialogs/CardPlayedByAIPanel"
+import { processPlayedCard } from "./PlayerState/CardUtils"
 import {
   doIntiativeRoll,
   doNavalBattleRoll,
@@ -73,6 +73,7 @@ import CarrierDamageDicePanel from "./components/dialogs/CarrierDamageDicePanel"
 import MidwayDamageDicePanel from "./components/dialogs/MidwayDamageDicePanel"
 import EliminatedReturningUnits from "./components/dialogs/EliminatedReturningUnitsPanel"
 import CardAlertPanel from "./components/dialogs/CardAlertPanel"
+import PoopCardAlertPanel from "./components/dialogs/PoopCardAlertPanel"
 import { AirOpsHeaders, AirOpsFooters } from "./attackscreens/AirOpsDataPanels"
 import { TargetHeaders, TargetFooters } from "./attackscreens/TargetPanel"
 import { AttackTargetHeaders, AttackTargetFooters } from "./attackscreens/AttackTargetPanel"
@@ -114,6 +115,7 @@ import handleAction, { calcAirOpsPointsMidway, getFleetsForDMCVSeaBattle, midway
 import { setStrikeGroupAirUnitsToNotMoved } from "./controller/AirOperationsHandler"
 import { SeaBattleFooters, SeaBattleHeaders } from "./attackscreens/SeaBattlePanel"
 import HexCommand from "./commands/HexCommand"
+import { displayScreen } from "./PlayerState/StateUtils"
 
 export default App
 
@@ -393,13 +395,15 @@ export function App() {
     }
   }, [GlobalGameState.gamePhase])
 
-  useEffect(() => {
-    if (GlobalGameState.gamePhase === GlobalGameState.PHASE.INITIATIVE_DETERMINATION) {
-      GlobalGameState.dieRolls = []
-      GlobalGameState.sideWithInitiative = undefined
-      setInitiativePanelShow(true)
-    }
-  }, [GlobalGameState.gamePhase])
+  // useEffect(() => {
+  //   if (GlobalGameState.gamePhase === GlobalGameState.PHASE.INITIATIVE_DETERMINATION) {
+  //     GlobalGameState.dieRolls = []
+  //     GlobalGameState.sideWithInitiative = undefined
+  //     if (displayScreen) {
+  //       setInitiativePanelShow(true)
+  //     }
+  //   }
+  // }, [GlobalGameState.gamePhase])
 
   useEffect(() => {
     if (GlobalGameState.gamePhase === GlobalGameState.PHASE.NIGHT_AIR_OPERATIONS_JAPAN) {
@@ -620,7 +624,6 @@ export function App() {
     StateManager.gameStateManager.setStateHandlers(stateObject)
 
     if (newGame) {
-      console.log(">>>>>>>>>> GOING TO USE stateObject", stateObject)
       if (StateManager.gameStateManager.getCurrentPlayer() === GlobalUnitsModel.Side.JAPAN && StateManager.gameStateManager.actionComplete(GlobalUnitsModel.Side.JAPAN ) === false && splash===false) {  
           StateManager.gameStateManager.doAction(GlobalUnitsModel.Side.JAPAN, stateObject)
       }
@@ -630,7 +633,6 @@ export function App() {
 
   useEffect(() => {
     if (GlobalGameState.gamePhase === GlobalGameState.PHASE.JAPAN_CARD_DRAW) {
-      console.log("WOOF 1")
       StateManager.gameStateManager.setJapanState(stateObject)
       StateManager.gameStateManager.doAction(GlobalUnitsModel.Side.JAPAN, stateObject)
     }
@@ -646,9 +648,6 @@ export function App() {
 
   useEffect(() => {
     if (GlobalGameState.gamePhase === GlobalGameState.PHASE.JAPAN_SETUP) {
-      console.log("JAPAN SETUP")
-      console.log("WOOF 2")
-
       StateManager.gameStateManager.setJapanState(stateObject)
       GlobalGameState.updateGlobalState()
     }
@@ -674,8 +673,6 @@ export function App() {
 
   useEffect(() => {
     if (GlobalGameState.gamePhase === GlobalGameState.PHASE.JAPAN_MIDWAY) {
-      console.log("*********************************** WOOF 3 *******************************************")
-
       StateManager.gameStateManager.setJapanState(stateObject)
 
       // only show this for da human
@@ -696,8 +693,6 @@ export function App() {
         ) {
       GlobalGameState.currentPlayer = GlobalUnitsModel.Side.JAPAN
       setDMCVCarrierSelected(() => "")
-      console.log("WOOF 4")
-
       StateManager.gameStateManager.setJapanState(stateObject)
       StateManager.gameStateManager.doAction(GlobalUnitsModel.Side.JAPAN,stateObject)
     }
@@ -733,8 +728,6 @@ export function App() {
       if (GlobalGameState.currentPlayer === GlobalUnitsModel.Side.US, stateObject) {
         StateManager.gameStateManager.setUSState(stateObject)
       } else {
-        console.log("WOOF 5")
-
         StateManager.gameStateManager.setJapanState(stateObject)
       }
     }
@@ -753,8 +746,6 @@ export function App() {
           StateManager.gameStateManager.setUSState(stateObject)
           StateManager.gameStateManager.doAction(GlobalUnitsModel.Side.US, stateObject)
         } else {
-          console.log("WOOF 6")
-
           StateManager.gameStateManager.setJapanState(stateObject)
           StateManager.gameStateManager.doAction(GlobalUnitsModel.Side.JAPAN, stateObject)
         }      
@@ -763,6 +754,23 @@ export function App() {
       }
     }
   }, [GlobalGameState.gamePhase, cardNumber])
+
+  useEffect(() => {
+    if (GlobalGameState.gamePhase === GlobalGameState.PHASE.INITIATIVE_DETERMINATION) {
+      GlobalGameState.dieRolls = []
+      GlobalGameState.sideWithInitiative = undefined
+
+      // TODO AI vs AI needs adjusting
+      if (displayScreen) {
+        setInitiativePanelShow(true)
+      } else {
+
+        // maybe :-) ...........??
+        doInitiativeRoll()
+        nextAction()
+      }
+    }
+  }, [GlobalGameState.gamePhase])
 
   useEffect(() => {
     if (GlobalGameState.gamePhase === GlobalGameState.PHASE.AIR_OPERATIONS) {
@@ -777,8 +785,6 @@ export function App() {
         StateManager.gameStateManager.setUSState(stateObject)
         StateManager.gameStateManager.doAction(GlobalUnitsModel.Side.US, stateObject, )
       } else {
-        console.log("WOOF 7")
-
         StateManager.gameStateManager.setJapanState(stateObject)
         StateManager.gameStateManager.doAction(GlobalUnitsModel.Side.JAPAN, stateObject)
       }
@@ -787,7 +793,6 @@ export function App() {
   }, [GlobalGameState.gamePhase])
 
   const nextAction = () => {
-    
     StateManager.gameStateManager.doNextState(GlobalGameState.currentPlayer)
   }
   // const nextAction = () => {
@@ -906,8 +911,31 @@ export function App() {
     }
   }
 
+  const cardEventHandler = (cardNumber) => {
+    const title = allCards[cardNumber - 1].title
+    let side = allCards[cardNumber - 1].side // @TODO can be BOTH
+
+    const jpPlayedCard4 = GlobalInit.controller.getCardPlayed(4, GlobalUnitsModel.Side.JAPAN)
+
+    // Decide on BOTH card play
+    if (cardNumber === 4) {
+      side = jpPlayedCard4 ? GlobalUnitsModel.Side.JAPAN : GlobalUnitsModel.Side.US
+    }
+    GlobalInit.controller.viewEventHandler({
+      type: Controller.EventTypes.CARD_PLAY,
+      data: {
+        number: cardNumber,
+        title,
+        side,
+      },
+    })
+  }
+
   const stateObject = {
     // FOR AI AND TESTING
+    controller: GlobalInit.controller,
+    cardEventHandler,
+    setCardDicePanelShow7,
     setTestClicked,
     setCardPlayedPanelShow,
     setTestUpdate,
@@ -949,7 +977,8 @@ export function App() {
     setJapanStrikePanelEnabled,
     setHeaderText,
     setMidwayDialogShow,
-    setMidwayWarningShow
+    setMidwayWarningShow,
+    setCardAlertPanelShow
   }
 
   const onDrag = () => {
@@ -1415,6 +1444,15 @@ export function App() {
       return
     }
     if (GlobalGameState.gamePhase === GlobalGameState.PHASE.JAPAN_FLEET_MOVEMENT) {
+      if (GlobalGameState.midwayAttackDeclaration) {
+        // only allow end of phase if 1AF is within 5 hexes of Midway
+        if (GlobalInit.controller.getDistanceBetween1AFAndMidway() <= 5) {
+          GlobalGameState.nextActionButtonDisabled = false
+        } else {
+          GlobalGameState.nextActionButtonDisabled = true
+        }
+        return
+      }
       if (GlobalGameState.gameTurn < 4) {
         if (GlobalGameState.jpFleetPlaced) {
           GlobalGameState.nextActionButtonDisabled = false
@@ -1521,6 +1559,11 @@ export function App() {
       image = "/images/japanflag.jpg"
     } else if (GlobalGameState.gamePhase === GlobalGameState.PHASE.AIR_SEARCH) {
       image = "/images/bothflags.jpg"
+    }
+    if (GlobalGameState.gamePhase === GlobalGameState.PHASE.CARD_PLAY) {
+      if (GlobalGameState.currentPlayer === GlobalUnitsModel.Side.JAPAN) {
+        image = "/images/japanflag.jpg"
+      }
     }
     let midwayMsg = ""
     nextActionButtonDisabled()
@@ -1760,13 +1803,13 @@ export function App() {
   function midwayYesHandler(e) {
     setMidwayDialogShow(false)
     GlobalGameState.midwayAttackDeclaration = true
-    nextAction(e)
+    GlobalGameState.gamePhase = GlobalGameState.PHASE.US_FLEET_MOVEMENT_PLANNING
   }
 
   function midwayNoHandler(e) {
     GlobalGameState.midwayAttackDeclaration = false
     setMidwayDialogShow(false)
-    nextAction(e)
+    GlobalGameState.gamePhase = GlobalGameState.PHASE.US_FLEET_MOVEMENT_PLANNING
   }
 
   function loadMyGame(id) {
@@ -1935,7 +1978,6 @@ export function App() {
       ></DamageFooters>
     </>
   )
-
   const dmcvSide =
     GlobalGameState.gamePhase === GlobalGameState.PHASE.JAPAN_DMCV_FLEET_MOVEMENT
       ? GlobalUnitsModel.Side.JAPAN
@@ -2265,25 +2307,7 @@ export function App() {
     </>
   )
 
-  const cardEventHandler = (cardNumber) => {
-    const title = allCards[cardNumber - 1].title
-    let side = allCards[cardNumber - 1].side // @TODO can be BOTH
 
-    const jpPlayedCard4 = GlobalInit.controller.getCardPlayed(4, GlobalUnitsModel.Side.JAPAN)
-
-    // Decide on BOTH card play
-    if (cardNumber === 4) {
-      side = jpPlayedCard4 ? GlobalUnitsModel.Side.JAPAN : GlobalUnitsModel.Side.US
-    }
-    GlobalInit.controller.viewEventHandler({
-      type: Controller.EventTypes.CARD_PLAY,
-      data: {
-        number: cardNumber,
-        title,
-        side,
-      },
-    })
-  }
 
   function doSubmarine(roll) {
     doSubmarineDamageRoll(roll)
@@ -2313,12 +2337,12 @@ export function App() {
   // console.log("GlobalUnitsModel.usStrikeGroups=", GlobalUnitsModel.usStrikeGroups)
   function doInitiativeRoll(roll0, roll1) {
     // for testing QUACK
-    doIntiativeRoll(GlobalInit.controller, 6, 1, true) // JAPAN initiative
-    // doIntiativeRoll(GlobalInit.controller, 1, 6, true) // US initiative
+    // doIntiativeRoll(GlobalInit.controller, 6, 1, true) // JAPAN initiative
+    doIntiativeRoll(GlobalInit.controller, 1, 6, true) // US initiative
 
     // doIntiativeRoll(GlobalInit.controller, 3, 3, true) // tie
 
-    doIntiativeRoll(GlobalInit.controller, roll0, roll1)
+    // doIntiativeRoll(GlobalInit.controller, roll0, roll1)
     GlobalGameState.updateGlobalState()
   }
 
@@ -3049,8 +3073,38 @@ export function App() {
         nextAction={nextAction}
         width={30}
       ></CardAlertPanel>
-      <CardPlayedByAIPanel
-        show={!testClicked && cardPlayedPanelShow}
+
+      <PoopCardAlertPanel
+        show={cardPlayedPanelShow}
+        controller={GlobalInit.controller}
+        headers={cardAlertHeaders}
+        headerText={headerText}
+        setHeaderText={setHeaderText}
+        setShowCardFooter={setShowCardFooter}
+        footers={cardAlertFooters}
+        cardNumber={cardNumber}
+        eventHandler={cardEventHandler}
+        margin={0}
+        setDamagedCV={setDamagedCV}
+        setCardDicePanelShow5={setCardDicePanelShow5}
+        setCardDicePanelShow7={setCardDicePanelShow7}
+        setStrikeLostPanelShow={setStrikeLostPanelShow}
+        setCarrierPlanesDitchPanelShow={setCarrierPlanesDitchPanelShow}
+        setTowedToFriendlyPortPanelShow={setTowedToFriendlyPortPanelShow}
+        setAirReplacementsPanelShow={setAirReplacementsPanelShow}
+        setDamageControlPanelShow={setDamageControlPanelShow}
+        setAttackResolved={setAttackResolved}
+        setSubmarineAlertPanelShow={setSubmarineAlertPanelShow}
+        setSubmarineDamagePanelShow={setSubmarineDamagePanelShow}
+        onHide={(e) => {
+          setCardPlayedPanelShow(false)
+          processPlayedCard(stateObject) 
+        }}
+        width={30}
+      ></PoopCardAlertPanel>
+    
+      {/* <CardPlayedByAIPanel
+        show={cardPlayedPanelShow}
         controller={GlobalInit.controller}
         headers={cardAlertHeaders}
         headerText={headerText}
@@ -3076,7 +3130,7 @@ export function App() {
           nextAction(e)
         }}
         width={30}
-      ></CardPlayedByAIPanel>
+      ></CardPlayedByAIPanel> */}
       <DicePanel
         numDice={1}
         show={!testClicked && cardDicePanelShow5}

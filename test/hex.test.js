@@ -39,7 +39,8 @@ test("Is Midway and Distances between two hexes on map", () => {
 
 test("Generate regions within certain distance of hex", () => {
   let region = allHexesWithinDistance({ q: 5, r: 1 }, 2, false)
-  expect(region).toEqual([
+  const r1 = region.map((element) => {return {q:element.q, r: element.r}})
+  expect(r1).toEqual([
     { q: 3, r: 1 },
     { q: 3, r: 2 },
     { q: 3, r: 3 },
@@ -63,7 +64,8 @@ test("Generate regions within certain distance of hex", () => {
 
   // exclude Midway from region
   region = allHexesWithinDistance({ q: 7, r: 1 }, 2, true)
-  expect(region).toEqual([
+  const r2 = region.map((element) => {return {q:element.q, r: element.r}})
+  expect(r2).toEqual([
     { q: 5, r: 1 },
     { q: 5, r: 2 },
     { q: 5, r: 3 },

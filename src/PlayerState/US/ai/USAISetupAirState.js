@@ -13,13 +13,12 @@ class USAISetupAirState {
     GlobalGameState.setupPhase = 6
   }
   async doAction(stateObject) {
-    console.log("OIOOH BACK IN ERE AGAIN fuck")
     const { setTestUpdate } = stateObject
 
     let i = 0
     for (let unit of airUnitDataUS) {
       const airBoxes = getAirSetupBoxes(GlobalGameState.US_CARRIERS[GlobalGameState.currentCarrier])
-  
+
       let update = {
         name: unit.name,
         boxName: "",
@@ -38,7 +37,7 @@ class USAISetupAirState {
 
       let position1 = USAirBoxOffsets.find((box) => box.name === boxName)
       update.position = position1.offsets[update.index]
-      
+
       setTestUpdate(update)
 
       await delay(GlobalGameState.DELAY)
@@ -60,10 +59,12 @@ class USAISetupAirState {
       GlobalGameState.gamePhase = GlobalGameState.PHASE.US_CARD_DRAW
       GlobalGameState.updateGlobalState()
       GlobalGameState.usSetUpComplete = true
-      GlobalInit.controller.drawUSCards(2, true)
+      // GlobalInit.controller.drawUSCards(2, true) QUACK TEST
+
+      GlobalInit.controller.drawUSCards(2, true, [8, 7])
+
       GlobalGameState.usCardsDrawn = true
       GlobalGameState.phaseCompleted = false
-      console.log("SET STATE TO fuck card draw")
       return new USAICardDrawState()
     }
     GlobalGameState.phaseCompleted = false

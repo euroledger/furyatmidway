@@ -1,12 +1,12 @@
 import GlobalGameState from "../../../model/GlobalGameState"
-import GlobalUnitsModel from "../../../model/GlobalUnitsModel"
-import { playCardAction } from "../../../UIEvents/AI/JapanCardPlayBot"
-import GlobalInit from "../../../model/GlobalInit"
 import { displayScreen, setNextStateFollowingCardPlay } from "../../StateUtils"
+import { playCardAction } from "../../../UIEvents/AI/USCardPlayBot"
+import GlobalInit from "../../../model/GlobalInit"
+import GlobalUnitsModel from "../../../model/GlobalUnitsModel"
+import USAIAirSearchState from "./USAIAirSearchState"
 
-class JapanAICardPlayState {
+class USAICardPlayState {
   displayCardPlayedPanel(stateObject) {
-
     // this will vary for different cards played
     const { cardNumber, setShowCardFooter, setHeaderText, setCardPlayedPanelShow } = stateObject
     const msg = `CARD #${cardNumber} PLAYED`
@@ -14,27 +14,35 @@ class JapanAICardPlayState {
     setCardPlayedPanelShow(() => true)
     setShowCardFooter(() => true)
   }
-
+  
   async doAction(stateObject) {
     const { cardNumber } = stateObject
+    this.cardNumber = cardNumber
 
     const playThisCard = playCardAction(cardNumber)
 
+    console.log("playThisCard=", playThisCard)
     if (playThisCard) {
-      GlobalInit.controller.setCardPlayed(cardNumber, GlobalUnitsModel.Side.JAPAN)
+      GlobalInit.controller.setCardPlayed(cardNumber, GlobalUnitsModel.Side.US)
 
       if (displayScreen) {
         this.displayCardPlayedPanel(stateObject)
       }
     }
-  
-
-    // this.nextState(stateObject)
   }
 
   async nextState(stateObject) {
-    console.log("NEXT STATE FROM JAPAN CARD PLAY")
+    const { setSearchValuesAlertShow } = stateObject
+
+    console.log("TRASH NEXT STATE FROM US CARD PLAY cardNumber=", this.cardNumber)
+    stateObject.cardNumber = this.cardNumber
     await setNextStateFollowingCardPlay(stateObject)
+    if (displayScreen()) {
+      setSearchValuesAlertShow(true)
+    }
+
+    GlobalGameState.currentPlayer = GlobalUnitsModel.Side.US
+    return new USAIAirSearchState()
   }
 
   getState() {
@@ -42,4 +50,4 @@ class JapanAICardPlayState {
   }
 }
 
-export default JapanAICardPlayState
+export default USAICardPlayState

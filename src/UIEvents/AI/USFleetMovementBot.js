@@ -16,5 +16,6 @@ export function placeUSCSFFleetAction() {
 export function doUSFleetMovementAction(regions, offboardPossible) {
     // regions is all valid hexes this fleet can move to
 
-
+    // for now choose randomly
+    return getRandomElementFrom(regions)
 }

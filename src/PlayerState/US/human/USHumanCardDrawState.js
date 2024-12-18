@@ -20,10 +20,9 @@ class USHumanCardDrawState {
       if (GlobalInit.controller.japanHandContainsCard(6) && GlobalGameState.gameTurn !== 4) {
         // card 6 cannot be played at night
         setCardNumber(() => 6)
+        console.log("%%%%%%%%%%% QUACK 3 %%%%%%%%%%%%")
         GlobalGameState.gamePhase = GlobalGameState.PHASE.CARD_PLAY
       } else {
-        console.log("%%%%%%%%%%% QUACK 3 %%%%%%%%%%%%")
-
         GlobalGameState.gamePhase = GlobalGameState.PHASE.JAPAN_MIDWAY
       }
     }

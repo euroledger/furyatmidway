@@ -115,6 +115,9 @@ function getValidJapanDestinationsRETURN1(controller, parentCarrier, side) {
   let destinationsArray = new Array()
   if (controller.isSunk(parentCarrier)) {
     destinationsArray = tryOtherCarrier(controller, parentCarrier, side)
+    if (destinationsArray.length === 0) {
+      destinationsArray = tryOtherTaskForce(controller, parentCarrier, side)
+    }
   } else if (controller.isHangarAvailable(parentCarrier)) {
     const box = controller.getAirBoxForNamedShip(side, parentCarrier, "HANGAR")
     destinationsArray.push(box)
@@ -560,7 +563,8 @@ export function doStrikeBoxUS(controller, name, side) {
 
     destArray.push(return2Box)
     // Do not allow other TF return boxes for Midway aircraft
-    if (tf !== GlobalUnitsModel.TaskForce.MIDWAY) {
+    const usCarrierUnitBasedOnMidway = controller.isCarrierUnit(name)
+    if (tf !== GlobalUnitsModel.TaskForce.MIDWAY || usCarrierUnitBasedOnMidway) {
       const otherTF = controller.getOtherTaskForce(tf, side)
       const carriersInOtherTaskForce = controller.getCarriersInOtherTF(tf, side)
       for (let carrier of carriersInOtherTaskForce) {
@@ -962,7 +966,6 @@ export async function moveCAPtoReturnBox(controller, capAirUnits, setAirUnitUpda
     if (GlobalGameState.sideWithInitiative === GlobalUnitsModel.Side.US) {
       position1 = JapanAirBoxOffsets.find((box) => box.name === destBox)
       console.log("DEBUG JAPAN set position1 to", position1)
-
     }
     update.boxName = location.boxName
 
