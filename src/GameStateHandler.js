@@ -290,23 +290,11 @@ function setupUSAirHandler() {
 }
 
 function dmcvState(side) {
-  console.log("QUACK 1")
   if (side === GlobalUnitsModel.Side.US) {
-    // WHAT THE FUCK IS THIS?
-    // if (GlobalGameState.usDMCVCarrier === undefined) {
-    //   console.log("IN HERE")
-    //   return false
-    // }
     const usDMCVLocation = GlobalInit.controller.getFleetLocation("US-DMCV", GlobalUnitsModel.Side.US)
     if (usDMCVLocation !== undefined && usDMCVLocation.boxName === HexCommand.FLEET_BOX) {
       return false
     }
-
-    console.log(
-      "1. GlobalInit.controller.getDamagedCarriers(side).length=",
-      GlobalInit.controller.getDamagedCarriers(side).length
-    )
-    console.log("2. GlobalGameState.usDMCVFleetPlaced=", GlobalGameState.usDMCVFleetPlaced)
     return (
       (GlobalInit.controller.getDamagedCarriers(side).length > 0 && GlobalGameState.usDMCVFleetPlaced === false) ||
       (usDMCVLocation !== undefined && GlobalGameState.usDMCVFleetPlaced === true) // could be sunk
@@ -811,11 +799,34 @@ async function doFleetUpdates(setFleetUnitUpdate) {
   // if different -> do update
   const dmcvLocation = GlobalInit.controller.getFleetLocation("US-DMCV", GlobalUnitsModel.Side.US)
   const dmcvLocationJpMap = GlobalInit.controller.getFleetLocation("US-DMCV-JPMAP", GlobalUnitsModel.Side.JAPAN)
-
+  console.log("dmcvLocation=", dmcvLocation)
   console.log("dmcvLocationJpMap=", dmcvLocationJpMap)
+
+  if (dmcvLocation.boxName === HexCommand.FLEET_BOX && dmcvLocationJpMap !== HexCommand.FLEET_BOX) {
+    const index1 = GlobalInit.controller.getNextAvailableFleetBox(GlobalUnitsModel.Side.US)
+  
+    let update1 = {
+      name: "US-DMCV-JPMAP",
+      position: {
+        currentHex: {
+          boxName: HexCommand.FLEET_BOX,
+          boxIndex: index1,
+        },
+      },
+      initial: false,
+      loading: false,
+      side: GlobalUnitsModel.Side.JAPAN,
+    }
+    if (update1 !== null) {
+      setFleetUnitUpdate(update1)
+    }
+    await delay(1)
+    return
+  }
   if (
     dmcvLocation !== undefined &&
     dmcvLocationJpMap !== undefined &&
+    dmcvLocation.currentHex !== undefined &&
     dmcvLocation !== HexCommand.OFFBOARD &&
     dmcvLocation !== HexCommand.OFFBOARD
   ) {
@@ -831,7 +842,6 @@ async function doFleetUpdates(setFleetUnitUpdate) {
 
   if (dmcvLocationJpMap === undefined) {
     const update1 = createFleetUpdate("US-DMCV-JPMAP", dmcvLocation.currentHex.q, dmcvLocation.currentHex.r)
-    console.log("*********** update1=", update1)
     if (update1 !== null) {
       // going to 2,1
       setFleetUnitUpdate(update1)
@@ -1184,27 +1194,28 @@ function midwayOrAirOps() {
 
 function determineMidwayInvasion(setCardNumber,setEndOfTurnSummaryShow, currentCardNumber) {
   // before midway invasion, check cards playable at end of turn
+  console.log("Current CARD =", currentCardNumber)
   if (
     currentCardNumber !== 1 && 
-    GlobalInit.controller.usHandContainsCard(1) &&
-    GlobalInit.controller.getSunkCarriers(GlobalUnitsModel.Side.US).length > 0
+    (GlobalInit.controller.usHandContainsCard(1) &&
+    GlobalInit.controller.getSunkCarriers(GlobalUnitsModel.Side.US).length > 0)
   ) {
     setCardNumber(() => 1)
     GlobalGameState.gamePhase = GlobalGameState.PHASE.CARD_PLAY
     return
   }
-  if (currentCardNumber !== 2 && GlobalInit.controller.usHandContainsCard(2) || GlobalInit.controller.japanHandContainsCard(2)) {
+  if (currentCardNumber !== 2 && (GlobalInit.controller.usHandContainsCard(2) || GlobalInit.controller.japanHandContainsCard(2))) {
     setCardNumber(() => 2)
     console.log("FUCKETY")
     GlobalGameState.gamePhase = GlobalGameState.PHASE.CARD_PLAY
     return
   }
-  if (currentCardNumber !== 3 && GlobalInit.controller.usHandContainsCard(3) || GlobalInit.controller.japanHandContainsCard(3)) {
+  if (currentCardNumber !== 3 && (GlobalInit.controller.usHandContainsCard(3) || GlobalInit.controller.japanHandContainsCard(3))) {
     setCardNumber(() => 3)
     GlobalGameState.gamePhase = GlobalGameState.PHASE.CARD_PLAY
     return
   }
-  if (currentCardNumber !== 4 && GlobalInit.controller.usHandContainsCard(4) || GlobalInit.controller.japanHandContainsCard(4)) {
+  if (currentCardNumber !== 4 && (GlobalInit.controller.usHandContainsCard(4) || GlobalInit.controller.japanHandContainsCard(4))) {
     setCardNumber(() => 4)
     GlobalGameState.gamePhase = GlobalGameState.PHASE.CARD_PLAY
     return

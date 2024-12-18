@@ -312,6 +312,7 @@ export function autoAllocateMidwayDamage(controller) {
     box2: false,
     destroyed: false,
   }
+  let hitsAllocatedThisTurn = 0
   if (GlobalGameState.midwayBox0Damaged === false) {
     GlobalGameState.midwayBox0Damaged = true
     box = 0
@@ -319,6 +320,7 @@ export function autoAllocateMidwayDamage(controller) {
     moveMidwayAirUnitsToEliminated(controller, box, true)
     GlobalGameState.midwayGarrisonLevel--
     GlobalGameState.totalMidwayHits++
+    hitsAllocatedThisTurn++
   }
   if (GlobalGameState.midwayBox1Damaged === false) {
     GlobalGameState.midwayBox1Damaged = true
@@ -327,6 +329,7 @@ export function autoAllocateMidwayDamage(controller) {
     moveMidwayAirUnitsToEliminated(controller, box, true)
     GlobalGameState.midwayGarrisonLevel--
     GlobalGameState.totalMidwayHits++
+    hitsAllocatedThisTurn++
   }
   if (GlobalGameState.midwayBox2Damaged === false) {
     GlobalGameState.midwayBox2Damaged = true
@@ -335,6 +338,7 @@ export function autoAllocateMidwayDamage(controller) {
     moveMidwayAirUnitsToEliminated(controller, box, true)
     GlobalGameState.midwayGarrisonLevel--
     GlobalGameState.totalMidwayHits++
+    hitsAllocatedThisTurn++
   }
   if (GlobalGameState.totalMidwayHits >= 3) {
     damage.destroyed = true
@@ -345,6 +349,15 @@ export function autoAllocateMidwayDamage(controller) {
     // All units in hangar to eliminated box
   }
 
+  // if first hit destroys the base, second hit can still reduce the garrison (down to minimum of 2)
+  while (
+    hitsAllocatedThisTurn <= 2 &&
+    hitsAllocatedThisTurn < GlobalGameState.midwayHits &&
+    GlobalGameState.midwayGarrisonLevel > 2
+  ) {
+    GlobalGameState.midwayGarrisonLevel--
+    hitsAllocatedThisTurn++
+  }
   GlobalGameState.damageThisAttack = damage
   if (GlobalGameState.midwayHits > 0) {
     doCarrierDamageEvent(GlobalInit.controller)
