@@ -390,6 +390,9 @@ function loadAirUnits(airUnitMap) {
 
     const globalAirUnit = GlobalInit.controller.getAirUnitForName(key)
 
+    if (globalAirUnit === undefined || airUnit.counterData === undefined) {
+      continue // this got round the removal of the B17 counter
+    }
     globalAirUnit.aircraftUnit.steps = airUnit.counterData._aircraftUnit._steps
     globalAirUnit.image = airUnit.counterData._image
 

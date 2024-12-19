@@ -1,8 +1,8 @@
 import GlobalGameState from "../../../model/GlobalGameState"
 import GlobalInit from "../../../model/GlobalInit"
-import { getAirSetupBoxes } from "../../../UIEvents/AI/USAirOperationsBot"
-import { airUnitDataUS } from "../../../AirUnitData"
-import { carrierBoxArray } from "../../../AirUnitData"
+import { getAirSetupBoxes } from "../../../UIEvents/AI/USAirUnitSetupBots"
+import { airUnitSetupDataUS } from "../../../AirUnitData"
+import { usAirBoxArray } from "../../../AirUnitData"
 import USAirBoxOffsets from "../../../components/draganddrop/USAirBoxOffsets"
 import { delay } from "../../../Utils"
 import GlobalUnitsModel from "../../../model/GlobalUnitsModel"
@@ -16,8 +16,8 @@ class USAISetupAirState {
     const { setTestUpdate } = stateObject
 
     let i = 0
-    for (let unit of airUnitDataUS) {
-      const airBoxes = getAirSetupBoxes(GlobalGameState.US_CARRIERS[GlobalGameState.currentCarrier])
+    for (let unit of airUnitSetupDataUS) {
+      let airBoxes = getAirSetupBoxes(GlobalGameState.US_CARRIERS[GlobalGameState.currentCarrier])
 
       let update = {
         name: unit.name,
@@ -25,11 +25,13 @@ class USAISetupAirState {
         index: -1,
       }
       let boxName
+      console.log("UNIT=", unit.name)
+
       if (unit.name.includes(GlobalUnitsModel.Carrier.MIDWAY)) {
-        boxName = unit.boxName
+        let airBoxes = getAirSetupBoxes(GlobalUnitsModel.Carrier.MIDWAY)
+        boxName = usAirBoxArray[airBoxes[i]]
       } else {
-        console.log("UNIT=", unit.name)
-        boxName = carrierBoxArray[airBoxes[i]]
+        boxName = usAirBoxArray[airBoxes[i]]
       }
       update.boxName = boxName
       const boxIndex = GlobalInit.controller.getFirstAvailableZone(boxName)

@@ -85,9 +85,16 @@ const US_HORNET_HANGAR = 4
 const US_TF17_CAP = 5
 const US_YORKTOWN_FLIGHT_DECK = 6
 const US_YORKTOWN_HANGAR = 7
+const US_STRIKE_BOX_0 = 9
+const US_STRIKE_BOX_1 = 10
+const US_STRIKE_BOX_2 = 11
+const US_STRIKE_BOX_3 = 12
+const US_STRIKE_BOX_4 = 13
+const US_STRIKE_BOX_5 = 14
+const US_STRIKE_BOX_6 = 15
 
-export const carrierBoxArray = [
-  GlobalUnitsModel.AirBox.US_TF16_CAP,
+export const usAirBoxArray = [
+  GlobalUnitsModel.AirBox.US_TF16_CAP, // 0
   GlobalUnitsModel.AirBox.US_ENTERPRISE_FLIGHT_DECK,
   GlobalUnitsModel.AirBox.US_ENTERPRISE_HANGAR,
   GlobalUnitsModel.AirBox.US_HORNET_FLIGHT_DECK,
@@ -95,6 +102,16 @@ export const carrierBoxArray = [
   GlobalUnitsModel.AirBox.US_TF17_CAP,
   GlobalUnitsModel.AirBox.US_YORKTOWN_FLIGHT_DECK,
   GlobalUnitsModel.AirBox.US_YORKTOWN_HANGAR,
+  GlobalUnitsModel.AirBox.US_MIDWAY_CAP, // 8
+  GlobalUnitsModel.AirBox.US_MIDWAY_FLIGHT_DECK, // 9
+  GlobalUnitsModel.AirBox.US_MIDWAY_HANGAR, // 10
+  GlobalUnitsModel.AirBox.US_STRIKE_BOX_0,
+  GlobalUnitsModel.AirBox.US_STRIKE_BOX_1,
+  GlobalUnitsModel.AirBox.US_STRIKE_BOX_2,
+  GlobalUnitsModel.AirBox.US_STRIKE_BOX_3,
+  GlobalUnitsModel.AirBox.US_STRIKE_BOX_4,
+  GlobalUnitsModel.AirBox.US_STRIKE_BOX_5,
+  GlobalUnitsModel.AirBox.US_STRIKE_BOX_6,
 ]
 
 export function getRandomElementFrom(items) {
@@ -108,6 +125,8 @@ export function getRandomElementFrom(items) {
 let enterpriseFlightDeckSlotsLeft = 2
 let hornetFlightDeckSlotsLeft = 2
 let yorktownFlightDeckSlotsLeft = 2
+
+
 
 export function generateRandomUSAirSetup() {
   // Enterprise Fighters
@@ -319,7 +338,7 @@ export const USAirStrategies = []
 
 export const tf17carrierBoxArray = []
 
-export const airUnitDataUS = [
+export const airUnitSetupDataUS = [
   {
     name: "Enterprise-F4F4-1",
     boxName: GlobalUnitsModel.AirBox.US_TF16_CAP,
@@ -385,35 +404,57 @@ export const airUnitDataUS = [
   },
   {
     name: "Midway-F4F3",
-    boxName: GlobalUnitsModel.AirBox.US_MIDWAY_CAP,
+    boxName: GlobalUnitsModel.AirBox.US_MIDWAY_CAP, // 8
   },
   {
     name: "Midway-F2A-3",
-    boxName: GlobalUnitsModel.AirBox.US_MIDWAY_CAP,
+    boxName: GlobalUnitsModel.AirBox.US_MIDWAY_CAP, // 8
   },
   {
     name: "Midway-SBD-2",
-    boxName: GlobalUnitsModel.AirBox.US_MIDWAY_FLIGHT_DECK,
+    boxName: GlobalUnitsModel.AirBox.US_MIDWAY_FLIGHT_DECK, // 9
   },
   {
     name: "Midway-SB2U-3",
-    boxName: GlobalUnitsModel.AirBox.US_MIDWAY_HANGAR,
+    boxName: GlobalUnitsModel.AirBox.US_MIDWAY_HANGAR, // 10
   },
   {
-    name: "Midway-TBF-1",
-    boxName: GlobalUnitsModel.AirBox.US_MIDWAY_FLIGHT_DECK,
+    name: "Midway-TBF-1", 
+    boxName: GlobalUnitsModel.AirBox.US_MIDWAY_FLIGHT_DECK, // 9
   },
   {
     name: "Midway-B26-B",
-    boxName: GlobalUnitsModel.AirBox.US_MIDWAY_FLIGHT_DECK,
+    boxName: GlobalUnitsModel.AirBox.US_MIDWAY_FLIGHT_DECK, // 9
   },
-  {
-    name: "Midway-B17-E",
-    boxName: GlobalUnitsModel.AirBox.US_MIDWAY_HANGAR,
-    nextAction: true,
-  },
+  // {
+  //   name: "Midway-B17-E",
+  //   boxName: GlobalUnitsModel.AirBox.US_MIDWAY_HANGAR,
+  //   nextAction: true,
+  // },
 ]
-
+export const airUnitDataUS = [
+  "Enterprise-F4F4-1",
+  "Enterprise-F4F4-2",
+  "Enterprise-SBD3-1",
+  "Enterprise-SBD3-2",
+  "Enterprise-TBD1",
+  "Hornet-F4F4-1",
+  "Hornet-F4F4-2",
+  "Hornet-SBD3-1",
+  "Hornet-SBD3-2",
+  "Hornet-TBD1",
+  "Yorktown-F4F4-1",
+  "Yorktown-F4F4-2",
+  "Yorktown-SBD3-1",
+  "Yorktown-SBD3-2",
+  "Yorktown-TBD1",
+  "Midway-F4F3",
+  "Midway-F2A-3",
+  "Midway-SBD-2",
+  "Midway-SB2U-3",
+  "Midway-TBF-1",
+  "Midway-B26-B",
+]
 export const airUnitsToStrikeGroupsUS = [
   {
     name: "Yorktown-SBD3-1",

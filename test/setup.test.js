@@ -21,7 +21,7 @@ describe("Controller tests", () => {
     expect(GlobalUnitsModel.jpFleetUnits.get(GlobalUnitsModel.Carrier.SORYU)).toBeTruthy();
 
     expect(GlobalUnitsModel.jpAirUnits.size).toEqual(16);
-    expect(GlobalUnitsModel.usAirUnits.size).toEqual(22);
+    expect(GlobalUnitsModel.usAirUnits.size).toEqual(21);
 
   });
 

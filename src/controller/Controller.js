@@ -796,7 +796,7 @@ export default class Controller {
     for (let i = 0; i < 5; i++) {
       if (!takenBoxes.includes(i)) {
         return i
-      } 
+      }
     }
     return firstBox
   }
@@ -1218,7 +1218,7 @@ export default class Controller {
     }
     return false
   }
-  
+
   opposingFleetsInSameHex() {
     const csfLocation = this.getFleetLocation("CSF", GlobalUnitsModel.Side.US)
     const usDMCVLocation = this.getFleetLocation("US-DMCV", GlobalUnitsModel.Side.US)
@@ -1900,6 +1900,66 @@ export default class Controller {
     // if totals and air ops both equal, needs a re-roll - return null
     return null
   }
+
+  getFleetStrengthAsArray(side) {
+    let strength = new Array()
+    if (side === GlobalUnitsModel.Side.US) {
+      strength.push(3 - this.getCarrierHits(GlobalUnitsModel.Carrier.ENTERPRISE))
+      strength.push(3 - this.getCarrierHits(GlobalUnitsModel.Carrier.HORNET))
+      strength.push(3 - this.getCarrierHits(GlobalUnitsModel.Carrier.YORKTOWN))
+      strength.push(Math.max(0, 3 - this.getCarrierHits(GlobalUnitsModel.Carrier.MIDWAY)))
+    } else {
+      strength.push(3 - this.getCarrierHits(GlobalUnitsModel.Carrier.AKAGI))
+      strength.push(3 - this.getCarrierHits(GlobalUnitsModel.Carrier.KAGA))
+      strength.push(3 - this.getCarrierHits(GlobalUnitsModel.Carrier.HIRYU))
+      strength.push(3 - this.getCarrierHits(GlobalUnitsModel.Carrier.SORYU))
+    }
+    return strength
+  }
+  getFleetStrength(side) {
+    let strength = 0
+    if (side === GlobalUnitsModel.Side.US) {
+      strength =
+        3 -
+        this.getCarrierHits(GlobalUnitsModel.Carrier.ENTERPRISE) +
+        3 -
+        this.getCarrierHits(GlobalUnitsModel.Carrier.HORNET) +
+        3 -
+        this.getCarrierHits(GlobalUnitsModel.Carrier.YORKTOWN) +
+        3 -
+        Math.max(0, this.getCarrierHits(GlobalUnitsModel.Carrier.MIDWAY))
+    } else {
+      strength =
+        3 -
+        this.getCarrierHits(GlobalUnitsModel.Carrier.AKAGI) +
+        3 -
+        this.getCarrierHits(GlobalUnitsModel.Carrier.KAGA) +
+        3 -
+        this.getCarrierHits(GlobalUnitsModel.Carrier.HIRYU) +
+        3 -
+        this.getCarrierHits(GlobalUnitsModel.Carrier.SORYU)
+    }
+    return strength
+  }
+
+  getAirStrength(side) {
+    let units = this.getAllAirUnits(side)
+    let strength = units.reduce((sum, unit) => sum + unit.aircraftUnit.steps, 0)
+    return strength
+  }
+
+  getAirStrengthAsArray(side) {
+    let strength = new Array()
+    let units = this.getAllAirUnits(side)
+
+    for (let unit of units) {
+      strength.push(unit.aircraftUnit.steps)
+    }
+    return strength
+  }
+
+  // NEW FUNCTIONS TO FILTER AIR UNITS
+  getAllAirUnitsInBoxes(side, boxes) {}
 
   viewEventHandler(event) {
     // event contains type and data

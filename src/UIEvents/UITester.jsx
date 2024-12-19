@@ -10,7 +10,7 @@ import {
 } from "../AirUnitData"
 import JapanAirBoxOffsets from "../components/draganddrop/JapanAirBoxOffsets"
 import USAirBoxOffsets from "../components/draganddrop/USAirBoxOffsets"
-import { airUnitDataJapan, airUnitDataUS, airUnitsToStrikeGroupsUS, createStrikeGroupUpdate } from "../AirUnitData"
+import { airUnitDataJapan, airUnitSetupDataUS, airUnitsToStrikeGroupsUS, createStrikeGroupUpdate } from "../AirUnitData"
 import GlobalUnitsModel from "../model/GlobalUnitsModel"
 import {
   getValidJapanDestinationsCAP,
@@ -573,7 +573,7 @@ const UITester = async ({
 
   nextAction(e) // get past US Fleet Unit setup
 
-  for (const unit of airUnitDataUS) {
+  for (const unit of airUnitSetupDataUS) {
     update = calcTestDataUS(unit, GlobalInit.controller)
     if (!update) {
       continue

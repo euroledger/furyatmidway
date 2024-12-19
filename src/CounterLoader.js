@@ -970,23 +970,23 @@ const usAirUnits = [
       steps: 1,
     },
   },
-  {
-    name: "Midway-B17-E",
-    longName: "US B17-E (Midway)",
-    position: usMidwayStartPosition7,
-    offsets: { x: 66, y: 80 },
-    image: "/images/aircounters/midway-b17-front.png",
-    width: "2.1%",
-    carrier: GlobalUnitsModel.Carrier.MIDWAY,
-    side: GlobalUnitsModel.Side.US,
-    aircraftUnit: {
-      strength: 0,
-      movement: 3,
-      attack: true,
-      diveBomber: false,
-      steps: 2,
-    },
-  },
+  // {
+  //   name: "Midway-B17-E",
+  //   longName: "US B17-E (Midway)",
+  //   position: usMidwayStartPosition7,
+  //   offsets: { x: 66, y: 80 },
+  //   image: "/images/aircounters/midway-b17-front.png",
+  //   width: "2.1%",
+  //   carrier: GlobalUnitsModel.Carrier.MIDWAY,
+  //   side: GlobalUnitsModel.Side.US,
+  //   aircraftUnit: {
+  //     strength: 0,
+  //     movement: 3,
+  //     attack: true,
+  //     diveBomber: false,
+  //     steps: 2,
+  //   },
+  // },
 ]
 
 const jpSGPosition1 = {

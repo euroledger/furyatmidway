@@ -11,3 +11,4 @@ export function selectLossesFromCAPAction(controller, stateObject) {
   // 2. Take one loss from 2-step units before taking any from 1-step attackers
   // 3. Random Factor
 }
+

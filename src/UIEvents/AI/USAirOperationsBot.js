@@ -1,7 +1,8 @@
 import GlobalUnitsModel from "../../model/GlobalUnitsModel"
 import GlobalGameState from "../../model/GlobalGameState"
-import { generateRandomUSAirSetup } from "../../AirUnitData"
-import { getRandomElementFrom } from "../../AirUnitData"
+import GlobalInit from "../../model/GlobalInit"
+import Controller from "../../controller/Controller"
+import { distanceBetweenHexes } from "../../components/HexUtils"
 
 export function selectUSDefendingCAPUnits(controller, stateObject) {
   const { setCapAirUnits, setFightersPresent, setCapSteps } = stateObject
@@ -49,70 +50,44 @@ export function selectUSDefendingCAPUnits(controller, stateObject) {
   return { steps, selectedCapUnits, fighters }
 }
 
-export const AIR_STRATEGIES = new Array()
+export function generateUSAirOperationsMoves() {
+  // for each air unit that we wish to move generate an array of destination boxes
+  // (21 element vector, one for each air unit (3 x 5 carrier air units, 6 for Midway do not include B17))
 
-AIR_STRATEGIES.push([
-  [0, 1, 1, 2, 2],
-  [0, 3, 3, 4, 4],
-  [5, 5, 6, 7, 6],
-]) // standard aggressive fighter-DB strike groups
+  // Need to take into account:
+  // - Overall Game Strategy
+  // - Turn,
+  // - State of Two Fleets/Remaining Air Power
+  // - Distance Between Fleets or Enemy Fleet(s) and Midway
+  // - Existence of MIF/DMCV Fleets
+  // - Remaining Air Ops
 
-AIR_STRATEGIES.push([
-  [0, 0, 1, 2, 1],
-  [0, 0, 3, 4, 3],
-  [5, 6, 6, 7, 7],
-]) // standard defensive all fighters in CAP
+  const locationCSF = GlobalInit.controller.getFleetLocation("CSF", GlobalUnitsModel.Side.US)
+  const location1AF = GlobalInit.controller.getFleetLocation("1AF", GlobalUnitsModel.Side.JAPAN)
 
-AIR_STRATEGIES.push([
-  [0, 1, 1, 2, 2],
-  [0, 0, 3, 4, 3],
-  [5, 6, 6, 7, 7],
-]) // mixture of above two
+  const turn = GlobalGameState.gameTurn
+  const remainingJapanAirOps = GlobalGameState.airOperationPoints.japan
+  const remainingUSAirOps = GlobalGameState.airOperationPoints.us
 
-AIR_STRATEGIES.push([
-  [0, 0, 2, 2, 2],
-  [0, 0, 4, 4, 4],
-  [5, 5, 7, 7, 7],
-]) // ultra defensive all fighters in CAP, all attack aircraft in hangars
-
-AIR_STRATEGIES.push([
-  [1, 2, 1, 2, 2],
-  [3, 4, 3, 4, 4],
-  [6, 7, 6, 7, 7],
-]) // ultra aggressive no fighters in CAP, all attack aircraft either on fligth deck or hangar
-
-const randomStrategy = generateRandomUSAirSetup()
-
-// Q-Learning. Greedy Evaluation.
-// Set epsilon to initial 0.5, choose randomly policy pi = p(1-epsilon) as either a a) strategy 1-5 or b) random setup.
-// As exploration reveals rewards for each policy, add new policies and lower epsilon
+  const distanceBetweenCSFand1AF = distanceBetweenHexes(locationCSF.currentHex, location1AF.currentHex)
+  const distanceBetweenMidwayand1AF = distanceBetweenHexes(Controller.MIDWAY_HEX.currentHex, location1AF.currentHex)
+ 
+  const usNavalStrength = GlobalInit.controller.getFleetStrength(GlobalUnitsModel.Side.US)
+  const japanNavalStrength = GlobalInit.controller.getFleetStrength(GlobalUnitsModel.Side.JAPAN)
+  const usAirStrength = GlobalInit.controller.getAirStrength(GlobalUnitsModel.Side.US)
+  const japanAirStrength = GlobalInit.controller.getAirStrength(GlobalUnitsModel.Side.JAPAN)
 
 
-// pick one of the Air strategies, return 2d array of starting air boxes
+  
 
-const EPSILON = 0.5
-const r = Math.random()
-let presetStrategy = getRandomElementFrom(AIR_STRATEGIES)
+  // if not last air op and distance >3 (could move out of range)
+    // => 1. Move Units from Flight Deck to Strike Boxes
 
+  // 2. Move Units from Flight Deck to CAP Boxes
 
-export function getAirSetupBoxes(carrier) {
+  // 2. Move Units from Hangar to Flight Deck
 
-  // if r < epsilon choose random setup
-  // else choose one of the pre-set strategies
+  // 3. Move Units in Return Boxes to next Return Box or Hangar
 
-  let airStrategy
-  if (r < EPSILON) {
-    airStrategy = randomStrategy
-  } else {
-    airStrategy = presetStrategy
-  }
-
-  switch (carrier) {
-    case GlobalUnitsModel.Carrier.ENTERPRISE:
-      return airStrategy[0]
-    case GlobalUnitsModel.Carrier.HORNET:
-      return airStrategy[1]
-    case GlobalUnitsModel.Carrier.YORKTOWN:
-      return airStrategy[2]
-  }
+  // const airUnitsOnFlightDeck =
 }

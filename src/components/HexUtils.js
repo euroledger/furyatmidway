@@ -53,9 +53,10 @@ export const mapIndexToHex = (i) => {
   return hexes.find((h)=> h.index = i)
 }
 
-export const mapHexToIndex = (q,r) => {
+export const mapHexToIndex = (hex) => {
   const hexes = getAllHexes()
-  return hexes.find((h)=> h.q === q && h.r === r)
+  const theHex = hexes.find((h)=> h.q === hex.q && h.r === hex.r)
+  return theHex.index
 }
 
 export const mapIndexesToHexes = (indexArray) => {
@@ -63,7 +64,7 @@ export const mapIndexesToHexes = (indexArray) => {
 }
 
 export const mapHexesToIndexes= (hexArray) => {
-  return hexArray.map((element) => mapHexToIndex(element.q, element.r))
+  return hexArray.map((element) => mapHexToIndex({q: element.q, r: element.r}))
 }
 
 export const areCoordinatesOnMap = (q, r) => {

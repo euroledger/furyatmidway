@@ -750,7 +750,7 @@ export function App() {
           StateManager.gameStateManager.doAction(GlobalUnitsModel.Side.JAPAN, stateObject)
         }      
       } else {
-        nextAction()
+        // nextAction()
       }
     }
   }, [GlobalGameState.gamePhase, cardNumber])
@@ -784,9 +784,12 @@ export function App() {
       if (GlobalGameState.sideWithInitiative === GlobalUnitsModel.Side.US) {
         StateManager.gameStateManager.setUSState(stateObject)
         StateManager.gameStateManager.doAction(GlobalUnitsModel.Side.US, stateObject, )
+        setUsStrikePanelEnabled(true) // for now. Move this in due course (only display for humans)
+            
       } else {
         StateManager.gameStateManager.setJapanState(stateObject)
         StateManager.gameStateManager.doAction(GlobalUnitsModel.Side.JAPAN, stateObject)
+        setJapanStrikePanelEnabled(true) // for now move this in due course (only display for humans)
       }
       
     }

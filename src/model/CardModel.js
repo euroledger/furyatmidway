@@ -40,19 +40,16 @@ export default class CardModel {
   replaceCardWithOtherCard(cardNumber, otherCardNumber, side) {
     if (side === GlobalUnitsModel.Side.JAPAN) {
       if (!this.japanHandContainsCard(cardNumber)) {
-        console.log("QUACK 1")
         return
       }
       // Remove old card from Japan hand and put back into the deck
       const index = GlobalUnitsModel.jpCards.findIndex((x) => x._number === cardNumber)
-      console.log("INdex=", index)
       GlobalUnitsModel.cards.push(...GlobalUnitsModel.jpCards.splice(index, 1))
 
 
       // find new card and add to Japan hand
       const newCard = GlobalUnitsModel.cards.find((card) => card._number === otherCardNumber)
 
-      console.log("newCard=", newCard)
       GlobalUnitsModel.cards = Array.from(GlobalUnitsModel.cards).filter((c) => c._number != otherCardNumber)
 
       GlobalUnitsModel.jpCards.push(newCard)
