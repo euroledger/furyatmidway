@@ -359,6 +359,7 @@ export function App() {
     if (GlobalGameState.gamePhase === GlobalGameState.PHASE.AIR_OPERATIONS) {
       GlobalGameState.phaseCompleted = false
       GlobalGameState.nextActionButtonDisabled = true
+      setCapAirUnits([])
       setEnabledUSReorgBoxes(false)
       setEnabledJapanReorgBoxes(false)
       setEnabledJapanFleetBoxes(false)
@@ -851,6 +852,7 @@ export function App() {
       GlobalGameState.gamePhase === GlobalGameState.PHASE.MIDWAY_ATTACK
     ) {
       GlobalGameState.phaseCompleted = false
+      setCapAirUnits([])
       if (GlobalGameState.sideWithInitiative === GlobalUnitsModel.Side.JAPAN) {
         setJapanStrikePanelEnabled(true)
         setUsStrikePanelEnabled(false)
