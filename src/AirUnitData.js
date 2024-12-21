@@ -85,13 +85,25 @@ const US_HORNET_HANGAR = 4
 const US_TF17_CAP = 5
 const US_YORKTOWN_FLIGHT_DECK = 6
 const US_YORKTOWN_HANGAR = 7
-const US_STRIKE_BOX_0 = 9
-const US_STRIKE_BOX_1 = 10
-const US_STRIKE_BOX_2 = 11
-const US_STRIKE_BOX_3 = 12
-const US_STRIKE_BOX_4 = 13
-const US_STRIKE_BOX_5 = 14
-const US_STRIKE_BOX_6 = 15
+const US_MIDWAY_CAP = 8
+const US_MIDWAY_FLIGHT_DECK = 9
+const US_MIDWAY_HANGAR = 10
+const US_STRIKE_BOX_0 = 11
+const US_STRIKE_BOX_1 = 12
+const US_STRIKE_BOX_2 = 13
+const US_STRIKE_BOX_3 = 14
+const US_STRIKE_BOX_4 = 15
+const US_STRIKE_BOX_5 = 16
+const US_STRIKE_BOX_6 = 17
+
+export const usBoxToIndex = (box) => {
+  const index = usAirBoxArray.findIndex((b) => b === box)
+  return index ?? -1
+} 
+
+export const usIndexToBox = (index) => {
+  return usAirBoxArray[index]
+}
 
 export const usAirBoxArray = [
   GlobalUnitsModel.AirBox.US_TF16_CAP, // 0

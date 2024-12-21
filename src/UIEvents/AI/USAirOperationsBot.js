@@ -3,6 +3,7 @@ import GlobalGameState from "../../model/GlobalGameState"
 import GlobalInit from "../../model/GlobalInit"
 import Controller from "../../controller/Controller"
 import { distanceBetweenHexes } from "../../components/HexUtils"
+import { setValidDestinationBoxes } from "../../controller/AirOperationsHandler"
 
 export function selectUSDefendingCAPUnits(controller, stateObject) {
   const { setCapAirUnits, setFightersPresent, setCapSteps } = stateObject
@@ -50,7 +51,40 @@ export function selectUSDefendingCAPUnits(controller, stateObject) {
   return { steps, selectedCapUnits, fighters }
 }
 
-export function generateUSAirOperationsMoves() {
+function getFleetDistances(controller) {
+  const locationCSF = controller.getFleetLocation("CSF", GlobalUnitsModel.Side.US)
+
+  console.log("POO locationCSF=", locationCSF)
+
+  const location1AF = controller.getFleetLocation("1AF", GlobalUnitsModel.Side.JAPAN)
+  const locationIJNDMCV = controller.getFleetLocation("IJN-DMCV", GlobalUnitsModel.Side.US)
+  const locationMIF = controller.getFleetLocation("MIF", GlobalUnitsModel.Side.US)
+
+  let distanceBetweenCSFandIJNDMCV = -1
+  let distanceBetweenCSFandMIF = -1
+  let distanceBetweenMidwayandIJNDMCV = -1
+  let distanceBetweenMidwayandMIF = -1
+
+  const distanceBetweenCSFand1AF = distanceBetweenHexes(locationCSF.currentHex, location1AF.currentHex)
+  const distanceBetweenMidwayand1AF = distanceBetweenHexes(Controller.MIDWAY_HEX.currentHex, location1AF.currentHex)
+
+  if (locationIJNDMCV !== undefined && locationIJNDMCV.currentHex !== undefined) {
+    distanceBetweenCSFandIJNDMCV = distanceBetweenHexes(locationCSF.currentHex, locationIJNDMCV.currentHex)
+    distanceBetweenMidwayandIJNDMCV = distanceBetweenHexes(Controller.MIDWAY_HEX.currentHex, locationIJNDMCV.currentHex)
+  }
+  if (locationMIF !== undefined && locationMIF.currentHex !== undefined) {
+    distanceBetweenCSFandMIF = distanceBetweenHexes(locationCSF.currentHex, locationMIF.currentHex)
+    distanceBetweenMidwayandMIF = distanceBetweenHexes(Controller.MIDWAY_HEX.currentHex, locationMIF.currentHex)
+  }
+  return {
+    distanceBetweenCSFand1AF,
+    distanceBetweenCSFandMIF,
+    distanceBetweenCSFandIJNDMCV,
+    distanceBetweenMidwayandIJNDMCV,
+    distanceBetweenMidwayandMIF,
+  }
+}
+export function generateUSAirOperationsMoves(controller) {
   // for each air unit that we wish to move generate an array of destination boxes
   // (21 element vector, one for each air unit (3 x 5 carrier air units, 6 for Midway do not include B17))
 
@@ -62,32 +96,48 @@ export function generateUSAirOperationsMoves() {
   // - Existence of MIF/DMCV Fleets
   // - Remaining Air Ops
 
-  const locationCSF = GlobalInit.controller.getFleetLocation("CSF", GlobalUnitsModel.Side.US)
-  const location1AF = GlobalInit.controller.getFleetLocation("1AF", GlobalUnitsModel.Side.JAPAN)
-
   const turn = GlobalGameState.gameTurn
   const remainingJapanAirOps = GlobalGameState.airOperationPoints.japan
   const remainingUSAirOps = GlobalGameState.airOperationPoints.us
+  const usNavalStrength = controller.getFleetStrength(GlobalUnitsModel.Side.US)
+  const japanNavalStrength = controller.getFleetStrength(GlobalUnitsModel.Side.JAPAN)
+  const usAirStrength = controller.getAirStrength(GlobalUnitsModel.Side.US)
+  const japanAirStrength = controller.getAirStrength(GlobalUnitsModel.Side.JAPAN)
 
-  const distanceBetweenCSFand1AF = distanceBetweenHexes(locationCSF.currentHex, location1AF.currentHex)
-  const distanceBetweenMidwayand1AF = distanceBetweenHexes(Controller.MIDWAY_HEX.currentHex, location1AF.currentHex)
- 
-  const usNavalStrength = GlobalInit.controller.getFleetStrength(GlobalUnitsModel.Side.US)
-  const japanNavalStrength = GlobalInit.controller.getFleetStrength(GlobalUnitsModel.Side.JAPAN)
-  const usAirStrength = GlobalInit.controller.getAirStrength(GlobalUnitsModel.Side.US)
-  const japanAirStrength = GlobalInit.controller.getAirStrength(GlobalUnitsModel.Side.JAPAN)
+  // 1. Get all air units on Flight Deck (non-fighters first then fighters as order affects SG formation)
 
+  // 2. For each unit:
+  // 2a. Get valid destinations for units on Flight Deck
+  const {
+    distanceBetweenCSFand1AF,
+    distanceBetweenCSFandMIF,
+    distanceBetweenCSFandIJNDMCV,
+    distanceBetweenMidwayandIJNDMCV,
+    distanceBetweenMidwayandMIF,
+  } = getFleetDistances(controller)
 
-  
+  if (distanceBetweenCSFand1AF <= 5 || distanceBetweenCSFandIJNDMCV < 5 || distanceBetweenCSFandMIF < 5) {
+    const usAirUnitsOnFlightDecks = controller.getAllUnitsOnUSFlightDecks(false)
 
-  // if not last air op and distance >3 (could move out of range)
-    // => 1. Move Units from Flight Deck to Strike Boxes
+    for (let unit of usAirUnitsOnFlightDecks) {
+      setValidDestinationBoxes(controller, unit.name, GlobalUnitsModel.Side.US)
 
-  // 2. Move Units from Flight Deck to CAP Boxes
+      const destinations = controller.getValidAirUnitDestinations(unit.name)
 
-  // 2. Move Units from Hangar to Flight Deck
+      console.log("AIR UNIT:", unit.name, "VALID DESTINATIONS=", destinations)
+    }
+    // if not last air op and distance >3 (could move out of range)
+    // => 3. Move Unit from Flight Deck to Strike Boxes, or
+    // 4. Move Unit from Flight Deck to CAP Boxes
 
-  // 3. Move Units in Return Boxes to next Return Box or Hangar
+    // 5a. Get all air units in Hangar
+    // 5b. Get valid destinations for units in Hangar
+    // 5c. Move Units from Hangar to Flight Deck
 
-  // const airUnitsOnFlightDeck =
+    // 6a. Get all air units in Return Boxes
+    // 6b. Get valid destinations for units in Return Boxes
+    // 6c. Move Units in Return Boxes to next Return Box or Hangar
+
+    // const airUnitsOnFlightDeck =
+  }
 }

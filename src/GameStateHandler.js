@@ -784,7 +784,7 @@ async function doFleetUpdates(setFleetUnitUpdate) {
   console.log("dmcvLocation=", dmcvLocation)
   console.log("dmcvLocationJpMap=", dmcvLocationJpMap)
 
-  if (dmcvLocation.boxName === HexCommand.FLEET_BOX && dmcvLocationJpMap !== HexCommand.FLEET_BOX) {
+  if (dmcvLocation !== undefined && dmcvLocation.boxName === HexCommand.FLEET_BOX && dmcvLocationJpMap !== HexCommand.FLEET_BOX) {
     const index1 = GlobalInit.controller.getNextAvailableFleetBox(GlobalUnitsModel.Side.US)
   
     let update1 = {
@@ -822,14 +822,14 @@ async function doFleetUpdates(setFleetUnitUpdate) {
     }
   }
 
-  if (dmcvLocationJpMap === undefined) {
-    const update1 = createFleetUpdate("US-DMCV-JPMAP", dmcvLocation.currentHex.q, dmcvLocation.currentHex.r)
-    if (update1 !== null) {
-      // going to 2,1
-      setFleetUnitUpdate(update1)
-    }
-    await delay(1)
-  }
+  // if (dmcvLocation !== undefined) {
+  //   const update1 = createFleetUpdate("US-DMCV-JPMAP", dmcvLocation.currentHex.q, dmcvLocation.currentHex.r)
+  //   if (update1 !== null) {
+  //     // going to 2,1
+  //     setFleetUnitUpdate(update1)
+  //   }
+  //   await delay(1)
+  // }
 }
 
 

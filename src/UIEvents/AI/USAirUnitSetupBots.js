@@ -58,38 +58,43 @@ export const GAME_STRATEGIES = {
   ULTRA_DEFENSIVE: 3,
   ULTRA_AGGRESSIVE: 4,
 }
+const MIDWAY_SETUP = [8, 8, 9, 10, 9, 9]
 
 AIR_STRATEGIES.push([
   [0, 1, 1, 2, 2],
   [0, 3, 3, 4, 4],
   [5, 5, 6, 7, 6],
+  MIDWAY_SETUP
 ]) // standard aggressive fighter-DB strike groups
 
 AIR_STRATEGIES.push([
   [0, 0, 1, 2, 1],
   [0, 0, 3, 4, 3],
   [5, 6, 6, 7, 7],
+  MIDWAY_SETUP
 ]) // standard defensive all fighters in CAP
 
 AIR_STRATEGIES.push([
   [0, 1, 1, 2, 2],
   [0, 0, 3, 4, 3],
   [5, 6, 6, 7, 7],
+  MIDWAY_SETUP
 ]) // mixture of above two
 
 AIR_STRATEGIES.push([
   [0, 0, 2, 2, 2],
   [0, 0, 4, 4, 4],
   [5, 5, 7, 7, 7],
+  MIDWAY_SETUP
 ]) // ultra defensive all fighters in CAP, all attack aircraft in hangars
 
 AIR_STRATEGIES.push([
   [1, 2, 1, 2, 2],
   [3, 4, 3, 4, 4],
   [6, 7, 6, 7, 7],
+  MIDWAY_SETUP
 ]) // ultra aggressive no fighters in CAP, all attack aircraft either on fligth deck or hangar
 
-const MIDWAY_SETUP = [8, 8, 9, 10, 9, 9]
 
 const randomStrategy = generateRandomUSAirSetup()
 
@@ -128,20 +133,4 @@ export function getAirSetupBoxes(carrier, testStrategy) {
     case GlobalUnitsModel.Carrier.MIDWAY:
       return MIDWAY_SETUP
   }
-}
-
-export function generateUSAirOperationsMoves() {
-  // for each air unit that we wish to move generate an array of destination boxes
-  // (21 element vector, one for each air unit (3 x 5 carrier air units, 6 for Midway do not include B17))
-  // Need to take into account:
-  // - turn,
-  // - VP situation/State of Two Fleets/Remaining Air Power
-  // - Distance Between Fleets,
-  // - Existence of MIF/DMCV
-  // - Remaining Air Ops
-  // 1. Move Units from Flight Deck to Strike Boxes
-  // 2. Move Units from Flight Deck to CAP Boxes
-  // 2. Move Units from Hangar to Flight Deck
-  // 3. Move Units in Return Boxes to next Return Box or Hangar
-  // const airUnitsOnFlightDeck =
 }

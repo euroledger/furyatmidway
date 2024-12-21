@@ -4,6 +4,7 @@ import USAICardDrawState from "./USAICardDrawState"
 import USAIFleetMovementPlanningState from "./USAIFleetMovementPlanningState"
 import USAIFleetMovementState from "./USAIFleetMovementState"
 import USAICardPlayState from "./USAICardPlayState"
+import USAIAirOperationsState from "./USAIAirOperationsState"
 
 function mapGameStateToUSAIHandlerState() {
   switch (GlobalGameState.gamePhase) {
@@ -17,6 +18,8 @@ function mapGameStateToUSAIHandlerState() {
       return new USAIFleetMovementPlanningState()
     case GlobalGameState.PHASE.US_FLEET_MOVEMENT:
       return new USAIFleetMovementState()
+    case GlobalGameState.PHASE.AIR_OPERATIONS:
+      return new USAIAirOperationsState()
 
     default:
       console.log("ERROR unexpected game state", GlobalGameState.gamePhase)

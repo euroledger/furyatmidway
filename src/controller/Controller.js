@@ -4,7 +4,7 @@ import MapModel from "../model/MapModel"
 import GlobalUnitsModel from "../model/GlobalUnitsModel"
 import ViewEventAirUnitSetupHandler from "./ViewEventAirUnitSetupHandler"
 import ViewEventFleetUnitSetupHandler from "./ViewEventFleetUnitSetupHandler"
-import { distanceBetweenHexes } from "../components/HexUtils"
+import { distanceBetweenHexes, mapHexToIndex, isMidwayHex } from "../components/HexUtils"
 import GlobalGameState from "../model/GlobalGameState"
 import AirOperationsModel from "../model/AirOperationsModel"
 import ViewEventAirUnitMoveHandler from "./ViewEventAirUnitMoveHandler"
@@ -14,7 +14,6 @@ import ViewEventSelectionHandler from "./ViewEventSelectionHandler"
 import ViewEventCapHandler from "./ViewEventCapHandler"
 import ViewEventCarrierDamageHandler from "./ViewEventDamageHandler"
 import ViewEventCardHandler from "./ViewEventCardHandler"
-import { isMidwayHex } from "../components/HexUtils"
 import HexCommand from "../commands/HexCommand"
 
 export default class Controller {
@@ -265,6 +264,25 @@ export default class Controller {
     return eliminatedAirUnits
   }
 
+  getAllUnitsOnUSFlightDecks(fighters) {
+    const airUnits = Array.from(this.counters.values())
+    const defenders = airUnits.filter(
+      (unit) => unit.constructor.name === "AirUnit" && unit.side === GlobalUnitsModel.Side.US
+    )
+
+    let units = new Array()
+    for (const unit of defenders) {
+      const location = this.getAirUnitLocation(unit.name)
+
+      if (location.boxName.includes("FLIGHT")) {
+        units.push(unit)
+      }
+    }
+    // will either filter all fighters or all non-fighters
+    units = units.filter((unit) => unit.aircraftUnit.attack !== fighters)
+    return units
+
+  }
   getAllUnitsOnJapaneseFlightDecks(fighters) {
     const airUnits = Array.from(this.counters.values())
     const defenders = airUnits.filter(
@@ -1104,6 +1122,9 @@ export default class Controller {
     }
 
     let unitsInGroup = new Array()
+    if (GlobalGameState.attackingStrikeGroup === undefined) {
+      return []
+    }
     const box = GlobalGameState.attackingStrikeGroup.box
 
     unitsInGroup = this.getAirUnitsInStrikeGroups(box)
@@ -1370,6 +1391,65 @@ export default class Controller {
     if (GlobalGameState.AF1LeftMap) {
       GlobalGameState.usVPs++
     }
+  }
+
+  getGameStateMatrix(strategy) {
+    // const strategy = GAME_STRATEGIES.MIXED
+
+    // const locationCSF = this.getFleetLocation("CSF", GlobalUnitsModel.Side.US)
+
+    // const location1AF = this.getFleetLocation("1AF", GlobalUnitsModel.Side.JAPAN)
+    // const locationIJNDMDCV = this.getFleetLocation("IJN-DMCV", GlobalUnitsModel.Side.JAPAN)
+    // const locationUSDMCV = this.getFleetLocation("US-DMCV", GlobalUnitsModel.Side.JAPAN)
+    // const locationMIF = this.getFleetLocation("MIF", GlobalUnitsModel.Side.JAPAN)
+
+    // // expect (locationIJNDMDCV).toBeUndefined()
+    // // expect (locationUSDMCV).toBeUndefined()
+    // // expect (locationMIF).toBeUndefined()
+
+    // const distanceBetweenCSFand1AF = distanceBetweenHexes(locationCSF.currentHex, location1AF.currentHex)
+    // // expect(distanceBetweenCSFand1AF).toEqual(6)
+
+    // const distanceBetweenMidwayand1AF = distanceBetweenHexes(Controller.MIDWAY_HEX.currentHex, location1AF.currentHex)
+    // // expect(distanceBetweenMidwayand1AF).toEqual(5)
+
+    // const distanceBetweenCSFandIJNDMCV = -1
+    // const distanceBetweenCSFandMIF = -1
+    // const distanceBetween1AFandUSDMCV = -1
+
+    // const hexIndexCSF = mapHexToIndex(locationCSF.currentHex)
+    // // expect(hexIndexCSF).toEqual(39)
+
+    // const hexIndex1AF = mapHexToIndex(location1AF.currentHex)
+    // // expect(hexIndex1AF).toEqual(2)
+
+    // const hexIndexIJNDMCV = locationIJNDMDCV !== undefined ? mapHexToIndex(locationIJNDMDCV) : -1
+    // const hexIndexUSDMCV = locationUSDMCV !== undefined ? mapHexToIndex(locationUSDMCV) : -1
+    // const hexIndexMIF = locationMIF !== undefined ? mapHexToIndex(locationIJNDMDCV) : -1
+
+    // const airStrategyBoxes = AIR_STRATEGIES[strategy]
+
+    // // const airBoxesEnterprise = getAirSetupBoxes(GlobalGameState.US_CARRIERS[0], airStrategyBoxes)
+    // // const airBoxesHornet = getAirSetupBoxes(GlobalGameState.US_CARRIERS[1], airStrategyBoxes)
+    // // const airBoxesYorktown = getAirSetupBoxes(GlobalGameState.US_CARRIERS[2], airStrategyBoxes)
+    // // const airBoxesMidway = getAirSetupBoxes(GlobalGameState.US_CARRIERS[3], airStrategyBoxes)
+
+    // // expect(airBoxesEnterprise).toEqual([0, 1, 1, 2, 2])
+    // // expect(airBoxesHornet).toEqual([0, 0, 3, 4, 3])
+    // // expect(airBoxesYorktown).toEqual([5, 6, 6, 7, 7])
+    // // expect(airBoxesMidway).toEqual([8, 8, 9, 10, 9, 9])
+
+    // return [
+    //   [GlobalGameState.gameTurn][strategy][(hexIndexCSF, hexIndex1AF, hexIndexIJNDMCV, hexIndexUSDMCV, hexIndexMIF)]
+    //   [
+    //     distanceBetweenCSFand1AF,
+    //     distanceBetweenMidwayand1AF,
+    //     distanceBetweenCSFandIJNDMCV,
+    //     distanceBetweenCSFandMIF,
+    //     distanceBetween1AFandUSDMCV
+    //   ],
+    //   [airStrategyBoxes]
+    // ]
   }
   victoryCheck() {
     const numJapanCVsSunk = this.getSunkCarriers(GlobalUnitsModel.Side.JAPAN).length

@@ -407,6 +407,7 @@ export function App() {
 
   useEffect(() => {
     if (GlobalGameState.gamePhase === GlobalGameState.PHASE.NIGHT_AIR_OPERATIONS_JAPAN) {
+      setCapAirUnits([])
       let unitsReturn2 = GlobalInit.controller.getAllAirUnitsInReturn2Boxes(GlobalUnitsModel.Side.JAPAN)
 
       let unitsAtSea = GlobalInit.controller.getAllStrikeUnits(GlobalUnitsModel.Side.JAPAN)
@@ -783,7 +784,7 @@ export function App() {
       GlobalGameState.updateGlobalState()
       if (GlobalGameState.sideWithInitiative === GlobalUnitsModel.Side.US) {
         StateManager.gameStateManager.setUSState(stateObject)
-        StateManager.gameStateManager.doAction(GlobalUnitsModel.Side.US, stateObject, )
+        StateManager.gameStateManager.doAction(GlobalUnitsModel.Side.US, stateObject)
         setUsStrikePanelEnabled(true) // for now. Move this in due course (only display for humans)
             
       } else {
