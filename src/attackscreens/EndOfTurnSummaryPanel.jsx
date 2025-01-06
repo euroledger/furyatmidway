@@ -49,7 +49,7 @@ export function EndOfTurnSummaryHeaders({ controller }) {
 
   const midwayControl = GlobalGameState.midwayControl === GlobalUnitsModel.Side.US ? "US" : "JAPAN"
 
-  GlobalGameState.winner = ""
+  // GlobalGameState.winner = ""
   if (GlobalGameState.gameTurn === 3 || GlobalGameState.gameTurn === 7) {
     GlobalGameState.winner = controller.victoryCheck()
   } else {

@@ -153,6 +153,7 @@ export function DMCVCarrierSelectionPanelFooters({ controller, DMCVCarrierSelect
   }
 
   if (side === GlobalUnitsModel.Side.US) {
+    console.log("SET US DMCV CARRIER SELECTED TO", carrierUnit.name)
     GlobalGameState.usDMCVCarrier = carrierUnit.name
   } else {
     GlobalGameState.jpDMCVCarrier = carrierUnit.name

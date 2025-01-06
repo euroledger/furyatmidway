@@ -489,6 +489,7 @@ function StrikeCounter({ setStrikeGroupPopup, currentUSHex, currentJapanHex, cou
       },
     })
     if (!loading && controller.checkForAirAttack(to, side)) {
+      console.log("SET UP AIR ATTACK")
       setUpAirAttack(controller, to, counterData, setCardNumber)
       GlobalGameState.attackingStrikeGroup = counterData
     }

@@ -2351,7 +2351,8 @@ export function App() {
     GlobalGameState.dieRolls.length > 0 ||
     damagedCV === "NO TARGETS"
 
-  const summaryButtonDisabled = GlobalGameState.winner !== ""
+    console.log("POO GlobalGameState.winner=",GlobalGameState.winner)
+  const summaryButtonDisabled = GlobalInit.controller.victoryCheck() !== ""
   return (
     <>
       <LoadGamePanel
@@ -2976,6 +2977,7 @@ export function App() {
           // sendDamageEvent(eliminatedSteps)
           // @TODO send DMCV Carrier Selection Event
           sendDMCVSelectionEvent()
+          setDMCVCarrierSelected("")
           nextAction(e)
         }}
         disabled={true}

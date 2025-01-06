@@ -840,7 +840,8 @@ async function doFleetUpdates(setFleetUnitUpdate) {
     }
   }
 
-  // if (dmcvLocation !== undefined) {
+  // I think this does initial placement of US DMCV on JP MAP
+  // if (dmcvLocation !== undefined && dmcvLocation.currentHex !== undefined) {
   //   const update1 = createFleetUpdate("US-DMCV-JPMAP", dmcvLocation.currentHex.q, dmcvLocation.currentHex.r)
   //   if (update1 !== null) {
   //     // going to 2,1

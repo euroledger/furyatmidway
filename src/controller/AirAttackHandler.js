@@ -40,6 +40,7 @@ export function setUpAirAttack(controller, location, strikeGroup, setCardNumber,
     // }
     GlobalGameState.taskForceTarget = GlobalUnitsModel.TaskForce.MIDWAY
   } else {
+    console.log("SET TARGET TO", fleetTarget)
     GlobalGameState.taskForceTarget = fleetTarget
     if (fleetTarget.includes("DMCV") || fleetTarget.includes("MIF")) {
       GlobalGameState.gamePhase = GlobalGameState.PHASE.ANTI_AIRCRAFT_FIRE
@@ -63,6 +64,7 @@ export function setUpAirAttack(controller, location, strikeGroup, setCardNumber,
           ? GlobalUnitsModel.Side.JAPAN
           : GlobalUnitsModel.Side.US
       let anyTargets = controller.anyTargets(sideBeingAttacked)
+      console.log("anyTargets=", anyTargets)
       if (anyTargets) {
         GlobalGameState.gamePhase = GlobalGameState.PHASE.TARGET_DETERMINATION
       } else {

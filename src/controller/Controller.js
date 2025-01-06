@@ -1432,7 +1432,7 @@ export default class Controller {
       }
       if (GlobalGameState.usVPs > GlobalGameState.japanVPs) {
         return "US"
-      } else if (GlobalGameState.japanVPsVPs > GlobalGameState.usVPs) {
+      } else if (GlobalGameState.japanVPs > GlobalGameState.usVPs) {
         return "JAPAN"
       }
       return "DRAW"
