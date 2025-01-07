@@ -461,6 +461,7 @@ function goToIJNFleetMovement({
   GlobalGameState.phaseCompleted = false
 }
 function usDMCVPlanningHandler({ setUsFleetRegions, setFleetUnitUpdate }) {
+  console.log("DO FLEET UPDATES QUACK 1")
   doFleetUpdates(setFleetUnitUpdate)
   GlobalGameState.gamePhase = GlobalGameState.PHASE.US_FLEET_MOVEMENT_PLANNING
   GlobalGameState.usFleetMoved = false
@@ -803,6 +804,7 @@ async function doFleetUpdates(setFleetUnitUpdate) {
   console.log("dmcvLocationJpMap=", dmcvLocationJpMap)
 
   if (dmcvLocation !== undefined && dmcvLocation.boxName === HexCommand.FLEET_BOX && dmcvLocationJpMap !== HexCommand.FLEET_BOX) {
+    console.log("DOING US DMCV UPDATE FOR JAP MAP quack 1")
     const index1 = GlobalInit.controller.getNextAvailableFleetBox(GlobalUnitsModel.Side.US)
   
     let update1 = {
@@ -831,6 +833,8 @@ async function doFleetUpdates(setFleetUnitUpdate) {
     dmcvLocation !== HexCommand.OFFBOARD
   ) {
     if (!locationsEqual(dmcvLocation, dmcvLocationJpMap)) {
+      console.log("DOING US DMCV UPDATE FOR JAP MAP quack 2")
+
       const update1 = createFleetUpdate("US-DMCV-JPMAP", dmcvLocation.currentHex.q, dmcvLocation.currentHex.r)
       if (update1 !== null) {
         // going to 2,1
@@ -841,14 +845,14 @@ async function doFleetUpdates(setFleetUnitUpdate) {
   }
 
   // I think this does initial placement of US DMCV on JP MAP
-  // if (dmcvLocation !== undefined && dmcvLocation.currentHex !== undefined) {
-  //   const update1 = createFleetUpdate("US-DMCV-JPMAP", dmcvLocation.currentHex.q, dmcvLocation.currentHex.r)
-  //   if (update1 !== null) {
-  //     // going to 2,1
-  //     setFleetUnitUpdate(update1)
-  //   }
-  //   await delay(1)
-  // }
+  if (dmcvLocation !== undefined && dmcvLocation.currentHex !== undefined) {
+    const update1 = createFleetUpdate("US-DMCV-JPMAP", dmcvLocation.currentHex.q, dmcvLocation.currentHex.r)
+    if (update1 !== null) {
+      // going to 2,1
+      setFleetUnitUpdate(update1)
+    }
+    await delay(1)
+  }
 }
 
 function locationsEqual(locationA, locationB) {
