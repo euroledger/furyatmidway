@@ -174,7 +174,6 @@ function StrikeCounter({ setStrikeGroupPopup, currentUSHex, currentJapanHex, cou
        if (GlobalGameState.gamePhase === GlobalGameState.PHASE.MIDWAY_ATTACK) {
         const groups = controller.getAllStrikeGroups(GlobalUnitsModel.Side.JAPAN)
         if (GlobalGameState.midwayAttackGroup === undefined && groups.length > 0) {
-          console.log("POOGY VERY 10000")
           GlobalGameState.midwayAttackGroup = groups[0].name
         }
       }
@@ -187,6 +186,7 @@ function StrikeCounter({ setStrikeGroupPopup, currentUSHex, currentJapanHex, cou
         return
       }
       if (GlobalGameState.gamePhase !== GlobalGameState.PHASE.MIDWAY_ATTACK) {
+        console.log("QUACK 1 get locations for enemy fleets...")
         const locationOfEnemyCarrier = controller.getFleetLocation("CSF", GlobalUnitsModel.Side.US)
         const locationOfEnemyDMCV = controller.getFleetLocation("US-DMCV", GlobalUnitsModel.Side.US)
         let distanceToDMCV, distanceToCSF
@@ -242,6 +242,11 @@ function StrikeCounter({ setStrikeGroupPopup, currentUSHex, currentJapanHex, cou
             // strike group can move to attack enemy carrier fleet
             jpRegion.push(locationOfEnemyDMCV.currentHex)
           }
+        }
+        if (jpRegion.length === 0) {
+          counterData.attacked = true
+        } else {
+          setJapanMapRegions(jpRegion)
         }
         setJapanMapRegions(jpRegion)
       } else {
@@ -378,7 +383,11 @@ function StrikeCounter({ setStrikeGroupPopup, currentUSHex, currentJapanHex, cou
         setCurrentHex(locationOfCarrier)
         usRegion = allHexesWithinDistance(locationOfCarrier.currentHex, 2, true)
       }
-      setUSMapRegions(usRegion)
+      if (usRegion.length === 0) {
+        counterData.attacked = true
+      } else {
+        setUSMapRegions(usRegion)
+      }
     }
   }
   const handleClick = (e) => {

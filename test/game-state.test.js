@@ -180,7 +180,7 @@ describe("Numeric Evaluation Of State of Each Side's Naval and Air Power", () =>
 
     setInitialAirUnitLocations()
 
-    generateUSAirOpe0= 5rationsMoves(controller)
+    generateUSAirOperationsMoves(controller)
 
   })
 })

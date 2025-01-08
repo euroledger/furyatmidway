@@ -2580,7 +2580,8 @@ export function App() {
     damagedCV === "NO TARGETS"
 
 
-  const summaryButtonDisabled = GlobalGameState.winner !== ""
+  const summaryButtonDisabled = GlobalInit.controller.victoryCheck() !== ""
+
   return (
     <>
       <LoadGamePanel
@@ -3274,6 +3275,7 @@ export function App() {
           setDmcvCarrierSelectionPanelShow(false)
           // sendDamageEvent(eliminatedSteps)
           // @TODO send DMCV Carrier Selection Event
+          setDMCVCarrierSelected("")
           sendDMCVSelectionEvent()
           nextAction(e)
         }}

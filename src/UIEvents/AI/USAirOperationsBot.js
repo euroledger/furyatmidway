@@ -54,8 +54,6 @@ export function selectUSDefendingCAPUnits(controller, stateObject) {
 function getFleetDistances(controller) {
   const locationCSF = controller.getFleetLocation("CSF", GlobalUnitsModel.Side.US)
 
-  console.log("POO locationCSF=", locationCSF)
-
   const location1AF = controller.getFleetLocation("1AF", GlobalUnitsModel.Side.JAPAN)
   const locationIJNDMCV = controller.getFleetLocation("IJN-DMCV", GlobalUnitsModel.Side.US)
   const locationMIF = controller.getFleetLocation("MIF", GlobalUnitsModel.Side.US)
