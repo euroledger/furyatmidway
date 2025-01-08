@@ -22,6 +22,11 @@ NodeJS comes with a tool called npm, and it is this we use to install the game.
 
 git clone https://github.com/euroledger/furyatmidway.git
 
+For the two player demo version of the game (recommended as of Jan '25)
+change to the testy branch
+
+git checkout testy
+
 3. Otherwise download the zip file
 
 4. cd to the source code folder:

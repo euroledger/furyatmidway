@@ -66,7 +66,18 @@ function usCardDrawHandler({ setMidwayDialogShow, setMidwayWarningShow, setCardN
   }
   GlobalGameState.phaseCompleted = true
 }
-function setupUSFleetHandler({ setUSMapRegions }) {
+async function usFleetInitialPlacementHandler({ setFleetUnitUpdate }) {
+  const update1 = createMapUpdateForFleet(GlobalInit.controller, "CSF", GlobalUnitsModel.Side.US)
+
+  if (update1 !== null) {
+    await setFleetUnitUpdate(update1)
+  }
+  await delay(1)
+
+  GlobalGameState.updateGlobalState()
+}
+function setupUSFleetHandler({ setUSMapRegions, setFleetUnitUpdate }) {
+  usFleetInitialPlacementHandler({setFleetUnitUpdate})
   GlobalGameState.gamePhase = GlobalGameState.PHASE.US_SETUP_AIR
   GlobalGameState.usFleetPlaced = true
   setUSMapRegions([])
@@ -240,7 +251,6 @@ async function setNextStateFollowingCardPlay({
       if (GlobalInit.controller.getCardPlayed(11, GlobalUnitsModel.Side.JAPAN)) {
         GlobalGameState.gamePhase = GlobalGameState.PHASE.AIR_OPERATIONS
       } else {
-        console.log("SET UP AIR ATTACK! FUCKING SHIT")
         setUpAirAttack(GlobalInit.controller, location, GlobalGameState.attackingStrikeGroup, setCardNumber, true)
       }
       break
@@ -461,7 +471,6 @@ function goToIJNFleetMovement({
   GlobalGameState.phaseCompleted = false
 }
 function usDMCVPlanningHandler({ setUsFleetRegions, setFleetUnitUpdate }) {
-  console.log("DO FLEET UPDATES QUACK 1")
   doFleetUpdates(setFleetUnitUpdate)
   GlobalGameState.gamePhase = GlobalGameState.PHASE.US_FLEET_MOVEMENT_PLANNING
   GlobalGameState.usFleetMoved = false
@@ -800,11 +809,8 @@ async function doFleetUpdates(setFleetUnitUpdate) {
   // if different -> do update
   const dmcvLocation = GlobalInit.controller.getFleetLocation("US-DMCV", GlobalUnitsModel.Side.US)
   const dmcvLocationJpMap = GlobalInit.controller.getFleetLocation("US-DMCV-JPMAP", GlobalUnitsModel.Side.JAPAN)
-  console.log("dmcvLocation=", dmcvLocation)
-  console.log("dmcvLocationJpMap=", dmcvLocationJpMap)
 
   if (dmcvLocation !== undefined && dmcvLocation.boxName === HexCommand.FLEET_BOX && dmcvLocationJpMap !== HexCommand.FLEET_BOX) {
-    console.log("DOING US DMCV UPDATE FOR JAP MAP quack 1")
     const index1 = GlobalInit.controller.getNextAvailableFleetBox(GlobalUnitsModel.Side.US)
   
     let update1 = {
@@ -833,7 +839,6 @@ async function doFleetUpdates(setFleetUnitUpdate) {
     dmcvLocation !== HexCommand.OFFBOARD
   ) {
     if (!locationsEqual(dmcvLocation, dmcvLocationJpMap)) {
-      console.log("DOING US DMCV UPDATE FOR JAP MAP quack 2")
 
       const update1 = createFleetUpdate("US-DMCV-JPMAP", dmcvLocation.currentHex.q, dmcvLocation.currentHex.r)
       if (update1 !== null) {
@@ -1199,7 +1204,6 @@ function midwayOrAirOps() {
 
 function determineMidwayInvasion(setCardNumber,setEndOfTurnSummaryShow, currentCardNumber) {
   // before midway invasion, check cards playable at end of turn
-  console.log("Current CARD =", currentCardNumber)
   if (
     currentCardNumber !== 1 && 
     (GlobalInit.controller.usHandContainsCard(1) &&
@@ -1211,7 +1215,6 @@ function determineMidwayInvasion(setCardNumber,setEndOfTurnSummaryShow, currentC
   }
   if (currentCardNumber !== 2 && (GlobalInit.controller.usHandContainsCard(2) || GlobalInit.controller.japanHandContainsCard(2))) {
     setCardNumber(() => 2)
-    console.log("FUCKETY")
     GlobalGameState.gamePhase = GlobalGameState.PHASE.CARD_PLAY
     return
   }
@@ -1231,7 +1234,6 @@ function determineMidwayInvasion(setCardNumber,setEndOfTurnSummaryShow, currentC
   // MIF Regions set separately
   if (jpMIFLocation !== undefined && jpMIFLocation.boxName !== HexCommand.FLEET_BOX) {
     const distance = distanceBetweenHexes(jpMIFLocation.currentHex, Controller.MIDWAY_HEX.currentHex)
-    console.log("MUGS distance=", distance)
     if (distance === 1) {
       if (GlobalInit.controller.usHandContainsCard(8)) {
         setCardNumber(() => 8)
@@ -1240,12 +1242,10 @@ function determineMidwayInvasion(setCardNumber,setEndOfTurnSummaryShow, currentC
         GlobalGameState.gamePhase = GlobalGameState.PHASE.MIDWAY_INVASION
       }
     } else {
-      console.log("FUCKING END YOU CUNT 1")
       setEndOfTurnSummaryShow(true)
       GlobalGameState.gamePhase = GlobalGameState.PHASE.END_OF_GAME
     }
   } else {
-    console.log("FUCKING END YOU CUNT 2")
     setEndOfTurnSummaryShow(true)
     GlobalGameState.gamePhase = GlobalGameState.PHASE.END_OF_GAME
   }
@@ -1315,7 +1315,7 @@ export default async function handleAction({
   } else if (GlobalGameState.gamePhase === GlobalGameState.PHASE.JAPAN_CARD_DRAW) {
     japanCardDrawHandler({ setUSMapRegions, setCSFAlertShow })
   } else if (GlobalGameState.gamePhase === GlobalGameState.PHASE.US_SETUP_FLEET) {
-    setupUSFleetHandler({ setUSMapRegions })
+    setupUSFleetHandler({ setUSMapRegions, setFleetUnitUpdate })
   } else if (GlobalGameState.gamePhase === GlobalGameState.PHASE.US_SETUP_AIR) {
     setupUSAirHandler()
   } else if (GlobalGameState.gamePhase === GlobalGameState.PHASE.US_CARD_DRAW) {

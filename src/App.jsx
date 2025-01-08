@@ -1274,8 +1274,6 @@ export function App() {
           }
           return
         } else {
-          console.log("QUACK 4")
-
           GlobalGameState.nextActionButtonDisabled = false
           if (prevButton !== GlobalGameState.nextActionButtonDisabled) {
             GlobalGameState.updateGlobalState()
@@ -2351,7 +2349,6 @@ export function App() {
     GlobalGameState.dieRolls.length > 0 ||
     damagedCV === "NO TARGETS"
 
-    console.log("POO GlobalGameState.winner=",GlobalGameState.winner)
   const summaryButtonDisabled = GlobalInit.controller.victoryCheck() !== ""
   return (
     <>

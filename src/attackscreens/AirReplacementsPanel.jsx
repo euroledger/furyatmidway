@@ -81,7 +81,6 @@ export function AirReplacementsHeaders({
       airUnit.aircraftUnit.steps = 2
       const newImage = airUnit.image.replace("back", "front")
       airUnit.image = newImage
-      console.log("QUACK 1")
       setAirReplacementsSelected(true)
       return
     }
@@ -247,7 +246,6 @@ export function AirReplacementsFooters({
     })
     if (clickedOnSomething && availableUSCVs.length === 0) {
       msg = "No carriers available to receive replacements"
-      console.log("QUACK 2")
       setAirReplacementsSelected(true)
     }
   } else {
@@ -262,7 +260,6 @@ export function AirReplacementsFooters({
     )
     if (clickedOnSomething && availableJapanCVs.length === 0) {
       msg = "No carriers available to receive replacements"
-      console.log("QUACK 3")
       setAirReplacementsSelected(true)
     }
   }
@@ -341,7 +338,6 @@ export function AirReplacementsFooters({
     console.log("WE SELECTED A UNIT!")
   }
   if (selectedCV && showCarrierDisplay && !airReplacementsSelected) {
-    console.log("QUACK 4")
     setAirReplacementsSelected(true)
     moveAirUnitFromEliminatedBox(controller, side, selectedCV, selectedAirUnit, setAirUnitUpdate)
   }

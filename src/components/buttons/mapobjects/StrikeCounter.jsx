@@ -244,7 +244,11 @@ function StrikeCounter({ setStrikeGroupPopup, currentUSHex, currentJapanHex, cou
             jpRegion.push(locationOfEnemyDMCV.currentHex)
           }
         }
-        setJapanMapRegions(jpRegion)
+        if (jpRegion.length === 0) {
+          counterData.attacked = true
+        } else {
+          setJapanMapRegions(jpRegion)
+        }
       } else {
         setCurrentHex(locationOfCarrier)
         if (locationOfCarrier) {

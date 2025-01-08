@@ -1826,9 +1826,6 @@ export default class Controller {
     jpVal -= GlobalGameState.midwayAirOpsCompleted
     jpVal = Math.max(0, jpVal)
 
-    console.log("QUACK GlobalGameState.US_MIDWAY=",GlobalGameState.US_MIDWAY)
-
-    console.log("QUACK GlobalGameState.US_MIDWAY - distances.us_midway=",GlobalGameState.US_MIDWAY - distances.us_midway)
     let usVal = Math.max(1, GlobalGameState.US_CSF - distances.us_csf, GlobalGameState.US_MIDWAY - distances.us_midway)
     usVal = Math.min(4, usVal)
     return {
