@@ -127,7 +127,6 @@ describe("Numeric Evaluation Of State of Each Side's Naval and Air Power", () =>
     expect(strength).toEqual(32)
 
     let strengthAsArray = controller.getAirStrengthAsArray(GlobalUnitsModel.Side.JAPAN)
-    console.log("STRENGTH AS ARRAY US=", strengthAsArray)
     expect(strengthAsArray).toEqual([2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2])
   })
 
@@ -140,7 +139,7 @@ describe("Numeric Evaluation Of State of Each Side's Naval and Air Power", () =>
     const distanceBetweenCSFand1AF = distanceBetweenHexes(locationCSF.currentHex, location1AF.currentHex)
     expect(distanceBetweenCSFand1AF).toEqual(6)
 
-    const distanceBetweenMidwayand1AF = distanceBetweenHexes(Controller.MIDWAY.currentHex, location1AF.currentHex)
+    const distanceBetweenMidwayand1AF = distanceBetweenHexes(Controller.MIDWAY_HEX.currentHex, location1AF.currentHex)
     expect(distanceBetweenMidwayand1AF).toEqual(5)
   })
 })

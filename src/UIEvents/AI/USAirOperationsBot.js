@@ -121,8 +121,6 @@ export function generateUSAirOperationsMoves(controller) {
       setValidDestinationBoxes(controller, unit.name, GlobalUnitsModel.Side.US)
 
       const destinations = controller.getValidAirUnitDestinations(unit.name)
-
-      console.log("AIR UNIT:", unit.name, "VALID DESTINATIONS=", destinations)
     }
     // if not last air op and distance >3 (could move out of range)
     // => 3. Move Unit from Flight Deck to Strike Boxes, or

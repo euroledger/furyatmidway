@@ -93,9 +93,10 @@ describe("Controller tests", () => {
 
     expect(airUnits[0].name).toEqual("Enterprise-F4F4-1")
     expect(airUnits[1].name).toEqual("Enterprise-F4F4-2")
-    expect(airUnits[2].name).toEqual("Enterprise-TBD1")
-    expect(airUnits[3].name).toEqual("Enterprise-SBD3-1")
-    expect(airUnits[4].name).toEqual("Enterprise-SBD3-2")
+    expect(airUnits[2].name).toEqual("Enterprise-SBD3-1")
+    expect(airUnits[3].name).toEqual("Enterprise-SBD3-2")
+    expect(airUnits[4].name).toEqual("Enterprise-TBD1")
+
   })
 
   test("Move air unit event in view event handler", () => {
