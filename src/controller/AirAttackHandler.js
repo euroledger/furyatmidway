@@ -40,15 +40,12 @@ export function setUpAirAttack(controller, location, strikeGroup, setCardNumber,
     // }
     GlobalGameState.taskForceTarget = GlobalUnitsModel.TaskForce.MIDWAY
   } else {
-    console.log("SET TARGET TO", fleetTarget)
     GlobalGameState.taskForceTarget = fleetTarget
     if (fleetTarget.includes("DMCV") || fleetTarget.includes("MIF")) {
       GlobalGameState.gamePhase = GlobalGameState.PHASE.ANTI_AIRCRAFT_FIRE
       if (fleetTarget.includes("IJN-DMCV")) {
         GlobalGameState.taskForceTarget = GlobalUnitsModel.TaskForce.JAPAN_DMCV
         GlobalGameState.currentCarrierAttackTarget = GlobalUnitsModel.TaskForce.JAPAN_DMCV
-        console.log("+++++++++++++++++++++++++ SET TARGET TO", GlobalGameState.currentCarrierAttackTarget)
-
       } else if (fleetTarget.includes("US-DMCV")) {
         GlobalGameState.taskForceTarget = GlobalUnitsModel.TaskForce.US_DMCV
         GlobalGameState.currentCarrierAttackTarget = GlobalUnitsModel.TaskForce.US_DMCV
@@ -64,7 +61,6 @@ export function setUpAirAttack(controller, location, strikeGroup, setCardNumber,
           ? GlobalUnitsModel.Side.JAPAN
           : GlobalUnitsModel.Side.US
       let anyTargets = controller.anyTargets(sideBeingAttacked)
-      console.log("anyTargets=", anyTargets)
       if (anyTargets) {
         GlobalGameState.gamePhase = GlobalGameState.PHASE.TARGET_DETERMINATION
       } else {

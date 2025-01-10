@@ -91,9 +91,9 @@ export default class Controller {
       }
       if (
         (this.isSunk(GlobalUnitsModel.Carrier.HIRYU) ||
-          GlobalGameState.usDMCVCarrier === GlobalUnitsModel.Carrier.HIRYU) &&
+          GlobalGameState.jpDMCVCarrier === GlobalUnitsModel.Carrier.HIRYU) &&
         (this.isSunk(GlobalUnitsModel.Carrier.SORYU) ||
-          GlobalGameState.usDMCVCarrier === GlobalUnitsModel.Carrier.SORYU)
+          GlobalGameState.jpDMCVCarrier === GlobalUnitsModel.Carrier.SORYU)
       ) {
         autoSelectTarget = GlobalUnitsModel.TaskForce.CARRIER_DIV_1
       }
@@ -619,6 +619,8 @@ export default class Controller {
   }
   setUnitsToNotMoved(airunits) {
     for (const unit of airunits) {
+      console.log("QUACK 2 SET AIR UNITS TO NOT MOVED ...BOY")
+
       unit.aircraftUnit.moved = false
       this.counters.set(unit.name, unit)
       unit.aircraftUnit.hitsScored = 0

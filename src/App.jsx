@@ -2289,10 +2289,13 @@ export function App() {
   }
   let damagedCarriers = GlobalInit.controller.getDamagedCarriersOneOrTwoHits(GlobalUnitsModel.Side.US)
   let damageControlButtonDisabled =
-    (damagedCV=== "x") || (damagedCV === "" && GlobalGameState.dieRolls.length === 0) || GlobalGameState.dieRolls.length > 0
+    (damagedCV=== "x") || (damagedCV === "" && GlobalGameState.dieRolls.length === 0) 
+    || GlobalGameState.dieRolls.length > 0
 
+  let damageControlCloseButtonDisabled = !damageControlButtonDisabled || damagedCV === ""
   if (damageControlSide === GlobalUnitsModel.Side.US) {
     damageControlButtonDisabled = damagedCV !== "" || damagedCarriers.length === 0
+    damageControlCloseButtonDisabled = !damageControlButtonDisabled
   }
 
   const totalHits = GlobalGameState.midwayHits + GlobalGameState.totalMidwayHits
@@ -2881,7 +2884,7 @@ export function App() {
         showDice={damagedCV !== "x" && damageControlSide === GlobalUnitsModel.Side.JAPAN}
         margin={350}
         diceButtonDisabled={damageControlButtonDisabled}
-        closeButtonDisabled={!damageControlButtonDisabled}
+        closeButtonDisabled={damageControlCloseButtonDisabled}
         onHide={(e) => {
           setDamageControlPanelShow(false)
           nextAction(e)

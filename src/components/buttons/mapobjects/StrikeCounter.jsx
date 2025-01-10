@@ -8,6 +8,7 @@ import "./counter.css"
 import { allHexesWithinDistance, hexesInTwoRegions, distanceBetweenHexes } from "../../HexUtils"
 import HexCommand from "../../../commands/HexCommand"
 import { setUpAirAttack } from "../../../controller/AirAttackHandler"
+import { setStrikeGroupAirUnitsToNotMoved } from "../../../controller/AirOperationsHandler"
 
 function StrikeCounter({ setStrikeGroupPopup, currentUSHex, currentJapanHex, counterData, side, index }) {
   const {
@@ -215,6 +216,7 @@ function StrikeCounter({ setStrikeGroupPopup, currentUSHex, currentJapanHex, cou
           // no enemy fleet within range of the SG -> set to attacked
           // this will trigger all SG air units to RETURN-2 box
           counterData.attacked = true
+          setStrikeGroupAirUnitsToNotMoved(GlobalUnitsModel.Side.JAPAN)
         } else {
           setJapanMapRegions(jpRegion)
         }
@@ -246,6 +248,7 @@ function StrikeCounter({ setStrikeGroupPopup, currentUSHex, currentJapanHex, cou
         }
         if (jpRegion.length === 0) {
           counterData.attacked = true
+          setStrikeGroupAirUnitsToNotMoved(GlobalUnitsModel.Side.JAPAN)
         } else {
           setJapanMapRegions(jpRegion)
         }
@@ -338,8 +341,8 @@ function StrikeCounter({ setStrikeGroupPopup, currentUSHex, currentJapanHex, cou
       if (usRegion.length === 0) {
         // no enemy fleet within range of the SG -> set to attacked
         // this will trigger all SG air units to RETURN-2 box
-
         counterData.attacked = true
+        setStrikeGroupAirUnitsToNotMoved(GlobalUnitsModel.Side.US)
       } else {
         setUSMapRegions(usRegion)
       }
@@ -493,7 +496,6 @@ function StrikeCounter({ setStrikeGroupPopup, currentUSHex, currentJapanHex, cou
       },
     })
     if (!loading && controller.checkForAirAttack(to, side)) {
-      console.log("SET UP AIR ATTACK")
       setUpAirAttack(controller, to, counterData, setCardNumber)
       GlobalGameState.attackingStrikeGroup = counterData
     }
@@ -509,6 +511,13 @@ function StrikeCounter({ setStrikeGroupPopup, currentUSHex, currentJapanHex, cou
     if (GlobalGameState.gamePhase === GlobalGameState.PHASE.NIGHT_AIR_OPERATIONS_JAPAN) {
       // rare occasion where SG is at sea from previous turn
       counterData.attacked = true
+      setStrikeGroupAirUnitsToNotMoved(GlobalUnitsModel.Side.JAPAN)
+      return
+    }
+    if (GlobalGameState.gamePhase === GlobalGameState.PHASE.NIGHT_AIR_OPERATIONS_US) {
+      // rare occasion where SG is at sea from previous turn
+      counterData.attacked = true
+      setStrikeGroupAirUnitsToNotMoved(GlobalUnitsModel.Side.US)
       return
     }
 

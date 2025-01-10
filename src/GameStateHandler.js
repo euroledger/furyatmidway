@@ -1135,6 +1135,8 @@ async function tidyUp(setAirUnitUpdate, setStrikeGroupUpdate, setFleetUnitUpdate
 
     // 3. Fire state update to display Fleet Removed alert
   }
+  console.log("WOOF 2")
+
   await setStrikeGroupAirUnitsToNotMoved(GlobalGameState.sideWithInitiative, setAirUnitUpdate)
 
   // reset SG attributes to allow that Strike Group and its boxes to be available
@@ -1158,6 +1160,9 @@ export async function endOfAirOperation(side, capAirUnits, setAirUnitUpdate, set
   const anySGsNotMoved = GlobalInit.controller.getStrikeGroupsNotMoved2(GlobalGameState.sideWithInitiative)
 
   if (!anySGsNotMoved) {
+    console.trace()
+    console.log("WOOF 3")
+
     await setStrikeGroupAirUnitsToNotMoved(GlobalGameState.sideWithInitiative, setAirUnitUpdate)
   } else {
     return false
