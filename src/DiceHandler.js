@@ -617,7 +617,6 @@ export async function sendRemoveDamageMarkerUpdate(
 
 export async function sendDMCVUpdate(controller, carrier, setDmcvShipMarkerUpdate, side) {
   // place a DMCV marker on the carrier display of any carrier assigned to
-  // a DMCV fleet
   const carrierUnit = controller.getCarrier(carrier)
 
   const boxName = controller.getAirBoxForNamedShip(side, carrier, "DMCV")
@@ -801,9 +800,9 @@ export function doAttackFireRolls(controller, testRolls) {
     GlobalGameState.carrierAttackHits = hits
     GlobalGameState.carrierAttackHitsThisAttack = hits
 
-    // QUACK REMOVE TEESTING ONLY
-    // GlobalGameState.carrierAttackHits = 2
-    // GlobalGameState.carrierAttackHitsThisAttack = 2
+    // // QUACK REMOVE TEESTING ONLY
+    // GlobalGameState.carrierAttackHits = 1
+    // GlobalGameState.carrierAttackHitsThisAttack = 1
   }
   return hits
 }

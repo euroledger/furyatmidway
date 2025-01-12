@@ -77,7 +77,7 @@ async function usFleetInitialPlacementHandler({ setFleetUnitUpdate }) {
   GlobalGameState.updateGlobalState()
 }
 function setupUSFleetHandler({ setUSMapRegions, setFleetUnitUpdate }) {
-  usFleetInitialPlacementHandler({setFleetUnitUpdate})
+  usFleetInitialPlacementHandler({ setFleetUnitUpdate })
   GlobalGameState.gamePhase = GlobalGameState.PHASE.US_SETUP_AIR
   GlobalGameState.usFleetPlaced = true
   setUSMapRegions([])
@@ -104,7 +104,6 @@ async function setNextStateFollowingCardPlay({
 }) {
   GlobalGameState.dieRolls = []
 
-  console.log("PANTS!!!!!!!!!!!!!!!!!")
   switch (cardNumber) {
     case -1:
       break
@@ -127,7 +126,7 @@ async function setNextStateFollowingCardPlay({
         setCardNumber(() => 4)
       } else {
         if (GlobalGameState.gameTurn === 7) {
-          determineMidwayInvasion(setCardNumber,setEndOfTurnSummaryShow, 1)
+          determineMidwayInvasion(setCardNumber, setEndOfTurnSummaryShow, 1)
         } else {
           GlobalGameState.gamePhase = GlobalGameState.PHASE.END_OF_TURN
           setEndOfTurnSummaryShow(true)
@@ -136,15 +135,12 @@ async function setNextStateFollowingCardPlay({
       break
 
     case 2:
-      console.log("PANTS 1")
       if (GlobalInit.controller.usHandContainsCard(3) || GlobalInit.controller.japanHandContainsCard(3)) {
         setCardNumber(() => 3)
       } else if (GlobalInit.controller.usHandContainsCard(4) || GlobalInit.controller.japanHandContainsCard(4)) {
         setCardNumber(() => 4)
       } else {
         if (GlobalGameState.gameTurn === 7) {
-          console.log("PANTS 2")
-
           determineMidwayInvasion(setCardNumber, setEndOfTurnSummaryShow, 2)
         } else {
           GlobalGameState.gamePhase = GlobalGameState.PHASE.END_OF_TURN
@@ -158,7 +154,7 @@ async function setNextStateFollowingCardPlay({
         setCardNumber(() => 4)
       } else {
         if (GlobalGameState.gameTurn === 7) {
-          determineMidwayInvasion(setCardNumber,setEndOfTurnSummaryShow, 3)
+          determineMidwayInvasion(setCardNumber, setEndOfTurnSummaryShow, 3)
         } else {
           GlobalGameState.gamePhase = GlobalGameState.PHASE.END_OF_TURN
           setEndOfTurnSummaryShow(true)
@@ -471,7 +467,8 @@ function goToIJNFleetMovement({
   GlobalGameState.phaseCompleted = false
 }
 function usDMCVPlanningHandler({ setUsFleetRegions, setFleetUnitUpdate }) {
-  doFleetUpdates(setFleetUnitUpdate)
+  // DMCV Fleet Updates should be done at end of US FLEET MOVEMENT
+  // doFleetUpdates(setFleetUnitUpdate)
   GlobalGameState.gamePhase = GlobalGameState.PHASE.US_FLEET_MOVEMENT_PLANNING
   GlobalGameState.usFleetMoved = false
   setUsFleetRegions()
@@ -729,6 +726,7 @@ export async function removeMIFFleet(setFleetUnitUpdate) {
   // update1.loading = false
   // update2.loading = false
 
+  await delay(1)
   setFleetUnitUpdate(update1)
   await delay(1)
   setFleetUnitUpdate(update2)
@@ -770,21 +768,23 @@ async function removeDMCVFleetForCarrier(side, setFleetUnitUpdate) {
 }
 
 async function usFleetMovementHandler({ setFleetUnitUpdate }) {
-  const update1 = createMapUpdateForFleet(GlobalInit.controller, "CSF", GlobalUnitsModel.Side.US)
-  let update2 = null
-  if (GlobalUnitsModel.usDMCVCarrier !== undefined) {
-    update2 = createMapUpdateForFleet(GlobalInit.controller, "US-DMCV", GlobalUnitsModel.Side.US)
-  }
+  doFleetUpdates(setFleetUnitUpdate)
 
-  if (update2 !== null) {
-    await setFleetUnitUpdate(update2)
-  }
-  await delay(1)
+  // const update1 = createMapUpdateForFleet(GlobalInit.controller, "CSF", GlobalUnitsModel.Side.US)
+  // let update2 = null
+  // if (GlobalUnitsModel.usDMCVCarrier !== undefined) {
+  //   update2 = createMapUpdateForFleet(GlobalInit.controller, "US-DMCV", GlobalUnitsModel.Side.US)
+  // }
 
-  if (update1 !== null) {
-    await setFleetUnitUpdate(update1)
-  }
-  await delay(1)
+  // if (update2 !== null) {
+  //   await setFleetUnitUpdate(update2)
+  // }
+  // await delay(1)
+
+  // if (update1 !== null) {
+  //   await setFleetUnitUpdate(update1)
+  // }
+  // await delay(1)
 
   GlobalGameState.updateGlobalState()
 }
@@ -810,9 +810,13 @@ async function doFleetUpdates(setFleetUnitUpdate) {
   const dmcvLocation = GlobalInit.controller.getFleetLocation("US-DMCV", GlobalUnitsModel.Side.US)
   const dmcvLocationJpMap = GlobalInit.controller.getFleetLocation("US-DMCV-JPMAP", GlobalUnitsModel.Side.JAPAN)
 
-  if (dmcvLocation !== undefined && dmcvLocation.boxName === HexCommand.FLEET_BOX && dmcvLocationJpMap !== HexCommand.FLEET_BOX) {
+  if (
+    dmcvLocation !== undefined &&
+    dmcvLocation.boxName === HexCommand.FLEET_BOX &&
+    dmcvLocationJpMap !== HexCommand.FLEET_BOX
+  ) {
     const index1 = GlobalInit.controller.getNextAvailableFleetBox(GlobalUnitsModel.Side.US)
-  
+
     let update1 = {
       name: "US-DMCV-JPMAP",
       position: {
@@ -839,7 +843,6 @@ async function doFleetUpdates(setFleetUnitUpdate) {
     dmcvLocation !== HexCommand.OFFBOARD
   ) {
     if (!locationsEqual(dmcvLocation, dmcvLocationJpMap)) {
-
       const update1 = createFleetUpdate("US-DMCV-JPMAP", dmcvLocation.currentHex.q, dmcvLocation.currentHex.r)
       if (update1 !== null) {
         // going to 2,1
@@ -1135,8 +1138,6 @@ async function tidyUp(setAirUnitUpdate, setStrikeGroupUpdate, setFleetUnitUpdate
 
     // 3. Fire state update to display Fleet Removed alert
   }
-  console.log("WOOF 2")
-
   await setStrikeGroupAirUnitsToNotMoved(GlobalGameState.sideWithInitiative, setAirUnitUpdate)
 
   // reset SG attributes to allow that Strike Group and its boxes to be available
@@ -1160,9 +1161,6 @@ export async function endOfAirOperation(side, capAirUnits, setAirUnitUpdate, set
   const anySGsNotMoved = GlobalInit.controller.getStrikeGroupsNotMoved2(GlobalGameState.sideWithInitiative)
 
   if (!anySGsNotMoved) {
-    console.trace()
-    console.log("WOOF 3")
-
     await setStrikeGroupAirUnitsToNotMoved(GlobalGameState.sideWithInitiative, setAirUnitUpdate)
   } else {
     return false
@@ -1207,28 +1205,37 @@ function midwayOrAirOps() {
   }
 }
 
-function determineMidwayInvasion(setCardNumber,setEndOfTurnSummaryShow, currentCardNumber) {
+function determineMidwayInvasion(setCardNumber, setEndOfTurnSummaryShow, currentCardNumber) {
   // before midway invasion, check cards playable at end of turn
   if (
-    currentCardNumber !== 1 && 
-    (GlobalInit.controller.usHandContainsCard(1) &&
-    GlobalInit.controller.getSunkCarriers(GlobalUnitsModel.Side.US).length > 0)
+    currentCardNumber !== 1 &&
+    GlobalInit.controller.usHandContainsCard(1) &&
+    GlobalInit.controller.getSunkCarriers(GlobalUnitsModel.Side.US).length > 0
   ) {
     setCardNumber(() => 1)
     GlobalGameState.gamePhase = GlobalGameState.PHASE.CARD_PLAY
     return
   }
-  if (currentCardNumber !== 2 && (GlobalInit.controller.usHandContainsCard(2) || GlobalInit.controller.japanHandContainsCard(2))) {
+  if (
+    currentCardNumber !== 2 &&
+    (GlobalInit.controller.usHandContainsCard(2) || GlobalInit.controller.japanHandContainsCard(2))
+  ) {
     setCardNumber(() => 2)
     GlobalGameState.gamePhase = GlobalGameState.PHASE.CARD_PLAY
     return
   }
-  if (currentCardNumber !== 3 && (GlobalInit.controller.usHandContainsCard(3) || GlobalInit.controller.japanHandContainsCard(3))) {
+  if (
+    currentCardNumber !== 3 &&
+    (GlobalInit.controller.usHandContainsCard(3) || GlobalInit.controller.japanHandContainsCard(3))
+  ) {
     setCardNumber(() => 3)
     GlobalGameState.gamePhase = GlobalGameState.PHASE.CARD_PLAY
     return
   }
-  if (currentCardNumber !== 4 && (GlobalInit.controller.usHandContainsCard(4) || GlobalInit.controller.japanHandContainsCard(4))) {
+  if (
+    currentCardNumber !== 4 &&
+    (GlobalInit.controller.usHandContainsCard(4) || GlobalInit.controller.japanHandContainsCard(4))
+  ) {
     setCardNumber(() => 4)
     GlobalGameState.gamePhase = GlobalGameState.PHASE.CARD_PLAY
     return
@@ -1583,8 +1590,8 @@ export default async function handleAction({
     if (GlobalGameState.capHits > 0) {
       GlobalGameState.gamePhase = GlobalGameState.PHASE.CAP_DAMAGE_ALLOCATION
     } else {
-      if (GlobalGameState.taskForceTarget === GlobalUnitsModel.TaskForce.MIDWAY && GlobalGameState.elitePilots) {
-        if (GlobalGameState.attackingStepsRemaining > 0) {
+     if (GlobalGameState.taskForceTarget === GlobalUnitsModel.TaskForce.MIDWAY && GlobalGameState.elitePilots) {
+        if (GlobalGameState.attackingStepsRemaining > 0 || GlobalGameState.attackingStepsRemaining === undefined) {
           GlobalGameState.gamePhase = GlobalGameState.PHASE.ANTI_AIRCRAFT_FIRE
         } else {
           await endOfAirOperation(

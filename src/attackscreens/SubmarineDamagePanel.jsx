@@ -6,7 +6,7 @@ import Controller from "../controller/Controller"
 import { sendDamageUpdates, doCarrierDamageRolls, autoAllocateDamage, sendDMCVUpdate } from "../DiceHandler"
 
 export function SubmarineDamagePanelHeaders({ controller, setDamagedCV, damagedCV, side, damageDone }) {
-   let usEnterprise = {
+  let usEnterprise = {
     image: "/images/fleetcounters/enterprise.jpg",
     name: GlobalUnitsModel.Carrier.ENTERPRISE,
     buttonStr: "Enterprise",
@@ -335,17 +335,23 @@ export function SubmarineDamagePanelFooters({
     // ---- THIS IS DUPLICATE CODE, SEE CarrierDamageDicePanel NEEDS REFACRING QUACK TODO ---
     const damage = autoAllocateDamage(controller, 1)
     sendDamageUpdates(controller, damage, setDamageMarkerUpdate)
-    if (damage.sunk) {
-      const sideBeingAttacked =
-        side === GlobalUnitsModel.Side.US ? GlobalUnitsModel.Side.JAPAN : GlobalUnitsModel.Side.US
 
-        if (sideBeingAttacked === GlobalUnitsModel.Side.US) {
-          GlobalGameState.usDMCVCarrier = undefined
-        } else {
-          GlobalGameState.jpDMCVCarrier = undefined
-        }
-      sendDMCVUpdate(controller, GlobalGameState.currentCarrierAttackTarget, setDmcvShipMarkerUpdate, sideBeingAttacked)
-    }
+    // I don't see any reason to update the DMCV marker in response to a submarine attack
+    // if (damage.sunk) {
+    //   const sideBeingAttacked =
+    //     side === GlobalUnitsModel.Side.US ? GlobalUnitsModel.Side.JAPAN : GlobalUnitsModel.Side.US
+
+    //   if (sideBeingAttacked === GlobalUnitsModel.Side.US) {
+    //     if (GlobalGameState.currentCarrierAttackTarget === GlobalGameState.usDMCVCarrier) {
+    //       GlobalGameState.usDMCVCarrier = undefined
+    //     }
+    //   } else {
+    //     if (GlobalGameState.currentCarrierAttackTarget === GlobalGameState.jpDMCVCarrier) {
+    //       GlobalGameState.jpDMCVCarrier = undefined
+    //     }
+    //   }
+    //   sendDMCVUpdate(controller, GlobalGameState.currentCarrierAttackTarget, setDmcvShipMarkerUpdate, sideBeingAttacked)
+    // }
     // ---- END ---
 
     // this logs the die roll

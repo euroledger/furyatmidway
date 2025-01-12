@@ -167,10 +167,19 @@ export function SingleCarrier({ controller }) {
   if (
     GlobalGameState.taskForceTarget !== GlobalUnitsModel.TaskForce.MIF
   ) {
+
+   
+
     const carrier1SternDamaged = controller.getCarrierSternDamaged(carrierTarget.name)
     const carrier1BowDamaged = controller.getCarrierBowDamaged(carrierTarget.name)
 
+    console.log("DEBUG GETTING DAMAGE FOR CARRIER", carrierTarget.name)
+    console.log("DEBUG carrier1SternDamaged=",carrier1SternDamaged)
+    console.log("DEBUG carrier1BowDamaged=",carrier1BowDamaged)
+
     const carrier1Sunk = controller.isSunk(carrierTarget.name)
+    console.log("DEBUG carrier1Sunk=",carrier1Sunk)
+
     const damageMarker = "/images/markers/damage.png"
     const sunkMarker = "/images/markers/sunk.png"
 
