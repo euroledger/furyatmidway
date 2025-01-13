@@ -1279,7 +1279,7 @@ export default class Controller {
 
   getDistanceBetween1AFAndMidway() {
     const locationOfCarrier = this.getFleetLocation("1AF", GlobalUnitsModel.Side.JAPAN)
-    if (locationOfCarrier === undefined) {
+    if (locationOfCarrier === undefined || locationOfCarrier.currentHex === undefined) {
       return NaN
     }
     return distanceBetweenHexes(locationOfCarrier.currentHex, Controller.MIDWAY_HEX.currentHex)

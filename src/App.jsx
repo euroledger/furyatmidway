@@ -1576,6 +1576,7 @@ export function App() {
 
   function midwayNoHandler(e) {
     GlobalGameState.midwayAttackDeclaration = false
+    GlobalGameState.midwayAirOpsCompleted = 0
     setMidwayDialogShow(false)
     nextAction(e)
   }
@@ -1642,7 +1643,7 @@ export function App() {
 
     const usedPoints = GlobalGameState.midwayAirOpsCompleted
     let ptsStr = ""
-    if (usedPoints > 0) {
+    if (usedPoints > 0 && GlobalGameState.midwayAttackDeclaration) {
       ptsStr = ` (${usedPoints} used in Midway Attack)`
     }
     jpOpsText = `Japan Air Operations Points${ptsStr}: ${searchResults.JAPAN}`
