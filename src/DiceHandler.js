@@ -566,6 +566,9 @@ export function delay(ms) {
 }
 
 export async function allMidwayBoxesDamaged(controller, setDamageMarkerUpdate) {
+  GlobalGameState.midwayBox0Damaged = true
+  GlobalGameState.midwayBox1Damaged = true
+  GlobalGameState.midwayBox2Damaged = true
   await delay(1)
   await sendMidwayDamageUpdates(controller, 0, setDamageMarkerUpdate)
   await delay(1)

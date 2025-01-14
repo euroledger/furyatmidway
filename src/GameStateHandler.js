@@ -440,7 +440,6 @@ function goToIJNFleetMovement({
         jpRegion = newHexArray
       }
       setJapanMapRegions(jpRegion)
-
     }
     const jpMIFLocation = GlobalInit.controller.getFleetLocation("MIF", GlobalUnitsModel.Side.JAPAN)
 
@@ -799,11 +798,13 @@ async function doFleetUpdates(setFleetUnitUpdate) {
   const csfLocationJpMap = GlobalInit.controller.getFleetLocation("CSF-JPMAP", GlobalUnitsModel.Side.JAPAN)
 
   if (!locationsEqual(csfLocation, csfLocationJpMap)) {
-    const update1 = createFleetUpdate("CSF-JPMAP", csfLocation.currentHex.q, csfLocation.currentHex.r)
-    if (update1 !== null) {
-      setFleetUnitUpdate(update1)
+    if (csfLocation.currentHex !== undefined) {
+      const update1 = createFleetUpdate("CSF-JPMAP", csfLocation.currentHex.q, csfLocation.currentHex.r)
+      if (update1 !== null) {
+        setFleetUnitUpdate(update1)
+      }
+      await delay(1)
     }
-    await delay(1)
   }
 
   // compare position of US-DMCV with US-DMCV-JPMAP
@@ -865,7 +866,12 @@ async function doFleetUpdates(setFleetUnitUpdate) {
 }
 
 function locationsEqual(locationA, locationB) {
-  if (locationA === undefined || locationB === undefined) {
+  if (
+    locationA === undefined ||
+    locationB === undefined ||
+    locationA.currentHex === undefined ||
+    locationB.currentHex === undefined
+  ) {
     return false
   }
   return locationA.currentHex.q === locationB.currentHex.q && locationA.currentHex.r === locationB.currentHex.r

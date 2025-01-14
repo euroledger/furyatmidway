@@ -619,8 +619,6 @@ export default class Controller {
   }
   setUnitsToNotMoved(airunits) {
     for (const unit of airunits) {
-      console.log("QUACK 2 SET AIR UNITS TO NOT MOVED ...BOY")
-
       unit.aircraftUnit.moved = false
       this.counters.set(unit.name, unit)
       unit.aircraftUnit.hitsScored = 0
@@ -1474,6 +1472,9 @@ export default class Controller {
       if (GlobalGameState.midwayBox0Damaged) hits++
       if (GlobalGameState.midwayBox1Damaged) hits++
       if (GlobalGameState.midwayBox2Damaged) hits++
+    }
+    if (carrierName === GlobalUnitsModel.Carrier.MIDWAY && hits === 3) {
+      return false
     }
     // return false if both slots either damaged or occupied by an air unit
     const flightDeckBox = this.airOperationsModel.getAirBoxForNamedShip(side, carrierName, "FLIGHT")

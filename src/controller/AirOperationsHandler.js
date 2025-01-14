@@ -667,7 +667,7 @@ export function doHangarNight(controller, name, side) {
   const destAvailable = controller.isFlightDeckAvailable(carrierName, side, true)
 
   if (!destAvailable) {
-    controller.setValidAirUnitDestinations(name, destinationsArray)
+    controller.setValidAirUnitDestinations(name, new Array())
     return
   }
   if (destBox) {
