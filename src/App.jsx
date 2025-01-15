@@ -469,11 +469,11 @@ export function App() {
   useEffect(() => {
     if (GlobalGameState.gamePhase === GlobalGameState.PHASE.CARD_PLAY) {
       setEliminatedSteps(0)
+      GlobalGameState.dieRolls = []
       setHeaderText("Possible Card Play: Card #" + cardNumber)
       
       if (cardNumber === 2 || cardNumber === 4) {
         setDamagedCV("")
-        GlobalGameState.dieRolls = []
       }
       if (cardNumber !== 0 && cardNumber !== -1) {
         setCardAlertPanelShow(true)
@@ -2055,6 +2055,7 @@ export function App() {
       </>
     )
   }
+  console.log("GlobalGameState.dieRolls=", GlobalGameState.dieRolls)
   const cardAlertFooters = (
     <>
       <CardAlertFooters
