@@ -665,8 +665,9 @@ export function doHangarNight(controller, name, side) {
   // check there is room on this carrier's flight deck
   const destAvailable = controller.isFlightDeckAvailable(carrierName, side, true)
 
-  if (!destAvailable) {
-    controller.setValidAirUnitDestinations(name, destinationsArray)
+  // only check if flight deck is available for attack aircraft - fighters can go straigh to CAP
+  if (!destAvailable && unit.aircraftUnit.attack) {
+    controller.setValidAirUnitDestinations(name, new Array())
     return
   }
   if (destBox) {

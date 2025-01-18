@@ -8,7 +8,7 @@ import { getInitialGameStateAsArray } from "../src/controller/gameStateUtils"
 import { AIR_STRATEGIES, GAME_STRATEGIES, getAirSetupBoxes } from "../src/UIEvents/AI/USAirUnitSetupBots"
 import { usBoxToIndex } from "../src/AirUnitData"
 import { airUnitLocationsAsArray } from "../src/controller/gameStateUtils"
-import { generateUSAirOperationsMoves } from "../src/UIEvents/AI/USAirOperationsBot"
+import { generateUSAirOperationsMovesCarriers } from "../src/UIEvents/AI/USAirOperationsBot"
 
 describe("Numeric Evaluation Of State of Each Side's Naval and Air Power", () => {
   let controller
@@ -32,9 +32,9 @@ describe("Numeric Evaluation Of State of Each Side's Naval and Air Power", () =>
 
     controller.addAirUnitToBox(GlobalUnitsModel.AirBox.US_TF17_CAP, 0, yf1)
     controller.addAirUnitToBox(GlobalUnitsModel.AirBox.US_YORKTOWN_FLIGHT_DECK, 0, yf2)
-    controller.addAirUnitToBox(GlobalUnitsModel.AirBox.US_YORKTOWN_FLIGHT_DECK, 1, ydb1)
-    controller.addAirUnitToBox(GlobalUnitsModel.AirBox.US_YORKTOWN_HANGAR, 0, ydb2)
-    controller.addAirUnitToBox(GlobalUnitsModel.AirBox.US_YORKTOWN_HANGAR, 1, ytb)
+    controller.addAirUnitToBox(GlobalUnitsModel.AirBox.US_YORKTOWN_FLIGHT_DECK, 1, ytb)
+    controller.addAirUnitToBox(GlobalUnitsModel.AirBox.US_YORKTOWN_HANGAR, 0, ydb1)
+    controller.addAirUnitToBox(GlobalUnitsModel.AirBox.US_YORKTOWN_HANGAR, 1, ydb2)
 
     controller.addAirUnitToBox(GlobalUnitsModel.AirBox.US_MIDWAY_CAP, 0, mf1)
     controller.addAirUnitToBox(GlobalUnitsModel.AirBox.US_MIDWAY_CAP, 1, mf2)
@@ -161,26 +161,75 @@ describe("Numeric Evaluation Of State of Each Side's Naval and Air Power", () =>
     let unitArray = airUnitLocationsAsArray(controller, GlobalUnitsModel.Side.US)
 
     // 1. START STATE
-    expect(unitArray).toEqual([0, 1, 1, 2, 2, 0, 3, 3, 4, 4, 5, 6, 6, 7, 7, 8, 8, 9, 9, 10, 10])
+    expect(unitArray).toEqual([0, 1, 1, 2, 2, 0, 3, 3, 4, 4, 5, 6, 7, 7, 6, 8, 8, 9, 9, 10, 10])
 
     // 2. ACTION: Enterprise SBD-1 to Strike Box 1
     controller.addAirUnitToBoxUsingNextFreeSlot(GlobalUnitsModel.AirBox.US_STRIKE_BOX_1, edb1)
 
     // 3. NEW STATE
     unitArray = airUnitLocationsAsArray(controller, GlobalUnitsModel.Side.US)
-    expect(unitArray).toEqual([0, 1, 12, 2, 2, 0, 3, 3, 4, 4, 5, 6, 6, 7, 7, 8, 8, 9, 9, 10, 10])
+    expect(unitArray).toEqual([0, 1, 12, 2, 2, 0, 3, 3, 4, 4, 5, 6, 7, 7, 6, 8, 8, 9, 9, 10, 10])
   })
 
-  test("Create Air Unit Moves Using US Air Operations Bot", () => {
-    createFleetMove(controller, 1, 3, "1AF", GlobalUnitsModel.Side.JAPAN) // A,3
+  test("Create Air Unit Moves Using US Air Operations Bot", async () => {
+    createFleetMove(controller, 3, 3, "1AF", GlobalUnitsModel.Side.JAPAN) // C,3
     createFleetMove(controller, 7, 1, "CSF", GlobalUnitsModel.Side.US) // G,4
 
     GlobalGameState.airOperationPoints.japan = 3
     GlobalGameState.airOperationPoints.us = 4
 
     setInitialAirUnitLocations()
+    controller.addAirUnitToBox(GlobalUnitsModel.AirBox.US_ENTERPRISE_FLIGHT_DECK, 0, edb2)
+    controller.addAirUnitToBox(GlobalUnitsModel.AirBox.US_ENTERPRISE_HANGAR, 0, ef2)
+    
+    let usAirUnitsOnFlightDecks = controller.getAllUnitsOnUSFlightDecks()
 
-    generateUSAirOperationsMoves(controller)
+    // console.log("UNITS ON FLIGHT DECKS=", usAirUnitsOnFlightDecks.map((unit) => unit.name))
 
+    expect(usAirUnitsOnFlightDecks.length).toEqual(8) // all units including 2 on Midway runway
+    // Set Up Strike Groups first
+
+    usAirUnitsOnFlightDecks = controller.getAllUnitsOnUSFlightDecks(false)
+    expect(usAirUnitsOnFlightDecks.length).toEqual(6) 
+
+    usAirUnitsOnFlightDecks = controller.getAllUnitsOnUSFlightDecks(true)
+    expect(usAirUnitsOnFlightDecks.length).toEqual(2) // fighters only
+
+    await generateUSAirOperationsMovesCarriers(controller, { setTestUpdate: undefined }, true)
+
+    // should have three strike groups, one from each carrier, each containing two units
+
+    // Will have new airUnitLocationsArray after this operation. See above test
+    let unitArray = airUnitLocationsAsArray(controller, GlobalUnitsModel.Side.US)
+
+    // test that this has the 3 strike groups etc correctly set
+    let strikeGroup = GlobalUnitsModel.usStrikeGroups.get(GlobalUnitsModel.AirBox.US_STRIKE_BOX_0)
+    let unitsInGroup = controller.getAirUnitsInStrikeGroups(strikeGroup.box)
+    expect(unitsInGroup.length).toEqual(2)
+
+    strikeGroup = GlobalUnitsModel.usStrikeGroups.get(GlobalUnitsModel.AirBox.US_STRIKE_BOX_1)
+    unitsInGroup = controller.getAirUnitsInStrikeGroups(strikeGroup.box)
+    expect(unitsInGroup.length).toEqual(2)
+
+    strikeGroup = GlobalUnitsModel.usStrikeGroups.get(GlobalUnitsModel.AirBox.US_STRIKE_BOX_2)
+    unitsInGroup = controller.getAirUnitsInStrikeGroups(strikeGroup.box)
+    expect(unitsInGroup.length).toEqual(2)
+
+    let airUnits = controller.getAllAirUnitsInBox(GlobalUnitsModel.AirBox.US_ENTERPRISE_FLIGHT_DECK)
+    expect(airUnits.length).toEqual(2)
+    expect(airUnits[0]).toEqual(ef2)
+    expect(airUnits[1]).toEqual(etb)
+
+    
+    airUnits = controller.getAllAirUnitsInBox(GlobalUnitsModel.AirBox.US_HORNET_FLIGHT_DECK)
+    expect(airUnits.length).toEqual(2)
+    expect(airUnits[0]).toEqual(hdb2)
+    expect(airUnits[1]).toEqual(htb)
+
+    
+    airUnits = controller.getAllAirUnitsInBox(GlobalUnitsModel.AirBox.US_YORKTOWN_FLIGHT_DECK)
+    expect(airUnits.length).toEqual(2)
+    expect(airUnits[0]).toEqual(ydb1)
+    expect(airUnits[1]).toEqual(ydb2)
   })
 })

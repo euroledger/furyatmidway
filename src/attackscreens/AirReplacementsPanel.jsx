@@ -87,6 +87,7 @@ export function AirReplacementsHeaders({
 
     // if this unit has 0 steps -> set to 1 step and display the eligible carriers in which to place into hangar
     if (eliminatedAirUnits.includes(airUnit)) {
+      airUnit.aircraftUnit.steps = 1
       const newImage = airUnit.image.replace("front", "back")
       airUnit.image = newImage
       setSelectedAirUnit(airUnit)

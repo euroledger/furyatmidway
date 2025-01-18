@@ -335,17 +335,19 @@ export function SubmarineDamagePanelFooters({
     // ---- THIS IS DUPLICATE CODE, SEE CarrierDamageDicePanel NEEDS REFACRING QUACK TODO ---
     const damage = autoAllocateDamage(controller, 1)
     sendDamageUpdates(controller, damage, setDamageMarkerUpdate)
-    if (damage.sunk) {
-      const sideBeingAttacked =
-        side === GlobalUnitsModel.Side.US ? GlobalUnitsModel.Side.JAPAN : GlobalUnitsModel.Side.US
 
-        if (sideBeingAttacked === GlobalUnitsModel.Side.US) {
-          GlobalGameState.usDMCVCarrier = undefined
-        } else {
-          GlobalGameState.jpDMCVCarrier = undefined
-        }
-      sendDMCVUpdate(controller, GlobalGameState.currentCarrierAttackTarget, setDmcvShipMarkerUpdate, sideBeingAttacked)
-    }
+    // should never need to update DMCV marker after sub attack
+    // if (damage.sunk) {
+    //   const sideBeingAttacked =
+    //     side === GlobalUnitsModel.Side.US ? GlobalUnitsModel.Side.JAPAN : GlobalUnitsModel.Side.US
+
+    //     if (sideBeingAttacked === GlobalUnitsModel.Side.US) {
+    //       GlobalGameState.usDMCVCarrier = undefined
+    //     } else {
+    //       GlobalGameState.jpDMCVCarrier = undefined
+    //     }
+    //   sendDMCVUpdate(controller, GlobalGameState.currentCarrierAttackTarget, setDmcvShipMarkerUpdate, sideBeingAttacked)
+    // }
     // ---- END ---
 
     // this logs the die roll

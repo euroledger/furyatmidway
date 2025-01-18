@@ -90,9 +90,9 @@ export default class Controller {
       }
       if (
         (this.isSunk(GlobalUnitsModel.Carrier.HIRYU) ||
-          GlobalGameState.usDMCVCarrier === GlobalUnitsModel.Carrier.HIRYU) &&
+          GlobalGameState.jpDMCVCarrier === GlobalUnitsModel.Carrier.HIRYU) &&
         (this.isSunk(GlobalUnitsModel.Carrier.SORYU) ||
-          GlobalGameState.usDMCVCarrier === GlobalUnitsModel.Carrier.SORYU)
+          GlobalGameState.jpDMCVCarrier === GlobalUnitsModel.Carrier.SORYU)
       ) {
         autoSelectTarget = GlobalUnitsModel.TaskForce.CARRIER_DIV_1
       }
@@ -264,6 +264,28 @@ export default class Controller {
     return eliminatedAirUnits
   }
 
+  getAllUnitsOnUSFlightDeckofNamedCarrier(carrier) {
+    const units = this.getAllUnitsOnUSFlightDecks()
+    return units.filter((unit) => unit.parentCarrier === carrier)
+  }
+
+  getAllUnitsOnUSFlightDecks() {
+    const airUnits = Array.from(this.counters.values())
+    const defenders = airUnits.filter(
+      (unit) => unit.constructor.name === "AirUnit" && unit.side === GlobalUnitsModel.Side.US
+    )
+
+    let units = new Array()
+    for (const unit of defenders) {
+      const location = this.getAirUnitLocation(unit.name)
+
+      if (location.boxName.includes("FLIGHT")) {
+        units.push(unit)
+      }
+    }
+    return units
+  }
+
   getAllUnitsOnUSFlightDecks(fighters) {
     const airUnits = Array.from(this.counters.values())
     const defenders = airUnits.filter(
@@ -283,6 +305,24 @@ export default class Controller {
     return units
 
   }
+
+  getAllUnitsInUSHangars() {
+    const airUnits = Array.from(this.counters.values())
+    const defenders = airUnits.filter(
+      (unit) => unit.constructor.name === "AirUnit" && unit.side === GlobalUnitsModel.Side.US
+    )
+
+    let units = new Array()
+    for (const unit of defenders) {
+      const location = this.getAirUnitLocation(unit.name)
+
+      if (location.boxName.includes("HANGAR")) {
+        units.push(unit)
+      }
+    }
+    return units
+  }
+
   getAllUnitsOnJapaneseFlightDecks(fighters) {
     const airUnits = Array.from(this.counters.values())
     const defenders = airUnits.filter(
@@ -376,6 +416,9 @@ export default class Controller {
     let loc = location.boxName
     if (location.boxName.includes("STRIKE")) {
       loc = unit.launchedFrom
+    }
+    if (loc === undefined) {
+      loc = unit.carrier
     }
     return this.getCarrierForAirBox(loc)
   }
@@ -1286,7 +1329,7 @@ export default class Controller {
 
   getDistanceBetween1AFAndMidway() {
     const locationOfCarrier = this.getFleetLocation("1AF", GlobalUnitsModel.Side.JAPAN)
-    if (locationOfCarrier === undefined) {
+    if (locationOfCarrier === undefined || locationOfCarrier.currentHex === undefined) {
       return NaN
     }
     return distanceBetweenHexes(locationOfCarrier.currentHex, Controller.MIDWAY_HEX.currentHex)
@@ -1525,6 +1568,15 @@ export default class Controller {
     }
   }
 
+  getFlightDeckSlot(carrierName, side, comingFromHangar, box) {
+    if (!this.isFlightDeckAvailable(carrierName, side, comingFromHangar)) return -1
+
+    if (!this.getCarrierBowDamaged(carrierName) && !this.getCarrierSternDamaged(carrierName)) {
+      return this.getFirstAvailableZone(box)
+    }
+    return this.getCarrierBowDamaged(carrierName) ? 1 : 0
+  }
+
   isFlightDeckAvailable(carrierName, side, comingFromHangar) {
     let hits = 0
     let carrier
@@ -1540,6 +1592,9 @@ export default class Controller {
       if (GlobalGameState.midwayBox0Damaged) hits++
       if (GlobalGameState.midwayBox1Damaged) hits++
       if (GlobalGameState.midwayBox2Damaged) hits++
+    }
+    if (carrierName === GlobalUnitsModel.Carrier.MIDWAY && hits === 3) {
+      return false
     }
     // return false if both slots either damaged or occupied by an air unit
     const flightDeckBox = this.airOperationsModel.getAirBoxForNamedShip(side, carrierName, "FLIGHT")

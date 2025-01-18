@@ -19,6 +19,7 @@ export function doCVDamageControl(roll) {
 
 export function doNavalBombardmentRoll(controller, roll) {
   let theRoll = roll ?? randomDice(1)
+  theRoll = 6 // QUACK TESTING ONLY
   GlobalGameState.dieRolls = [theRoll]
   const midwayGarrisonReduction = Math.floor(theRoll / 2)
 
@@ -572,6 +573,10 @@ export async function allMidwayBoxesDamaged(controller, setDamageMarkerUpdate) {
   await sendMidwayDamageUpdates(controller, 1, setDamageMarkerUpdate)
   await delay(1)
   await sendMidwayDamageUpdates(controller, 2, setDamageMarkerUpdate)
+
+  GlobalGameState.midwayBox0Damaged = true
+  GlobalGameState.midwayBox1Damaged = true
+  GlobalGameState.midwayBox2Damaged = true
 }
 export async function sendMidwayDamageUpdates(controller, box, setDamageMarkerUpdate) {
   const boxName = controller.getAirBoxForNamedShip(

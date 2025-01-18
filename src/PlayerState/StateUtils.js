@@ -152,21 +152,21 @@ export function initialiseIJNFleetMovement({
         jpRegion = removeHexFromRegion(jpRegion, jpDMCVLocation.currentHex)
       }
       setJapanMapRegions(jpRegion)
+    }
+    const jpMIFLocation = GlobalInit.controller.getFleetLocation("MIF", GlobalUnitsModel.Side.JAPAN)
 
-      const jpMIFLocation = GlobalInit.controller.getFleetLocation("MIF", GlobalUnitsModel.Side.JAPAN)
-
-      // MIF Regions set separately
-      if (jpMIFLocation !== undefined && jpMIFLocation.currentHex !== undefined) {
-        jpRegion = allHexesWithinDistance(jpMIFLocation.currentHex, GlobalGameState.dmcvFleetSpeed, true)
-        if (jpDMCVLocation !== undefined && jpDMCVLocation.currentHex !== undefined) {
-          jpRegion = removeHexFromRegion(jpRegion, jpDMCVLocation.currentHex)
-        }
-        setJapanMIFMapRegions(jpRegion)
+    // MIF Regions set separately
+    if (jpMIFLocation !== undefined && jpMIFLocation.currentHex !== undefined) {
+      const jpDMCVLocation = GlobalInit.controller.getFleetLocation("IJN-DMCV", GlobalUnitsModel.Side.JAPAN)
+      let jpRegion = allHexesWithinDistance(jpMIFLocation.currentHex, GlobalGameState.dmcvFleetSpeed, true)
+      if (jpDMCVLocation !== undefined && jpDMCVLocation.currentHex !== undefined) {
+        jpRegion = removeHexFromRegion(jpRegion, jpDMCVLocation.currentHex)
       }
-      if (GlobalGameState.gameTurn === 4) {
-        // Initial placement of MIF
-        setJapanMIFMapRegions(japanMIFStartHexes)
-      }
+      setJapanMIFMapRegions(jpRegion)
+    }
+    if (GlobalGameState.gameTurn === 4) {
+      // Initial placement of MIF
+      setJapanMIFMapRegions(japanMIFStartHexes)
     }
   } else {
     if (GlobalGameState.midwayAttackDeclaration === true) {

@@ -23,7 +23,6 @@ class USAICardDrawState {
       GlobalGameState.currentPlayer = GlobalUnitsModel.Side.JAPAN
       if (GlobalInit.controller.japanHandContainsCard(6) && GlobalGameState.gameTurn !== 4) {
         // card 6 cannot be played at night
-        console.log("QUACK SET CARD TO 6 HERE..........")
         setCardNumber(() => 6)
         GlobalGameState.gamePhase = GlobalGameState.PHASE.CARD_PLAY
       } else {

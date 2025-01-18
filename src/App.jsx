@@ -738,9 +738,9 @@ export function App() {
     if (GlobalGameState.gamePhase === GlobalGameState.PHASE.CARD_PLAY) {
       setEliminatedSteps(0)
       setHeaderText("Possible Card Play: Card #" + cardNumber)
+      GlobalGameState.dieRolls = []
       if (cardNumber === 2 || cardNumber === 4) {
         setDamagedCV("")
-        GlobalGameState.dieRolls = []
       }
       if (cardNumber !== 0 && cardNumber !== -1) {
         if (GlobalGameState.currentPlayer === GlobalUnitsModel.Side.US) {
@@ -982,7 +982,7 @@ export function App() {
     setHeaderText,
     setMidwayDialogShow,
     setMidwayWarningShow,
-    setCardAlertPanelShow
+    setCardAlertPanelShow,
   }
 
   const onDrag = () => {
@@ -1812,6 +1812,7 @@ export function App() {
 
   function midwayNoHandler(e) {
     GlobalGameState.midwayAttackDeclaration = false
+    GlobalGameState.midwayAirOpsCompleted = 0
     setMidwayDialogShow(false)
     GlobalGameState.gamePhase = GlobalGameState.PHASE.US_FLEET_MOVEMENT_PLANNING
   }
@@ -2517,10 +2518,13 @@ export function App() {
   }
   let damagedCarriers = GlobalInit.controller.getDamagedCarriersOneOrTwoHits(GlobalUnitsModel.Side.US)
   let damageControlButtonDisabled =
-  (damagedCV=== "x") || (damagedCV === "" && GlobalGameState.dieRolls.length === 0) || GlobalGameState.dieRolls.length > 0
+    (damagedCV=== "x") || (damagedCV === "" && GlobalGameState.dieRolls.length === 0) 
+    || GlobalGameState.dieRolls.length > 0
 
+  let damageControlCloseButtonDisabled = !damageControlButtonDisabled || damagedCV === ""
   if (damageControlSide === GlobalUnitsModel.Side.US) {
     damageControlButtonDisabled = damagedCV !== "" || damagedCarriers.length === 0
+    damageControlCloseButtonDisabled = !damageControlButtonDisabled
   }
 
   const totalHits = GlobalGameState.midwayHits + GlobalGameState.totalMidwayHits
@@ -3183,7 +3187,7 @@ export function App() {
         showDice={damagedCV !== "x" && damageControlSide === GlobalUnitsModel.Side.JAPAN}
         margin={350}
         diceButtonDisabled={damageControlButtonDisabled}
-        closeButtonDisabled={!damageControlButtonDisabled}
+        closeButtonDisabled={damageControlCloseButtonDisabled}
         onHide={(e) => {
           setDamageControlPanelShow(false)
           nextAction(e)

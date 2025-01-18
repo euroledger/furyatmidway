@@ -5,7 +5,6 @@ import { createFleetMove } from "./TestUtils"
 import HexCommand from "../src/commands/HexCommand"
 import GlobalGameState from "../src/model/GlobalGameState"
 import { calcAirOpsPointsMidway } from "../src/GameStateHandler"
-import { setUpAirAttack } from "../src/controller/AirAttackHandler"
 
 describe("Strike Group tests", () => {
   let controller

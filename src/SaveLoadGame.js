@@ -260,9 +260,9 @@ function createDamageUpdatesMidway(controller) {
     "FLIGHT_DECK"
   )
   let markers = new Array()
-  // console.log("GlobalGameState.midwayBox0Damaged=", GlobalGameState.midwayBox0Damaged)
-  // console.log("GlobalGameState.midwayBox1Damaged=", GlobalGameState.midwayBox1Damaged)
-  // console.log("GlobalGameState.midwayBox2Damaged=", GlobalGameState.midwayBox2Damaged)
+  console.log("GlobalGameState.midwayBox0Damaged=", GlobalGameState.midwayBox0Damaged)
+  console.log("GlobalGameState.midwayBox1Damaged=", GlobalGameState.midwayBox1Damaged)
+  console.log("GlobalGameState.midwayBox2Damaged=", GlobalGameState.midwayBox2Damaged)
 
   if (GlobalGameState.midwayBox0Damaged) {
     const marker1 = GlobalInit.controller.getNextAvailableMarker("DAMAGED")

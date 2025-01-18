@@ -1,12 +1,12 @@
 import GlobalGameState from "../../../model/GlobalGameState"
 import GlobalInit from "../../../model/GlobalInit"
-import { generateUSAirOperationsMoves } from "../../../UIEvents/AI/USAirOperationsBot"
+import { generateUSAirOperationsMovesCarriers } from "../../../UIEvents/AI/USAirOperationsBot"
 
 class USAIAirOperationsState {
  
   async doAction(stateObject) {
     console.log("DO US AIR OPERATION...")
-    generateUSAirOperationsMoves(GlobalInit.controller)
+    await generateUSAirOperationsMovesCarriers(GlobalInit.controller, stateObject)
   }
 
   async nextState(stateObject) {
