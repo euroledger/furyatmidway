@@ -11,6 +11,7 @@ class ViewEventStrikeGroupMoveHandler {
     const { initial, counterData, from, to, side, loading, moved, attacked } = event.data
 
     // add strike group to map holding name -> current Hex
+    console.log("SET SG LOCATION,", counterData.name)
     this.controller.setStrikeGroupLocation(counterData.name, to, side)
 
     if (side === GlobalUnitsModel.Side.JAPAN) {

@@ -12,14 +12,12 @@ import mapGameStateToJapanAIHandlerState from "./Japan/ai/JapanAIStateFactory"
 class GameStateManager {
 
   setPlayerStates(japanPlayerType, usPlayerType) {
-    console.log("SET US PLAYER TYPE TO", usPlayerType)
     this.japanPlayerType = japanPlayerType
     this.usPlayerType = usPlayerType
   }
 
   setJapanState(stateObject) {
     this.stateObject = stateObject
-    console.log("NANNY POOP 2 stateObject=", this.stateObject)
     let state
     console.log("MAP game state:", GlobalGameState.gamePhase)
     if (this.japanPlayerType === GlobalUnitsModel.TYPE.AI) {

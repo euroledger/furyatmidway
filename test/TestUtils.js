@@ -39,5 +39,4 @@ export const createFleetMove = (controller, q, r, name, side) => {
       side,
     },
   })
-  const loc = controller.getFleetLocation("1AF", GlobalUnitsModel.Side.JAPAN)
 }

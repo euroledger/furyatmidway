@@ -7,7 +7,7 @@ import Controller from "./Controller"
 import USAirBoxOffsets from "../components/draganddrop/USAirBoxOffsets"
 import JapanAirBoxOffsets from "../components/draganddrop/JapanAirBoxOffsets"
 import { moveAirUnitToEliminatedBox } from "../DiceHandler"
-import { distanceBetweenHexes } from "../components/HexUtils"
+import { distanceBetweenHexes, allHexesWithinDistance } from "../components/HexUtils"
 import { japanStrikeGroups, usStrikeGroups } from "../CounterLoader"
 import HexCommand from "../commands/HexCommand"
 
@@ -1501,4 +1501,94 @@ export function handleAirUnitMoves(controller, side) {
       setValidDestinationBoxes(controller, unit.name, side)
     }
   }
+}
+
+export function firstAirOpUSStrikeRegion(controller, counterData) {
+  let locationOfCarrier, usRegion
+  const unitsInGroup = controller.getAirUnitsInStrikeGroups(counterData.box)
+  if (unitsInGroup[0].carrier === GlobalUnitsModel.Carrier.MIDWAY) {
+    locationOfCarrier = Controller.MIDWAY_HEX
+  } else {
+    locationOfCarrier = controller.getFleetLocation("CSF", GlobalUnitsModel.Side.US)
+  }
+  if (!locationOfCarrier) {
+    return []
+  }
+  if (GlobalGameState.gameTurn === 3 && GlobalGameState.airOperationPoints["us"] === 1) {
+    const locationOfEnemyCarrier = controller.getFleetLocation("1AF", GlobalUnitsModel.Side.JAPAN)
+    const locationOfEnemyDMCV = controller.getFleetLocation("IJN-DMCV", GlobalUnitsModel.Side.JAPAN)
+    const locationOfEnemyMIF = controller.getFleetLocation("MIF", GlobalUnitsModel.Side.JAPAN)
+    let distanceToDMCV, distanceTo1AF, distanceToMIF
+    if (locationOfEnemyCarrier !== undefined) {
+      distanceTo1AF = distanceBetweenHexes(locationOfCarrier.currentHex, locationOfEnemyCarrier.currentHex)
+      if (distanceTo1AF <= 2) {
+        // strike group can move to attack enemy carrier fleet
+        usRegion.push(locationOfEnemyCarrier.currentHex)
+      }
+    }
+    if (locationOfEnemyDMCV !== undefined && locationOfEnemyDMCV.currentHex !== undefined) {
+      distanceToDMCV = distanceBetweenHexes(locationOfCarrier.currentHex, locationOfEnemyDMCV.currentHex)
+      if (distanceToDMCV <= 2) {
+        // strike group can move to attack enemy carrier fleet
+        usRegion.push(locationOfEnemyDMCV.currentHex)
+      }
+    }
+    if (locationOfEnemyMIF !== undefined && locationOfEnemyMIF.currentHex !== undefined) {
+      distanceToMIF = distanceBetweenHexes(locationOfCarrier.currentHex, locationOfEnemyMIF.currentHex)
+      if (distanceToMIF <= 2) {
+        // strike group can move to attack enemy carrier fleet
+        usRegion.push(locationOfEnemyDMCV.currentHex)
+      }
+    }
+  } else {
+    usRegion = allHexesWithinDistance(locationOfCarrier.currentHex, 2, false)
+  }
+  return usRegion
+}
+
+export function secondAirOpUSStrikeRegion(controller, counterData) {
+  let usRegion
+  const locationOfStrikeGroup = controller.getStrikeGroupLocation(counterData.name, GlobalUnitsModel.Side.US)
+
+  // second air op for this SG, use movement allowance (3) and position of SG to determine regions
+  const speed = controller.getSlowestUnitSpeedInStrikeGroup(counterData.box)
+
+  const locationOfEnemyCarrier = controller.getFleetLocation("1AF", GlobalUnitsModel.Side.JAPAN)
+  const locationOfEnemyDMCV = controller.getFleetLocation("IJN-DMCV", GlobalUnitsModel.Side.JAPAN)
+  const locationOfEnemyMIF = controller.getFleetLocation("MIF", GlobalUnitsModel.Side.JAPAN)
+  let distanceToDMCV, distanceTo1AF, distanceToMIF
+  if (locationOfEnemyCarrier !== undefined) {
+    distanceTo1AF = distanceBetweenHexes(locationOfStrikeGroup.currentHex, locationOfEnemyCarrier.currentHex)
+    if (distanceTo1AF <= speed) {
+      // strike group can move to attack enemy carrier fleet
+      usRegion.push(locationOfEnemyCarrier.currentHex)
+    }
+  }
+  if (locationOfEnemyDMCV !== undefined && locationOfEnemyDMCV.currentHex !== undefined) {
+    distanceToDMCV = distanceBetweenHexes(locationOfStrikeGroup.currentHex, locationOfEnemyDMCV.currentHex)
+    if (distanceToDMCV <= speed) {
+      // strike group can move to attack enemy carrier fleet
+      usRegion.push(locationOfEnemyDMCV.currentHex)
+    }
+  }
+  if (locationOfEnemyMIF !== undefined && locationOfEnemyMIF.currentHex !== undefined) {
+    distanceToMIF = distanceBetweenHexes(locationOfStrikeGroup.currentHex, locationOfEnemyMIF.currentHex)
+    if (distanceToMIF <= speed) {
+      // strike group can move to attack enemy carrier fleet
+      usRegion.push(locationOfEnemyMIF.currentHex)
+    }
+  }
+  return usRegion
+}
+
+export function isFirstAirOpForStrike(controller, counterData, side) {
+  const locationOfStrikeGroup = controller.getStrikeGroupLocation(counterData.name, side)
+
+  const sg = controller.getStrikeGroupForBox(side, counterData.box)
+  return !((
+    (sg.gameTurnMoved !== undefined && sg.gameTurnMoved !== GlobalGameState.gameTurn) ||
+    (locationOfStrikeGroup !== undefined &&
+      counterData.airOpMoved !== undefined &&
+      GlobalGameState.airOpUS !== counterData.airOpMoved)
+  ))
 }

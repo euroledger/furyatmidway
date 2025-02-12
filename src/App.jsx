@@ -1552,7 +1552,7 @@ export function App() {
       GlobalGameState.gamePhase === GlobalGameState.PHASE.JAPAN_SETUP ||
       GlobalGameState.gamePhase === GlobalGameState.PHASE.JAPAN_CARD_DRAW ||
       GlobalGameState.gamePhase === GlobalGameState.PHASE.JAPAN_MIDWAY ||
-      GlobalGameState.gaFmePhase === GlobalGameState.PHASE.JAPAN_FLEET_MOVEMENT ||
+      GlobalGameState.gamePhase === GlobalGameState.PHASE.JAPAN_FLEET_MOVEMENT ||
       GlobalGameState.gamePhase === GlobalGameState.PHASE.JAPAN_DMCV_FLEET_MOVEMENT ||
       GlobalGameState.gamePhase === GlobalGameState.PHASE.MIDWAY_ATTACK ||
       GlobalGameState.gamePhase === GlobalGameState.PHASE.NIGHT_AIR_OPERATIONS_JAPAN ||

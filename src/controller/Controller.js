@@ -163,6 +163,12 @@ export default class Controller {
     this.counters = counters
   }
 
+
+  getStrikeUnits(side) {
+    const units = Array.from(this.counters.values())
+    return units.filter((unit) => unit.constructor.name === "StrikeGroupUnit" && unit.side === side)
+  }
+
   getAllAirUnits(side) {
     const units = Array.from(this.counters.values())
     const airCounters = units.filter((unit) => unit.constructor.name === "AirUnit" && unit.side === side)
@@ -280,6 +286,23 @@ export default class Controller {
       const location = this.getAirUnitLocation(unit.name)
 
       if (location.boxName.includes("FLIGHT")) {
+        units.push(unit)
+      }
+    }
+    return units
+  }
+
+  getAllUnitsOnMidwayRunways() {
+    const airUnits = Array.from(this.counters.values())
+    const defenders = airUnits.filter(
+      (unit) => unit.constructor.name === "AirUnit" && unit.side === GlobalUnitsModel.Side.US
+    )
+
+    let units = new Array()
+    for (const unit of defenders) {
+      const location = this.getAirUnitLocation(unit.name)
+
+      if (location.boxName.includes("FLIGHT") && location.boxName.includes("MIDWAY")) {
         units.push(unit)
       }
     }
@@ -1202,6 +1225,12 @@ export default class Controller {
   anyFightersInStrike(tf, side) {
     const units = this.getAttackingStrikeUnitsForTF(tf, side).filter((airUnit) => !airUnit.aircraftUnit.attack)
     return units.length > 0
+  }
+
+  anyFightersInStrikeGroup(name) {
+    const units = this.getAirUnitsInStrikeGroups(name)
+    const fighters = units.filter((airUnit) => !airUnit.aircraftUnit.attack)
+    return fighters.length > 0
   }
 
   getAirUnitsInStrikeGroups(name) {
