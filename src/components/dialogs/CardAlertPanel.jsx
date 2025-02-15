@@ -5,6 +5,7 @@ import Button from "react-bootstrap/Button"
 import GlobalGameState from "../../model/GlobalGameState"
 import "./modal.css"
 import GlobalUnitsModel from "../../model/GlobalUnitsModel"
+import GlobalUIConstants from "../UIConstants"
 
 function CardAlertPanel(props) {
   const {
@@ -153,7 +154,14 @@ function CardAlertPanel(props) {
     }
   }, [GlobalGameState.closePanel])
 
-  const bg = GlobalGameState.gameTurn === 4 ? "black" : "#293a4b"
+  let bg = "black"
+
+  if (GlobalGameState.gameTurn !== 4) {
+    bg = GlobalUIConstants.Colors.US
+    if (cardNumber === 10) {
+      bg = GlobalUIConstants.Colors.JAPAN
+    }
+  }
 
   let myBigBollocks = "modal-width" + 2
 
@@ -217,15 +225,6 @@ function CardAlertPanel(props) {
             textAlign: "right",
           }}
         ></div>
-        {/* <div>TEXT</div>
-      <div  style={{
-          display: "flex",
-          justifyContent: "center",
-          alignItems: "center",
-          background: `${bg}`,
-          color: "white",
-        }}> <p className="text-center">
-        </p></div> */}
       </Modal.Header>
       <Modal.Body style={{ background: `${bg}`, color: "black" }}>
         <div style={{ marginLeft: "28px" }}>

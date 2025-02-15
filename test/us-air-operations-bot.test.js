@@ -91,7 +91,7 @@ describe("Numeric Evaluation Of State of Each Side's Naval and Air Power", () =>
     mhb1 = counters.get("Midway-B26-B")
   })
 
-  test.skip("Variables Used in Air Operations - US", () => {
+  test("Variables Used in Air Operations - US", () => {
     createFleetMove(controller, 1, 3, "1AF", GlobalUnitsModel.Side.JAPAN) // A,3
     createFleetMove(controller, 7, 1, "CSF", GlobalUnitsModel.Side.US) // G,4
 
@@ -141,7 +141,7 @@ describe("Numeric Evaluation Of State of Each Side's Naval and Air Power", () =>
     expect(airBoxesMidway).toEqual([8, 8, 9, 10, 9, 9])
   })
 
-  test.skip("Get Game State Variables as Array - US", () => {
+  test("Get Game State Variables as Array - US", () => {
     createFleetMove(controller, 1, 3, "1AF", GlobalUnitsModel.Side.JAPAN) // A,3
     createFleetMove(controller, 7, 1, "CSF", GlobalUnitsModel.Side.US) // G,4
 
@@ -179,7 +179,7 @@ describe("Numeric Evaluation Of State of Each Side's Naval and Air Power", () =>
     // expect(unitArray).toEqual([0, 1, 12, 2, 2, 0, 3, 3, 4, 4, 5, 6, 7, 7, 6, 8, 9, 9, 9, 10, 10])
   })
 
-  test.skip("Create Air Unit Moves Using US Air Operations Bot", async () => {
+  test("Create Air Unit Moves Using US Air Operations Bot", async () => {
     createFleetMove(controller, 3, 3, "1AF", GlobalUnitsModel.Side.JAPAN) // C,3
     createFleetMove(controller, 7, 1, "CSF", GlobalUnitsModel.Side.US) // G,4
 
@@ -238,7 +238,7 @@ describe("Numeric Evaluation Of State of Each Side's Naval and Air Power", () =>
     expect(airUnits[1]).toEqual(ydb2)
   })
 
-  test.skip("Create Enterprise Strike Group SBD plus TBD Combination", async () => {
+  test("Create Enterprise Strike Group SBD plus TBD Combination", async () => {
     createFleetMove(controller, 3, 3, "1AF", GlobalUnitsModel.Side.JAPAN) // C,3
     createFleetMove(controller, 7, 1, "CSF", GlobalUnitsModel.Side.US) // G,4
 
@@ -279,7 +279,7 @@ describe("Numeric Evaluation Of State of Each Side's Naval and Air Power", () =>
     // expect(airUnits[1]).toEqual(edb2)
   })
 
-  test.skip("Create Air Unit Moves for Midway Air Units Using US Air Operations Bot", async () => {
+  test("Create Air Unit Moves for Midway Air Units Using US Air Operations Bot", async () => {
     createFleetMove(controller, 3, 3, "1AF", GlobalUnitsModel.Side.JAPAN) // C,3
     createFleetMove(controller, 7, 1, "CSF", GlobalUnitsModel.Side.US) // G,4
 
@@ -311,7 +311,7 @@ describe("Numeric Evaluation Of State of Each Side's Naval and Air Power", () =>
     expect(airUnits[1].name).toEqual(mhb1.name)
   })
 
-  test.skip("Move US Strike Groups First Air Op, Carrier Fleets 2 Hexes apart", async () => {
+  test("Move US Strike Groups First Air Op, Carrier Fleets 2 Hexes apart", async () => {
     createFleetMove(controller, 7, -1, "1AF", GlobalUnitsModel.Side.JAPAN) // G, 2
     createFleetMove(controller, 7, 1, "CSF", GlobalUnitsModel.Side.US) // G,4
 
@@ -334,7 +334,7 @@ describe("Numeric Evaluation Of State of Each Side's Naval and Air Power", () =>
     const usRegion = firstAirOpUSStrikeRegion(controller, strikeUnits[0])
     expect(usRegion.length).toEqual(19) // 19 possible destination
 
-    const targets = getFirstAirOpTargetsInRange(controller, strikeUnits[0], 2)
+    const targets = getFirstAirOpTargetsInRange(controller, strikeUnits[0], 2, 1)
     expect(targets.length).toEqual(1)
     expect(targets[0]).toEqual("1AF")
 
@@ -349,7 +349,6 @@ describe("Numeric Evaluation Of State of Each Side's Naval and Air Power", () =>
 
     const numTargets = numTargetsInRange(strikeUnits)
     expect(numTargets).toEqual(1)
-    // moveStrikeGroups(controller, { setStrikeGroupUpdate: undefined }, true)
   })
 
   test("Move US Strike Groups First Air Op, Carrier Fleets 5 Hexes apart", async () => {
@@ -382,7 +381,7 @@ describe("Numeric Evaluation Of State of Each Side's Naval and Air Power", () =>
     expect(location.currentHex.r).toEqual(1)
   })
 
-  test.skip("Move US Strike Groups Target Allocation, Multiple IJN Fleets on Map", async () => {
+  test("Move US Strike Groups Target Allocation, Multiple IJN Fleets on Map", async () => {
     createFleetMove(controller, 7, -1, "1AF", GlobalUnitsModel.Side.JAPAN) // G, 2
     createFleetMove(controller, 7, 1, "CSF", GlobalUnitsModel.Side.US) // G,4
     createFleetMove(controller, 4, 0, "IJN-DMCV", GlobalUnitsModel.Side.JAPAN) // D 2
@@ -417,7 +416,7 @@ describe("Numeric Evaluation Of State of Each Side's Naval and Air Power", () =>
     expect(location.currentHex.r).toEqual(-1)
   })
 
-  test.skip("Move US Strike Groups Second Air Op", async () => {
+  test("Move US Strike Groups Second Air Op", async () => {
     createFleetMove(controller, 3, 3, "1AF", GlobalUnitsModel.Side.JAPAN) // C,3
     createFleetMove(controller, 7, 1, "CSF", GlobalUnitsModel.Side.US) // G,4
 

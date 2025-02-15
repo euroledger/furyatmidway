@@ -116,6 +116,7 @@ import { setStrikeGroupAirUnitsToNotMoved } from "./controller/AirOperationsHand
 import { SeaBattleFooters, SeaBattleHeaders } from "./attackscreens/SeaBattlePanel"
 import HexCommand from "./commands/HexCommand"
 import { displayScreen } from "./PlayerState/StateUtils"
+import GlobalUIConstants from "./components/UIConstants"
 
 export default App
 
@@ -344,16 +345,6 @@ export function App() {
   // GlobalGameState.TESTING = true
   // GlobalGameState.carrierAttackHits = 3
   // *******************************************
-
-  useEffect(() => {
-    if (GlobalGameState.gamePhase === GlobalGameState.PHASE.TARGET_DETERMINATION) {
-      setTargetDetermined(false)
-      setTargetSelected(false)
-      setTargetPanelShow(true)
-      GlobalGameState.dieRolls = []
-      GlobalGameState.capHits = undefined
-    }
-  }, [GlobalGameState.gamePhase])
 
   useEffect(() => {
     if (GlobalGameState.gamePhase === GlobalGameState.PHASE.FLEET_TARGET_SELECTION) {
@@ -596,30 +587,19 @@ export function App() {
     }
   }, [GlobalGameState.gamePhase])
 
-  // useEffect(() => {
-  //   if (
-  //     GlobalGameState.gamePhase === GlobalGameState.PHASE.US_FLEET_MOVEMENT_PLANNING ||
-  //     GlobalGameState.gamePhase === GlobalGameState.PHASE.US_DMCV_FLEET_MOVEMENT_PLANNING ||
-  //     GlobalGameState.gamePhase === GlobalGameState.PHASE.JAPAN_FLEET_MOVEMENT ||
-  //     GlobalGameState.gamePhase === GlobalGameState.PHASE.JAPAN_DMCV_FLEET_MOVEMENT
-  //   ) {
-  //     GlobalGameState.updateGlobalState()
-  //     setDMCVCarrierSelected(() => "")
-  //   }
-  // }, [GlobalGameState.gamePhase])
-
-
-  // NEW AI-HUMAN SIDE EFFECTS....
-  // useEffect(() => {
-  //   StateManager.gameStateManager.setStateHandlers(stateObject)
-
-  //   if (StateManager.gameStateManager.getCurrentPlayer() === GlobalUnitsModel.Side.JAPAN && StateManager.gameStateManager.actionComplete(GlobalUnitsModel.Side.JAPAN ) === false && splash===false) {
-  //       StateManager.gameStateManager.doAction(GlobalUnitsModel.Side.JAPAN)
-  //   }
-
-  // }, [initComplete])
-
   // // NEW AI-HUMAN SIDE EFFECTS....
+  useEffect(() => {
+    if (GlobalGameState.gamePhase === GlobalGameState.PHASE.TARGET_DETERMINATION) {
+      setTargetDetermined(false)
+      setTargetSelected(false)
+      setTargetPanelShow(true)
+      GlobalGameState.dieRolls = []
+      GlobalGameState.capHits = undefined
+      StateManager.gameStateManager.setUSState(stateObject)
+      StateManager.gameStateManager.doAction(GlobalUnitsModel.Side.US, stateObject)
+    }
+  }, [GlobalGameState.gamePhase])
+
   useEffect(() => {
 
     StateManager.gameStateManager.setStateHandlers(stateObject)
@@ -634,6 +614,7 @@ export function App() {
 
   useEffect(() => {
     if (GlobalGameState.gamePhase === GlobalGameState.PHASE.JAPAN_CARD_DRAW) {
+      console.log("QUACK 1")
       StateManager.gameStateManager.setJapanState(stateObject)
       StateManager.gameStateManager.doAction(GlobalUnitsModel.Side.JAPAN, stateObject)
     }
@@ -783,10 +764,12 @@ export function App() {
       setEnabledUSFleetBoxes(false)
       GlobalGameState.updateGlobalState()
       if (GlobalGameState.sideWithInitiative === GlobalUnitsModel.Side.US) {
+        console.log("SET US STATE TO AIR OPERATIONS")
         StateManager.gameStateManager.setUSState(stateObject)
+        console.log("US AI AIR OPERATIONS doAction()")
         StateManager.gameStateManager.doAction(GlobalUnitsModel.Side.US, stateObject)
         setUsStrikePanelEnabled(true) // for now. Move this in due course (only display for humans)
-            
+        StateManager.gameStateManager.doNextState(GlobalUnitsModel.Side.US)
       } else {
         StateManager.gameStateManager.setJapanState(stateObject)
         StateManager.gameStateManager.doAction(GlobalUnitsModel.Side.JAPAN, stateObject)
@@ -796,6 +779,16 @@ export function App() {
     }
   }, [GlobalGameState.gamePhase])
 
+  useEffect(() => {
+    if (GlobalGameState.gamePhase === GlobalGameState.PHASE.END_OF_AIR_OPERATION) {
+      console.log("END OF AIR OPS-> DISPLAY PANEL HERE!")
+      GlobalInit.controller.setAllDefendersToNotInterceptingAndNotSeparated()
+      GlobalGameState.nextActionButtonDisabled = false
+      GlobalGameState.elitePilots = false // reset for future air combats
+      StateManager.gameStateManager.setJapanState(stateObject)
+      setEndOfAirOpAlertShow(true)
+    }
+  }, [GlobalGameState.gamePhase])
   const nextAction = () => {
     StateManager.gameStateManager.doNextState(GlobalGameState.currentPlayer)
   }
@@ -1558,7 +1551,9 @@ export function App() {
       GlobalGameState.gamePhase === GlobalGameState.PHASE.NIGHT_AIR_OPERATIONS_JAPAN ||
       GlobalGameState.gamePhase === GlobalGameState.PHASE.MIDWAY_INVASION ||
       (GlobalGameState.gamePhase === GlobalGameState.PHASE.AIR_OPERATIONS &&
-        GlobalGameState.sideWithInitiative === GlobalUnitsModel.Side.JAPAN)
+        GlobalGameState.sideWithInitiative === GlobalUnitsModel.Side.JAPAN) ||
+      (GlobalGameState.gamePhase === GlobalGameState.PHASE.CAP_INTERCEPTION &&
+        GlobalGameState.sideWithInitiative === GlobalUnitsModel.Side.US)
     ) {
       image = "/images/japanflag.jpg"
     } else if (GlobalGameState.gamePhase === GlobalGameState.PHASE.AIR_SEARCH) {
@@ -2606,16 +2601,16 @@ export function App() {
         <h4>ALERT</h4>
         <p>This air unit is not a fighter unit so cannot be used for CAP.</p>
       </AlertPanel>
-      <AlertPanel show={!testClicked && !testyClicked && csfAlertShow} onHide={() => setCSFAlertShow(false)}>
+      <AlertPanel show={csfAlertShow} onHide={() => setCSFAlertShow(false)}>
         <h4>INFO</h4>
         <p>Drag the US CSF Fleet Unit to any hex in the shaded blue area of the map.</p>
       </AlertPanel>
-      <AlertPanel show={!testClicked && !testyClicked && jpAlertShow} onHide={() => setJpAlertShow(false)}>
+      <AlertPanel show={jpAlertShow} onHide={() => setJpAlertShow(false)} sidebg={GlobalUIConstants.Colors.JAPAN}>
         <h4>INFO</h4>
         <p>{jpMsg}</p>
       </AlertPanel>
       <AlertPanel
-        show={!testClicked && !testyClicked && fleetMoveAlertShow}
+        show={fleetMoveAlertShow}
         onHide={() => setFleetMoveAlertShow(false)}
       >
         <h4>INFO</h4>
@@ -2625,7 +2620,7 @@ export function App() {
         </p>
       </AlertPanel>
       <AlertPanel
-        show={!testClicked && !testyClicked && endOfAirOpAlertShow}
+        show={endOfAirOpAlertShow}
         onHide={(e) => {
           setEndOfAirOpAlertShow(false)
           nextAction(e)
@@ -2656,6 +2651,7 @@ export function App() {
         size={4}
         onHide={(e) => {
           setSearchValuesAlertShow(false)
+          GlobalGameState.gamePhase = GlobalGameState.PHASE.AIR_OPERATIONS
           nextAction(e)
         }}
       >
@@ -2728,13 +2724,18 @@ export function App() {
         footers={airOpsFooters}
         showDice={true}
         margin={25}
+        sidebg={GlobalUIConstants.Colors.BOTH}
         onHide={(e) => {
           setInitiativePanelShow(false)
-          nextAction(e)
+          console.log("CLOSE INITIATIVE DETERMINATION SCREEN")
+          GlobalGameState.gamePhase = GlobalGameState.PHASE.AIR_OPERATIONS
+
+          // nextAction(e)
         }}
         doRoll={doInitiativeRoll}
         diceButtonDisabled={airOpsDiceButtonDisabled}
         closeButtonDisabled={!airOpsDiceButtonDisabled}
+        image="POO"
       ></DicePanel>
       <DicePanel
         numDice={2}
@@ -2826,6 +2827,12 @@ export function App() {
         }}
         doRoll={doCAPRolls}
         disabled={true}
+        image={GlobalGameState.sideWithInitiative === GlobalUnitsModel.Side.US
+                ? "/images/japanflag.jpg"
+                : "/images/usaflag.jpg"}
+        sidebg = {GlobalGameState.sideWithInitiative === GlobalUnitsModel.Side.US 
+          ? GlobalUIConstants.Colors.JAPAN : 
+          GlobalUIConstants.Colors.US}    
       ></LargeDicePanel>
       <LargeDicePanel
         numDice={0}

@@ -3,10 +3,14 @@ import Modal from "react-bootstrap/Modal"
 import Button from "react-bootstrap/Button"
 import "./modal.css"
 import GlobalGameState from "../../model/GlobalGameState"
-
+import GlobalUIConstants from "../UIConstants"
 
 function AlertPanel(props) {
-  const bg = GlobalGameState.gameTurn === 4 ? "black" :"#293a4b"
+  let sidebg = GlobalGameState.gameTurn === 4 ? "black" : GlobalUIConstants.Colors.BOTH
+  if (props.sidebg !== undefined && GlobalGameState.gameTurn !== 4) {
+    sidebg = props.sidebg
+  }
+
   const size = props.size ? "modal-width" + props.size : "sm"
 
   const buttonRef = useRef(null)
@@ -20,9 +24,11 @@ function AlertPanel(props) {
   }, [GlobalGameState.closePanel])
   return (
     <Modal {...props} size={size} aria-labelledby="contained-modal-title-vcenter" centered backdrop="static">
-      <Modal.Body style={{ background: `${bg}`, color: "white" }}>{props.children}</Modal.Body>
-      <Modal.Footer style={{ background: `${bg}`, color: "black" }}>
-        <Button  ref={buttonRef} onClick={props.onHide} >Close</Button>
+      <Modal.Body style={{ background: `${sidebg}`, color: "white" }}>{props.children}</Modal.Body>
+      <Modal.Footer style={{ background: `${sidebg}`, color: "black" }}>
+        <Button ref={buttonRef} onClick={props.onHide}>
+          Close
+        </Button>
       </Modal.Footer>
     </Modal>
   )

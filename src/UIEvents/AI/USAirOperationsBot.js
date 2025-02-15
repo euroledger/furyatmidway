@@ -146,7 +146,6 @@ async function moveAirUnitToHangar({ controller, unit, setTestUpdate, test, box,
     controller.addAirUnitToBox(update.boxName, update.index, unit)
     return
   }
-  console.log("SET UPDATE->", update)
   setTestUpdate(update)
 
   await delay(DELAY_MS)
@@ -173,13 +172,12 @@ async function moveAirUnitToStrikeGroup({ controller, unit, setTestUpdate, test,
   await delay(DELAY_MS)
 }
 
-
 async function moveStrikeGroup(controller, unit, fromHex, toHex, setStrikeGroupUpdate, test) {
   await delay(DELAY_MS)
   const usStrikeGroupMove = createStrikeGroupUpdate(unit.name, toHex.currentHex.q, toHex.currentHex.r)
 
   if (test) {
-    // move the unit to the new location (test only)    
+    // move the unit to the new location (test only)
     controller.viewEventHandler({
       type: Controller.EventTypes.STRIKE_GROUP_MOVE,
       data: {
@@ -214,7 +212,6 @@ async function hangarToFlightDeck({ controller, unit, setTestUpdate, test }) {
     return
   }
   const index = controller.getFlightDeckSlot(unit.carrier, GlobalUnitsModel.Side.US, true, box)
-  console.log("UNIT", unit.name, "MOVE TO", box, "INDEX", index)
   if (index !== -1) {
     await moveAirUnitToHangar({ controller, unit, setTestUpdate, test, box, index })
   }
@@ -406,6 +403,8 @@ export function sortStrikeGroups(controller, strikeUnits) {
   let myStrikeGroup
   for (const strikeGroup of strikeUnits) {
     myStrikeGroup = strikeGroup
+
+    // units property needed for sort
     myStrikeGroup.units = controller.getAirUnitsInStrikeGroups(strikeGroup.box)
     if (myStrikeGroup.units.length === 0) {
       continue
@@ -413,7 +412,7 @@ export function sortStrikeGroups(controller, strikeUnits) {
     strikeUnitSortedProperties.push(myStrikeGroup)
   }
 
-  strikeUnitSortedProperties.sort(function (a, b) {
+  const sortedUnits = strikeUnitSortedProperties.sort(function (a, b) {
     if (a.name.includes("Midway") && !b.name.includes("Midway")) {
       return 1
     } else if (!a.name.includes("Midway") && b.name.includes("Midway")) {
@@ -430,26 +429,33 @@ export function sortStrikeGroups(controller, strikeUnits) {
     return -1
   })
 
-  return strikeUnitSortedProperties
+  return sortedUnits
 }
 
-export function getFirstAirOpTargetsInRange(controller, strikeGroup, speed) {
+export function getFirstAirOpTargetsInRange(controller, strikeGroup, speed, airOp) {
   const unitsInGroup = controller.getAirUnitsInStrikeGroups(strikeGroup.box)
   if (unitsInGroup.length === 0) {
     return []
   }
   let strikeGroupLocation
-  if (unitsInGroup[0].carrier === GlobalUnitsModel.Carrier.MIDWAY) {
-    strikeGroupLocation = Controller.MIDWAY_HEX
+
+  if (airOp === 1) {
+    // strike units at Midway -> use Midway base
+    if (unitsInGroup[0].carrier === GlobalUnitsModel.Carrier.MIDWAY) {
+      strikeGroupLocation = Controller.MIDWAY_HEX
+    } else {
+      // strike units on carrier -> use location of CSF
+      strikeGroupLocation = controller.getFleetLocation("CSF", GlobalUnitsModel.Side.US)
+    }
   } else {
-    strikeGroupLocation = controller.getFleetLocation("CSF", GlobalUnitsModel.Side.US)
+    // second air op, strike group is at sea
+    strikeGroupLocation = controller.getStrikeGroupLocation(strikeGroup.name, GlobalUnitsModel.Side.US)
   }
   const { distanceBetweenCurrentHexand1AF, distanceBetweenCurrentHexandMIF, distanceBetweenCurrentHexandIJNDMCV } =
     getAirDistances(controller, strikeGroupLocation.currentHex)
 
   let targets = new Array()
 
-  console.log("distanceBetweenCurrentHexand1AF=", distanceBetweenCurrentHexand1AF)
   if (distanceBetweenCurrentHexand1AF <= speed) {
     targets.push("1AF")
   }
@@ -499,17 +505,17 @@ export function getClosestHexToTarget(target, usRegion) {
   let distance = 100
   let toHex
   for (const hex of usRegion) {
-    const distanceBH = distanceBetweenHexes(hex, target.currentHex) 
+    const distanceBH = distanceBetweenHexes(hex, target.currentHex)
     if (distanceBH < distance) {
       distance = distanceBH
       toHex = hex
     }
-  } 
+  }
   return {
     currentHex: {
       q: toHex.q,
-      r: toHex.r
-    }
+      r: toHex.r,
+    },
   }
 }
 
@@ -522,22 +528,24 @@ export function numTargetsInRange(strikeUnits) {
     for (const target of strikeGroup.targetsSecondAirOp) {
       targets.add(target)
     }
-  }  
+  }
   return targets.size
 }
 
 export function getAllTargetsInRange(controller, strikeUnits) {
   for (const strikeGroup of strikeUnits) {
     if (isFirstAirOpForStrike(controller, strikeGroup, GlobalUnitsModel.Side.US)) {
-      const targetsFirstAirOp = getFirstAirOpTargetsInRange(controller, strikeGroup, 2)
+      const targetsFirstAirOp = getFirstAirOpTargetsInRange(controller, strikeGroup, 2, 1)
       strikeGroup.targetsFirstAirOp = targetsFirstAirOp
 
       const targetsSecondAirOp = getSecondAirOpTargetsInRange(controller, strikeGroup)
       strikeGroup.targetsSecondAirOp = targetsSecondAirOp
+      strikeGroup.airOp = 1
     } else {
       const speed = controller.getSlowestUnitSpeedInStrikeGroup(strikeGroup.box)
-      const targetsSecondAirOp = getFirstAirOpTargetsInRange(controller, strikeGroup, speed)
+      const targetsSecondAirOp = getFirstAirOpTargetsInRange(controller, strikeGroup, speed, 2)
       strikeGroup.targetsSecondAirOp = targetsSecondAirOp
+      strikeGroup.airOp = 2
     }
   }
 }
@@ -560,7 +568,9 @@ export async function moveStrikeGroups(controller, stateObject, test) {
 
   // TODO Set priority targets
 
-  let strikeGroupsWithTarget = strikeUnits.filter((sg) => sg.targetsFirstAirOp.length > 0)
+  let strikeGroupsWithTarget = strikeUnits.filter(
+    (sg) => (sg.airOp === 1 && sg.targetsFirstAirOp.length > 0) || (sg.airOp === 2 && sg.targetsSecondAirOp.length > 0)
+  )
   let strikeGroupsWithOutTarget = strikeUnits.filter((sg) => sg.targetsFirstAirOp.length === 0)
 
   strikeGroupsWithTarget = sortStrikeGroups(controller, strikeGroupsWithTarget)
@@ -577,10 +587,9 @@ export async function moveStrikeGroups(controller, stateObject, test) {
     if (isFirstAirOpForStrike(controller, strikeGroup, GlobalUnitsModel.Side.US)) {
       const usRegion = firstAirOpUSStrikeRegion(controller, strikeGroup)
 
-
       if (strikeGroup.targetsFirstAirOp.length >= 1) {
         if (GlobalGameState.gameTurn === 6 || GlobalGameState.gameTurn === 7) {
-          // prioritise MIF 
+          // prioritise MIF
           if (strikeGroup.targetsFirstAirOp.includes("MIF")) {
             const locationMIF = controller.getFleetLocation("MIF", GlobalUnitsModel.Side.JAPAN)
             await moveStrikeGroup(controller, strikeGroup, HexCommand.OFFBOARD, locationMIF, setStrikeGroupUpdate, test)
@@ -604,7 +613,14 @@ export async function moveStrikeGroups(controller, stateObject, test) {
         // Need to check if 1AF is also in range
         if (!ijndmcvTargeted && numTargetsInRange > 1 && strikeGroup.targetsFirstAirOp.includes("IJN-DMCV")) {
           const locationIJNDMCV = controller.getFleetLocation("IJN-DMCV", GlobalUnitsModel.Side.JAPAN)
-          await moveStrikeGroup(controller, strikeGroup, HexCommand.OFFBOARD, locationIJNDMCV, setStrikeGroupUpdate, test)
+          await moveStrikeGroup(
+            controller,
+            strikeGroup,
+            HexCommand.OFFBOARD,
+            locationIJNDMCV,
+            setStrikeGroupUpdate,
+            test
+          )
           ijndmcvTargeted = true
           return
         }
@@ -619,8 +635,6 @@ export async function moveStrikeGroups(controller, stateObject, test) {
           return
         }
       } else if (strikeGroup.targetsFirstAirOp.length === 0) {
-
-        console.log("NO TARGETS IN RANGE MOVE STRIKE GROUPS AS CLOSE AS POSSIBLE")
         // else move as close as possible to target
         //  => loop through all hexes and pick the one which has lowest range to target
         if (!ijndmcvTargeted && numTargetsInRange > 1 && strikeGroup.targetsSecondAirOp.includes("IJN-DMCV")) {
@@ -630,11 +644,9 @@ export async function moveStrikeGroups(controller, stateObject, test) {
           ijndmcvTargeted = true
         }
         if (strikeGroup.targetsSecondAirOp.includes("1AF")) {
-          console.log("\t=>1AF IS CLOSEST TARGET")
           const location1AF = controller.getFleetLocation("1AF", GlobalUnitsModel.Side.JAPAN)
           const toHex = getClosestHexToTarget(location1AF, usRegion)
-          console.log("toHex=", toHex)
-          await moveStrikeGroup(controller, strikeGroup, HexCommand.OFFBOARD, toHex, setStrikeGroupUpdate, test) 
+          await moveStrikeGroup(controller, strikeGroup, HexCommand.OFFBOARD, toHex, setStrikeGroupUpdate, test)
         }
         if (strikeGroup.targetsSecondAirOp.includes("MIF")) {
           const locationMIF = controller.getFleetLocation("MIF", GlobalUnitsModel.Side.JAPAN)
@@ -643,28 +655,26 @@ export async function moveStrikeGroups(controller, stateObject, test) {
         }
       }
     } else {
-      const usRegion = secondAirOpUSStrikeRegion(controller, strikeGroup)
-
-      const { distanceBetweenCurrentHexand1AF, distanceBetweenCurrentHexandMIF, distanceBetweenCurrentHexandIJNDMCV } =
-        getAirDistances(controller, strikeGroup.location)
-
+      console.log(">>>>>>>>>>>>>>>>>>>> SECOND AIR OP:", strikeGroup)
       // For SGs with target, prioritise target
       // else move as RETURN 2 box (no target possible)
-      if (!ijndmcvTargeted && numTargetsInRange > 1 && strikeGroup.targetsFirstAirOp.includes("IJN-DMCV")) {
+      const strikeGroupLocation = controller.getStrikeGroupLocation(strikeGroup.name, GlobalUnitsModel.Side.US)
+
+      if (!ijndmcvTargeted && numTargetsInRange > 1 && strikeGroup.targetsSecondAirOp.includes("IJN-DMCV")) {
         const locationIJNDMCV = controller.getFleetLocation("IJN-DMCV", GlobalUnitsModel.Side.JAPAN)
-        await moveStrikeGroup(controller, strikeGroup, HexCommand.OFFBOARD, locationIJNDMCV, setStrikeGroupUpdate, test)
+        await moveStrikeGroup(controller, strikeGroup, strikeGroupLocation, locationIJNDMCV, setStrikeGroupUpdate, test)
         ijndmcvTargeted = true
-        return
+        return true
       }
-      if (strikeGroup.targetsFirstAirOp.includes("1AF")) {
+      if (strikeGroup.targetsSecondAirOp.includes("1AF")) {
         const location1AF = controller.getFleetLocation("1AF", GlobalUnitsModel.Side.JAPAN)
-        await moveStrikeGroup(controller, strikeGroup, HexCommand.OFFBOARD, location1AF, setStrikeGroupUpdate, test)
-        return
+        await moveStrikeGroup(controller, strikeGroup, strikeGroupLocation, location1AF, setStrikeGroupUpdate, test)
+        return true
       }
-      if (strikeGroup.targetsFirstAirOp.includes("MIF")) {
+      if (strikeGroup.targetsSecondAirOp.includes("MIF")) {
         const locationMIF = controller.getFleetLocation("MIF", GlobalUnitsModel.Side.JAPAN)
-        await moveStrikeGroup(controller, strikeGroup, HexCommand.OFFBOARD, locationMIF, setStrikeGroupUpdate, test)
-        return
+        await moveStrikeGroup(controller, strikeGroup, strikeGroupLocation, locationMIF, setStrikeGroupUpdate, test)
+        return true
       }
 
       // TODO no targets -> I think we just set attacked to true

@@ -5,6 +5,7 @@ import Col from "react-bootstrap/Col"
 import Row from "react-bootstrap/Row"
 import Button from "react-bootstrap/Button"
 import GlobalGameState from "../../model/GlobalGameState"
+import GlobalUnitsModel from "../../model/GlobalUnitsModel"
 import Die from "./Die"
 import "./modal.css"
 import "./largemodal.css"
@@ -25,6 +26,8 @@ function LargeDicePanel(props) {
     doRoll,
     closeButtonStr,
     closeButtonCallback,
+    sidebg,
+    image,
     ...rest
   } = props
 
@@ -47,7 +50,23 @@ function LargeDicePanel(props) {
     }
   }, [GlobalGameState.closePanel])
 
-  const bg = GlobalGameState.gameTurn === 4 ? "black" :"#293a4b"
+  let sidey = sidebg
+  if (!sidebg) {
+    sidey = GlobalGameState.sideWithInitiative === GlobalUnitsModel.Side.JAPAN ? "#4B0808" : "#293a4b"
+  }
+  let showImg = false
+  let img = image
+  if (image != "POO") {
+    showImg = true
+  }
+  if (!image) {
+    img =
+      GlobalGameState.sideWithInitiative === GlobalUnitsModel.Side.JAPAN
+        ? "/images/japanflag.jpg"
+        : "/images/usaflag.jpg"
+  }
+
+  const bg = GlobalGameState.gameTurn === 4 ? "black" : sidey
   const closey = closeButtonStr ?? "Close"
 
   let numDiceRow1 = numDice
@@ -88,16 +107,45 @@ function LargeDicePanel(props) {
       <Modal.Header
         className="text-center"
         style={{
-          display: "flex",
-          justifyContent: "center",
-          alignItems: "center",
+          // display: "flex",
+          // justifyContent: "center",
+          // alignItems: "center",
           background: `${bg}`,
           color: "white",
         }}
       >
-        <p className="text-center">
+        {showImg && (
+          <div
+            style={{
+              float: "left",
+              width: "20%",
+            }}
+          >
+            <img
+              style={{
+                width: "60px",
+                height: "40px",
+              }}
+              src={img}
+            ></img>
+          </div>
+        )}
+        <div
+          style={{
+            float: "left",
+            width: "60%",
+            textAlign: "center",
+          }}
+        >
           <h4>{headerText}</h4>
-        </p>
+        </div>
+        <div
+          style={{
+            float: "left",
+            width: "20%",
+            textAlign: "right",
+          }}
+        ></div>
       </Modal.Header>
       <Modal.Body style={{ background: `${bg}`, color: "black" }}>
         <div style={{ marginLeft: "28px" }}>
@@ -124,14 +172,13 @@ function LargeDicePanel(props) {
                     )
                   })}
                 </Row>
-             
               </div>
               <div
                 style={{
                   display: "flex",
                   justifyContent: "center",
                   alignItems: "center",
-                  marginTop: "10px"
+                  marginTop: "10px",
                 }}
               >
                 <Row xs={numDiceRow2} className={rowClass2}>
@@ -155,18 +202,18 @@ function LargeDicePanel(props) {
 
       <Modal.Footer style={{ background: `${bg}`, color: "black" }}>
         {numDice > 0 && (
-          <Button  ref={button1Ref} disabled={diceButtonDisabled} onClick={() => doRoll()}>
+          <Button ref={button1Ref} disabled={diceButtonDisabled} onClick={() => doRoll()}>
             {diceButtonStr}
           </Button>
         )}
         <Button
-         ref={button2Ref} 
+          ref={button2Ref}
           disabled={closeButtonDisabled}
           onClick={(e) => {
             if (nextState) {
               GlobalGameState.gamePhase = nextState
             }
-            if(closeButtonCallback) {
+            if (closeButtonCallback) {
               closeButtonCallback(e)
             } else {
               onHide(e)
