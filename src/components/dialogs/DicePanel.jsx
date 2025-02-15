@@ -7,6 +7,7 @@ import Button from "react-bootstrap/Button"
 import GlobalGameState from "../../model/GlobalGameState"
 import Die from "./Die"
 import "./modal.css"
+import GlobalUnitsModel from "../../model/GlobalUnitsModel"
 
 function DicePanel(props) {
   let {
@@ -23,19 +24,21 @@ function DicePanel(props) {
     showDice,
     doRoll,
     closeButtonStr,
+    image,
+    sidebg,
     ...rest
   } = props
   // const numDice = props.numDice
   const button1Ref = useRef(null)
   const button2Ref = useRef(null)
 
-  const closeHandler = (e)=> {
+  const closeHandler = (e) => {
     if (nextState) {
       GlobalGameState.gamePhase = nextState
     }
     onHide(e)
   }
-  
+
   useEffect(() => {
     if (button1Ref.current) {
       if (GlobalGameState.rollDice === true) {
@@ -51,8 +54,18 @@ function DicePanel(props) {
       }
     }
   }, [GlobalGameState.closePanel])
-  const bg = GlobalGameState.gameTurn === 4 ? "black" :"#293a4b"
 
+  if (!sidebg) {
+    sidebg = GlobalGameState.sideWithInitiative === GlobalUnitsModel.Side.JAPAN ?  "#4B0808" : "#293a4b" 
+  }
+  let showImg = false
+  if (image != "POO") {
+    showImg = true
+  }
+  image =
+    GlobalGameState.sideWithInitiative === GlobalUnitsModel.Side.JAPAN ? "/images/japanflag.jpg" : "/images/usaflag.jpg"
+
+  const bg = GlobalGameState.gameTurn === 4 ? "black" : sidebg
 
   const rowClass = `g-${numDice}`
 
@@ -71,6 +84,7 @@ function DicePanel(props) {
   if (margin) {
     myBigMargin = margin
   }
+
 
   //   const sizey = numDice >= 4 ? "xl" : "lg"
 
@@ -94,6 +108,22 @@ function DicePanel(props) {
           color: "white",
         }}
       >
+        {showImg && (<div
+          style={{
+            width: "100px",
+            height: "60px",
+            marginLeft: "-235px",
+            marginRight: "155px",
+          }}
+        >
+          <img
+            style={{
+              width: "60px",
+              height: "40px",
+            }}
+            src={image}
+          ></img>
+        </div>)}
         <p className="text-center">
           <h4>{headerText}</h4>
         </p>

@@ -1,12 +1,13 @@
 import GlobalGameState from "../../../model/GlobalGameState"
 
-class USHumanInitiativeDeterminationState {
+class USAIInitiativeDeterminationState {
   async doAction(stateObject) {
     
   }
 
   async nextState(stateObject) {
-    GlobalGameState.gamePhase = GlobalGameState.PHASE.AIR_OPERATIONS
+    // console.log("TRIGGER STATE CHANGE TO AIR_OPERATIONS")
+    // GlobalGameState.gamePhase = GlobalGameState.PHASE.AIR_OPERATIONS
   }
 
   getState() {
@@ -14,4 +15,4 @@ class USHumanInitiativeDeterminationState {
   }
 }
 
-export default USHumanInitiativeDeterminationState
+export default USAIInitiativeDeterminationState

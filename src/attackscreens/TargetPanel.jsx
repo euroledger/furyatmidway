@@ -353,6 +353,11 @@ export function TargetHeaders({ controller, setTargetSelected, setTargetDetermin
 
   let selectMsg = "Select a target to attack"
 
+  if (GlobalGameState.sideWithInitiative === GlobalUnitsModel.Side.US &&     
+      GlobalGameState.usPlayerType === GlobalUnitsModel.TYPE.AI) {
+        selectMsg = `INCOMING ${GlobalGameState.sideWithInitiative} AIR STRIKE!!`
+  }
+
   if (autoSelectTarget) {
     setTargetSelected(true)
     setTargetDetermined(true)

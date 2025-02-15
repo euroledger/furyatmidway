@@ -4,6 +4,7 @@ import Button from "react-bootstrap/Button"
 import Col from "react-bootstrap/Col"
 import GlobalGameState from "../../model/GlobalGameState"
 import "./modal.css"
+import GlobalUIConstants from "../UIConstants"
 
 function getSavedKey(idx) {
   let keys = Object.keys(localStorage)
@@ -52,7 +53,7 @@ function ConfirmPanel({ idx, setShowConfirmPanel }) {
 function LoadGamePanel(props) {
   const [idx, setIdx] = useState("")
   const [showConfirmPanel, setShowConfirmPanel] = useState(false)
-  const bg = "#293a4b"
+  const bg = GlobalUIConstants.Colors.BOTH
   const size = props.size ? "modal-width" + props.size : "sm"
 
   let keys = Object.keys(localStorage)

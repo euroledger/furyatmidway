@@ -5,11 +5,9 @@ import GlobalInit from "../../../model/GlobalInit"
 import { setNextStateFollowingCardPlay } from "../../StateUtils"
 
 class JapanHumanCardPlayState {
-
-
   async doAction(stateObject) {
     const { cardNumber, setCardAlertPanelShow } = stateObject
-   setCardAlertPanelShow(true)
+    setCardAlertPanelShow(true)
 
     // this.nextState(stateObject)
   }
@@ -19,6 +17,7 @@ class JapanHumanCardPlayState {
 
     console.log("GRABBAGE NEXT STATE FROM JAPAN CARD PLAY cardNumber=", cardNumber)
     await setNextStateFollowingCardPlay(stateObject)
+    GlobalGameState.gamePhase = GlobalGameState.PHASE.END_OF_AIR_OPERATION
   }
 
   getState() {

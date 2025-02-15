@@ -1351,7 +1351,6 @@ export default async function handleAction({
       setMidwayWarningShow,
     })
   } else if (GlobalGameState.gamePhase === GlobalGameState.PHASE.JAPAN_MIDWAY) {
-    console.log("IN HERE...")
     midwayDeclarationHandler({ setUsFleetRegions })
   } else if (GlobalGameState.gamePhase === GlobalGameState.PHASE.US_DMCV_FLEET_MOVEMENT_PLANNING) {
     usDMCVPlanningHandler({ setUsFleetRegions })
