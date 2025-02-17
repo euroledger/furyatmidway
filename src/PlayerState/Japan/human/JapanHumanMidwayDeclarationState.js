@@ -12,7 +12,6 @@ class JapanHumanMidwayDeclarationState {
       GlobalGameState.midwayAttackDeclaration = false
       setMidwayWarningShow(true)
     } else {
-      console.log("DISASTER!!!!!!!!!!!!!!!")
       setMidwayDialogShow(true)
     }
   }

@@ -527,17 +527,7 @@ export function App() {
       setAttackResolved(false)
     }
   }, [GlobalGameState.gamePhase])
-  useEffect(() => {
-    if (GlobalGameState.gamePhase === GlobalGameState.PHASE.CAP_INTERCEPTION) {
-      setFightersPresent(true)
-      setCapInterceptionPanelShow(true)
-      setCapSteps(0)
-      setCapAirUnits([])
-      GlobalInit.controller.setAllDefendersToNotIntercepting()
-      GlobalGameState.dieRolls = []
-      GlobalGameState.capHits = 0
-    }
-  }, [GlobalGameState.gamePhase])
+ 
 
   useEffect(() => {
     if (
@@ -589,14 +579,39 @@ export function App() {
 
   // // NEW AI-HUMAN SIDE EFFECTS....
   useEffect(() => {
+    if (GlobalGameState.gamePhase === GlobalGameState.PHASE.CAP_INTERCEPTION) {
+      setFightersPresent(true)
+      setCapInterceptionPanelShow(true)
+      setCapSteps(0)
+      setCapAirUnits([])
+      GlobalInit.controller.setAllDefendersToNotIntercepting()
+      GlobalGameState.dieRolls = []
+      GlobalGameState.capHits = 0
+      console.log("CAP INTERCEPTION current player=", GlobalGameState.currentPlayer)
+      if (GlobalGameState.currentPlayer === GlobalUnitsModel.Side.US) {
+        StateManager.gameStateManager.setUSState(stateObject)
+        StateManager.gameStateManager.doAction(GlobalUnitsModel.Side.US, stateObject) // Used by AI
+      } else {
+        StateManager.gameStateManager.setJapanState(stateObject)
+        StateManager.gameStateManager.doAction(GlobalUnitsModel.Side.JAPAN, stateObject) // only used by AI
+      }
+    }
+  }, [GlobalGameState.gamePhase])
+  
+  useEffect(() => {
     if (GlobalGameState.gamePhase === GlobalGameState.PHASE.TARGET_DETERMINATION) {
       setTargetDetermined(false)
       setTargetSelected(false)
       setTargetPanelShow(true)
       GlobalGameState.dieRolls = []
       GlobalGameState.capHits = undefined
-      StateManager.gameStateManager.setUSState(stateObject)
-      StateManager.gameStateManager.doAction(GlobalUnitsModel.Side.US, stateObject)
+      if (GlobalGameState.currentPlayer === GlobalUnitsModel.Side.US, stateObject) {
+        StateManager.gameStateManager.setUSState(stateObject)
+        StateManager.gameStateManager.doAction(GlobalUnitsModel.Side.US, stateObject)
+      } else {
+        StateManager.gameStateManager.setJapanState(stateObject)
+        StateManager.gameStateManager.doAction(GlobalUnitsModel.Side.JAPAN, stateObject)
+      }
     }
   }, [GlobalGameState.gamePhase])
 

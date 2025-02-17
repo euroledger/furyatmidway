@@ -9,10 +9,10 @@ class USAICardDrawState {
   }
 
   async nextState(stateObject) {
-    console.log("NEXT STATE FROM US CARD DRAW, stateObject", stateObject)
+    console.log("QUACK !!!!!!! NEXT STATE FROM US CARD DRAW, stateObject", stateObject)
     const { setCardNumber } = stateObject
 
-    if (GlobalGameState.gameTurn != 1) {
+    if (GlobalGameState.gameTurn !== 1) {
       if (GlobalGameState.gameTurn === 2 || GlobalGameState.gameTurn === 4 || GlobalGameState.gameTurn === 6) {
         GlobalGameState.gamePhase = GlobalGameState.PHASE.US_DRAWS_ONE_CARD
 
@@ -26,7 +26,6 @@ class USAICardDrawState {
         setCardNumber(() => 6)
         GlobalGameState.gamePhase = GlobalGameState.PHASE.CARD_PLAY
       } else {
-     
         GlobalGameState.gamePhase = GlobalGameState.PHASE.JAPAN_MIDWAY
         GlobalGameState.updateGlobalState()
       }

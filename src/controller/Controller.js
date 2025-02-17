@@ -163,7 +163,6 @@ export default class Controller {
     this.counters = counters
   }
 
-
   getStrikeUnits(side) {
     const units = Array.from(this.counters.values())
     return units.filter((unit) => unit.constructor.name === "StrikeGroupUnit" && unit.side === side)
@@ -188,6 +187,43 @@ export default class Controller {
       }
     }
     return units
+  }
+
+  getNumStepsInCAPBoxesByTF(side) {
+    const airUnits = Array.from(this.counters.values())
+    const defenders = airUnits.filter((unit) => unit.constructor.name === "AirUnit" && unit.side === side)
+
+    let jptotals = {
+      cd1: 0,
+      cd2: 0
+    }
+    let ustotals = {
+      tf16: 0,
+      tf17: 0
+    }
+    for (const unit of defenders) {
+      const location = this.getAirUnitLocation(unit.name)
+      unit.location = location
+      if (side === GlobalUnitsModel.Side.JAPAN) {
+        if (location.boxName === GlobalUnitsModel.AirBox.JP_CD1_CAP) {
+          jptotals.cd1 += unit.aircraftUnit.steps
+        }
+        if (location.boxName === GlobalUnitsModel.AirBox.JP_CD2_CAP) {
+          jptotals.cd2 += unit.aircraftUnit.steps
+        }
+      } else {
+        if (location.boxName === GlobalUnitsModel.AirBox.US_TF16_CAP) {
+          ustotals.tf16 += unit.aircraftUnit.steps
+        } 
+        if (location.boxName === GlobalUnitsModel.AirBox.US_TF17_CAP) {
+          ustotals.tf17 += unit.aircraftUnit.steps
+        } 
+      }
+    }
+    if (side === GlobalUnitsModel.Side.JAPAN) {
+      return jptotals
+    }
+    return ustotals
   }
 
   getAllAirUnitsInCAPBoxes(side) {
@@ -326,7 +362,6 @@ export default class Controller {
     // will either filter all fighters or all non-fighters
     units = units.filter((unit) => unit.aircraftUnit.attack !== fighters)
     return units
-
   }
 
   getAllUnitsInUSHangars() {
@@ -1009,6 +1044,70 @@ export default class Controller {
     return damagedCarriers
   }
 
+  getDamageToCarriersByTF(side) {
+    let cd1Damage = 0
+    let cd2Damage = 0
+    let tf16Damage = 0
+    let tf17Damage = 0
+
+    if (side === GlobalUnitsModel.Side.JAPAN) {
+      if (
+        GlobalGameState.jpDMCVCarrier !== GlobalUnitsModel.Carrier.AKAGI &&
+        (this.getCarrierHits(GlobalUnitsModel.Carrier.AKAGI) == 1 ||
+          this.getCarrierHits(GlobalUnitsModel.Carrier.AKAGI) == 2)
+      ) {
+        cd1Damage += this.getCarrierHits(GlobalUnitsModel.Carrier.AKAGI)
+      }
+      if (
+        GlobalGameState.jpDMCVCarrier !== GlobalUnitsModel.Carrier.KAGA &&
+        (this.getCarrierHits(GlobalUnitsModel.Carrier.KAGA) == 1 ||
+          this.getCarrierHits(GlobalUnitsModel.Carrier.KAGA) == 2)
+      ) {
+        cd1Damage += this.getCarrierHits(GlobalUnitsModel.Carrier.KAGA)
+      }
+
+      if (
+        GlobalGameState.jpDMCVCarrier !== GlobalUnitsModel.Carrier.HIRYU &&
+        (this.getCarrierHits(GlobalUnitsModel.Carrier.HIRYU) == 1 ||
+          this.getCarrierHits(GlobalUnitsModel.Carrier.HIRYU) == 2)
+      ) {
+        cd2Damage += this.getCarrierHits(GlobalUnitsModel.Carrier.HIRYU)
+      }
+      if (
+        GlobalGameState.jpDMCVCarrier !== GlobalUnitsModel.Carrier.SORYU &&
+        (this.getCarrierHits(GlobalUnitsModel.Carrier.SORYU) == 1 ||
+          this.getCarrierHits(GlobalUnitsModel.Carrier.SORYU) == 2)
+      ) {
+        cd2Damage += this.getCarrierHits(GlobalUnitsModel.Carrier.SORYU)
+      }
+      return { cd1Damage, cd2Damage }
+    } else {
+      if (
+        GlobalGameState.usDMCVCarrier !== GlobalUnitsModel.Carrier.ENTERPRISE &&
+        (this.getCarrierHits(GlobalUnitsModel.Carrier.ENTERPRISE) == 1 ||
+          this.getCarrierHits(GlobalUnitsModel.Carrier.ENTERPRISE) == 2)
+      ) {
+        tf16Damage += this.getCarrierHits(GlobalUnitsModel.Carrier.ENTERPRISE)
+      }
+      if (
+        GlobalGameState.usDMCVCarrier !== GlobalUnitsModel.Carrier.HORNET &&
+        (this.getCarrierHits(GlobalUnitsModel.Carrier.HORNET) == 1 ||
+          this.getCarrierHits(GlobalUnitsModel.Carrier.HORNET) == 2)
+      ) {
+        tf16Damage += this.getCarrierHits(GlobalUnitsModel.Carrier.HORNET)
+      }
+
+      if (
+        GlobalGameState.usDMCVCarrier !== GlobalUnitsModel.Carrier.YORKTOWN &&
+        (this.getCarrierHits(GlobalUnitsModel.Carrier.YORKTOWN) == 1 ||
+          this.getCarrierHits(GlobalUnitsModel.Carrier.YORKTOWN) == 2)
+      ) {
+        tf17Damage += this.getCarrierHits(GlobalUnitsModel.Carrier.YORKTOWN)
+      }
+
+      return { tf16Damage, tf17Damage }
+    }
+  }
   getDamagedCarriersOneOrTwoHits(side) {
     let damagedCarriers = new Array()
     if (side === GlobalUnitsModel.Side.JAPAN) {
@@ -1467,50 +1566,37 @@ export default class Controller {
 
   getGameStateMatrix(strategy) {
     // const strategy = GAME_STRATEGIES.MIXED
-
     // const locationCSF = this.getFleetLocation("CSF", GlobalUnitsModel.Side.US)
-
     // const location1AF = this.getFleetLocation("1AF", GlobalUnitsModel.Side.JAPAN)
     // const locationIJNDMDCV = this.getFleetLocation("IJN-DMCV", GlobalUnitsModel.Side.JAPAN)
     // const locationUSDMCV = this.getFleetLocation("US-DMCV", GlobalUnitsModel.Side.JAPAN)
     // const locationMIF = this.getFleetLocation("MIF", GlobalUnitsModel.Side.JAPAN)
-
     // // expect (locationIJNDMDCV).toBeUndefined()
     // // expect (locationUSDMCV).toBeUndefined()
     // // expect (locationMIF).toBeUndefined()
-
     // const distanceBetweenCSFand1AF = distanceBetweenHexes(locationCSF.currentHex, location1AF.currentHex)
     // // expect(distanceBetweenCSFand1AF).toEqual(6)
-
     // const distanceBetweenMidwayand1AF = distanceBetweenHexes(Controller.MIDWAY_HEX.currentHex, location1AF.currentHex)
     // // expect(distanceBetweenMidwayand1AF).toEqual(5)
-
     // const distanceBetweenCSFandIJNDMCV = -1
     // const distanceBetweenCSFandMIF = -1
     // const distanceBetween1AFandUSDMCV = -1
-
     // const hexIndexCSF = mapHexToIndex(locationCSF.currentHex)
     // // expect(hexIndexCSF).toEqual(39)
-
     // const hexIndex1AF = mapHexToIndex(location1AF.currentHex)
     // // expect(hexIndex1AF).toEqual(2)
-
     // const hexIndexIJNDMCV = locationIJNDMDCV !== undefined ? mapHexToIndex(locationIJNDMDCV) : -1
     // const hexIndexUSDMCV = locationUSDMCV !== undefined ? mapHexToIndex(locationUSDMCV) : -1
     // const hexIndexMIF = locationMIF !== undefined ? mapHexToIndex(locationIJNDMDCV) : -1
-
     // const airStrategyBoxes = AIR_STRATEGIES[strategy]
-
     // // const airBoxesEnterprise = getAirSetupBoxes(GlobalGameState.US_CARRIERS[0], airStrategyBoxes)
     // // const airBoxesHornet = getAirSetupBoxes(GlobalGameState.US_CARRIERS[1], airStrategyBoxes)
     // // const airBoxesYorktown = getAirSetupBoxes(GlobalGameState.US_CARRIERS[2], airStrategyBoxes)
     // // const airBoxesMidway = getAirSetupBoxes(GlobalGameState.US_CARRIERS[3], airStrategyBoxes)
-
     // // expect(airBoxesEnterprise).toEqual([0, 1, 1, 2, 2])
     // // expect(airBoxesHornet).toEqual([0, 0, 3, 4, 3])
     // // expect(airBoxesYorktown).toEqual([5, 6, 6, 7, 7])
     // // expect(airBoxesMidway).toEqual([8, 8, 9, 10, 9, 9])
-
     // return [
     //   [GlobalGameState.gameTurn][strategy][(hexIndexCSF, hexIndex1AF, hexIndexIJNDMCV, hexIndexUSDMCV, hexIndexMIF)]
     //   [

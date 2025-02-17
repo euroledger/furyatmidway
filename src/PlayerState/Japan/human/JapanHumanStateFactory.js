@@ -5,6 +5,7 @@ import JapanHumanCardPlayState from "./JapanHumanCardPlayState"
 import JapanHumanCardDrawState from "./JapanHumanCardDrawState"
 import JapanHumanFleetMovementState from "./JapanHumanFleetMovementState"
 import JapanHumanEndOfAirOperationState from "./JapanHumanEndOfAirOperationState"
+import JapanHumanCapInterceptionState from "./JapanHumanCapInterceptionState"
 
 function mapGameStateToJapanHumanHandlerState() {
   switch (GlobalGameState.gamePhase) {
@@ -25,6 +26,10 @@ function mapGameStateToJapanHumanHandlerState() {
 
     case GlobalGameState.PHASE.END_OF_AIR_OPERATION:
       return new JapanHumanEndOfAirOperationState()
+
+    case GlobalGameState.PHASE.CAP_INTERCEPTION:
+      return new JapanHumanCapInterceptionState()
+      
     default:
   }
 }

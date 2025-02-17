@@ -1,23 +1,22 @@
 import GlobalGameState from "../../../model/GlobalGameState"
 import GlobalUnitsModel from "../../../model/GlobalUnitsModel"
-import { delay } from "../../../DiceHandler"
-import { DELAY_MS } from "../../StateUtils"
+import { selectTFTarget } from "../../../UIEvents/AI/USAirCombatBot"
+import GlobalInit from "../../../model/GlobalInit"
+import { delay } from "../../../Utils"
 
 class USAITargetDeterminationState {
   async doAction(stateObject) {
     GlobalGameState.currentPlayer = GlobalUnitsModel.Side.US
     console.log("++++++++++++++ US TARGET DETERMINATION")
-    GlobalGameState.testTarget = GlobalUnitsModel.TaskForce.CARRIER_DIV_1
-    GlobalGameState.updateGlobalState()
-
+    await selectTFTarget(GlobalInit.controller, stateObject)
     await delay(1000)
-
     GlobalGameState.rollDice = true
     GlobalGameState.updateGlobalState()
   }
 
   async nextState(stateObject) {
-     GlobalGameState.gamePhase = GlobalGameState.PHASE.CAP_INTERCEPTION
+    GlobalGameState.currentPlayer = GlobalUnitsModel.Side.JAPAN
+    GlobalGameState.gamePhase = GlobalGameState.PHASE.CAP_INTERCEPTION
   }
 
   getState() {

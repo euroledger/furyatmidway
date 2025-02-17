@@ -3,7 +3,7 @@ import GlobalUnitsModel from "../src/model/GlobalUnitsModel"
 import loadCounters from "../src/CounterLoader"
 import GlobalGameState from "../src/model/GlobalGameState"
 import { displayAttackTargetPanel } from "../src/GameStateHandler"
-import { createFleetMove } from "./testUtils"
+import { createFleetMove } from "./TestUtils"
 import HexCommand from "../src/commands/HexCommand"
 
 describe("Controller test.skips", () => {
