@@ -2,10 +2,18 @@ import { React, useEffect, useState, createRef } from "react"
 import "./cap.css"
 import GlobalGameState from "../model/GlobalGameState"
 import { doDamageAllocation } from "../DiceHandler"
+import GlobalUnitsModel from "../model/GlobalUnitsModel"
 
-
-export function DamageHeaders({ controller, eliminatedSteps, setEliminatedSteps, setStepsLeft, capAirUnits }) {
+export function DamageHeaders({
+  controller,
+  eliminatedSteps,
+  setEliminatedSteps,
+  setStepsLeft,
+  disableButtons,
+  capAirUnits,
+}) {
   const [elRefs, setElRefs] = useState([])
+  const [eliminatedUnits, setEliminatedUnits] = useState([])
 
   const msg = "Number of Hits to Allocate:"
 
@@ -25,6 +33,7 @@ export function DamageHeaders({ controller, eliminatedSteps, setEliminatedSteps,
     )
   }, [])
 
+  // TODO have array of air units, one for each step: display the names of elimintated steps
   useEffect(() => {
     if (GlobalGameState.testStepLossSelection === -1) {
       return
@@ -36,7 +45,6 @@ export function DamageHeaders({ controller, eliminatedSteps, setEliminatedSteps,
   }, [GlobalGameState.testStepLossSelection])
 
   let totalSteps = 0
-
   const airCounters = unitsInGroup.map((airUnit, i) => {
     if (airUnit.aircraftUnit.steps === 0) {
       setStepsLeft(0)
@@ -47,19 +55,23 @@ export function DamageHeaders({ controller, eliminatedSteps, setEliminatedSteps,
     if (GlobalGameState.gamePhase === GlobalGameState.PHASE.ESCORT_DAMAGE_ALLOCATION) {
       totalSteps += airUnit.aircraftUnit.steps
     } else {
-      if (!capAirUnits) {  
-        if (airUnit.aircraftUnit.attack || GlobalGameState.gamePhase === GlobalGameState.PHASE.ESCORT_DAMAGE_ALLOCATION) {
+      if (!capAirUnits) {
+        if (
+          airUnit.aircraftUnit.attack ||
+          GlobalGameState.gamePhase === GlobalGameState.PHASE.ESCORT_DAMAGE_ALLOCATION
+        ) {
           totalSteps += airUnit.aircraftUnit.steps
         }
       }
-    }  
+    }
     const stepStr = `(${airUnit.aircraftUnit.steps})`
     return (
       <div>
         <input
           ref={elRefs[i]}
-          onClick={() => handleClick(airUnit)}
+          onClick={(e) => handleClick(e, airUnit)}
           type="image"
+          // disabled={disableButtons}
           src={airUnit.image}
           style={{
             width: "60px",
@@ -92,7 +104,18 @@ export function DamageHeaders({ controller, eliminatedSteps, setEliminatedSteps,
   setStepsLeft(totalSteps)
   if (!capAirUnits) GlobalGameState.attackingStepsRemaining = totalSteps
 
-  const handleClick = (airUnit) => {
+  const handleClick = (e, airUnit) => {
+    // TODO
+    // We need a general utility function that checks:
+    //    i) if this is an AI screen
+    //    ii) if this is a human button click
+    // => if so, disallow the click
+
+    // then we can get rid of disable buttons
+    if (disableButtons && e.clientX !== 0 && e.clientY !== 0) {
+      // AI screen, disallow human clicks by checking mouse click location
+      return
+    }
     if (GlobalGameState.gamePhase === GlobalGameState.PHASE.CAP_DAMAGE_ALLOCATION) {
       if (eliminatedSteps === GlobalGameState.capHits) {
         // setEliminatedSteps(0)
@@ -115,14 +138,25 @@ export function DamageHeaders({ controller, eliminatedSteps, setEliminatedSteps,
     doDamageAllocation(controller, airUnit)
     setEliminatedSteps(() => eliminatedSteps + 1)
     GlobalGameState.updateGlobalState()
+
+    setEliminatedUnits(()=> [...eliminatedUnits,airUnit])
   }
   let hitsToAllocate = GlobalGameState.capHits !== undefined ? GlobalGameState.capHits : 0
-  if (GlobalGameState.gamePhase === GlobalGameState.PHASE.AAA_DAMAGE_ALLOCATION) {  
+  if (GlobalGameState.gamePhase === GlobalGameState.PHASE.AAA_DAMAGE_ALLOCATION) {
     hitsToAllocate = GlobalGameState.antiaircraftHits !== undefined ? GlobalGameState.antiaircraftHits : 0
   } else if (GlobalGameState.gamePhase === GlobalGameState.PHASE.ESCORT_DAMAGE_ALLOCATION) {
     hitsToAllocate = GlobalGameState.fighterHits !== undefined ? GlobalGameState.fighterHits : 0
   }
 
+  let side = GlobalGameState.sideWithInitiative
+  if (GlobalGameState.gamePhase === GlobalGameState.ESCORT_DAMAGE_ALLOCATION) {
+    if (side === GlobalUnitsModel.Side.US) {
+      side = GlobalUnitsModel.Side.JAPAN
+    } else {
+      side = GlobalUnitsModel.Side.US
+    }
+  }
+  const selectionMsg = disableButtons ? `${side} Selects Steps to Eliminate` : "Select Steps to Eliminate"
   return (
     <>
       <div>
@@ -157,20 +191,23 @@ export function DamageHeaders({ controller, eliminatedSteps, setEliminatedSteps,
             marginLeft: "10px",
           }}
         >
-          Select Steps to Eliminate <br></br>
+          {selectionMsg}
+          <br></br>
         </p>
-        <p
-          style={{
-            display: "flex",
-            marginTop: "20px",
-            justifyContent: "center",
-            alignItems: "center",
-            color: "white",
-            marginLeft: "10px",
-          }}
-        >
-          (click on air unit to eliminate a step)
-        </p>
+        {!disableButtons && (
+          <p
+            style={{
+              display: "flex",
+              marginTop: "20px",
+              justifyContent: "center",
+              alignItems: "center",
+              color: "white",
+              marginLeft: "10px",
+            }}
+          >
+            (click on air unit to eliminate a step)
+          </p>
+        )}
       </div>
       <div>
         <p

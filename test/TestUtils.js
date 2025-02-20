@@ -4,6 +4,18 @@ import Controller from "../src/controller/Controller"
 import GlobalUnitsModel from "../src/model/GlobalUnitsModel"
 
 
+export const moveAirUnitToStrikeGroup = (controller, strikeBox, unit, index, side) => {
+   controller.viewEventHandler({
+        type: Controller.EventTypes.AIR_UNIT_MOVE,
+        data: {
+          name: strikeBox,
+          counterData: unit,
+          index,
+          side,
+          loading: false,
+        },
+      })
+}
 export const createFleetMove = (controller, q, r, name, side) => {
   let hex = {
     q: q,

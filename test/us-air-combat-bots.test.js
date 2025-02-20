@@ -2,7 +2,8 @@ import Controller from "../src/controller/Controller"
 import loadCounters from "../src/CounterLoader"
 import GlobalUnitsModel from "../src/model/GlobalUnitsModel"
 import GlobalGameState from "../src/model/GlobalGameState"
-import { createFleetMove } from "./TestUtils"
+import { allocateCAPDamageToAttackingStrikeUnit } from "../src/UIEvents/AI/USAirCombatBot"
+import { moveAirUnitToStrikeGroup } from "./TestUtils"
 
 describe("Combat Selections by US Bot", () => {
   let controller
@@ -71,10 +72,10 @@ describe("Combat Selections by US Bot", () => {
 
     mf1 = counters.get("Midway-F4F3")
     mf2 = counters.get("Midway-F2A-3")
-    mdb = counters.get("Midway-SBD-2")
+    mdb = counters.get("Midway-SBD-2") // *
     mdb2 = counters.get("Midway-SB2U-3")
-    mtb = counters.get("Midway-TBF-1")
-    mhb1 = counters.get("Midway-B26-B")
+    mtb = counters.get("Midway-TBF-1") // *
+    mhb1 = counters.get("Midway-B26-B") // *
 
     kaf1 = counters.get("Kaga-A6M-2b-1")
     aaf1 = counters.get("Akagi-A6M-2b-1")
@@ -119,7 +120,57 @@ describe("Combat Selections by US Bot", () => {
 
     // Set one fighter unit to be reduced
     aaf1.aircraftUnit.steps = 1
-    const {cd1} = controller.getNumStepsInCAPBoxesByTF(GlobalUnitsModel.Side.JAPAN)
+    const { cd1 } = controller.getNumStepsInCAPBoxesByTF(GlobalUnitsModel.Side.JAPAN)
     expect(cd1).toEqual(7)
+  })
+
+  test("US CAP Damage Allocation (to Strike Units)", async () => {
+    // Enterprise 2-plane strike group
+    let strikeUnits = [edb1, edb2, ef1, ef1, etb]
+    let selection = await allocateCAPDamageToAttackingStrikeUnit(strikeUnits)
+    expect(selection.unit).toEqual(ef1)
+
+    // Midway 3-plane strike group
+    strikeUnits = [mdb, mtb, mhb1]
+    selection = await allocateCAPDamageToAttackingStrikeUnit(strikeUnits)
+    expect(selection.unit).toEqual(mhb1)
+
+    mhb1.aircraftUnit.steps = 0
+    strikeUnits = [mdb, mtb]
+
+    selection = await allocateCAPDamageToAttackingStrikeUnit(strikeUnits)
+
+
+    expect(selection.unit).toEqual(mdb)
+
+    mdb.aircraftUnit.steps = 1
+
+    selection = await allocateCAPDamageToAttackingStrikeUnit(strikeUnits)
+    expect(selection.unit).toEqual(mdb)
+
+    mdb.aircraftUnit.steps = 0
+
+    strikeUnits = [mtb]
+
+    selection = await allocateCAPDamageToAttackingStrikeUnit(strikeUnits)
+    expect(selection.unit).toEqual(mtb)
+
+    // Midway 3-plane strike group with fighter escort
+    strikeUnits = [mtb, mhb1, mf1]
+    selection = await allocateCAPDamageToAttackingStrikeUnit(strikeUnits)
+
+    expect(selection.unit).toEqual(mf1)
+
+    mf1.aircraftUnit.steps = 0
+    strikeUnits = [mhb1, mtb]
+
+    selection = await allocateCAPDamageToAttackingStrikeUnit(strikeUnits)
+    expect(selection.unit).toEqual(mhb1)
+
+    mhb1.aircraftUnit.steps = 0
+    strikeUnits = [mtb]
+
+    selection = await allocateCAPDamageToAttackingStrikeUnit(strikeUnits)
+    expect(selection.unit).toEqual(mtb)
   })
 })

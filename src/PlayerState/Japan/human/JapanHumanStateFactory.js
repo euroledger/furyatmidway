@@ -6,6 +6,7 @@ import JapanHumanCardDrawState from "./JapanHumanCardDrawState"
 import JapanHumanFleetMovementState from "./JapanHumanFleetMovementState"
 import JapanHumanEndOfAirOperationState from "./JapanHumanEndOfAirOperationState"
 import JapanHumanCapInterceptionState from "./JapanHumanCapInterceptionState"
+import JapanHumanAAAFireState from "./JapanHumanAAAFireState"
 
 function mapGameStateToJapanHumanHandlerState() {
   switch (GlobalGameState.gamePhase) {
@@ -29,8 +30,12 @@ function mapGameStateToJapanHumanHandlerState() {
 
     case GlobalGameState.PHASE.CAP_INTERCEPTION:
       return new JapanHumanCapInterceptionState()
+
+    case GlobalGameState.PHASE.ANTI_AIRCRAFT_FIRE:
+      return new JapanHumanAAAFireState()
       
     default:
+      console.log("NO JAPAN HUMAN STATE FOUND FOR PHASE", GlobalGameState.gamePhase)
   }
 }
 

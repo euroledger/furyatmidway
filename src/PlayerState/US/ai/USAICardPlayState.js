@@ -19,7 +19,7 @@ class USAICardPlayState {
     const { cardNumber } = stateObject
     this.cardNumber = cardNumber
 
-    const playThisCard = playCardAction(cardNumber)
+    const playThisCard = playCardAction(GlobalInit.controller, cardNumber)
 
     console.log("playThisCard=", playThisCard)
     if (playThisCard) {
@@ -28,6 +28,8 @@ class USAICardPlayState {
       if (displayScreen) {
         this.displayCardPlayedPanel(stateObject)
       }
+    } else {
+      this.nextState(stateObject)
     }
   }
 

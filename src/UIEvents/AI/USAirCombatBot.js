@@ -32,3 +32,101 @@ export async function selectTFTarget(controller) {
   }
   GlobalGameState.updateGlobalState()
 }
+
+function is2StepFighter(unit) {
+  return !unit.aircraftUnit.attack && unit.aircraftUnit.steps === 2
+}
+
+function is1StepFighter(unit) {
+  return !unit.aircraftUnit.attack && unit.aircraftUnit.steps === 1
+}
+
+function is2StepTorpedoPlane(unit) {
+  return unit.aircraftUnit.attack && !unit.aircraftUnit.diveBomber && unit.aircraftUnit.steps === 2
+}
+
+function is1StepTorpedoPlane(unit) {
+  return unit.aircraftUnit.attack && !unit.aircraftUnit.diveBomber && unit.aircraftUnit.steps === 1
+}
+
+function is2StepDiveBomber(unit) {
+  return unit.aircraftUnit.diveBomber && unit.aircraftUnit.steps === 2
+}
+
+function is1StepDiveBomber(unit) {
+  return unit.aircraftUnit.diveBomber && unit.aircraftUnit.steps === 1
+}
+
+export async function allocateCAPDamageToAttackingStrikeUnit(strikeUnits) {
+  let originalUnits = JSON.parse(JSON.stringify(strikeUnits));
+
+  // sort by combat strength first (for Midway planes)
+  strikeUnits = strikeUnits.sort(function (a, b) {
+    return a.aircraftUnit.strength - b.aircraftUnit.strength
+  })
+
+  if (strikeUnits[0].carrier === GlobalUnitsModel.Carrier.MIDWAY) {
+    // for midway based strike groups sorting by fighter then strength is enough
+
+    const sortedUnits = strikeUnits.sort(function (a, b) {
+      if (is2StepFighter(a) && !is2StepFighter(b)) {
+        return -1
+      } else if (!is2StepFighter(a) && is2StepFighter(b)) {
+        return 1
+      } else if (!is1StepFighter(a) && is1StepFighter(b)) {
+        return 1
+      } else if (is1StepFighter(a) && !is1StepFighter(b)) {
+        return -1
+      } 
+      return b.aircraftUnit.strength - b.aircraftUnit.strength
+    })
+
+    const index = originalUnits.findIndex((unit) => unit._name === sortedUnits[0].name)
+    const unit = sortedUnits[0]
+    return { unit, index }
+  }
+
+  // Priorities:
+  // 1. 2-step fighter units
+  // 2. 1-step fighter units
+  // 3. 2-step tbds
+  // 4. 2-step SBDs
+  // 5. 1-step tbds
+  // 6. 1-step sbds
+
+  // console.log("strikeUnits=", strikeUnits)
+
+  const sortedUnits = strikeUnits.sort(function (a, b) {
+    if (is2StepFighter(a) && !is2StepFighter(b)) {
+      return -1
+    } else if (!is2StepFighter(a) && is2StepFighter(b)) {
+      return 1
+    } else if (is1StepFighter(a) && !is1StepFighter(b)) {
+      return -1
+    } else if (!is1StepFighter(a) && is1StepFighter(b)) {
+      return 1
+    } else if (is2StepTorpedoPlane(a) && !is2StepTorpedoPlane(b)) {
+      return -1
+    } else if (!is2StepTorpedoPlane(a) && is2StepTorpedoPlane(b)) {
+      return 1
+    } else if (is2StepDiveBomber(a) && !is2StepDiveBomber(b)) {
+      return -1
+    } else if (!is2StepDiveBomber(a) && is2StepDiveBomber(b)) {
+      return 1
+    } else if (is1StepTorpedoPlane(a) && !is1StepTorpedoPlane(b)) {
+      return -1
+    } else if (!is1StepTorpedoPlane(a) && is1StepTorpedoPlane(b)) {
+      return 1
+    } else if (is1StepDiveBomber(a) && !is1StepDiveBomber(b)) {
+      return -1
+    } else if (!is1StepDiveBomber(a) && is1StepDiveBomber(b)) {
+      return 1
+    }
+    return 1
+  })
+
+  const index = originalUnits.findIndex((unit) => unit._name === sortedUnits[0].name)
+  const unit = sortedUnits[0]
+  return { unit, index }
+  // return sortedUnits[0]
+}

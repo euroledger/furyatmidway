@@ -7,7 +7,13 @@ import { calculateSearchResults, calculateSearchValues } from "../model/SearchVa
 import { delay } from "../Utils"
 import { japanAF1StartHexesMidway, japanAF1StartHexesNoMidway } from "../components/MapRegions"
 import HexCommand from "../commands/HexCommand"
-import { setStrikeGroupAirUnitsToNotMoved, resetStrikeGroups } from "../controller/AirOperationsHandler"
+import {
+  setStrikeGroupAirUnitsToNotMoved,
+  resetStrikeGroups,
+  moveCAPtoReturnBox,
+  moveOrphanedCAPUnitsToEliminatedBox,
+  moveOrphanedAirUnitsInReturn1Boxes,
+} from "../controller/AirOperationsHandler"
 export const DELAY_MS = 1
 
 export function calcAirOpsPointsMidway(distanceFromFleetToMidway) {
@@ -504,7 +510,7 @@ export async function setNextStateFollowingCardPlay(stateObject) {
     case 10:
       // US Carrier Planes Ditch
       GlobalGameState.isFirstAirOp = true
-      GlobalGameState.gamePhase = GlobalGameState.PHASE.AIR_SE
+      GlobalGameState.gamePhase = GlobalGameState.PHASE.AIR_SEARCH
       tidyUp(setAirUnitUpdate, setStrikeGroupUpdate, setFleetUnitUpdate)
       break
     default:
@@ -617,4 +623,57 @@ export async function tidyUp(setAirUnitUpdate, setStrikeGroupUpdate, setFleetUni
   decrementAirOpsPoints()
   GlobalGameState.sideWithInitiative = undefined
   GlobalGameState.updateGlobalState()
+}
+
+export function midwayOrAirOps() {
+  if (GlobalGameState.taskForceTarget === GlobalUnitsModel.TaskForce.MIDWAY) {
+    GlobalGameState.midwayAirOpsCompleted = GlobalGameState.midwayAirOp
+    GlobalGameState.gamePhase = GlobalGameState.PHASE.MIDWAY_ATTACK
+  } else {
+    GlobalGameState.gamePhase = GlobalGameState.PHASE.AIR_OPERATIONS
+  }
+}
+
+export async function endOfAirOperation(capAirUnits, setAirUnitUpdate, setEliminatedUnitsPanelShow) {
+  if (
+    GlobalGameState.taskForceTarget !== GlobalUnitsModel.TaskForce.JAPAN_DMCV &&
+    GlobalGameState.taskForceTarget !== GlobalUnitsModel.TaskForce.US_DMCV
+  ) {
+    if (capAirUnits) {
+      await moveCAPtoReturnBox(GlobalInit.controller, capAirUnits, setAirUnitUpdate)
+    }
+  }
+
+  const anySGsNotMoved = GlobalInit.controller.getStrikeGroupsNotMoved2(GlobalGameState.sideWithInitiative)
+
+  if (!anySGsNotMoved) {
+    await setStrikeGroupAirUnitsToNotMoved(GlobalGameState.sideWithInitiative, setAirUnitUpdate)
+  } else {
+    return false
+  }
+
+  // RESET ELITE PILOTS FOR FUTURE AIR COMBATS
+  GlobalGameState.elitePilots = false
+
+  // ELIMIMINATE ORPHANED UNITS IN RETURN BOXES
+  // (CAP RETURN TO BEGIN WITH)
+  const sideBeingAttacked =
+    GlobalGameState.sideWithInitiative === GlobalUnitsModel.Side.US
+      ? GlobalUnitsModel.Side.JAPAN
+      : GlobalUnitsModel.Side.US
+
+  await moveOrphanedCAPUnitsToEliminatedBox(sideBeingAttacked)
+  await moveOrphanedAirUnitsInReturn1Boxes(sideBeingAttacked)
+
+  if (GlobalGameState.orphanedAirUnits.length > 0) {
+    setEliminatedUnitsPanelShow(true)
+  }
+  // 2. CHECK ALL INTERCEPTING CAP UNITS HAVE RETURNED TO CARRIERS
+
+  const capUnitsReturning = GlobalInit.controller.getAllCAPDefendersInCAPReturnBoxes(sideBeingAttacked)
+
+  if (capUnitsReturning.length === 0) {
+    return true
+  }
+  return false
 }

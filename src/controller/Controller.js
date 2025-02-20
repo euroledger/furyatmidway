@@ -130,6 +130,20 @@ export default class Controller {
     }
   }
 
+  getAllUSCarrierPlanesInReturnBoxes() {
+    const airUnitsTF16Return1 = this.getAllAirUnitsInBox(GlobalUnitsModel.AirBox.US_TF16_RETURN1)
+    const airUnitsTF16Return2 = this.getAllAirUnitsInBox(GlobalUnitsModel.AirBox.US_TF16_RETURN2)
+    const airUnitsTF17Return1 = this.getAllAirUnitsInBox(GlobalUnitsModel.AirBox.US_TF17_RETURN1)
+    const airUnitsTF17Return2 = this.getAllAirUnitsInBox(GlobalUnitsModel.AirBox.US_TF17_RETURN2)
+
+    const unitsInGroup = airUnitsTF16Return1
+      .concat(airUnitsTF16Return2)
+      .concat(airUnitsTF17Return1)
+      .concat(airUnitsTF17Return2)
+
+    return unitsInGroup
+  }
+
   getTargetMap() {
     return this.targetMap
   }
@@ -195,11 +209,11 @@ export default class Controller {
 
     let jptotals = {
       cd1: 0,
-      cd2: 0
+      cd2: 0,
     }
     let ustotals = {
       tf16: 0,
-      tf17: 0
+      tf17: 0,
     }
     for (const unit of defenders) {
       const location = this.getAirUnitLocation(unit.name)
@@ -214,10 +228,10 @@ export default class Controller {
       } else {
         if (location.boxName === GlobalUnitsModel.AirBox.US_TF16_CAP) {
           ustotals.tf16 += unit.aircraftUnit.steps
-        } 
+        }
         if (location.boxName === GlobalUnitsModel.AirBox.US_TF17_CAP) {
           ustotals.tf17 += unit.aircraftUnit.steps
-        } 
+        }
       }
     }
     if (side === GlobalUnitsModel.Side.JAPAN) {

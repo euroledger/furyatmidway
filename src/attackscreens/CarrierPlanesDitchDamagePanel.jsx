@@ -18,16 +18,17 @@ export function CarrierPlanesDitchDamageHeaders({
   // let unitsInGroup = controller.getAttackingStrikeUnits()
 
   // Get all US planes in TF16 and TF17 return boxes
-  const airUnitsTF16Return1 = controller.getAllAirUnitsInBox(GlobalUnitsModel.AirBox.US_TF16_RETURN1)
-  const airUnitsTF16Return2 = controller.getAllAirUnitsInBox(GlobalUnitsModel.AirBox.US_TF16_RETURN2)
-  const airUnitsTF17Return1 = controller.getAllAirUnitsInBox(GlobalUnitsModel.AirBox.US_TF17_RETURN1)
-  const airUnitsTF17Return2 = controller.getAllAirUnitsInBox(GlobalUnitsModel.AirBox.US_TF17_RETURN2)
+  // const airUnitsTF16Return1 = controller.getAllAirUnitsInBox(GlobalUnitsModel.AirBox.US_TF16_RETURN1)
+  // const airUnitsTF16Return2 = controller.getAllAirUnitsInBox(GlobalUnitsModel.AirBox.US_TF16_RETURN2)
+  // const airUnitsTF17Return1 = controller.getAllAirUnitsInBox(GlobalUnitsModel.AirBox.US_TF17_RETURN1)
+  // const airUnitsTF17Return2 = controller.getAllAirUnitsInBox(GlobalUnitsModel.AirBox.US_TF17_RETURN2)
 
-  const unitsInGroup = airUnitsTF16Return1
-    .concat(airUnitsTF16Return2)
-    .concat(airUnitsTF17Return1)
-    .concat(airUnitsTF17Return2)
+  // const unitsInGroup = airUnitsTF16Return1
+  //   .concat(airUnitsTF16Return2)
+  //   .concat(airUnitsTF17Return1)
+  //   .concat(airUnitsTF17Return2)
 
+  const unitsInGroup = controller.getAllUSCarrierPlanesInReturnBoxes()
   const arrLength = unitsInGroup.length
   useEffect(() => {
     // add or remove refs
@@ -257,7 +258,7 @@ export function CarrierPlanesDitchDamageHeaders({
                 display: "table-cell",
               }}
             >
-             <p
+              <p
                 style={{
                   margin: "5px",
                 }}

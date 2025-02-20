@@ -26,7 +26,7 @@ class USAIStateHandler extends PlayerStateHandler {
 
   async doNextState() {
     console.log("CRISPS: this.currentState=", this.currentState)
-    this.currentState = await this.currentState.nextState(this.stateObject)
+    this.currentState = await this.currentState.nextState(this.stateObject) ?? this.currentState
     console.log("CRISPS 2 AFTER: this.currentState=", this.currentState)
 
   }

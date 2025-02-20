@@ -28,6 +28,7 @@ function LargeDicePanel(props) {
     closeButtonCallback,
     sidebg,
     image,
+    disableButtons,
     ...rest
   } = props
 

@@ -530,34 +530,9 @@ export function App() {
  
 
   useEffect(() => {
-    if (
-      GlobalGameState.gamePhase === GlobalGameState.PHASE.CAP_DAMAGE_ALLOCATION ||
-      GlobalGameState.gamePhase === GlobalGameState.PHASE.AAA_DAMAGE_ALLOCATION
-    ) {
-      setEliminatedSteps(0)
-      setDamageAllocationPanelShow(true)
-    }
-  }, [GlobalGameState.gamePhase])
-
-  useEffect(() => {
     if (GlobalGameState.gamePhase === GlobalGameState.PHASE.ESCORT_DAMAGE_ALLOCATION) {
       setEliminatedSteps(0)
       setDamageAllocationPanelShow(true)
-    }
-  }, [GlobalGameState.gamePhase])
-  useEffect(() => {
-    if (GlobalGameState.gamePhase === GlobalGameState.PHASE.ESCORT_COUNTERATTACK) {
-      GlobalGameState.dieRolls = []
-      GlobalGameState.fighterHits = 0
-      setEscortPanelShow(true)
-    }
-  }, [GlobalGameState.gamePhase])
-
-  useEffect(() => {
-    if (GlobalGameState.gamePhase === GlobalGameState.PHASE.ANTI_AIRCRAFT_FIRE) {
-      GlobalGameState.dieRolls = []
-      GlobalGameState.antiaircraftHits
-      setAaaPanelShow(true)
     }
   }, [GlobalGameState.gamePhase])
 
@@ -579,6 +554,56 @@ export function App() {
 
   // // NEW AI-HUMAN SIDE EFFECTS....
   useEffect(() => {
+    if (GlobalGameState.gamePhase === GlobalGameState.PHASE.ESCORT_COUNTERATTACK) {
+      GlobalGameState.dieRolls = []
+      GlobalGameState.fighterHits = 0
+      setEscortPanelShow(true)
+
+      // TODO THESE LINES SHOULD BE IN A UTIL FUNCTION
+      if (GlobalGameState.currentPlayer === GlobalUnitsModel.Side.US) {
+        StateManager.gameStateManager.setUSState(stateObject)
+        StateManager.gameStateManager.doAction(GlobalUnitsModel.Side.US, stateObject) // Used by AI
+      } else {
+        StateManager.gameStateManager.setJapanState(stateObject)
+        StateManager.gameStateManager.doAction(GlobalUnitsModel.Side.JAPAN, stateObject) // only used by AI
+      }
+    }
+  }, [GlobalGameState.gamePhase])
+
+  useEffect(() => {
+    if (GlobalGameState.gamePhase === GlobalGameState.PHASE.ANTI_AIRCRAFT_FIRE) {
+      console.log("USE EFFECT ANTI AIRCRAFT FIRE")
+      GlobalGameState.dieRolls = []
+      GlobalGameState.antiaircraftHits
+      setAaaPanelShow(true)
+      if (GlobalGameState.currentPlayer === GlobalUnitsModel.Side.US) {
+        StateManager.gameStateManager.setUSState(stateObject)
+        StateManager.gameStateManager.doAction(GlobalUnitsModel.Side.US, stateObject) // Used by AI
+      } else {
+        StateManager.gameStateManager.setJapanState(stateObject)
+        StateManager.gameStateManager.doAction(GlobalUnitsModel.Side.JAPAN, stateObject) // only used by AI
+      }
+    }
+  }, [GlobalGameState.gamePhase])
+
+  useEffect(() => {
+    if (
+      GlobalGameState.gamePhase === GlobalGameState.PHASE.CAP_DAMAGE_ALLOCATION ||
+      GlobalGameState.gamePhase === GlobalGameState.PHASE.AAA_DAMAGE_ALLOCATION
+    ) {
+      setEliminatedSteps(0)
+      setDamageAllocationPanelShow(true)
+      if (GlobalGameState.currentPlayer === GlobalUnitsModel.Side.US) {
+        StateManager.gameStateManager.setUSState(stateObject)
+        StateManager.gameStateManager.doAction(GlobalUnitsModel.Side.US, stateObject) // Used by AI
+      } else {
+        StateManager.gameStateManager.setJapanState(stateObject)
+        StateManager.gameStateManager.doAction(GlobalUnitsModel.Side.JAPAN, stateObject) // only used by AI
+      }
+    }
+  }, [GlobalGameState.gamePhase])
+
+  useEffect(() => {
     if (GlobalGameState.gamePhase === GlobalGameState.PHASE.CAP_INTERCEPTION) {
       setFightersPresent(true)
       setCapInterceptionPanelShow(true)
@@ -588,6 +613,7 @@ export function App() {
       GlobalGameState.dieRolls = []
       GlobalGameState.capHits = 0
       console.log("CAP INTERCEPTION current player=", GlobalGameState.currentPlayer)
+      
       if (GlobalGameState.currentPlayer === GlobalUnitsModel.Side.US) {
         StateManager.gameStateManager.setUSState(stateObject)
         StateManager.gameStateManager.doAction(GlobalUnitsModel.Side.US, stateObject) // Used by AI
@@ -805,6 +831,7 @@ export function App() {
     }
   }, [GlobalGameState.gamePhase])
   const nextAction = () => {
+    console.log("APP nextAction for side", GlobalGameState.currentPlayer)
     StateManager.gameStateManager.doNextState(GlobalGameState.currentPlayer)
   }
   // const nextAction = () => {
@@ -991,6 +1018,9 @@ export function App() {
     setMidwayDialogShow,
     setMidwayWarningShow,
     setCardAlertPanelShow,
+    setAirUnitUpdate, 
+    setEliminatedUnitsPanelShow, 
+    setEndOfAirOpAlertShow
   }
 
   const onDrag = () => {
@@ -1969,6 +1999,39 @@ export function App() {
     </>
   )
 
+  const determineSideForDamageAllocation = () => {
+    // default is CAP damage allocation (i.e., to attacking escorts)
+    // also applies to Anti-Aircraft damage
+    let daImage = GlobalGameState.sideWithInitiative === GlobalUnitsModel.Side.JAPAN
+      ? "/images/japanflag.jpg"
+      : "/images/usaflag.jpg"
+    let daSidebg = GlobalGameState.sideWithInitiative === GlobalUnitsModel.Side.JAPAN
+      ? GlobalUIConstants.Colors.JAPAN : 
+      GlobalUIConstants.Colors.US  
+      
+    // Flip for escort damage (i.e., to defending CAP)
+    if (GlobalGameState.gamePhase === GlobalGameState.PHASE.ESCORT_DAMAGE_ALLOCATION) {
+      daImage = GlobalGameState.sideWithInitiative === GlobalUnitsModel.Side.US
+        ? "/images/japanflag.jpg"
+        : "/images/usaflag.jpg"
+      daSidebg = GlobalGameState.sideWithInitiative === GlobalUnitsModel.Side.US
+        ? GlobalUIConstants.Colors.JAPAN : 
+        GlobalUIConstants.Colors.US  
+    }
+    return { daImage, daSidebg }
+  }
+  const { daImage, daSidebg } = determineSideForDamageAllocation()
+
+  const disableScreenButtons = () => {
+    let disableButtons = false
+    if (GlobalGameState.gamePhase === GlobalGameState.PHASE.CAP_DAMAGE_ALLOCATION) {
+       if (GlobalGameState.sideWithInitiative === GlobalUnitsModel.Side.US &&     
+           GlobalGameState.usPlayerType === GlobalUnitsModel.TYPE.AI) {
+            disableButtons = true
+       }
+    }
+    return disableButtons
+  }
   const damageHeaders = (
     <>
       <DamageHeaders
@@ -1976,6 +2039,7 @@ export function App() {
         eliminatedSteps={eliminatedSteps}
         setEliminatedSteps={setEliminatedSteps}
         setStepsLeft={setStepsLeft}
+        disableButtons={disableScreenButtons()}
         capAirUnits={
           GlobalGameState.gamePhase === GlobalGameState.PHASE.ESCORT_DAMAGE_ALLOCATION ? capAirUnits : undefined
         }
@@ -2866,6 +2930,9 @@ export function App() {
         doRoll={doDamageAllocation}
         disabled={true}
         closeButtonDisabled={closeDamageButtonDisabled}
+        image={daImage}
+        sidebg={daSidebg}
+        disableButtons={disableScreenButtons()}
       ></LargeDicePanel>
       <LargeDicePanel
         numDice={getNumEscortFighterSteps(GlobalInit.controller)}
@@ -2906,6 +2973,12 @@ export function App() {
         diceButtonDisabled={GlobalGameState.dieRolls.length !== 0}
         closeButtonDisabled={GlobalGameState.dieRolls.length === 0}
         disabled={false}
+        image={GlobalGameState.sideWithInitiative === GlobalUnitsModel.Side.US
+          ? "/images/japanflag.jpg"
+          : "/images/usaflag.jpg"}
+        sidebg = {GlobalGameState.sideWithInitiative === GlobalUnitsModel.Side.US 
+          ? GlobalUIConstants.Colors.JAPAN : 
+          GlobalUIConstants.Colors.US}    
       ></LargeDicePanel>
 
       <AttackDicePanel
@@ -3133,35 +3206,6 @@ export function App() {
         }}
         width={30}
       ></PoopCardAlertPanel>
-    
-      {/* <CardPlayedByAIPanel
-        show={cardPlayedPanelShow}
-        controller={GlobalInit.controller}
-        headers={cardAlertHeaders}
-        headerText={headerText}
-        setHeaderText={setHeaderText}
-        setShowCardFooter={setShowCardFooter}
-        footers={cardAlertFooters}
-        cardNumber={cardNumber}
-        eventHandler={cardEventHandler}
-        margin={0}
-        setDamagedCV={setDamagedCV}
-        setCardDicePanelShow5={setCardDicePanelShow5}
-        setCardDicePanelShow7={setCardDicePanelShow7}
-        setStrikeLostPanelShow={setStrikeLostPanelShow}
-        setCarrierPlanesDitchPanelShow={setCarrierPlanesDitchPanelShow}
-        setTowedToFriendlyPortPanelShow={setTowedToFriendlyPortPanelShow}
-        setAirReplacementsPanelShow={setAirReplacementsPanelShow}
-        setDamageControlPanelShow={setDamageControlPanelShow}
-        setAttackResolved={setAttackResolved}
-        setSubmarineAlertPanelShow={setSubmarineAlertPanelShow}
-        setSubmarineDamagePanelShow={setSubmarineDamagePanelShow}
-        onHide={(e) => {
-          setCardPlayedPanelShow(false)
-          nextAction(e)
-        }}
-        width={30}
-      ></CardPlayedByAIPanel> */}
       <DicePanel
         numDice={1}
         show={!testClicked && cardDicePanelShow5}

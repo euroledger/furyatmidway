@@ -15,6 +15,7 @@ class USAITargetDeterminationState {
   }
 
   async nextState(stateObject) {
+    console.log("USAITargetDetermination -> nextState() !!!!!!!!!!!!!!!")
     GlobalGameState.currentPlayer = GlobalUnitsModel.Side.JAPAN
     GlobalGameState.gamePhase = GlobalGameState.PHASE.CAP_INTERCEPTION
   }
