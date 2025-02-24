@@ -152,6 +152,8 @@ async function moveAirUnitToHangar({ controller, unit, setTestUpdate, test, box,
 }
 
 async function moveAirUnitToStrikeGroup({ controller, unit, setTestUpdate, test, strikeBox }) {
+  await delay(40)
+  console.log("MOVE TO STRIKE BOX->", unit.name)
   const airBox = strikeBox ?? getNextAvailableStrikeBox(controller, GlobalUnitsModel.Side.US)
   const update = {
     name: unit.name,
@@ -161,7 +163,7 @@ async function moveAirUnitToStrikeGroup({ controller, unit, setTestUpdate, test,
   update.index = controller.getFirstAvailableZone(update.boxName)
   let position1 = USAirBoxOffsets.find((box) => box.name === update.boxName)
   update.position = position1.offsets[update.index]
-  // console.log("Send Air Unit update:", update)
+  console.log("Send Air Unit update:", update)
 
   if (test) {
     controller.addAirUnitToBox(update.boxName, update.index, unit)
@@ -169,7 +171,7 @@ async function moveAirUnitToStrikeGroup({ controller, unit, setTestUpdate, test,
   }
   setTestUpdate(update)
 
-  await delay(DELAY_MS)
+  await delay(40)
 }
 
 async function moveStrikeGroup(controller, unit, fromHex, toHex, setStrikeGroupUpdate, test) {
@@ -197,6 +199,7 @@ async function moveStrikeGroup(controller, unit, fromHex, toHex, setStrikeGroupU
   await delay(DELAY_MS)
 }
 async function hangarToFlightDeck({ controller, unit, setTestUpdate, test }) {
+  await delay (10)
   // 7b. Get valid destinations for units in Hangar
   // 7c. Move Units from Hangar to Flight Deck
   setValidDestinationBoxes(controller, unit.name, GlobalUnitsModel.Side.US)
@@ -275,6 +278,7 @@ export async function generateUSAirOperationsMovesCarriers(controller, stateObje
     setValidDestinationBoxes(controller, unit.name, GlobalUnitsModel.Side.US)
 
     const destinations = controller.getValidAirUnitDestinations(unit.name)
+    console.log("VALID DESTINATIONS FOR", unit.name, "->", destinations)
     const unitsOnCarrierFlighftDeck = controller.getAllUnitsOnUSFlightDeckofNamedCarrier(unit.carrier)
 
     if (unitsOnCarrierFlighftDeck.length === 1) {
@@ -402,6 +406,9 @@ export function sortStrikeGroups(controller, strikeUnits) {
   let strikeUnitSortedProperties = new Array()
   let myStrikeGroup
   for (const strikeGroup of strikeUnits) {
+    if (strikeGroup.attacked) {
+      continue
+    }
     myStrikeGroup = strikeGroup
 
     // units property needed for sort
@@ -413,22 +420,36 @@ export function sortStrikeGroups(controller, strikeUnits) {
   }
 
   const sortedUnits = strikeUnitSortedProperties.sort(function (a, b) {
+    console.log("COMPARE", a.name, "AND", b.name)
     if (a.name.includes("Midway") && !b.name.includes("Midway")) {
+      console.log("QUACK 1")
       return 1
     } else if (!a.name.includes("Midway") && b.name.includes("Midway")) {
+      console.log("QUACK 2")
+
       return -1
-    } else if (controller.anyFightersInStrike(a.box) && !controller.anyFightersInStrike(b.box)) {
-      return 1
-    } else if (!controller.anyFightersInStrike(a.box) && controller.anyFightersInStrike(b.box)) {
+    } else if (controller.anyFightersInStrikeGroup(a.box) && !controller.anyFightersInStrikeGroup(b.box)) {
+      console.log("QUACK 3")
+
+      return -1
+    } else if (!controller.anyFightersInStrikeGroup(a.box) && controller.anyFightersInStrikeGroup(b.box)) {
+      console.log("QUACK 4")
+
       return -1
     } else if (a.units.length === 2 && b.units.length !== 2) {
-      return 1
-    } else if (a.units.length !== 2 && b.units.length === 2) {
+      console.log("QUACK 5")
+
       return -1
+    } else if (a.units.length !== 2 && b.units.length === 2) {
+      console.log("QUACK 6")
+
+      return 1
     }
+    console.log("QUACK 100")
     return -1
   })
 
+  console.log(">>>>>>>>>>>>>>>>>>>>>>>>>>>>>> *************** SORTED UNITS=", sortedUnits)
   return sortedUnits
 }
 
@@ -579,6 +600,10 @@ export async function moveStrikeGroups(controller, stateObject, test) {
 
   let ijndmcvTargeted = false // only 1 SG should move to attack this fleet if more than 1 target
   for (const strikeGroup of strikeUnits) {
+    if (strikeGroup.attacked) {
+      continue // done for this SG
+    }
+    console.log("MOVE FOR SG", strikeGroup)
     const unitsInGroup = controller.getAirUnitsInStrikeGroups(strikeGroup.box)
 
     if (unitsInGroup.length === 0 && !strikeGroup.attacked) {

@@ -346,6 +346,15 @@ export function App() {
   // GlobalGameState.carrierAttackHits = 3
   // *******************************************
 
+  const doStateChange = () => {
+    if (GlobalGameState.currentPlayer === GlobalUnitsModel.Side.US) {
+      StateManager.gameStateManager.setUSState(stateObject)
+      StateManager.gameStateManager.doAction(GlobalUnitsModel.Side.US, stateObject) // Used by AI
+    } else {
+      StateManager.gameStateManager.setJapanState(stateObject)
+      StateManager.gameStateManager.doAction(GlobalUnitsModel.Side.JAPAN, stateObject) // only used by AI
+    }
+  }
   useEffect(() => {
     if (GlobalGameState.gamePhase === GlobalGameState.PHASE.FLEET_TARGET_SELECTION) {
       setTargetDetermined(false)
@@ -442,76 +451,6 @@ export function App() {
   }, [GlobalGameState.gamePhase])
 
   useEffect(() => {
-    if (GlobalGameState.gamePhase === GlobalGameState.PHASE.ATTACK_TARGET_SELECTION) {
-      setAttackTargetsSelected(false)
-      setAttackTargetPanelShow(true)
-      GlobalGameState.carrierAttackHits = 0
-    }
-  }, [GlobalGameState.gamePhase])
-
-  // useEffect(() => {
-  //   if (GlobalGameState.gamePhase === GlobalGameState.PHASE.AIR_SEARCH && GlobalGameState.isFirstAirOp) {
-  //     setSearchValuesAlertShow(true)
-  //     GlobalGameState.isFirstAirOp = false
-  //   }
-  // }, [GlobalGameState.gamePhase])
-
-  // useEffect(() => {
-  //   if (GlobalGameState.gamePhase === GlobalGameState.PHASE.CARD_PLAY) {
-  //     setEliminatedSteps(0)
-  //     if (cardNumber === 2 || cardNumber === 4) {
-  //       setDamagedCV("")
-  //       GlobalGameState.dieRolls = []
-  //     }
-  //     if (cardNumber !== 0 && cardNumber !== -1) {
-  //       setCardAlertPanelShow(true)
-  //     } else {
-  //       nextAction()
-  //     }
-  //   }
-  // }, [GlobalGameState.gamePhase, cardNumber])
-
-  useEffect(() => {
-    if (GlobalGameState.gamePhase === GlobalGameState.PHASE.AIR_ATTACK_1) {
-      GlobalGameState.dieRolls = []
-      GlobalGameState.carrierHitsDetermined = false
-      GlobalGameState.carrierAttackHitsThisAttack = 0
-      GlobalGameState.currentCarrierAttackTarget = GlobalGameState.carrierTarget1
-      GlobalGameState.eliminatedAirUnits = new Array()
-      GlobalGameState.midwayHits = 0
-      GlobalGameState.midwayHitsThisAttack = 0
-      setAttackResolved(false)
-      setAttackResolutionPanelShow(true)
-    }
-  }, [GlobalGameState.gamePhase])
-
-  useEffect(() => {
-    if (GlobalGameState.gamePhase === GlobalGameState.PHASE.AIR_ATTACK_2) {
-      GlobalGameState.carrierAttackHits = 0
-      GlobalGameState.carrierAttackHitsThisAttack = 0
-      GlobalGameState.dieRolls = []
-      GlobalGameState.carrierHitsDetermined = false
-
-      GlobalGameState.currentCarrierAttackTarget = GlobalGameState.carrierTarget2
-      GlobalGameState.carrierTarget2 = ""
-      GlobalGameState.eliminatedAirUnits = new Array()
-      setAttackResolutionPanelShow(true)
-    }
-  }, [GlobalGameState.gamePhase])
-
-  useEffect(() => {
-    if (GlobalGameState.gamePhase === GlobalGameState.PHASE.ATTACK_DAMAGE_RESOLUTION) {
-      setCarrierHits(-1)
-      GlobalGameState.dieRolls = []
-      setAttackResolutionPanelShow(false)
-      setCarrierDamagePanelShow(true)
-      setAttackResolved(false)
-      setDamageDone(false)
-      GlobalGameState.carrierDamageRoll = undefined
-    }
-  }, [GlobalGameState.gamePhase])
-
-  useEffect(() => {
     if (GlobalGameState.gamePhase === GlobalGameState.PHASE.MIDWAY_ATTACK) {
       GlobalGameState.dieRolls = []
       GlobalGameState.midwayAttackGroup = undefined
@@ -554,19 +493,66 @@ export function App() {
 
   // // NEW AI-HUMAN SIDE EFFECTS....
   useEffect(() => {
+    if (GlobalGameState.gamePhase === GlobalGameState.PHASE.AIR_ATTACK_2) {
+      GlobalGameState.carrierAttackHits = 0
+      GlobalGameState.carrierAttackHitsThisAttack = 0
+      GlobalGameState.dieRolls = []
+      GlobalGameState.carrierHitsDetermined = false
+
+      GlobalGameState.currentCarrierAttackTarget = GlobalGameState.carrierTarget2
+      GlobalGameState.carrierTarget2 = ""
+      GlobalGameState.eliminatedAirUnits = new Array()
+      setAttackResolved(false)
+      setAttackResolutionPanelShow(true)
+      doStateChange()
+    }
+  }, [GlobalGameState.gamePhase])
+
+  useEffect(() => {
+    if (GlobalGameState.gamePhase === GlobalGameState.PHASE.ATTACK_DAMAGE_RESOLUTION) {
+      setCarrierHits(-1)
+      GlobalGameState.dieRolls = []
+      setAttackResolutionPanelShow(false)
+      setCarrierDamagePanelShow(true)
+      setAttackResolved(false)
+      setDamageDone(false)
+      GlobalGameState.carrierDamageRoll = undefined
+      doStateChange()
+    }
+  }, [GlobalGameState.gamePhase])
+
+  useEffect(() => {
+    if (GlobalGameState.gamePhase === GlobalGameState.PHASE.AIR_ATTACK_1) {
+      GlobalGameState.dieRolls = []
+      GlobalGameState.carrierHitsDetermined = false
+      GlobalGameState.carrierAttackHitsThisAttack = 0
+
+      console.log("+++++++++++ QUACK SET CARRIER ATTACK TARGET TO", GlobalGameState.carrierTarget1)
+      GlobalGameState.currentCarrierAttackTarget = GlobalGameState.carrierTarget1
+      GlobalGameState.eliminatedAirUnits = new Array()
+      GlobalGameState.midwayHits = 0
+      GlobalGameState.midwayHitsThisAttack = 0
+      setAttackResolved(false)
+      setAttackResolutionPanelShow(true)
+      doStateChange()
+    }
+  }, [GlobalGameState.gamePhase])
+
+  useEffect(() => {
+    if (GlobalGameState.gamePhase === GlobalGameState.PHASE.ATTACK_TARGET_SELECTION) {
+      setAttackTargetsSelected(false)
+      setAttackTargetPanelShow(true)
+      GlobalGameState.carrierAttackHits = 0
+      doStateChange()
+    }
+  }, [GlobalGameState.gamePhase])
+
+  useEffect(() => {
     if (GlobalGameState.gamePhase === GlobalGameState.PHASE.ESCORT_COUNTERATTACK) {
       GlobalGameState.dieRolls = []
       GlobalGameState.fighterHits = 0
       setEscortPanelShow(true)
-
-      // TODO THESE LINES SHOULD BE IN A UTIL FUNCTION
-      if (GlobalGameState.currentPlayer === GlobalUnitsModel.Side.US) {
-        StateManager.gameStateManager.setUSState(stateObject)
-        StateManager.gameStateManager.doAction(GlobalUnitsModel.Side.US, stateObject) // Used by AI
-      } else {
-        StateManager.gameStateManager.setJapanState(stateObject)
-        StateManager.gameStateManager.doAction(GlobalUnitsModel.Side.JAPAN, stateObject) // only used by AI
-      }
+      doStateChange()
     }
   }, [GlobalGameState.gamePhase])
 
@@ -576,13 +562,7 @@ export function App() {
       GlobalGameState.dieRolls = []
       GlobalGameState.antiaircraftHits
       setAaaPanelShow(true)
-      if (GlobalGameState.currentPlayer === GlobalUnitsModel.Side.US) {
-        StateManager.gameStateManager.setUSState(stateObject)
-        StateManager.gameStateManager.doAction(GlobalUnitsModel.Side.US, stateObject) // Used by AI
-      } else {
-        StateManager.gameStateManager.setJapanState(stateObject)
-        StateManager.gameStateManager.doAction(GlobalUnitsModel.Side.JAPAN, stateObject) // only used by AI
-      }
+      doStateChange()
     }
   }, [GlobalGameState.gamePhase])
 
@@ -593,13 +573,7 @@ export function App() {
     ) {
       setEliminatedSteps(0)
       setDamageAllocationPanelShow(true)
-      if (GlobalGameState.currentPlayer === GlobalUnitsModel.Side.US) {
-        StateManager.gameStateManager.setUSState(stateObject)
-        StateManager.gameStateManager.doAction(GlobalUnitsModel.Side.US, stateObject) // Used by AI
-      } else {
-        StateManager.gameStateManager.setJapanState(stateObject)
-        StateManager.gameStateManager.doAction(GlobalUnitsModel.Side.JAPAN, stateObject) // only used by AI
-      }
+      doStateChange()
     }
   }, [GlobalGameState.gamePhase])
 
@@ -3016,6 +2990,12 @@ export function App() {
         diceButtonDisabled={GlobalGameState.dieRolls.length !== 0}
         closeButtonDisabled={GlobalGameState.dieRolls.length === 0 && !attackResolved}
         disabled={false}
+        image={GlobalGameState.sideWithInitiative === GlobalUnitsModel.Side.JAPAN
+          ? "/images/japanflag.jpg"
+          : "/images/usaflag.jpg"}
+        sidebg = {GlobalGameState.sideWithInitiative === GlobalUnitsModel.Side.US 
+          ? GlobalUIConstants.Colors.US : 
+          GlobalUIConstants.Colors.JAPAN}   
       ></AttackDicePanel>
       <NightLandingDicePanel
         controller={GlobalInit.controller}
@@ -3088,6 +3068,9 @@ export function App() {
         disabled={false}
         setDamageDone={setDamageDone}
         damageDone={damageDone}
+        image={GlobalGameState.sideWithInitiative === GlobalUnitsModel.Side.JAPAN
+          ? "/images/japanflag.jpg"
+          : "/images/usaflag.jpg"}
       ></CarrierDamageDicePanel>
       <MidwayDamageDicePanel
         numDice={1}

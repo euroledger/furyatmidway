@@ -28,7 +28,8 @@ class USAICapDamageAllocationState {
   }
 
   async nextState(stateObject) {
-    console.log("USAICAPDamageAllocationState nextState()")
+    const { capAirUnits, setAirUnitUpdate, setEliminatedUnitsPanelShow } = stateObject
+
     if (GlobalGameState.taskForceTarget === GlobalUnitsModel.TaskForce.MIDWAY && GlobalGameState.elitePilots) {
       if (GlobalGameState.attackingStepsRemaining > 0) {
         GlobalGameState.currentPlayer = GlobalUnitsModel.Side.JAPAN

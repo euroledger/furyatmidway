@@ -108,9 +108,6 @@ function LargeDicePanel(props) {
       <Modal.Header
         className="text-center"
         style={{
-          // display: "flex",
-          // justifyContent: "center",
-          // alignItems: "center",
           background: `${bg}`,
           color: "white",
         }}

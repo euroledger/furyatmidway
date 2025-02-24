@@ -742,11 +742,12 @@ export function doAttackFireRolls(controller, testRolls) {
       dbDRM = -1
       torpDRM = -1
     } else {
-      const attackAircraftOnDeck = controller.attackAircraftOnDeck()
+      const attackAircraftOnDeck =
+        controller.attackAircraftOnDeck() 
       if (attackAircraftOnDeck) {
         dbDRM = 1
       }
-      const combinedAttack = controller.combinedAttack()
+      const combinedAttack = controller.combinedAttack() && GlobalGameState.sideWithInitiative === GlobalUnitsModel.Side.JAPAN
       if (combinedAttack) {
         torpDRM = 1
       }
@@ -826,7 +827,7 @@ export function doAAAFireRolls(numDice, testRolls) {
   GlobalGameState.antiaircraftHits = hits
 
   // QUACK TESTING TAKE THIS OUT
-  // GlobalGameState.antiaircraftHits = 2
+  // GlobalGameState.antiaircraftHits = 0
 }
 
 function getFightersForStrikeGroup(controller) {

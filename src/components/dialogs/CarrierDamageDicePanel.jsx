@@ -60,6 +60,7 @@ function CarrierDamageDicePanel(props) {
     margin,
     showDice,
     doRoll,
+    image,
     closeButtonStr,
     closeButtonCallback,
     setDamageMarkerUpdate,
@@ -71,6 +72,17 @@ function CarrierDamageDicePanel(props) {
   const button1Ref = useRef(null)
   const button2Ref = useRef(null)
 
+  let showImg = false
+  let img = image
+  if (image != "POO") {
+    showImg = true
+  }
+  if (!image) {
+    img =
+      GlobalGameState.sideWithInitiative === GlobalUnitsModel.Side.JAPAN
+        ? "/images/japanflag.jpg"
+        : "/images/usaflag.jpg"
+  }
   useEffect(() => {
     if (button1Ref.current) {
       if (GlobalGameState.rollDice === true) {
@@ -127,7 +139,6 @@ function CarrierDamageDicePanel(props) {
     GlobalGameState.carrierAttackHits = 0
     sendDamageUpdates(controller, damage, setDamageMarkerUpdate)
     if (damage.sunk) {
-      
       // This needs to be done after the DMCV Fleet Marker is removed.
       // @See handleAction in GameStateHandler
       const cv = controller.getCarrier(carrier)
@@ -168,7 +179,11 @@ function CarrierDamageDicePanel(props) {
   }
 
   let isSunk = false
-  if (GlobalGameState.currentCarrierAttackTarget !== "SUNK" && GlobalGameState.currentCarrierAttackTarget !== "" && GlobalGameState.currentCarrierAttackTarget !== undefined) {
+  if (
+    GlobalGameState.currentCarrierAttackTarget !== "SUNK" &&
+    GlobalGameState.currentCarrierAttackTarget !== "" &&
+    GlobalGameState.currentCarrierAttackTarget !== undefined
+  ) {
     isSunk = controller.isSunk(GlobalGameState.currentCarrierAttackTarget)
   }
   const sunkMsg = `Carrier ${GlobalGameState.currentCarrierAttackTarget} is Sunk!`
@@ -197,16 +212,42 @@ function CarrierDamageDicePanel(props) {
       <Modal.Header
         className="text-center"
         style={{
-          display: "flex",
-          justifyContent: "center",
-          alignItems: "center",
           background: `${bg}`,
           color: "white",
         }}
       >
-        <p className="text-center">
+        {showImg && (
+          <div
+            style={{
+              float: "left",
+              width: "20%",
+            }}
+          >
+            <img
+              style={{
+                width: "60px",
+                height: "40px",
+              }}
+              src={img}
+            ></img>
+          </div>
+        )}
+        <div
+          style={{
+            float: "left",
+            width: "60%",
+            textAlign: "center",
+          }}
+        >
           <h4>{headerText}</h4>
-        </p>
+        </div>
+        <div
+          style={{
+            float: "left",
+            width: "20%",
+            textAlign: "right",
+          }}
+        ></div>
       </Modal.Header>
       <Modal.Body style={{ background: `${bg}`, color: "black" }}>
         <>

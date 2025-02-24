@@ -2,8 +2,11 @@ import Controller from "../src/controller/Controller"
 import loadCounters from "../src/CounterLoader"
 import GlobalUnitsModel from "../src/model/GlobalUnitsModel"
 import GlobalGameState from "../src/model/GlobalGameState"
-import { allocateCAPDamageToAttackingStrikeUnit } from "../src/UIEvents/AI/USAirCombatBot"
-import { moveAirUnitToStrikeGroup } from "./TestUtils"
+import {
+  allocateCAPDamageToAttackingStrikeUnit,
+  allocateAAADamageToAttackingStrikeUnit,
+  doTargetSelection,
+} from "../src/UIEvents/AI/USAirCombatBot"
 
 describe("Combat Selections by US Bot", () => {
   let controller
@@ -125,7 +128,7 @@ describe("Combat Selections by US Bot", () => {
   })
 
   test("US CAP Damage Allocation (to Strike Units)", async () => {
-    // Enterprise 2-plane strike group
+    // Enterprise 5-plane strike group (just for test)
     let strikeUnits = [edb1, edb2, ef1, ef1, etb]
     let selection = await allocateCAPDamageToAttackingStrikeUnit(strikeUnits)
     expect(selection.unit).toEqual(ef1)
@@ -139,7 +142,6 @@ describe("Combat Selections by US Bot", () => {
     strikeUnits = [mdb, mtb]
 
     selection = await allocateCAPDamageToAttackingStrikeUnit(strikeUnits)
-
 
     expect(selection.unit).toEqual(mdb)
 
@@ -172,5 +174,61 @@ describe("Combat Selections by US Bot", () => {
 
     selection = await allocateCAPDamageToAttackingStrikeUnit(strikeUnits)
     expect(selection.unit).toEqual(mtb)
+  })
+
+  test("US AAA Damage Allocation (to Strike Units)", async () => {
+    // Enterprise 4-plane strike group
+    let strikeUnits = [edb1, edb2, etb]
+    let selection = await allocateAAADamageToAttackingStrikeUnit(strikeUnits)
+    expect(selection.unit).toEqual(etb)
+
+    // Midway 3-plane strike group
+    strikeUnits = [mdb, mtb, mhb1]
+    selection = await allocateAAADamageToAttackingStrikeUnit(strikeUnits)
+    expect(selection.unit).toEqual(mhb1)
+
+    mhb1.aircraftUnit.steps = 0
+    strikeUnits = [mdb, mtb]
+
+    selection = await allocateAAADamageToAttackingStrikeUnit(strikeUnits)
+
+    expect(selection.unit).toEqual(mdb)
+
+    mdb.aircraftUnit.steps = 1
+
+    selection = await allocateAAADamageToAttackingStrikeUnit(strikeUnits)
+    expect(selection.unit).toEqual(mdb)
+  })
+
+  test("US Air Strike Carrier Target Selection", async () => {
+    // Enterprise 2-plane strike group
+    let strikeUnits = [edb1, edb2]
+
+    // No hits to any Japanese carriers -> random selection (pass in test die rolls)
+    GlobalGameState.taskForceTarget = GlobalUnitsModel.TaskForce.CARRIER_DIV_1
+
+    let carrierTargets = await doTargetSelection(
+      controller,
+      strikeUnits,
+      GlobalUnitsModel.Side.JAPAN,
+      { setAttackAirCounterUpdate: undefined },
+      [0, 1]
+    )
+    expect(carrierTargets[0]).toEqual(GlobalUnitsModel.Carrier.AKAGI)
+    expect(carrierTargets[1]).toEqual(GlobalUnitsModel.Carrier.KAGA)
+
+    // Kaga 2 hits - both attack units target the damaged carrier 
+    controller.setCarrierHits(GlobalUnitsModel.Carrier.KAGA, 2)
+
+    carrierTargets = await doTargetSelection(
+      controller,
+      strikeUnits,
+      GlobalUnitsModel.Side.JAPAN,
+      { setAttackAirCounterUpdate: undefined },
+      [0, 1]
+    )
+    expect(carrierTargets[0]).toEqual(GlobalUnitsModel.Carrier.KAGA)
+    expect(carrierTargets[1]).toEqual(GlobalUnitsModel.Carrier.KAGA)
+
   })
 })

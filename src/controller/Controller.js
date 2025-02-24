@@ -121,6 +121,7 @@ export default class Controller {
     const targets = Array.from(this.targetMap.values())
     let carriers = [...new Set(targets)]
 
+    console.log("++++++++++ QUACK 1 set carrierTarget1 to", carriers[0])
     GlobalGameState.carrierTarget1 = carriers[0]
 
     if (carriers.length === 2) {
@@ -670,6 +671,14 @@ export default class Controller {
     return fleetUnits.filter((n) => n.name.toUpperCase() != "MIDWAY")
   }
 
+  getAllNonSunkCarriersInTaskForce(tf, side) {
+    const fleetUnits =
+      side === GlobalUnitsModel.Side.JAPAN
+        ? Array.from(GlobalUnitsModel.jpFleetUnits.values())
+        : Array.from(GlobalUnitsModel.usFleetUnits.values())
+    return fleetUnits.filter((n) => n.taskForce === tf && !n.isSunk)
+  }
+
   getAllCarriersInTaskForce(tf, side) {
     const fleetUnits =
       side === GlobalUnitsModel.Side.JAPAN
@@ -892,6 +901,16 @@ export default class Controller {
     let boxName = Object.values(flightDeckBox)[0]
     const attackUnitsOnFlightDeck = this.getAttackAircraftInBox(boxName)
     return attackUnitsOnFlightDeck.length > 0
+  }
+
+  anyDiveBombersInStrikeGroup() {
+    const units = this.getStrikeUnitsAttackingCarrier()
+    for (const unit of units) {
+      if (unit.aircraftUnit.diveBomber) {
+        return true
+      }
+    }
+    return false
   }
 
   combinedAttack() {
@@ -1252,6 +1271,7 @@ export default class Controller {
 
   autoAssignTargets() {
     let carrierAttackTarget = this.getTargetForAttack()
+    console.log("CARRIER ATTACK TARGET=", carrierAttackTarget)
     if (carrierAttackTarget === null) {
       return null
     }
@@ -1318,18 +1338,18 @@ export default class Controller {
   }
 
   getAttackingStrikeUnitsForTF(tf, side) {
-    const sideBeingAttacked =
-      GlobalGameState.sideWithInitiative === GlobalUnitsModel.Side.US
-        ? GlobalUnitsModel.Side.JAPAN
-        : GlobalUnitsModel.Side.US
-    const fleetBeingAttacked = this.getFleetForTaskForce(tf, side)
+    // const sideBeingAttacked =
+    //   GlobalGameState.sideWithInitiative === GlobalUnitsModel.Side.US
+    //     ? GlobalUnitsModel.Side.JAPAN
+    //     : GlobalUnitsModel.Side.US
+    // const fleetBeingAttacked = this.getFleetForTaskForce(tf, side)
 
-    let location
-    if (fleetBeingAttacked === "MIDWAY") {
-      location = Controller.MIDWAY_HEX
-    } else {
-      location = this.getFleetLocation(fleetBeingAttacked, sideBeingAttacked)
-    }
+    // let location
+    // if (fleetBeingAttacked === "MIDWAY") {
+    //   location = Controller.MIDWAY_HEX
+    // } else {
+    //   location = this.getFleetLocation(fleetBeingAttacked, sideBeingAttacked)
+    // }
     if (!GlobalGameState.attackingStrikeGroup) return []
     let unitsInGroup = this.getAirUnitsInStrikeGroups(GlobalGameState.attackingStrikeGroup.box)
     return unitsInGroup
@@ -1338,11 +1358,15 @@ export default class Controller {
   anyFightersInStrike(tf, side) {
     const units = this.getAttackingStrikeUnitsForTF(tf, side).filter((airUnit) => !airUnit.aircraftUnit.attack)
     return units.length > 0
+
   }
 
   anyFightersInStrikeGroup(name) {
     const units = this.getAirUnitsInStrikeGroups(name)
+    console.log("UNITS IN SG FOR BOX", name, "=>", units)
     const fighters = units.filter((airUnit) => !airUnit.aircraftUnit.attack)
+    console.log("fighters.len=", fighters.length)
+
     return fighters.length > 0
   }
 

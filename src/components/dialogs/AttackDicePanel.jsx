@@ -8,6 +8,7 @@ import GlobalUnitsModel from "../../model/GlobalUnitsModel"
 import Die from "./Die"
 import "./modal.css"
 import "./largemodal.css"
+import GlobalUIConstants from "../UIConstants"
 
 function getAirCounters(attackers) {
   let index = 0
@@ -56,7 +57,7 @@ function getAirCounters(attackers) {
         </div>
         <p
           style={{
-            marginTop: "15px",
+            marginTop: "10px",
             marginLeft: "25px",
             color: "white",
           }}
@@ -85,6 +86,8 @@ function AttackDicePanel(props) {
     doRoll,
     closeButtonStr,
     closeButtonCallback,
+    sidebg,
+    image,
     ...rest
   } = props
 
@@ -99,15 +102,6 @@ function AttackDicePanel(props) {
     }
   }, [GlobalGameState.rollDice])
 
-  useEffect(() => {
-    if (button2Ref.current) {
-      if (GlobalGameState.closePanel === true) {
-        button2Ref.current.click()
-      }
-    }
-  }, [GlobalGameState.closePanel])
-
-  const bg = "#293a4b"
   const closey = closeButtonStr ?? "Close"
 
   const msg = "Target For Air Attack:"
@@ -140,18 +134,22 @@ function AttackDicePanel(props) {
     GlobalGameState.taskForceTarget !== GlobalUnitsModel.TaskForce.JAPAN_DMCV &&
     GlobalGameState.taskForceTarget !== GlobalUnitsModel.TaskForce.US_DMCV
   ) {
-    dbDRM = "No Attack Planes On Deck: No (Dive Bomber) DRM"
-    torpDRM = "Not a combined attack: No (Torpedo Bomber) DRM"
+    dbDRM = "No Attack Planes On Deck or No Dive Bombers (No DRM)"
+    torpDRM = "Not a combined attack: No (Torpedo Bomber DRM)"
+    if (GlobalGameState.sideWithInitiative === GlobalUnitsModel.Side.US) {
+      torpDRM = ""
+    }
     if (GlobalGameState.currentCarrierAttackTarget === GlobalUnitsModel.Carrier.MIDWAY) {
       dbDRM = "Midway Dive Bomber DRM: -1"
       torpDRM = "Midway Torpedo Bomber DRM: -1"
     } else if (GlobalGameState.currentCarrierAttackTarget !== undefined) {
-      const attackAircraftOnDeck = controller.attackAircraftOnDeck()
+
+      const attackAircraftOnDeck = controller.attackAircraftOnDeck() && controller.anyDiveBombersInStrikeGroup()
       if (attackAircraftOnDeck) {
         dbDRM = "Attack Planes On Deck: +1 (Dive Bomber) DRM"
       }
-      const combinedAttack = controller.combinedAttack()
-      if (combinedAttack) {
+      const combinedAttack = controller.combinedAttack() 
+      if (combinedAttack && GlobalGameState.sideWithInitiative === GlobalUnitsModel.Side.JAPAN) {
         torpDRM = "Combined attack: +1 (Torpedo Bomber) DRM"
       }
     }
@@ -166,6 +164,26 @@ function AttackDicePanel(props) {
       GlobalGameState.currentCarrierAttackTarget = GlobalGameState.usDMCVCarrier
     }
   }
+  let sidey = sidebg
+  if (!sidebg) {
+    sidey =
+      GlobalGameState.sideWithInitiative === GlobalUnitsModel.Side.JAPAN
+        ? GlobalUIConstants.Colors.US
+        : GlobalUIConstants.Colors.JAPAN
+  }
+  let showImg = false
+  let img = image
+  if (image != "POO") {
+    showImg = true
+  }
+  if (!image) {
+    img =
+      GlobalGameState.sideWithInitiative === GlobalUnitsModel.Side.JAPAN
+        ? "/images/japanflag.jpg"
+        : "/images/usaflag.jpg"
+  }
+
+  let bg = GlobalGameState.gameTurn === 4 ? "black" : sidey
 
   return (
     <Modal
@@ -178,16 +196,42 @@ function AttackDicePanel(props) {
       <Modal.Header
         className="text-center"
         style={{
-          display: "flex",
-          justifyContent: "center",
-          alignItems: "center",
           background: `${bg}`,
           color: "white",
         }}
       >
-        <p className="text-center">
+        {showImg && (
+          <div
+            style={{
+              float: "left",
+              width: "20%",
+            }}
+          >
+            <img
+              style={{
+                width: "60px",
+                height: "40px",
+              }}
+              src={img}
+            ></img>
+          </div>
+        )}
+        <div
+          style={{
+            float: "left",
+            width: "60%",
+            textAlign: "center",
+          }}
+        >
           <h4>{headerText}</h4>
-        </p>
+        </div>
+        <div
+          style={{
+            float: "left",
+            width: "20%",
+            textAlign: "right",
+          }}
+        ></div>
       </Modal.Header>
       <Modal.Body style={{ background: `${bg}`, color: "black" }}>
         <div style={{ marginLeft: "28px" }}>
@@ -222,8 +266,8 @@ function AttackDicePanel(props) {
               <div
                 style={{
                   display: "inline-block",
-                  marginTop: "20px",
-                  marginLeft: "445px",
+                  marginTop: "5px",
+                  marginLeft: "385px",
                 }}
               >
                 <div

@@ -9,6 +9,8 @@ class USAITargetDeterminationState {
     GlobalGameState.currentPlayer = GlobalUnitsModel.Side.US
     console.log("++++++++++++++ US TARGET DETERMINATION")
     await selectTFTarget(GlobalInit.controller, stateObject)
+    GlobalGameState.rollDice = false
+    GlobalGameState.updateGlobalState()
     await delay(1000)
     GlobalGameState.rollDice = true
     GlobalGameState.updateGlobalState()

@@ -23,6 +23,7 @@ function DicePanel(props) {
     margin,
     showDice,
     doRoll,
+    displayDiceButton,
     closeButtonStr,
     image,
     sidebg,
@@ -84,10 +85,6 @@ function DicePanel(props) {
   if (margin) {
     myBigMargin = margin
   }
-
-
-  //   const sizey = numDice >= 4 ? "xl" : "lg"
-
   const closey = closeButtonStr ?? "Close"
   const diceButtonStr = numDice > 1 ? "Roll Dice" : "Roll Die"
   return (

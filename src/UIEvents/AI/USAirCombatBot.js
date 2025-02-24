@@ -1,5 +1,7 @@
 import GlobalUnitsModel from "../../model/GlobalUnitsModel"
 import GlobalGameState from "../../model/GlobalGameState"
+import { delay } from "../../DiceHandler"
+
 
 export async function selectTFTarget(controller) {
   // Priority:
@@ -58,7 +60,7 @@ function is1StepDiveBomber(unit) {
 }
 
 export async function allocateCAPDamageToAttackingStrikeUnit(strikeUnits) {
-  let originalUnits = JSON.parse(JSON.stringify(strikeUnits));
+  let originalUnits = JSON.parse(JSON.stringify(strikeUnits))
 
   // sort by combat strength first (for Midway planes)
   strikeUnits = strikeUnits.sort(function (a, b) {
@@ -77,8 +79,8 @@ export async function allocateCAPDamageToAttackingStrikeUnit(strikeUnits) {
         return 1
       } else if (is1StepFighter(a) && !is1StepFighter(b)) {
         return -1
-      } 
-      return b.aircraftUnit.strength - b.aircraftUnit.strength
+      }
+      return a.aircraftUnit.strength - b.aircraftUnit.strength
     })
 
     const index = originalUnits.findIndex((unit) => unit._name === sortedUnits[0].name)
@@ -129,4 +131,118 @@ export async function allocateCAPDamageToAttackingStrikeUnit(strikeUnits) {
   const unit = sortedUnits[0]
   return { unit, index }
   // return sortedUnits[0]
+}
+
+export async function allocateAAADamageToAttackingStrikeUnit(strikeUnits) {
+  let originalUnits = JSON.parse(JSON.stringify(strikeUnits))
+
+  // sort by combat strength only (for Midway planes)
+
+  if (strikeUnits[0].carrier === GlobalUnitsModel.Carrier.MIDWAY) {
+    const sortedUnits = strikeUnits.sort(function (a, b) {
+      return a.aircraftUnit.strength - b.aircraftUnit.strength
+    })
+    const index = originalUnits.findIndex((unit) => unit._name === sortedUnits[0].name)
+    const unit = sortedUnits[0]
+    return { unit, index }
+  }
+
+  // Priorities: (note no fighters)
+  // 1. 2-step tbds
+  // 2. 2-step SBDs
+  // 3. 1-step tbds
+  // 4. 1-step sbds
+
+  const sortedUnits = strikeUnits.sort(function (a, b) {
+    if (is2StepTorpedoPlane(a) && !is2StepTorpedoPlane(b)) {
+      return -1
+    } else if (!is2StepTorpedoPlane(a) && is2StepTorpedoPlane(b)) {
+      return 1
+    } else if (is2StepDiveBomber(a) && !is2StepDiveBomber(b)) {
+      return -1
+    } else if (!is2StepDiveBomber(a) && is2StepDiveBomber(b)) {
+      return 1
+    } else if (is1StepTorpedoPlane(a) && !is1StepTorpedoPlane(b)) {
+      return -1
+    } else if (!is1StepTorpedoPlane(a) && is1StepTorpedoPlane(b)) {
+      return 1
+    } else if (is1StepDiveBomber(a) && !is1StepDiveBomber(b)) {
+      return -1
+    } else if (!is1StepDiveBomber(a) && is1StepDiveBomber(b)) {
+      return 1
+    }
+    return 1
+  })
+
+  const index = originalUnits.findIndex((unit) => unit._name === sortedUnits[0].name)
+  const unit = sortedUnits[0]
+  return { unit, index }
+  // return sortedUnits[0]
+}
+
+export async function doTargetSelection(
+  controller,
+  strikeUnits,
+  defendingSide,
+  setAttackAirCounterUpdate,
+  testOneOrZero
+) {
+  // Prioties:
+  // 1. Carrier with most damage
+  // 2. Random if equal
+
+  let carrierTargets = new Array()
+  let index = 0
+  let oneOrZero
+  for (let unit of strikeUnits) {
+    let attackAirCounterUpdate
+    if (setAttackAirCounterUpdate) {
+      await delay(300)
+      GlobalGameState.testCarrierSelection = -1
+      GlobalGameState.updateGlobalState()
+      await delay(100)
+    }
+
+    const carriersInTF = controller.getAllNonSunkCarriersInTaskForce(GlobalGameState.taskForceTarget, defendingSide)
+
+    let originalCarriers = JSON.parse(JSON.stringify(carriersInTF))
+
+    // sort by damage
+    let carriers = carriersInTF.sort(function (a, b) {
+      return b.hits - a.hits
+    })
+
+    console.log(">>>>> CARRIERS=", carriers)
+
+    if (testOneOrZero && carriers[0].hits === 0) {
+      oneOrZero = testOneOrZero[index++]
+    } else {
+      oneOrZero = Math.random() >= 0.5 ? 1 : 0
+    }
+    let carrier = carriersInTF[oneOrZero]
+
+    if (carriers[0].hits > 0) {
+      console.log(">>>>> SET CARRIER TARGET TO", carriers[0])
+
+      carrier = carriers[0]
+      oneOrZero = originalCarriers.findIndex((unit) => unit._name === carriersInTF[0].name)
+    }
+    const uuid = Date.now()
+    attackAirCounterUpdate = {
+      unit,
+      carrier: carrier.name,
+      id: oneOrZero + 1,
+      side: GlobalGameState.sideWithInitiative,
+      uuid,
+    }
+    carrierTargets.push(carrier.name)
+    if (!testOneOrZero) {
+      setAttackAirCounterUpdate(attackAirCounterUpdate)
+      await delay(10)
+
+      GlobalGameState.updateGlobalState()
+      await delay(1000)
+    }
+  }
+  return carrierTargets
 }

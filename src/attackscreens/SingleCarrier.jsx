@@ -99,8 +99,8 @@ export function SingleCarrier({ controller }) {
       GlobalGameState.currentCarrierAttackTarget
     )
   }
-  console.log("DEBUG GlobalGameState.currentCarrierAttackTarget=", GlobalGameState.currentCarrierAttackTarget)
-  console.log("DEBUG carrierTarget=", carrierTarget)
+  // console.log("DEBUG GlobalGameState.currentCarrierAttackTarget=", GlobalGameState.currentCarrierAttackTarget)
+  // console.log("DEBUG carrierTarget=", carrierTarget)
 
   const createImage = (image, left, top) => {
     return (
@@ -156,7 +156,7 @@ export function SingleCarrier({ controller }) {
 
       // const top = "" + (-8 + location.boxIndex * -66) + "px"
       const top = "" + (-74 + location.boxIndex * 66) + "px"
-      return <div>{createImage(airUnit.image, "25.2%", top)}</div>
+      return <div>{createImage(airUnit.image, "26.5%", top)}</div>
     })
   }
   let c1bowDamage, c1sternDamage

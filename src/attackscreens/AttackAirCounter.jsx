@@ -30,6 +30,7 @@ function AirAttackCounter({
   const [uuid, setUUid] = useState()
 
   const setUSAttackAirUnit = (airUnit, carrier, index) => {
+
     // if unit was previously assigned the other carrier - remove from map
     controller.removeAirUnitTarget(airUnit)
     controller.setAirUnitTarget(airUnit, carrier)
@@ -42,6 +43,7 @@ function AirAttackCounter({
 
     if (i == j) {
       const targets = controller.getAttackTargets()
+      console.log("++++++++++ QUACK 3 set carrierTarget1 to", targets[0])
       GlobalGameState.carrierTarget1 = targets[0]
       if (targets.length === 2) {
         GlobalGameState.carrierTarget2 = targets[1]
@@ -49,21 +51,52 @@ function AirAttackCounter({
       // all units allocated a target
       setAttackTargetsSelected(() => true)
     }
-    const top = size === 1 ? "57%" : "52%"
-    let left
+    // const top = size === 1 ? "57%" : "52%"
+    let left, top
     // idx is carrier 1 or 2
+    
+    console.log(">>>>>>>>>>>>>>>>>>> CARRIER INDEX=", index)
+
+    // index 1 is left carrier, 2 is right carrier
     if (index === 1) {
-      left = size === 1 ? "10.4%" : "13.4%"
+      // left = size === 1 ? "10.4%" : "13.4%"
+      if (size === 1) {
+        left = "10.4%"
+        top = "57%"
+      } else if (size === 2) {
+        left = "11.9%" 
+        top = "54.5%"
+      } else {
+        left = "13.4%"
+        top = "52%"
+      }
     } else {
-      left = size === 1 ? "75.4%" : "78.4%"
+      // left = size === 1 ? "75.4%" : "78.4%"
+      // left = size === 1 ? "75.4%" : "78.4%"
+      if (size === 1) {
+        left = "75.4%"
+        top = "57%"
+      } else if (size === 2) {
+        left = "76.9%" 
+        top = "54.5%"
+      } else {
+        left = "78.4%"
+        top = "52%"
+      }
     }
 
+    console.log("UNIT:", airUnit.name, "LEFT=", left)
     setPosition(() => ({
       left: left,
       top: top,
     }))
-    if (size === 2) {
-      setZindex(() => zIndex + 1)
+    // if (size === 2) {
+    //   setZindex(() => zIndex + 1)
+    // }
+    if (size > 1) {
+      setZindex(() => size * 10)
+    } else {
+      setZindex(() => 5)
     }
   }
   const setJapanAttackAirUnit = (airUnit, carrier, index) => {
@@ -79,6 +112,7 @@ function AirAttackCounter({
 
     if (i == j) {
       const targets = controller.getAttackTargets()
+      console.log("++++++++++ QUACK 2 set carrierTarget1 to", targets[0])
       GlobalGameState.carrierTarget1 = targets[0]
       if (targets.length === 2) {
         GlobalGameState.carrierTarget2 = targets[1]
@@ -113,7 +147,7 @@ function AirAttackCounter({
     myIdx !== attackAirCounterUpdate && 
     uuid !== attackAirCounterUpdate.uuid
   ) {
-    // console.log("I am ", airUnit.name, " -> ATTACK AIR COUNTER UPDATE = ", attackAirCounterUpdate)
+    console.log("I am ", airUnit.name, " -> ATTACK AIR COUNTER UPDATE = ", attackAirCounterUpdate)
 
     if (attackAirCounterUpdate.side === GlobalUnitsModel.Side.US) {
       setUSAttackAirUnit(attackAirCounterUpdate.unit, attackAirCounterUpdate.carrier, attackAirCounterUpdate.id)

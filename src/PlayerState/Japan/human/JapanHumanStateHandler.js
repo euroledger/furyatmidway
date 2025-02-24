@@ -20,7 +20,7 @@ class JapanHumanStateHandler extends PlayerStateHandler {
 
   async doNextState() {
     console.log("POPCORN: this.currentState=", this.currentState)
-    this.currentState = await this.currentState.nextState(this.stateObject)
+    this.currentState = await this.currentState.nextState(this.stateObject) ?? this.currentState
     console.log("POPCORN 2 AFTER: this.currentState=", this.currentState)
 
   }

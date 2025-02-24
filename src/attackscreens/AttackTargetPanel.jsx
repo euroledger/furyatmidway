@@ -23,7 +23,7 @@ export function AttackTargetHeaders({ controller, setAttackTargetsSelected, atta
   }
 
   const airCounters = unitsInGroup.map((airUnit, index) => {
-    const left = base + (10 * index)
+    const left = base + 10 * index
     return (
       <AirAttackCounter
         style={{
@@ -43,6 +43,13 @@ export function AttackTargetHeaders({ controller, setAttackTargetsSelected, atta
   const handleDragEnter = (e, carrier, idx) => {
     setMyCarrier(carrier)
     setMyIdx(idx)
+  }
+  let selectMsg = "Select a target to attack for each air unit (drag to target)"
+  if (
+    GlobalGameState.sideWithInitiative === GlobalUnitsModel.Side.US &&
+    GlobalGameState.usPlayerType === GlobalUnitsModel.TYPE.AI
+  ) {
+    selectMsg = `${GlobalGameState.sideWithInitiative} selects targets to attack for each air unit`
   }
   return (
     <div
@@ -68,7 +75,7 @@ export function AttackTargetHeaders({ controller, setAttackTargetsSelected, atta
           marginTop: "100px",
         }}
       >
-        Select a target to attack for each air unit (drag to target)
+        {selectMsg}
       </p>
       <CarrierTarget controller={controller} handleDragEnter={handleDragEnter}></CarrierTarget>
       <p
@@ -81,7 +88,7 @@ export function AttackTargetHeaders({ controller, setAttackTargetsSelected, atta
       >
         {message1} &nbsp;<strong>{myCarrier}</strong>&nbsp;
       </p>
-     </div>
+    </div>
   )
 }
 

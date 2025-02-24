@@ -677,3 +677,90 @@ export async function endOfAirOperation(capAirUnits, setAirUnitUpdate, setElimin
   }
   return false
 }
+
+export function displayAttackTargetPanel(controller) {
+  if (
+    GlobalGameState.taskForceTarget === GlobalUnitsModel.TaskForce.JAPAN_DMCV ||
+    GlobalGameState.taskForceTarget === GlobalUnitsModel.TaskForce.US_DMCV
+  ) {
+    return false
+  }
+  if (GlobalGameState.taskForceTarget === GlobalUnitsModel.TaskForce.MIF) {
+    return false
+  }
+  if (
+    GlobalGameState.taskForceTarget === GlobalUnitsModel.TaskForce.TASK_FORCE_17 ||
+    GlobalGameState.taskForceTarget === GlobalUnitsModel.TaskForce.MIDWAY
+  ) {
+    return false
+  }
+
+  if (GlobalGameState.taskForceTarget === GlobalUnitsModel.TaskForce.CARRIER_DIV_1) {
+    if (
+      GlobalGameState.jpDMCVCarrier === GlobalUnitsModel.Carrier.AKAGI ||
+      GlobalGameState.jpDMCVCarrier === GlobalUnitsModel.Carrier.KAGA
+    ) {
+      return false
+    }
+    if (controller.isSunk(GlobalUnitsModel.Carrier.AKAGI) || controller.isSunk(GlobalUnitsModel.Carrier.KAGA)) {
+      return false
+    }
+  }
+
+  if (GlobalGameState.taskForceTarget === GlobalUnitsModel.TaskForce.CARRIER_DIV_2) {
+    if (
+      GlobalGameState.jpDMCVCarrier === GlobalUnitsModel.Carrier.HIRYU ||
+      GlobalGameState.jpDMCVCarrier === GlobalUnitsModel.Carrier.SORYU
+    ) {
+      return false
+    }
+    if (controller.isSunk(GlobalUnitsModel.Carrier.HIRYU) || controller.isSunk(GlobalUnitsModel.Carrier.SORYU)) {
+      return false
+    }
+  }
+
+  if (GlobalGameState.taskForceTarget === GlobalUnitsModel.TaskForce.TASK_FORCE_16) {
+    if (
+      GlobalGameState.jpDMCVCarrier === GlobalUnitsModel.Carrier.ENTERPRISE ||
+      GlobalGameState.jpDMCVCarrier === GlobalUnitsModel.Carrier.HORNET
+    ) {
+      return false
+    }
+    if (controller.isSunk(GlobalUnitsModel.Carrier.ENTERPRISE) || controller.isSunk(GlobalUnitsModel.Carrier.HORNET)) {
+      return false
+    }
+  }
+  return true
+}
+
+export async function removeDMCVFleetForCarrier(side, setFleetUnitUpdate) {
+  let update1 = {
+    position: {},
+  }
+  let update2 = {
+    position: {},
+  }
+
+  update1.position.currentHex = HexCommand.OFFBOARD
+  update2.position.currentHex = HexCommand.OFFBOARD
+
+  if (side === GlobalUnitsModel.Side.US) {
+    update1.name = "US-DMCV-JPMAP"
+    update2.name = "US-DMCV"
+  } else {
+    update1.name = "IJN-DMCV-USMAP"
+    update2.name = "IJN-DMCV"
+  }
+  update1.initial = false
+  update2.initial = false
+
+  setFleetUnitUpdate(update1)
+  await delay(1)
+  setFleetUnitUpdate(update2)
+  await delay(1)
+  setFleetUnitUpdate({
+    name: "",
+    position: {},
+  }) // reset to avoid updates causing problems for other markers
+}
+
