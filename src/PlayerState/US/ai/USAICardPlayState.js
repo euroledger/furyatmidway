@@ -19,6 +19,7 @@ class USAICardPlayState {
     const { cardNumber } = stateObject
     this.cardNumber = cardNumber
 
+    console.log("US AI Card Play: DETERMINE WHETHER OR NOT TO PLAY CARD NUMBER", cardNumber)
     const playThisCard = playCardAction(GlobalInit.controller, cardNumber)
 
     console.log("playThisCard=", playThisCard)

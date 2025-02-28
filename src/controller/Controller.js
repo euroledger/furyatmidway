@@ -891,6 +891,18 @@ export default class Controller {
     const x = new Map([...this.targetMap].filter(([_, v]) => v === carrier))
     return Array.from(x.keys())
   }
+
+  attackAircraftOnDeckForNamedCarrier(side, carrier) {
+    const flightDeckBox = this.airOperationsModel.getAirBoxForNamedShip(
+      side,
+      carrier,
+      "FLIGHT"
+    )
+    let boxName = Object.values(flightDeckBox)[0]
+    const attackUnitsOnFlightDeck = this.getAttackAircraftInBox(boxName)
+    return attackUnitsOnFlightDeck.length > 0
+  }
+
   attackAircraftOnDeck() {
     const side = GlobalUnitsModel.carrierSideMap.get(GlobalGameState.currentCarrierAttackTarget)
     const flightDeckBox = this.airOperationsModel.getAirBoxForNamedShip(
@@ -1363,10 +1375,7 @@ export default class Controller {
 
   anyFightersInStrikeGroup(name) {
     const units = this.getAirUnitsInStrikeGroups(name)
-    console.log("UNITS IN SG FOR BOX", name, "=>", units)
     const fighters = units.filter((airUnit) => !airUnit.aircraftUnit.attack)
-    console.log("fighters.len=", fighters.length)
-
     return fighters.length > 0
   }
 
@@ -1413,6 +1422,7 @@ export default class Controller {
       if (!airUnit) {
         return index
       }
+      console.log("BOX:", boxName, "AIR UNIT->", airUnit.name)
     }
     // box is full - return -1
     return -1

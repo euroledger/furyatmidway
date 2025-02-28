@@ -153,15 +153,17 @@ async function moveAirUnitToHangar({ controller, unit, setTestUpdate, test, box,
 
 async function moveAirUnitToStrikeGroup({ controller, unit, setTestUpdate, test, strikeBox }) {
   await delay(40)
-  console.log("MOVE TO STRIKE BOX->", unit.name)
   const airBox = strikeBox ?? getNextAvailableStrikeBox(controller, GlobalUnitsModel.Side.US)
   const update = {
     name: unit.name,
     boxName: airBox,
   }
-
   update.index = controller.getFirstAvailableZone(update.boxName)
   let position1 = USAirBoxOffsets.find((box) => box.name === update.boxName)
+
+  if (position1 === undefined) {
+    return // this can happen in rare situation where all strike boxes are used up
+  }
   update.position = position1.offsets[update.index]
   console.log("Send Air Unit update:", update)
 
@@ -199,7 +201,7 @@ async function moveStrikeGroup(controller, unit, fromHex, toHex, setStrikeGroupU
   await delay(DELAY_MS)
 }
 async function hangarToFlightDeck({ controller, unit, setTestUpdate, test }) {
-  await delay (10)
+  await delay(10)
   // 7b. Get valid destinations for units in Hangar
   // 7c. Move Units from Hangar to Flight Deck
   setValidDestinationBoxes(controller, unit.name, GlobalUnitsModel.Side.US)
@@ -220,8 +222,53 @@ async function hangarToFlightDeck({ controller, unit, setTestUpdate, test }) {
   }
 }
 
+async function moveAirUnit(controller, unit, setTestUpdate) {
+  setValidDestinationBoxes(controller, unit.name, GlobalUnitsModel.Side.US)
+
+  const destBoxes = controller.getValidAirUnitDestinations(unit.name)
+
+  console.log("UNIT", unit.name, "destBoxes=", destBoxes)
+  if (destBoxes.length === 0) {
+    // this can only happen if all carriers sunk, leave for now
+    return
+  }
+
+  // TODO Decide on best destination!! not just first one
+
+  // go to first available destination
+  let update = {
+    name: unit.name,
+    boxName: destBoxes[0],
+  }
+
+  const position1 = USAirBoxOffsets.find((box) => box.name === update.boxName)
+  update.index = controller.getFirstAvailableZone(update.boxName)
+  if (position1 === undefined) {
+    console.log("ERROR: position1 undefined in return strike units")
+    return
+  }
+  update.position = position1.offsets[update.index]
+
+  await delay(1)
+
+  setTestUpdate(update)
+  await delay(1)
+}
+
 export async function generateUSAirOperationsMovesCarriers(controller, stateObject, test) {
   const { setTestUpdate } = stateObject
+
+  // Get all air units in Return Boxes - do this first to free up strike boxes
+  let units = controller.getAirUnitsInStrikeBoxesReadyToReturn(GlobalGameState.sideWithInitiative)
+  if (units.length > 0) {
+    for (let unit of units) {
+      if (unit.aircraftUnit.moved) {
+        continue
+      }
+      console.log("DO RETURN MOVE FOR UNIT->", unit)
+      await moveAirUnit(controller, unit, setTestUpdate)
+    }
+  }
 
   // for each air unit that we wish to move generate an array of destination boxes
   // (21 element vector, one for each air unit (3 x 5 carrier air units, 6 for Midway do not include B17))
@@ -388,7 +435,6 @@ export async function generateUSAirOperationsMovesCarriers(controller, stateObje
     await hangarToFlightDeck({ controller, unit, setTestUpdate, test })
   }
 
-  // 8a. Get all air units in Return Boxes
   // 8b. Get valid destinations for units in Return Boxes
   // 8c. Move Units in Return Boxes to next Return Box or Hangar
 
@@ -420,36 +466,21 @@ export function sortStrikeGroups(controller, strikeUnits) {
   }
 
   const sortedUnits = strikeUnitSortedProperties.sort(function (a, b) {
-    console.log("COMPARE", a.name, "AND", b.name)
     if (a.name.includes("Midway") && !b.name.includes("Midway")) {
-      console.log("QUACK 1")
       return 1
     } else if (!a.name.includes("Midway") && b.name.includes("Midway")) {
-      console.log("QUACK 2")
-
       return -1
     } else if (controller.anyFightersInStrikeGroup(a.box) && !controller.anyFightersInStrikeGroup(b.box)) {
-      console.log("QUACK 3")
-
       return -1
     } else if (!controller.anyFightersInStrikeGroup(a.box) && controller.anyFightersInStrikeGroup(b.box)) {
-      console.log("QUACK 4")
-
       return -1
     } else if (a.units.length === 2 && b.units.length !== 2) {
-      console.log("QUACK 5")
-
       return -1
     } else if (a.units.length !== 2 && b.units.length === 2) {
-      console.log("QUACK 6")
-
       return 1
     }
-    console.log("QUACK 100")
     return -1
   })
-
-  console.log(">>>>>>>>>>>>>>>>>>>>>>>>>>>>>> *************** SORTED UNITS=", sortedUnits)
   return sortedUnits
 }
 
@@ -761,6 +792,9 @@ export async function generateUSAirOperationsMovesMidway(controller, stateObject
     setValidDestinationBoxes(controller, unit.name, GlobalUnitsModel.Side.US)
 
     const destinations = controller.getValidAirUnitDestinations(unit.name)
+
+    console.log("(MIDWAY) VALID DESTINATIONS FOR", unit.name, "->", destinations)
+
     const unitsOnCarrierFlighftDeck = controller.getAllUnitsOnUSFlightDeckofNamedCarrier("Midway")
 
     if (unitsOnCarrierFlighftDeck.length === 1) {

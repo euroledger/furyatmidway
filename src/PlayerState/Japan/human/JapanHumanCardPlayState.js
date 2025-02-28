@@ -17,7 +17,6 @@ class JapanHumanCardPlayState {
 
     console.log("GRABBAGE NEXT STATE FROM JAPAN CARD PLAY cardNumber=", cardNumber)
     await setNextStateFollowingCardPlay(stateObject)
-    GlobalGameState.gamePhase = GlobalGameState.PHASE.END_OF_AIR_OPERATION
   }
 
   getState() {

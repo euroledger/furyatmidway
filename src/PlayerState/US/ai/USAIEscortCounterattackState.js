@@ -1,18 +1,20 @@
 import GlobalGameState from "../../../model/GlobalGameState"
 import GlobalInit from "../../../model/GlobalInit"
-import { endOfAirOperation, midwayOrAirOps } from "../../StateUtils"
+import { endOfAirOperation, midwayOrAirOps, rollZeDice } from "../../StateUtils"
 import GlobalUnitsModel from "../../../model/GlobalUnitsModel"
 
 class USAIEscortCounterattackState {
   async doAction(stateObject) {
     console.log("++++++++++++++ US ESCORT COUNTERATTACK...")
+    await rollZeDice()
   }
 
   async nextState(stateObject) {
     console.log("END OF ESCORT_COUNTERATTACK")
 
     if (GlobalGameState.fighterHits > 0) {
-      console.log("GOING TO ECORT DAMAGE ALLOCATION")
+      console.log("GOING TO ESCORT DAMAGE ALLOCATION")
+      GlobalGameState.currentPlayer = GlobalUnitsModel.Side.JAPAN
       GlobalGameState.gamePhase = GlobalGameState.PHASE.ESCORT_DAMAGE_ALLOCATION
     } else {
       if (GlobalInit.controller.getAttackingStepsRemaining() > 0) {

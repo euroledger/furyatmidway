@@ -100,6 +100,7 @@ export function doIntiativeRoll(controller, roll0, roll1, showDice) {
   } else {
     GlobalGameState.airOpUS++
   }
+  GlobalGameState.currentPlayer = GlobalGameState.sideWithInitiative
   controller.viewEventHandler({
     type: Controller.EventTypes.INITIATIVE_ROLL,
     data: {
@@ -792,7 +793,7 @@ export function doAttackFireRolls(controller, testRolls) {
       index++
     }
   }
-  // Note: Cannot inflict more than two hits on <idway in any one attack
+  // Note: Cannot inflict more than two hits on Midway in any one attack
   if (GlobalGameState.currentCarrierAttackTarget === GlobalUnitsModel.Carrier.MIDWAY) {
     GlobalGameState.midwayHits = Math.min(2, hits)
     GlobalGameState.midwayHitsThisAttack = Math.min(2, hits)
@@ -808,8 +809,8 @@ export function doAttackFireRolls(controller, testRolls) {
     GlobalGameState.carrierAttackHitsThisAttack = hits
 
     // QUACK REMOVE TEESTING ONLY
-    // GlobalGameState.carrierAttackHits = 1
-    // GlobalGameState.carrierAttackHitsThisAttack = 1
+    // GlobalGameState.carrierAttackHits = 2
+    // GlobalGameState.carrierAttackHitsThisAttack = 2
   }
   return hits
 }
@@ -1117,7 +1118,7 @@ export function doCAP(controller, capAirUnits, fightersPresent, testRolls) {
   GlobalGameState.dieRolls = rolls
 
   // QUACK TESTING PUT THIS BACK
-  // GlobalGameState.capHits = 1
+  // GlobalGameState.capHits = 4
 
   GlobalGameState.capHits = hits
 }

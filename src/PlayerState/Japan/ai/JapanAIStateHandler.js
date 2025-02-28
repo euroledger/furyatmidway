@@ -22,7 +22,8 @@ class JapanAIStateHandler extends PlayerStateHandler {
     this.finishStateChange()
   }
 
-  async doNextState() {
+  async doNextState(stateObject) {
+    this.stateObject = stateObject ?? this.stateObject
     console.log("MARSHMALLOWS: this.currentState=", this.currentState)
     this.currentState.nextState(this.stateObject)
     console.log("MARSHMALLOWS 2 AFTER: this.currentState=", this.currentState)

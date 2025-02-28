@@ -85,7 +85,6 @@ function AirAttackCounter({
       }
     }
 
-    console.log("UNIT:", airUnit.name, "LEFT=", left)
     setPosition(() => ({
       left: left,
       top: top,

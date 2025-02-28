@@ -5,26 +5,24 @@ import { delay } from "../../../Utils"
 import { endOfAirOperation } from "../../StateUtils"
 import { removeDMCVFleetForCarrier } from "../../StateUtils"
 
-
 class USAIAttackDamageResolutionState {
   async doAction(stateObject) {
     console.log("++++++++++++++ US Attack Damage Resolution")
 
     if (GlobalGameState.carrierAttackHits === 1) {
       // roll one die
-      await delay(100)
       GlobalGameState.rollDice = false
       GlobalGameState.updateGlobalState()
 
       await delay(300)
       GlobalGameState.rollDice = true
       GlobalGameState.updateGlobalState()
-      await delay(300)
+      await delay(1)
     }
   }
 
   async nextState(stateObject) {
-    const { capAirUnits,  setAirUnitUpdate, setEliminatedUnitsPanelShow, setFleetUnitUpdate } = stateObject
+    const { capAirUnits, setAirUnitUpdate, setEliminatedUnitsPanelShow, setFleetUnitUpdate } = stateObject
     console.log("MOVE ON FROM US AI ATTACK DAMGE RESOLUTION")
 
     // check for card 13 critical hit
@@ -59,11 +57,7 @@ class USAIAttackDamageResolutionState {
       if (GlobalGameState.carrierTarget2 !== "" && GlobalGameState.carrierTarget2 !== undefined) {
         GlobalGameState.gamePhase = GlobalGameState.PHASE.AIR_ATTACK_2
       } else {
-        await endOfAirOperation(
-          capAirUnits,
-          setAirUnitUpdate,
-          setEliminatedUnitsPanelShow
-        )
+        await endOfAirOperation(capAirUnits, setAirUnitUpdate, setEliminatedUnitsPanelShow)
         GlobalGameState.gamePhase = GlobalGameState.PHASE.AIR_OPERATIONS
       }
     }

@@ -10,7 +10,7 @@ class JapanHumanCapInterceptionState {
   async nextState(stateObject) {
     const { capSteps, capAirUnits, setAirUnitUpdate, setEliminatedUnitsPanelShow } = stateObject
 
-    console.log("MOVE ON FROM JAPAN CAP INTERCEPTION!")
+    console.log("MOVE ON FROM JAPAN CAP INTERCEPTION! capSteps=", capSteps, "CAP AIR UNITS=", capAirUnits)
 
     // TODO move logic from GameStateHandler here...
     console.log("STATE CHANGE CAP -> AAA FIRE OR ESCORT COUNTERATTACK OR CAP DAMAGE")

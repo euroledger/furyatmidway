@@ -3,17 +3,14 @@ import GlobalUnitsModel from "../../../model/GlobalUnitsModel"
 import { selectTFTarget } from "../../../UIEvents/AI/USAirCombatBot"
 import GlobalInit from "../../../model/GlobalInit"
 import { delay } from "../../../Utils"
+import { rollZeDice } from "../../StateUtils"
 
 class USAITargetDeterminationState {
   async doAction(stateObject) {
     GlobalGameState.currentPlayer = GlobalUnitsModel.Side.US
     console.log("++++++++++++++ US TARGET DETERMINATION")
     await selectTFTarget(GlobalInit.controller, stateObject)
-    GlobalGameState.rollDice = false
-    GlobalGameState.updateGlobalState()
-    await delay(1000)
-    GlobalGameState.rollDice = true
-    GlobalGameState.updateGlobalState()
+    rollZeDice()
   }
 
   async nextState(stateObject) {

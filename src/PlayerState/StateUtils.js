@@ -7,6 +7,8 @@ import { calculateSearchResults, calculateSearchValues } from "../model/SearchVa
 import { delay } from "../Utils"
 import { japanAF1StartHexesMidway, japanAF1StartHexesNoMidway } from "../components/MapRegions"
 import HexCommand from "../commands/HexCommand"
+import { setUpAirAttack } from "../controller/AirAttackHandler"
+
 import {
   setStrikeGroupAirUnitsToNotMoved,
   resetStrikeGroups,
@@ -286,6 +288,7 @@ export async function usFleetMovementNextStateHandler({
   setJpFleet,
   setUsFleet,
   setCardNumber,
+  cardNumber,
   setSearchValues,
   setSearchResults,
 }) {
@@ -308,6 +311,7 @@ export async function usFleetMovementNextStateHandler({
     } else {
       if (GlobalInit.controller.usHandContainsCard(7)) {
         setCardNumber(() => 7)
+        console.log("US HAS CARD 7 so GO TO CARD_PLAY!!! cardNumber=", cardNumber)
         GlobalGameState.gamePhase = GlobalGameState.PHASE.CARD_PLAY
       } else {
         calcAirOpsPoints({ setSearchValues, setSearchResults })
@@ -469,6 +473,7 @@ export async function setNextStateFollowingCardPlay(stateObject) {
     setAirUnitUpdate,
     setStrikeGroupUpdate,
     setFleetUnitUpdate,
+    setUsFleetRegions,
   } = stateObject
   GlobalGameState.dieRolls = []
 
@@ -483,6 +488,12 @@ export async function setNextStateFollowingCardPlay(stateObject) {
         if (isMidwayAttackPossible()) {
           GlobalGameState.gamePhase = GlobalGameState.PHASE.JAPAN_MIDWAY
           return
+        } else {
+          GlobalGameState.gamePhase = GlobalGameState.PHASE.US_FLEET_MOVEMENT_PLANNING
+          GlobalGameState.usFleetMoved = false
+          setUsFleetRegions()
+          GlobalGameState.phaseCompleted = true
+          F
         }
       }
       if (
@@ -510,8 +521,23 @@ export async function setNextStateFollowingCardPlay(stateObject) {
     case 10:
       // US Carrier Planes Ditch
       GlobalGameState.isFirstAirOp = true
-      GlobalGameState.gamePhase = GlobalGameState.PHASE.AIR_SEARCH
+      // GlobalGameState.gamePhase = GlobalGameState.PHASE.AIR_SEARCH
+      GlobalGameState.gamePhase = GlobalGameState.PHASE.END_OF_AIR_OPERATION
+
       tidyUp(setAirUnitUpdate, setStrikeGroupUpdate, setFleetUnitUpdate)
+      break
+
+    case 11:
+      // US Strike Lost
+      // if the card was played we go back to AIR OPERATIONS
+      // otherwise TARGET DETERMINATION
+      setCardNumber(() => -1) // reset for next card play
+      if (GlobalInit.controller.getCardPlayed(11, GlobalUnitsModel.Side.JAPAN)) {
+        GlobalGameState.gamePhase = GlobalGameState.PHASE.AIR_OPERATIONS
+      } else {
+        GlobalGameState.currentPlayer = GlobalGameState.sideWithInitiative
+        setUpAirAttack(GlobalInit.controller, location, GlobalGameState.attackingStrikeGroup, setCardNumber, true)
+      }
       break
     default:
       console.log("ERROR unknown card number: ", cardNumber)
@@ -665,9 +691,9 @@ export async function endOfAirOperation(capAirUnits, setAirUnitUpdate, setElimin
   await moveOrphanedCAPUnitsToEliminatedBox(sideBeingAttacked)
   await moveOrphanedAirUnitsInReturn1Boxes(sideBeingAttacked)
 
-  if (GlobalGameState.orphanedAirUnits.length > 0) {
-    setEliminatedUnitsPanelShow(true)
-  }
+  // if (GlobalGameState.orphanedAirUnits.length > 0) {
+  //   setEliminatedUnitsPanelShow(true)
+  // }
   // 2. CHECK ALL INTERCEPTING CAP UNITS HAVE RETURNED TO CARRIERS
 
   const capUnitsReturning = GlobalInit.controller.getAllCAPDefendersInCAPReturnBoxes(sideBeingAttacked)
@@ -764,3 +790,12 @@ export async function removeDMCVFleetForCarrier(side, setFleetUnitUpdate) {
   }) // reset to avoid updates causing problems for other markers
 }
 
+export async function rollZeDice() {
+  await delay(300)
+  GlobalGameState.rollDice = false
+  GlobalGameState.updateGlobalState()
+
+  await delay(1)
+  GlobalGameState.rollDice = true
+  GlobalGameState.updateGlobalState()
+}

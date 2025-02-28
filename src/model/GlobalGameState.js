@@ -30,6 +30,7 @@ export default class GlobalGameState {
     AIR_SEARCH: "Search Phase",
     INITIATIVE_DETERMINATION: "Initiative Determination",
     AIR_OPERATIONS: "Air Operations Phase",
+    CAP_RETURN:"CAP Air Units Return",
     END_OF_AIR_OPERATION: "Air Operations Tidy Up",
     END_OF_TURN: "End of Turn",
     END_OF_GAME: "End of Game",
@@ -192,6 +193,7 @@ export default class GlobalGameState {
 
   static gamePhase = ""
   static temporaryGamePhase = ""
+  static onlycap = false
 
   // static setupPhase = 6; // tmp put back to 0
   static setupPhase = 0; // tmp put back to 0

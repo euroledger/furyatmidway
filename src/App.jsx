@@ -469,13 +469,6 @@ export function App() {
  
 
   useEffect(() => {
-    if (GlobalGameState.gamePhase === GlobalGameState.PHASE.ESCORT_DAMAGE_ALLOCATION) {
-      setEliminatedSteps(0)
-      setDamageAllocationPanelShow(true)
-    }
-  }, [GlobalGameState.gamePhase])
-
-  useEffect(() => {
     if (GlobalGameState.gamePhase === GlobalGameState.PHASE.END_OF_TURN) {
       GlobalGameState.JP_AF = 6 // in case card 6 was played
     }
@@ -492,6 +485,20 @@ export function App() {
   }, [GlobalGameState.gamePhase])
 
   // // NEW AI-HUMAN SIDE EFFECTS....
+  useEffect(() => {
+    if (GlobalGameState.gamePhase === GlobalGameState.PHASE.CAP_RETURN) {
+      doStateChange()
+    }
+  }, [GlobalGameState.gamePhase])
+
+  useEffect(() => {
+    if (GlobalGameState.gamePhase === GlobalGameState.PHASE.ESCORT_DAMAGE_ALLOCATION) {
+      setEliminatedSteps(0)
+      setDamageAllocationPanelShow(true)
+      doStateChange()
+    }
+  }, [GlobalGameState.gamePhase])
+
   useEffect(() => {
     if (GlobalGameState.gamePhase === GlobalGameState.PHASE.AIR_ATTACK_2) {
       GlobalGameState.carrierAttackHits = 0
@@ -586,15 +593,8 @@ export function App() {
       GlobalInit.controller.setAllDefendersToNotIntercepting()
       GlobalGameState.dieRolls = []
       GlobalGameState.capHits = 0
-      console.log("CAP INTERCEPTION current player=", GlobalGameState.currentPlayer)
-      
-      if (GlobalGameState.currentPlayer === GlobalUnitsModel.Side.US) {
-        StateManager.gameStateManager.setUSState(stateObject)
-        StateManager.gameStateManager.doAction(GlobalUnitsModel.Side.US, stateObject) // Used by AI
-      } else {
-        StateManager.gameStateManager.setJapanState(stateObject)
-        StateManager.gameStateManager.doAction(GlobalUnitsModel.Side.JAPAN, stateObject) // only used by AI
-      }
+      console.log("CAP INTERCEPTION current player=", GlobalGameState.currentPlayer)      
+      doStateChange()
     }
   }, [GlobalGameState.gamePhase])
   
@@ -605,13 +605,7 @@ export function App() {
       setTargetPanelShow(true)
       GlobalGameState.dieRolls = []
       GlobalGameState.capHits = undefined
-      if (GlobalGameState.currentPlayer === GlobalUnitsModel.Side.US, stateObject) {
-        StateManager.gameStateManager.setUSState(stateObject)
-        StateManager.gameStateManager.doAction(GlobalUnitsModel.Side.US, stateObject)
-      } else {
-        StateManager.gameStateManager.setJapanState(stateObject)
-        StateManager.gameStateManager.doAction(GlobalUnitsModel.Side.JAPAN, stateObject)
-      }
+      doStateChange()
     }
   }, [GlobalGameState.gamePhase])
 
@@ -629,7 +623,6 @@ export function App() {
 
   useEffect(() => {
     if (GlobalGameState.gamePhase === GlobalGameState.PHASE.JAPAN_CARD_DRAW) {
-      console.log("QUACK 1")
       StateManager.gameStateManager.setJapanState(stateObject)
       StateManager.gameStateManager.doAction(GlobalUnitsModel.Side.JAPAN, stateObject)
     }
@@ -734,6 +727,7 @@ export function App() {
     if (GlobalGameState.gamePhase === GlobalGameState.PHASE.CARD_PLAY) {
       setEliminatedSteps(0)
       setHeaderText("Possible Card Play: Card #" + cardNumber)
+      console.log("useEffect POSSIBLE CARD PLAY: cardNumber=", cardNumber)
       GlobalGameState.dieRolls = []
       if (cardNumber === 2 || cardNumber === 4) {
         setDamagedCV("")
@@ -750,13 +744,13 @@ export function App() {
         // nextAction()
       }
     }
-  }, [GlobalGameState.gamePhase, cardNumber])
+  }, [cardNumber])
 
   useEffect(() => {
     if (GlobalGameState.gamePhase === GlobalGameState.PHASE.INITIATIVE_DETERMINATION) {
       GlobalGameState.dieRolls = []
       GlobalGameState.sideWithInitiative = undefined
-
+      setTargetSelected(false)
       // TODO AI vs AI needs adjusting
       if (displayScreen) {
         setInitiativePanelShow(true)
@@ -771,6 +765,7 @@ export function App() {
 
   useEffect(() => {
     if (GlobalGameState.gamePhase === GlobalGameState.PHASE.AIR_OPERATIONS) {
+      console.log("++++++++++++++ GOT A STATE CHANGE NOW IN AIR OPERATIONS.............++++++++++++++")
       GlobalGameState.phaseCompleted = false
       GlobalGameState.nextActionButtonDisabled = true
       setEnabledUSReorgBoxes(false)
@@ -786,6 +781,7 @@ export function App() {
         setUsStrikePanelEnabled(true) // for now. Move this in due course (only display for humans)
         StateManager.gameStateManager.doNextState(GlobalUnitsModel.Side.US)
       } else {
+        console.log("SET JAPAN STATE...(AIR OPERATIONS)")
         StateManager.gameStateManager.setJapanState(stateObject)
         StateManager.gameStateManager.doAction(GlobalUnitsModel.Side.JAPAN, stateObject)
         setJapanStrikePanelEnabled(true) // for now move this in due course (only display for humans)
@@ -800,13 +796,15 @@ export function App() {
       GlobalInit.controller.setAllDefendersToNotInterceptingAndNotSeparated()
       GlobalGameState.nextActionButtonDisabled = false
       GlobalGameState.elitePilots = false // reset for future air combats
-      StateManager.gameStateManager.setJapanState(stateObject)
-      setEndOfAirOpAlertShow(true)
+      // StateManager.gameStateManager.setJapanState(stateObject)
+      doStateChange()
     }
   }, [GlobalGameState.gamePhase])
+
+  window.scrollTo(0,20)
   const nextAction = () => {
     console.log("APP nextAction for side", GlobalGameState.currentPlayer)
-    StateManager.gameStateManager.doNextState(GlobalGameState.currentPlayer)
+    StateManager.gameStateManager.doNextState(GlobalGameState.currentPlayer, stateObject)
   }
   // const nextAction = () => {
   //   handleAction({
@@ -943,7 +941,6 @@ export function App() {
       },
     })
   }
-
   const stateObject = {
     // FOR AI AND TESTING
     controller: GlobalInit.controller,
@@ -1572,6 +1569,8 @@ export function App() {
       (GlobalGameState.gamePhase === GlobalGameState.PHASE.AIR_OPERATIONS &&
         GlobalGameState.sideWithInitiative === GlobalUnitsModel.Side.JAPAN) ||
       (GlobalGameState.gamePhase === GlobalGameState.PHASE.CAP_INTERCEPTION &&
+        GlobalGameState.sideWithInitiative === GlobalUnitsModel.Side.US) ||
+      (GlobalGameState.gamePhase === GlobalGameState.PHASE.ESCORT_DAMAGE_ALLOCATION &&
         GlobalGameState.sideWithInitiative === GlobalUnitsModel.Side.US)
     ) {
       image = "/images/japanflag.jpg"
@@ -2830,6 +2829,7 @@ export function App() {
         show={!testClicked && targetPanelShow}
         headerText="Target Determination"
         headers={targetHeaders}
+        closeButtonStr="Next..."
         footers={targetFooters}
         width={30}
         showDice={targetSelected}
@@ -2869,6 +2869,7 @@ export function App() {
         headerText="CAP Interception"
         headers={capHeaders}
         footers={capFooters}
+        closeButtonStr="Next..."
         showDice={true}
         margin={0}
         onHide={(e) => {
@@ -2896,6 +2897,7 @@ export function App() {
         width={74}
         showDice={false}
         margin={0}
+        closeButtonStr="Next..."
         onHide={(e) => {
           setDamageAllocationPanelShow(false)
           sendDamageEvent(eliminatedSteps)
@@ -2915,7 +2917,7 @@ export function App() {
         headers={escortHeaders}
         closeButtonCallback={escortCloseCallback}
         footers={escortFooters}
-        // width={100}
+        closeButtonStr="Next..."
         showDice={true}
         margin={0}
         onHide={(e) => {
@@ -2943,6 +2945,7 @@ export function App() {
           sendAAAEvent()
           nextAction(e)
         }}
+        closeButtonStr="Next..."
         doRoll={doAntiAircraftRolls}
         diceButtonDisabled={GlobalGameState.dieRolls.length !== 0}
         closeButtonDisabled={GlobalGameState.dieRolls.length === 0}
@@ -3055,7 +3058,6 @@ export function App() {
         }}
         doRoll={doDamageRolls}
         width={30}
-        closeButtonStr="Next..."
         closeButtonCallback={(e) => {
           setCarrierDamagePanelShow(false)
           sendCarrierDamageEvent()

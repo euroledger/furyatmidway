@@ -38,21 +38,25 @@ class USAIAirOperationsState {
     const unitsInReturnBoxes = GlobalInit.controller.getAllUSCarrierPlanesInReturnBoxes()
 
     console.log(">>>>>>>>>>>>>>>>>> unitsInReturnBoxes len=", unitsInReturnBoxes.length)
-    if (
-      GlobalGameState.sideWithInitiative === GlobalUnitsModel.Side.US &&
-      GlobalInit.controller.japanHandContainsCard(10) &&
-      unitsInReturnBoxes.length > 0
-    ) {
-      GlobalGameState.currentPlayer = GlobalUnitsModel.Side.JAPAN
-      setCardNumber(() => 10)
-      GlobalGameState.gamePhase = GlobalGameState.PHASE.CARD_PLAY
-    } else {
+    // if (
+    //   GlobalGameState.sideWithInitiative === GlobalUnitsModel.Side.US &&
+    //   GlobalInit.controller.japanHandContainsCard(10) &&
+    //   unitsInReturnBoxes.length > 0
+    // ) {
+    //   GlobalGameState.currentPlayer = GlobalUnitsModel.Side.JAPAN
+    //   setCardNumber(() => 10)
+    //   GlobalGameState.gamePhase = GlobalGameState.PHASE.CARD_PLAY
+    // } else {
       console.log("+++++++++++++++++++++++++ DOING TIDY UP...")
       await tidyUp(setAirUnitUpdate, setStrikeGroupUpdate, setFleetUnitUpdate)
+
+      // TODO
+      // if any CAP need to return -> Go to new state JAPAN_CAP_RETURN
+
       GlobalGameState.currentPlayer = GlobalUnitsModel.Side.JAPAN
       GlobalGameState.gamePhase = GlobalGameState.PHASE.END_OF_AIR_OPERATION
       setEndOfAirOpAlertShow(true)
-    }
+    // }
   }
 
   getState() {

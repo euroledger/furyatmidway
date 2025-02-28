@@ -9,7 +9,6 @@ class USAICardDrawState {
   }
 
   async nextState(stateObject) {
-    console.log("QUACK !!!!!!! NEXT STATE FROM US CARD DRAW, stateObject", stateObject)
     const { setCardNumber } = stateObject
 
     if (GlobalGameState.gameTurn !== 1) {

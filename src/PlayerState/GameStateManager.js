@@ -85,13 +85,14 @@ class GameStateManager {
     }
   }
 
-  async doNextState(side) {
-    console.log("NEXT STATE FOR SIDE", side)
+  async doNextState(side, stateObject) {
+    console.log("NEXT STATE FOR SIDE", side, " -> stateObject=", stateObject)
+    this.stateObject = stateObject
     if (side === GlobalUnitsModel.Side.JAPAN) {
-      await this.japanStateHandler.doNextState()
+      await this.japanStateHandler.doNextState(stateObject)
       await this.japanStateHandler.finishStateChange()
     } else {
-      await this.usStateHandler.doNextState()
+      await this.usStateHandler.doNextState(stateObject)
       await this.usStateHandler.finishStateChange()
     }
   }

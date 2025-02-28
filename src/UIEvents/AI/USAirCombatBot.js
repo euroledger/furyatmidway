@@ -2,7 +2,6 @@ import GlobalUnitsModel from "../../model/GlobalUnitsModel"
 import GlobalGameState from "../../model/GlobalGameState"
 import { delay } from "../../DiceHandler"
 
-
 export async function selectTFTarget(controller) {
   // Priority:
   // 1. TF with most damage (not sunk or dmcv) to carriers
@@ -189,7 +188,8 @@ export async function doTargetSelection(
 ) {
   // Prioties:
   // 1. Carrier with most damage
-  // 2. Random if equal
+  // 2. Carrier with attack planes on deck
+  // 3. Random
 
   let carrierTargets = new Array()
   let index = 0
@@ -207,22 +207,44 @@ export async function doTargetSelection(
 
     let originalCarriers = JSON.parse(JSON.stringify(carriersInTF))
 
-    // sort by damage
+    // sort by damage then attack planes on deck
     let carriers = carriersInTF.sort(function (a, b) {
+      if (b.hits > a.hits) {
+        return b.hits - a.hits
+      } else if (a.hits > b.hits) {
+        return b.hits - a.hits
+      } else if (
+        controller.attackAircraftOnDeckForNamedCarrier(GlobalUnitsModel.Side.JAPAN, a.name) &&
+        !controller.attackAircraftOnDeckForNamedCarrier(GlobalUnitsModel.Side.JAPAN, b.name)
+      ) {
+        return -1
+      } else if (
+        controller.attackAircraftOnDeckForNamedCarrier(GlobalUnitsModel.Side.JAPAN, a.name) &&
+        !controller.attackAircraftOnDeckForNamedCarrier(GlobalUnitsModel.Side.JAPAN, b.name)
+      ) {
+        return 1
+      }
       return b.hits - a.hits
     })
 
-    console.log(">>>>> CARRIERS=", carriers)
+    // console.log(">>>>> SORTED CARRIERS=", carriers)
 
-    if (testOneOrZero && carriers[0].hits === 0) {
+    if (
+      testOneOrZero &&
+      carriers[0].hits === 0 &&
+      !controller.attackAircraftOnDeckForNamedCarrier(GlobalUnitsModel.Side.JAPAN, carriers[0].name)
+    ) {
       oneOrZero = testOneOrZero[index++]
     } else {
       oneOrZero = Math.random() >= 0.5 ? 1 : 0
     }
     let carrier = carriersInTF[oneOrZero]
 
-    if (carriers[0].hits > 0) {
-      console.log(">>>>> SET CARRIER TARGET TO", carriers[0])
+    if (
+      carriers[0].hits > 0 ||
+      controller.attackAircraftOnDeckForNamedCarrier(GlobalUnitsModel.Side.JAPAN, carriers[0].name)
+    ) {
+      // console.log(">>>>> SET CARRIER TARGET TO", carriers[0])
 
       carrier = carriers[0]
       oneOrZero = originalCarriers.findIndex((unit) => unit._name === carriersInTF[0].name)

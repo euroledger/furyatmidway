@@ -4,6 +4,8 @@ import { allocateCAPDamageToAttackingStrikeUnit } from "../../../UIEvents/AI/USA
 import { endOfAirOperation, midwayOrAirOps } from "../../StateUtils"
 import { delay } from "../../../Utils"
 import GlobalUnitsModel from "../../../model/GlobalUnitsModel"
+import { getNumEscortFighterSteps } from "../../../DiceHandler"
+
 
 class USAICapDamageAllocationState {
   async doAction(stateObject) {
@@ -18,6 +20,9 @@ class USAICapDamageAllocationState {
         await delay(10)
         let strikeUnits = GlobalInit.controller.getAttackingStrikeUnits()
 
+        if (strikeUnits.length === 0) {
+          break // all strike units eliminated
+        }
         // US Damage Allocation Bot...picks one unit to take this hit
         const { index } = await allocateCAPDamageToAttackingStrikeUnit(strikeUnits)
 

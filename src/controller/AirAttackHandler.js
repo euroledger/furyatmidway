@@ -75,6 +75,7 @@ export function setUpAirAttack(controller, location, strikeGroup, setCardNumber,
       && cardPlayed === undefined
     ) {
       GlobalGameState.gamePhase = GlobalGameState.PHASE.CARD_PLAY
+      GlobalGameState.currentPlayer = GlobalUnitsModel.Side.JAPAN
       setCardNumber(() => 11)
     } 
   }

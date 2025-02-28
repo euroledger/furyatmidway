@@ -14,7 +14,7 @@ describe("Combat Selections by US Bot", () => {
   let ef1, ef2, edb1, edb2, etb, hf1, hf2, hdb1, hdb2, htb
   let mf1, mf2, mdb, mdb2, mtb, mhb1, mhb2
   let yf1, yf2, ydb1, ydb2, ytb
-  let kaf1, aaf1, haf1, saf1, kaf2, aaf2
+  let kaf1, aaf1, haf1, saf1, kaf2, aaf2, adb, kdb
 
   function setInitialAirUnitLocations() {
     controller.addAirUnitToBox(GlobalUnitsModel.AirBox.US_TF16_CAP, 0, ef1)
@@ -87,6 +87,10 @@ describe("Combat Selections by US Bot", () => {
 
     haf1 = counters.get("Hiryu-A6M-2b-1")
     saf1 = counters.get("Soryu-A6M-2b-1")
+
+    adb = counters.get("Akagi-D3A-1")
+    kdb = counters.get("Kaga-D3A-1")
+
   })
 
   test("US Target Determination", async () => {
@@ -200,7 +204,7 @@ describe("Combat Selections by US Bot", () => {
     expect(selection.unit).toEqual(mdb)
   })
 
-  test("US Air Strike Carrier Target Selection", async () => {
+  test("US Air Strike, Carrier Target Selection", async () => {
     // Enterprise 2-plane strike group
     let strikeUnits = [edb1, edb2]
 
@@ -230,5 +234,39 @@ describe("Combat Selections by US Bot", () => {
     expect(carrierTargets[0]).toEqual(GlobalUnitsModel.Carrier.KAGA)
     expect(carrierTargets[1]).toEqual(GlobalUnitsModel.Carrier.KAGA)
 
+  })
+
+  test("US Air Strike, Carrier Target Selection - Attack Aircraft on Deck", async () => {
+    // Enterprise 2-plane strike group
+    let strikeUnits = [edb1, edb2]
+
+    // No hits to any Japanese carriers but attack aircraft on Akagi deck
+    controller.addAirUnitToBox(GlobalUnitsModel.AirBox.JP_AKAGI_FLIGHT_DECK, 0, adb)
+    GlobalGameState.taskForceTarget = GlobalUnitsModel.TaskForce.CARRIER_DIV_1
+
+    let carrierTargets = await doTargetSelection(
+      controller,
+      strikeUnits,
+      GlobalUnitsModel.Side.JAPAN,
+      { setAttackAirCounterUpdate: undefined },
+      [1, 1]
+    )
+    expect(carrierTargets[0]).toEqual(GlobalUnitsModel.Carrier.AKAGI)
+    expect(carrierTargets[1]).toEqual(GlobalUnitsModel.Carrier.AKAGI)
+
+    // Now attack aircraft on Kaga deck
+    controller.addAirUnitToBox(GlobalUnitsModel.AirBox.JP_AKAGI_HANGAR, 0, adb)
+    controller.addAirUnitToBox(GlobalUnitsModel.AirBox.JP_KAGA_FLIGHT_DECK, 0, kdb)
+    GlobalGameState.taskForceTarget = GlobalUnitsModel.TaskForce.CARRIER_DIV_1
+
+    carrierTargets = await doTargetSelection(
+      controller,
+      strikeUnits,
+      GlobalUnitsModel.Side.JAPAN,
+      { setAttackAirCounterUpdate: undefined },
+      [1, 1]
+    )
+    expect(carrierTargets[0]).toEqual(GlobalUnitsModel.Carrier.KAGA)
+    expect(carrierTargets[1]).toEqual(GlobalUnitsModel.Carrier.KAGA)
   })
 })

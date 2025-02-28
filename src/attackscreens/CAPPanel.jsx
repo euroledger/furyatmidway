@@ -163,7 +163,7 @@ export function CAPHeaders({ controller, setCapAirUnits, capSteps, setCapSteps }
             color: "white",
           }}
         >
-          Select Air Units to Intercept or Close if no interception
+          Select Air Units to Intercept or&nbsp;<strong>Next</strong>&nbsp; if no interception
         </p>
       </div>
       <div>

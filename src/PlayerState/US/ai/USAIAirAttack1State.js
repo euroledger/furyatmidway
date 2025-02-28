@@ -1,18 +1,11 @@
 import GlobalGameState from "../../../model/GlobalGameState"
 import GlobalUnitsModel from "../../../model/GlobalUnitsModel"
-import { delay } from "../../../Utils"
-import { endOfAirOperation } from "../../StateUtils"
+import { endOfAirOperation, rollZeDice } from "../../StateUtils"
 
 class USAIAirAttack1State {
   async doAction(stateObject) {
     console.log("++++++++++++++ US Air Attack")
-    await delay(1000)
-    GlobalGameState.rollDice = false
-    GlobalGameState.updateGlobalState()
-
-    await delay(1000)
-    GlobalGameState.rollDice = true
-    GlobalGameState.updateGlobalState()
+    await rollZeDice()
   }
 
   async nextState(stateObject) {

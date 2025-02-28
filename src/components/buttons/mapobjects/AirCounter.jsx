@@ -123,6 +123,10 @@ function AirCounter({ getAirBox, setAirBox, counterData, side }) {
   const onDrag = () => {
     const location = controller.getAirUnitLocation(counterData.name)
 
+    if (!location.boxName.includes("CAP RETURNING") && GlobalGameState.onlycap === true) {
+      return // disallow all non CAP Return moves when it's the other side's go
+    }
+
     setIsMoveable(true)
     // only the selected (clicked) air unit should be draggable
     setSelected(() => true)
