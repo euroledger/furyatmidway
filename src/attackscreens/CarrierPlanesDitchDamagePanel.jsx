@@ -13,15 +13,19 @@ export function CarrierPlanesDitchDamageHeaders({
 }) {
   const [elRefs, setElRefs] = useState([])
 
-  const msg = "One US Plane step is lost. Select a step to Eliminate."
-
-  // let unitsInGroup = controller.getAttackingStrikeUnits()
+  let msg = "One US Plane step is lost. Select a step to Eliminate."
+  if (
+    GlobalGameState.sideWithInitiative === GlobalUnitsModel.Side.US &&
+    GlobalGameState.usPlayerType === GlobalUnitsModel.TYPE.AI
+  ) {
+    msg = `One US Plane step is lost.`
+  }
 
   // Get all US planes in TF16 and TF17 return boxes
-  // const airUnitsTF16Return1 = controller.getAllAirUnitsInBox(GlobalUnitsModel.AirBox.US_TF16_RETURN1)
-  // const airUnitsTF16Return2 = controller.getAllAirUnitsInBox(GlobalUnitsModel.AirBox.US_TF16_RETURN2)
-  // const airUnitsTF17Return1 = controller.getAllAirUnitsInBox(GlobalUnitsModel.AirBox.US_TF17_RETURN1)
-  // const airUnitsTF17Return2 = controller.getAllAirUnitsInBox(GlobalUnitsModel.AirBox.US_TF17_RETURN2)
+  const airUnitsTF16Return1 = controller.getAllAirUnitsInBox(GlobalUnitsModel.AirBox.US_TF16_RETURN1)
+  const airUnitsTF16Return2 = controller.getAllAirUnitsInBox(GlobalUnitsModel.AirBox.US_TF16_RETURN2)
+  const airUnitsTF17Return1 = controller.getAllAirUnitsInBox(GlobalUnitsModel.AirBox.US_TF17_RETURN1)
+  const airUnitsTF17Return2 = controller.getAllAirUnitsInBox(GlobalUnitsModel.AirBox.US_TF17_RETURN2)
 
   // const unitsInGroup = airUnitsTF16Return1
   //   .concat(airUnitsTF16Return2)
@@ -107,6 +111,14 @@ export function CarrierPlanesDitchDamageHeaders({
     doDamageAllocation(controller, airUnit)
     setEliminatedSteps(() => eliminatedSteps + 1)
     GlobalGameState.updateGlobalState()
+  }
+
+  let instrMsg = "(click on air unit to eliminate a step)"
+  if (
+    GlobalGameState.sideWithInitiative === GlobalUnitsModel.Side.US &&
+    GlobalGameState.usPlayerType === GlobalUnitsModel.TYPE.AI
+  ) {
+    instrMsg = ""
   }
 
   const hitsToAllocate = 1
@@ -288,7 +300,7 @@ export function CarrierPlanesDitchDamageHeaders({
             marginLeft: "10px",
           }}
         >
-          (click on air unit to eliminate a step)
+          {instrMsg}
         </p>
       </div>
       <div>

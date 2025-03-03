@@ -521,10 +521,8 @@ export async function setNextStateFollowingCardPlay(stateObject) {
     case 10:
       // US Carrier Planes Ditch
       GlobalGameState.isFirstAirOp = true
-      // GlobalGameState.gamePhase = GlobalGameState.PHASE.AIR_SEARCH
-      GlobalGameState.gamePhase = GlobalGameState.PHASE.END_OF_AIR_OPERATION
-
-      tidyUp(setAirUnitUpdate, setStrikeGroupUpdate, setFleetUnitUpdate)
+      await tidyUp(setAirUnitUpdate, setStrikeGroupUpdate, setFleetUnitUpdate)
+      GlobalGameState.gamePhase = GlobalGameState.PHASE.INITIATIVE_DETERMINATION
       break
 
     case 11:

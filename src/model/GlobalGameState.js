@@ -15,6 +15,7 @@ export default class GlobalGameState {
     US_DRAWS_ONE_CARD: "US Card Draw Phase",
     JAPAN_DRAWS_ONE_CARD: "Japan Card Draw Phase",
     CARD_PLAY: "Possible Card Play",
+    CARD_RESPONSE: "Response to Card Play", // eg AI having to select step losses for a human played card
     JAPAN_MIDWAY: "IJN Midway Attack Declaration",
     US_FLEET_MOVEMENT_PLANNING: "US Fleet Movement Planning",
     US_DMCV_FLEET_MOVEMENT_PLANNING: "US DMCV Fleet Movement Planning",

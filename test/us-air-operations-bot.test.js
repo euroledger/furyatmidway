@@ -369,7 +369,6 @@ describe("Numeric Evaluation Of State of Each Side's Naval and Air Power", () =>
     await moveStrikeGroups(controller, { setStrikeGroupUpdate: undefined }, true)
 
     let strikeUnits = controller.getStrikeUnits(GlobalUnitsModel.Side.US)
-
     // Both Strike Groups should move to 7,1
     // Third SG cannot be formed because it has TBDs (range of 5 is too great)
     let location = controller.getStrikeGroupLocation(strikeUnits[0].name, GlobalUnitsModel.Side.US)

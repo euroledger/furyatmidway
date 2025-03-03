@@ -111,7 +111,6 @@ function AirAttackCounter({
 
     if (i == j) {
       const targets = controller.getAttackTargets()
-      console.log("++++++++++ QUACK 2 set carrierTarget1 to", targets[0])
       GlobalGameState.carrierTarget1 = targets[0]
       if (targets.length === 2) {
         GlobalGameState.carrierTarget2 = targets[1]

@@ -7,6 +7,7 @@ import {
   generateUSAirOperationsMovesMidway,
   moveStrikeGroups,
 } from "../../../UIEvents/AI/USAirOperationsBot"
+import { setStrikeGroupAirUnitsToNotMoved } from "../../../controller/AirOperationsHandler"
 
 class USAIAirOperationsState {
   constructor() {
@@ -20,11 +21,22 @@ class USAIAirOperationsState {
       // if the previous move has triggered a battle do not move any more SGs
       // the state handler will return to this state after the battle to continue
       // moving the remaining SGs
+      console.log("----m QUACK NO COMBAT -> MOVE CARRIER UNITS !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!")
       await generateUSAirOperationsMovesCarriers(GlobalInit.controller, stateObject)
       await generateUSAirOperationsMovesMidway(GlobalInit.controller, stateObject)
-      await moveStrikeGroups(GlobalInit.controller, stateObject) // first op strike groups
-      this.endOfAirOp = true
-      this.nextState(stateObject)
+      const inBattle = await moveStrikeGroups(GlobalInit.controller, stateObject)
+      console.log("FUCKING inBattle=", inBattle)
+      if (!inBattle) {
+        console.log("NOT IN BATTLE, end the fucking air op NOW!!!!!!!!!!!!")
+        this.endOfAirOp = true
+        // const returningUnitsNotMoved = GlobalInit.controller.getReturningUnitsNotMoved(GlobalUnitsModel.Side.US)
+
+        await setStrikeGroupAirUnitsToNotMoved(GlobalGameState.sideWithInitiative)
+        await generateUSAirOperationsMovesCarriers(GlobalInit.controller, stateObject)
+        await generateUSAirOperationsMovesMidway(GlobalInit.controller, stateObject)
+  
+        this.nextState(stateObject)
+      }
     }
   }
 
@@ -33,30 +45,23 @@ class USAIAirOperationsState {
       console.log("AIR OP NOT ENDED YET!")
       return
     }
-    const { setCardNumber, setAirUnitUpdate, setStrikeGroupUpdate, setFleetUnitUpdate, setEndOfAirOpAlertShow } =
-      stateObject
-    const unitsInReturnBoxes = GlobalInit.controller.getAllUSCarrierPlanesInReturnBoxes()
+    const { setAirUnitUpdate, setStrikeGroupUpdate, setFleetUnitUpdate, setEndOfAirOpAlertShow } = stateObject
 
-    console.log(">>>>>>>>>>>>>>>>>> unitsInReturnBoxes len=", unitsInReturnBoxes.length)
-    // if (
-    //   GlobalGameState.sideWithInitiative === GlobalUnitsModel.Side.US &&
-    //   GlobalInit.controller.japanHandContainsCard(10) &&
-    //   unitsInReturnBoxes.length > 0
-    // ) {
-    //   GlobalGameState.currentPlayer = GlobalUnitsModel.Side.JAPAN
-    //   setCardNumber(() => 10)
-    //   GlobalGameState.gamePhase = GlobalGameState.PHASE.CARD_PLAY
-    // } else {
-      console.log("+++++++++++++++++++++++++ DOING TIDY UP...")
-      await tidyUp(setAirUnitUpdate, setStrikeGroupUpdate, setFleetUnitUpdate)
+    console.log("+++++++++++++++++++++++++ DOING TIDY UP...")
+    await tidyUp(setAirUnitUpdate, setStrikeGroupUpdate, setFleetUnitUpdate)
 
-      // TODO
-      // if any CAP need to return -> Go to new state JAPAN_CAP_RETURN
+    // if any CAP need to return -> Go to new state JAPAN_CAP_RETURN
+    GlobalGameState.currentPlayer = GlobalUnitsModel.Side.JAPAN
 
-      GlobalGameState.currentPlayer = GlobalUnitsModel.Side.JAPAN
+    const capUnitsReturning = GlobalInit.controller.getAllCAPDefendersInCAPReturnBoxes(GlobalUnitsModel.Side.JAPAN)
+
+    if (capUnitsReturning.length > 0) {
+      GlobalGameState.sideWithInitiative = GlobalUnitsModel.Side.US
+      GlobalGameState.gamePhase = GlobalGameState.PHASE.CAP_RETURN
+    } else {
       GlobalGameState.gamePhase = GlobalGameState.PHASE.END_OF_AIR_OPERATION
       setEndOfAirOpAlertShow(true)
-    // }
+    }
   }
 
   getState() {

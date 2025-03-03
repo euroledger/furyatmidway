@@ -123,7 +123,7 @@ function AirCounter({ getAirBox, setAirBox, counterData, side }) {
   const onDrag = () => {
     const location = controller.getAirUnitLocation(counterData.name)
 
-    if (!location.boxName.includes("CAP RETURNING") && GlobalGameState.onlycap === true) {
+    if (!location.boxName.includes("CAP RETURNING") && GlobalGameState.gamePhase === GlobalGameState.PHASE.CAP_RETURN) {
       return // disallow all non CAP Return moves when it's the other side's go
     }
 
@@ -210,7 +210,9 @@ function AirCounter({ getAirBox, setAirBox, counterData, side }) {
     }
     if (
       GlobalGameState.gamePhase === GlobalGameState.PHASE.AIR_OPERATIONS ||
-      GlobalGameState.gamePhase === GlobalGameState.PHASE.MIDWAY_ATTACK
+      GlobalGameState.gamePhase === GlobalGameState.PHASE.MIDWAY_ATTACK || 
+      GlobalGameState.gamePhase === GlobalGameState.PHASE.CAP_RETURN 
+
     ) {
       setValidDestinationBoxes(controller, counterData.name, counterData.side)
     }

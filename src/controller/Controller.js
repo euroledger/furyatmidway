@@ -369,7 +369,6 @@ export default class Controller {
     let units = new Array()
     for (const unit of defenders) {
       const location = this.getAirUnitLocation(unit.name)
-
       if (location.boxName.includes("FLIGHT")) {
         units.push(unit)
       }
@@ -1422,7 +1421,6 @@ export default class Controller {
       if (!airUnit) {
         return index
       }
-      console.log("BOX:", boxName, "AIR UNIT->", airUnit.name)
     }
     // box is full - return -1
     return -1

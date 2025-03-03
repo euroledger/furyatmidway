@@ -17,6 +17,7 @@ import GameStatusPanel from "./components/dialogs/GameStatusPanel"
 import SplashScreen from "./components/dialogs/SplashScreen"
 import Controller from "./controller/Controller"
 import "./style.css"
+import { sideBeingAttacked } from "./Utils"
 import StateManager from "./model/StateManager"
 import { allCards } from "./CardLoader"
 import { processPlayedCard } from "./PlayerState/CardUtils"
@@ -485,6 +486,13 @@ export function App() {
   }, [GlobalGameState.gamePhase])
 
   // // NEW AI-HUMAN SIDE EFFECTS....
+
+  useEffect(() => {
+    if (GlobalGameState.gamePhase === GlobalGameState.PHASE.CARD_RESPONSE) {
+      doStateChange()
+    }
+  }, [GlobalGameState.gamePhase])
+
   useEffect(() => {
     if (GlobalGameState.gamePhase === GlobalGameState.PHASE.CAP_RETURN) {
       doStateChange()
@@ -1236,6 +1244,12 @@ export function App() {
       setJapanMapRegions(jpRegion)
     } else if (GlobalGameState.gamePhase === GlobalGameState.PHASE.RETREAT_US_FLEET) {
       GlobalGameState.phaseCompleted = true
+    } else if (GlobalGameState.gamePhase === GlobalGameState.PHASE.CAP_RETURN) {
+      const capUnitsReturning = GlobalInit.controller.getAllCAPDefendersInCAPReturnBoxes(sideBeingAttacked())
+  
+      for (let unit of capUnitsReturning) {
+        unit.border = true
+      }
     }
 
     // If we don't do this, a drag and drop move fires a fleet update and the fleet does not move
@@ -1374,12 +1388,8 @@ export function App() {
       await setStrikeGroupAirUnitsToNotMoved(GlobalGameState.sideWithInitiative)
     }
 
-    const sideBeingAttacked =
-      GlobalGameState.sideWithInitiative === GlobalUnitsModel.Side.US
-        ? GlobalUnitsModel.Side.JAPAN
-        : GlobalUnitsModel.Side.US
-    // 2. CHECK ALL INTERCEPTING CAP UNITS HAVE RETURNED TO CARRIERS
-    const capUnitsReturning = GlobalInit.controller.getAllCAPDefendersInCAPReturnBoxes(sideBeingAttacked)
+       // 2. CHECK ALL INTERCEPTING CAP UNITS HAVE RETURNED TO CARRIERS
+    const capUnitsReturning = GlobalInit.controller.getAllCAPDefendersInCAPReturnBoxes(sideBeingAttacked())
     if (capUnitsReturning.length === 0) {
       return true
     }
@@ -1449,6 +1459,16 @@ export function App() {
   const nextActionButtonDisabled = async () => {
     const prevButton = GlobalGameState.nextActionButtonDisabled
 
+    if (GlobalGameState.gamePhase === GlobalGameState.PHASE.CAP_RETURN) {
+      const capUnitsReturning = GlobalInit.controller.getAllCAPDefendersInCAPReturnBoxes(sideBeingAttacked())
+      console.log("Side Being Attacked=", sideBeingAttacked(), "capUnitsReturning.length=", capUnitsReturning.length)
+      if (capUnitsReturning.length === 0) {
+        GlobalGameState.nextActionButtonDisabled = false
+        return
+      }
+      GlobalGameState.nextActionButtonDisabled = true
+      return
+    }
     if (GlobalGameState.gamePhase === GlobalGameState.PHASE.US_FLEET_MOVEMENT_PLANNING) {
       GlobalGameState.nextActionButtonDisabled = false
       return
@@ -1571,7 +1591,9 @@ export function App() {
       (GlobalGameState.gamePhase === GlobalGameState.PHASE.CAP_INTERCEPTION &&
         GlobalGameState.sideWithInitiative === GlobalUnitsModel.Side.US) ||
       (GlobalGameState.gamePhase === GlobalGameState.PHASE.ESCORT_DAMAGE_ALLOCATION &&
-        GlobalGameState.sideWithInitiative === GlobalUnitsModel.Side.US)
+        GlobalGameState.sideWithInitiative === GlobalUnitsModel.Side.US) || 
+      (GlobalGameState.gamePhase === GlobalGameState.PHASE.CAP_RETURN &&
+        GlobalGameState.sideWithInitiative === GlobalUnitsModel.Side.US) 
     ) {
       image = "/images/japanflag.jpg"
     } else if (GlobalGameState.gamePhase === GlobalGameState.PHASE.AIR_SEARCH) {

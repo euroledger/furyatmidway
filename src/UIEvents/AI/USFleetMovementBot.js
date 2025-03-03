@@ -17,5 +17,7 @@ export function doUSFleetMovementAction(regions, offboardPossible) {
     // regions is all valid hexes this fleet can move to
 
     // for now choose randomly
-    return getRandomElementFrom(regions)
+    // return getRandomElementFrom(regions)
+
+    return  { q: 4, r: 1 } // QUACK HARD WIRED FOR TESTING ONLY
 }

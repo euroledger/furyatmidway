@@ -24,6 +24,8 @@ export function setUpAirAttack(controller, location, strikeGroup, setCardNumber,
   } else {
     fleetTarget = fleets[0].name
   }
+
+  console.log(">>>>> ATTACK ON FLEET BY SG", strikeGroup.name)
   controller.setAirOpAttacked(strikeGroup)
 
   if (GlobalGameState.gamePhase === GlobalGameState.PHASE.MIDWAY_ATTACK) {
@@ -62,6 +64,7 @@ export function setUpAirAttack(controller, location, strikeGroup, setCardNumber,
           : GlobalUnitsModel.Side.US
       let anyTargets = controller.anyTargets(sideBeingAttacked)
       if (anyTargets) {
+        console.log("---------------------------- GO TO TARGET DETERMINATION ----------------------------------")
         GlobalGameState.gamePhase = GlobalGameState.PHASE.TARGET_DETERMINATION
       } else {
         GlobalGameState.taskForceTarget = fleetTarget

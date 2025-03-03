@@ -459,27 +459,27 @@ const USAirBoxOffsets = [
     carriers: [GlobalUnitsModel.Carrier.MIDWAY],
     offsets: [
       {
-        left: 83.5,
+        left: 83.51,
         top: 50.0,
       },
       {
-        left: 83.5,
+        left: 83.51,
         top: 52.8,
       },
       {
-        left: 83.5,
+        left: 83.51,
         top: 55.6,
       },
       {
-        left: 85.4,
+        left: 85.41,
         top: 50.0,
       },
       {
-        left: 85.4,
+        left: 85.41,
         top: 52.8,
       },
       {
-        left: 85.4,
+        left: 85.41,
         top: 55.6,
       },
     ],

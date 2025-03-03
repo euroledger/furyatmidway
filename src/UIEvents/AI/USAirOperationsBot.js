@@ -227,7 +227,6 @@ async function moveAirUnit(controller, unit, setTestUpdate) {
 
   const destBoxes = controller.getValidAirUnitDestinations(unit.name)
 
-  console.log("UNIT", unit.name, "destBoxes=", destBoxes)
   if (destBoxes.length === 0) {
     // this can only happen if all carriers sunk, leave for now
     return
@@ -249,10 +248,11 @@ async function moveAirUnit(controller, unit, setTestUpdate) {
   }
   update.position = position1.offsets[update.index]
 
-  await delay(1)
+  await delay(50)
 
+  console.log("MOVE AIR UNIT", unit.name, ">>>>>>>>>>>>>>>>>>>>>>>>>>>>>> to box",update.boxName)
   setTestUpdate(update)
-  await delay(1)
+  await delay(50)
 }
 
 export async function generateUSAirOperationsMovesCarriers(controller, stateObject, test) {
@@ -262,13 +262,29 @@ export async function generateUSAirOperationsMovesCarriers(controller, stateObje
   let units = controller.getAirUnitsInStrikeBoxesReadyToReturn(GlobalGameState.sideWithInitiative)
   if (units.length > 0) {
     for (let unit of units) {
+      console.log("WOOOOOOF ************************ UNIT", unit.name, "MOVED=", unit.aircraftUnit.moved)
       if (unit.aircraftUnit.moved) {
         continue
       }
-      console.log("DO RETURN MOVE FOR UNIT->", unit)
       await moveAirUnit(controller, unit, setTestUpdate)
     }
   }
+
+  // i) MOVE UNITS FROM RETURN BOX 2 -> RETURN BOX 1
+  // ii) MOVE UNITS FROM RETURN BOX 1 -> CARRIER HANGAR
+
+  units = controller.getAttackingReturningUnitsNotMoved(GlobalGameState.sideWithInitiative)
+  console.log("------------------> RETURNING UNITS quack=", units)
+  if (units.length > 0) {
+    for (let unit of units) {
+      if (unit.aircraftUnit.moved) {
+        continue
+      }
+      await moveAirUnit(controller, unit, setTestUpdate)
+    }
+  }
+  
+
 
   // for each air unit that we wish to move generate an array of destination boxes
   // (21 element vector, one for each air unit (3 x 5 carrier air units, 6 for Midway do not include B17))
@@ -318,14 +334,15 @@ export async function generateUSAirOperationsMovesCarriers(controller, stateObje
 
   // Set Up Strike Groups first
 
+  console.log("UNITS ON FLIGHT DECK=", usAirUnitsOnFlightDecks)
   for (let unit of usAirUnitsOnFlightDecks) {
-    if (unit.carrier.includes("Midway")) {
+    if (unit.carrier.includes("Midway") || unit.aircraftUnit.moved) {
       continue
     }
     setValidDestinationBoxes(controller, unit.name, GlobalUnitsModel.Side.US)
 
     const destinations = controller.getValidAirUnitDestinations(unit.name)
-    console.log("VALID DESTINATIONS FOR", unit.name, "->", destinations)
+    console.log("++++++++++++++++++++ CARRIER MOVE: VALID DESTINATIONS FOR", unit.name, "->", destinations)
     const unitsOnCarrierFlighftDeck = controller.getAllUnitsOnUSFlightDeckofNamedCarrier(unit.carrier)
 
     if (unitsOnCarrierFlighftDeck.length === 1) {
@@ -409,7 +426,7 @@ export async function generateUSAirOperationsMovesCarriers(controller, stateObje
   // i) fighters
   let fighters = unitsInHangar.filter((unit) => unit.aircraftUnit.attack === false)
   for (let unit of fighters) {
-    if (unit.carrier.includes("Midway")) {
+    if (unit.carrier.includes("Midway") || unit.aircraftUnit.moved === true) {
       continue
     }
     await hangarToFlightDeck({ controller, unit, setTestUpdate, test })
@@ -418,7 +435,7 @@ export async function generateUSAirOperationsMovesCarriers(controller, stateObje
   // ii) SBDs
   let diveBombers = unitsInHangar.filter((unit) => unit.aircraftUnit.diveBomber === true)
   for (let unit of diveBombers) {
-    if (unit.carrier.includes("Midway")) {
+    if (unit.carrier.includes("Midway") || unit.aircraftUnit.moved === true) {
       continue
     }
     await hangarToFlightDeck({ controller, unit, setTestUpdate, test })
@@ -429,7 +446,7 @@ export async function generateUSAirOperationsMovesCarriers(controller, stateObje
     (unit) => unit.aircraftUnit.diveBomber === false && unit.aircraftUnit.attack === true
   )
   for (let unit of torpedoBombers) {
-    if (unit.carrier.includes("Midway")) {
+    if (unit.carrier.includes("Midway") || unit.aircraftUnit.moved === true) {
       continue
     }
     await hangarToFlightDeck({ controller, unit, setTestUpdate, test })
@@ -596,6 +613,7 @@ export function getAllTargetsInRange(controller, strikeUnits) {
     } else {
       const speed = controller.getSlowestUnitSpeedInStrikeGroup(strikeGroup.box)
       const targetsSecondAirOp = getFirstAirOpTargetsInRange(controller, strikeGroup, speed, 2)
+      strikeGroup.targetsFirstAirOp = []
       strikeGroup.targetsSecondAirOp = targetsSecondAirOp
       strikeGroup.airOp = 2
     }
@@ -613,8 +631,6 @@ export async function moveStrikeGroups(controller, stateObject, test) {
   // Need to allocate targets on this bases
   let strikeUnits = controller.getStrikeUnits(GlobalUnitsModel.Side.US)
   getAllTargetsInRange(controller, strikeUnits)
-
-  const targets = numTargetsInRange(strikeUnits)
 
   // filter and sort (into strike order) strike groups with 1 or more targets
 
@@ -634,22 +650,24 @@ export async function moveStrikeGroups(controller, stateObject, test) {
     if (strikeGroup.attacked) {
       continue // done for this SG
     }
-    console.log("MOVE FOR SG", strikeGroup)
+    console.log("IMPORTANT QUACK =============================== MOVE FOR SG", strikeGroup)
     const unitsInGroup = controller.getAirUnitsInStrikeGroups(strikeGroup.box)
 
     if (unitsInGroup.length === 0 && !strikeGroup.attacked) {
       continue
     }
     if (isFirstAirOpForStrike(controller, strikeGroup, GlobalUnitsModel.Side.US)) {
+      console.log("((((((((((((((((((((((((((((((( IMPORTANT QUACK 2 first air op for", strikeGroup.name)
       const usRegion = firstAirOpUSStrikeRegion(controller, strikeGroup)
 
       if (strikeGroup.targetsFirstAirOp.length >= 1) {
+        console.log("1. strikeGroup.targetsFirstAirOp=", strikeGroup.targetsFirstAirOp)
         if (GlobalGameState.gameTurn === 6 || GlobalGameState.gameTurn === 7) {
           // prioritise MIF
           if (strikeGroup.targetsFirstAirOp.includes("MIF")) {
             const locationMIF = controller.getFleetLocation("MIF", GlobalUnitsModel.Side.JAPAN)
             await moveStrikeGroup(controller, strikeGroup, HexCommand.OFFBOARD, locationMIF, setStrikeGroupUpdate, test)
-            return
+            return true
           }
         }
 
@@ -667,6 +685,8 @@ export async function moveStrikeGroups(controller, stateObject, test) {
 
         // Only send one SG to attack IJNDMCV -
         // Need to check if 1AF is also in range
+        console.log("2. strikeGroup.targetsFirstAirOp=", strikeGroup.targetsFirstAirOp)
+
         if (!ijndmcvTargeted && numTargetsInRange > 1 && strikeGroup.targetsFirstAirOp.includes("IJN-DMCV")) {
           const locationIJNDMCV = controller.getFleetLocation("IJN-DMCV", GlobalUnitsModel.Side.JAPAN)
           await moveStrikeGroup(
@@ -678,17 +698,17 @@ export async function moveStrikeGroups(controller, stateObject, test) {
             test
           )
           ijndmcvTargeted = true
-          return
+          return true
         }
         if (strikeGroup.targetsFirstAirOp.includes("1AF")) {
           const location1AF = controller.getFleetLocation("1AF", GlobalUnitsModel.Side.JAPAN)
           await moveStrikeGroup(controller, strikeGroup, HexCommand.OFFBOARD, location1AF, setStrikeGroupUpdate, test)
-          return
+          return true
         }
         if (strikeGroup.targetsFirstAirOp.includes("MIF")) {
           const locationMIF = controller.getFleetLocation("MIF", GlobalUnitsModel.Side.JAPAN)
           await moveStrikeGroup(controller, strikeGroup, HexCommand.OFFBOARD, locationMIF, setStrikeGroupUpdate, test)
-          return
+          return true
         }
       } else if (strikeGroup.targetsFirstAirOp.length === 0) {
         // else move as close as possible to target
@@ -698,16 +718,19 @@ export async function moveStrikeGroups(controller, stateObject, test) {
           const toHex = getClosestHexToTarget(locationIJNDMCV, usRegion)
           await moveStrikeGroup(controller, strikeGroup, HexCommand.OFFBOARD, toHex, setStrikeGroupUpdate, test)
           ijndmcvTargeted = true
+          // return false MO NEED TO RETURN IF THE SG IS NOT ATTACKING
         }
         if (strikeGroup.targetsSecondAirOp.includes("1AF")) {
           const location1AF = controller.getFleetLocation("1AF", GlobalUnitsModel.Side.JAPAN)
           const toHex = getClosestHexToTarget(location1AF, usRegion)
           await moveStrikeGroup(controller, strikeGroup, HexCommand.OFFBOARD, toHex, setStrikeGroupUpdate, test)
+          // return false
         }
         if (strikeGroup.targetsSecondAirOp.includes("MIF")) {
           const locationMIF = controller.getFleetLocation("MIF", GlobalUnitsModel.Side.JAPAN)
           const toHex = getClosestHexToTarget(locationMIF, usRegion)
           await moveStrikeGroup(controller, strikeGroup, HexCommand.OFFBOARD, toHex, setStrikeGroupUpdate, test)
+          // return false
         }
       }
     } else {
@@ -786,7 +809,7 @@ export async function generateUSAirOperationsMovesMidway(controller, stateObject
   // Set Up Strike Groups first
 
   for (let unit of usAirUnitsOnFlightDecks) {
-    if (!unit.carrier.includes("Midway")) {
+    if (!unit.carrier.includes("Midway") || unit.aircraftUnit.moved) {
       continue
     }
     setValidDestinationBoxes(controller, unit.name, GlobalUnitsModel.Side.US)
@@ -830,7 +853,7 @@ export async function generateUSAirOperationsMovesMidway(controller, stateObject
     usAirUnitsOnFlightDecks = controller.getAllUnitsOnUSFlightDecks(true)
 
     for (let unit of usAirUnitsOnFlightDecks) {
-      if (!unit.carrier.includes("Midway")) {
+      if (!unit.carrier.includes("Midway") || unit.aircraftUnit.moved === true) {
         continue
       }
       setValidDestinationBoxes(controller, unit.name, GlobalUnitsModel.Side.US)
@@ -859,7 +882,7 @@ export async function generateUSAirOperationsMovesMidway(controller, stateObject
   // i) fighters
   let fighters = unitsInHangar.filter((unit) => unit.aircraftUnit.attack === false)
   for (let unit of fighters) {
-    if (!unit.carrier.includes("Midway")) {
+    if (!unit.carrier.includes("Midway") || unit.aircraftUnit.moved === true) {
       continue
     }
     await hangarToFlightDeck({ controller, unit, setTestUpdate, test })
@@ -868,7 +891,7 @@ export async function generateUSAirOperationsMovesMidway(controller, stateObject
   // ii) SBDs
   let diveBombers = unitsInHangar.filter((unit) => unit.aircraftUnit.diveBomber === true)
   for (let unit of diveBombers) {
-    if (!unit.carrier.includes("Midway")) {
+    if (!unit.carrier.includes("Midway") || unit.aircraftUnit.moved === true) {
       continue
     }
     await hangarToFlightDeck({ controller, unit, setTestUpdate, test })
@@ -879,7 +902,7 @@ export async function generateUSAirOperationsMovesMidway(controller, stateObject
     (unit) => unit.aircraftUnit.diveBomber === false && unit.aircraftUnit.attack === true
   )
   for (let unit of torpedoBombers) {
-    if (!unit.carrier.includes("Midway")) {
+    if (!unit.carrier.includes("Midway") || unit.aircraftUnit.moved === true) {
       continue
     }
     await hangarToFlightDeck({ controller, unit, setTestUpdate, test })
