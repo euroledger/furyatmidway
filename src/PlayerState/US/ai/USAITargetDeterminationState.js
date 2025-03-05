@@ -11,6 +11,8 @@ class USAITargetDeterminationState {
     console.log("++++++++++++++ US TARGET DETERMINATION")
     await selectTFTarget(GlobalInit.controller, stateObject)
     rollZeDice()
+    await delay (10)
+    GlobalGameState.testTarget = undefined
   }
 
   async nextState(stateObject) {

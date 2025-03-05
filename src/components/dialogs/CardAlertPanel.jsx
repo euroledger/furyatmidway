@@ -120,10 +120,8 @@ function CardAlertPanel(props) {
       controller.setCardPlayed(10, GlobalUnitsModel.Side.JAPAN)
       onHide(e)
     } else if (cardNumber === 11) {
-
-      // TODO set CARD_RESPONSE 
-
-      
+      GlobalGameState.currentPlayer = GlobalUnitsModel.Side.US
+      GlobalGameState.gamePhase = GlobalGameState.PHASE.CARD_RESPONSE
       setStrikeLostPanelShow(true)
       controller.setCardPlayed(11, GlobalUnitsModel.Side.JAPAN)
       onHide(e)

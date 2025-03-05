@@ -165,7 +165,7 @@ async function moveAirUnitToStrikeGroup({ controller, unit, setTestUpdate, test,
     return // this can happen in rare situation where all strike boxes are used up
   }
   update.position = position1.offsets[update.index]
-  console.log("Send Air Unit update:", update)
+  // console.log("Send Air Unit update:", update)
 
   if (test) {
     controller.addAirUnitToBox(update.boxName, update.index, unit)

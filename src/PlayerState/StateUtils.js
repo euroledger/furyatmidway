@@ -9,6 +9,7 @@ import { japanAF1StartHexesMidway, japanAF1StartHexesNoMidway } from "../compone
 import HexCommand from "../commands/HexCommand"
 import { setUpAirAttack } from "../controller/AirAttackHandler"
 
+
 import {
   setStrikeGroupAirUnitsToNotMoved,
   resetStrikeGroups,
@@ -474,6 +475,7 @@ export async function setNextStateFollowingCardPlay(stateObject) {
     setStrikeGroupUpdate,
     setFleetUnitUpdate,
     setUsFleetRegions,
+    setEndOfAirOpAlertShow
   } = stateObject
   GlobalGameState.dieRolls = []
 
@@ -521,8 +523,13 @@ export async function setNextStateFollowingCardPlay(stateObject) {
     case 10:
       // US Carrier Planes Ditch
       GlobalGameState.isFirstAirOp = true
+      // await tidyUp(setAirUnitUpdate, setStrikeGroupUpdate, setFleetUnitUpdate)
+      // GlobalGameState.gamePhase = GlobalGameState.PHASE.INITIATIVE_DETERMINATION
+
       await tidyUp(setAirUnitUpdate, setStrikeGroupUpdate, setFleetUnitUpdate)
-      GlobalGameState.gamePhase = GlobalGameState.PHASE.INITIATIVE_DETERMINATION
+      GlobalGameState.currentPlayer = GlobalUnitsModel.Side.JAPAN
+      GlobalGameState.gamePhase = GlobalGameState.PHASE.END_OF_AIR_OPERATION
+      setEndOfAirOpAlertShow(true)
       break
 
     case 11:

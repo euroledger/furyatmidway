@@ -11,6 +11,7 @@ export function TargetHeaders({ controller, setTargetSelected, setTargetDetermin
   const button2Ref = useRef(null)
 
   useEffect(() => {
+    console.log("POOOOOOOOOOOOOOOOOOOOOOOOOOOO GlobalGameState.testTarget=", GlobalGameState.testTarget)
     if (GlobalGameState.testTarget === GlobalUnitsModel.TaskForce.CARRIER_DIV_1) {
       button1Ref.current.click(GlobalGameState.testTarget)
     }
@@ -26,6 +27,7 @@ export function TargetHeaders({ controller, setTargetSelected, setTargetDetermin
   }, [GlobalGameState.testTarget])
 
   const handleClick = (target) => {
+    console.log("CLICKET CLICK WANK")
     targetSelectionButtonClick(controller, target)
 
     setTargetSelected(true)

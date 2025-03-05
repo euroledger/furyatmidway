@@ -613,6 +613,7 @@ export function App() {
       setTargetPanelShow(true)
       GlobalGameState.dieRolls = []
       GlobalGameState.capHits = undefined
+      GlobalGameState.currentPlayer = GlobalGameState.sideWithInitiative
       doStateChange()
     }
   }, [GlobalGameState.gamePhase])

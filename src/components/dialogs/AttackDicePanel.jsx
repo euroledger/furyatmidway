@@ -265,9 +265,9 @@ function AttackDicePanel(props) {
             >
               <div
                 style={{
-                  display: "inline-block",
-                  marginTop: "5px",
-                  marginLeft: "385px",
+                  // display: "inline-block",
+                  // marginTop: "5px",
+                  // marginLeft: "385px",
                 }}
               >
                 <div
