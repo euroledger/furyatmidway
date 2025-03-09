@@ -149,13 +149,14 @@ export function DamageHeaders({
   }
 
   let side = GlobalGameState.sideWithInitiative
-  if (GlobalGameState.gamePhase === GlobalGameState.ESCORT_DAMAGE_ALLOCATION) {
+  if (GlobalGameState.gamePhase === GlobalGameState.PHASE.ESCORT_DAMAGE_ALLOCATION) {
     if (side === GlobalUnitsModel.Side.US) {
       side = GlobalUnitsModel.Side.JAPAN
     } else {
       side = GlobalUnitsModel.Side.US
     }
   }
+
   const selectionMsg = disableButtons ? `${side} Selects Steps to Eliminate` : "Select Steps to Eliminate"
   return (
     <>

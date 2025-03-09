@@ -58,6 +58,18 @@ function is1StepDiveBomber(unit) {
   return unit.aircraftUnit.diveBomber && unit.aircraftUnit.steps === 1
 }
 
+export async function allocateEscortDamageToAttackingStrikeUnit(strikeUnits) {
+  let originalUnits = JSON.parse(JSON.stringify(strikeUnits))
+
+  // sort by combat strength 
+  strikeUnits = strikeUnits.sort(function (a, b) {
+    return a.aircraftUnit.strength - b.aircraftUnit.strength
+  })
+  const index = originalUnits.findIndex((unit) => unit._name === strikeUnits[0].name)
+  const unit = strikeUnits[0]
+  return { unit, index }
+}
+
 export async function allocateCAPDamageToAttackingStrikeUnit(strikeUnits) {
   let originalUnits = JSON.parse(JSON.stringify(strikeUnits))
 
@@ -267,4 +279,35 @@ export async function doTargetSelection(
     }
   }
   return carrierTargets
+}
+
+export async function doCapSelection(controller) {
+  // Allocate CAP Fighters...
+  GlobalGameState.testCapSelection = -1
+
+  const capBox = controller.getCAPBoxForTaskForce(GlobalGameState.taskForceTarget, GlobalUnitsModel.Side.US)
+  const capUnits = controller.getAllAirUnitsInBox(capBox)
+
+  const attackers = controller.getAttackingStrikeUnits(false)
+
+  let copy = JSON.parse(JSON.stringify(capUnits))
+
+  // Allocate one CAP unit per attacker
+  for (let i = 0; i < attackers.length; i++) {
+    await delay(1000)
+
+    const selection = Math.floor(Math.random() * copy.length)
+
+    GlobalGameState.testCapSelection = selection
+    GlobalGameState.updateGlobalState()
+
+    await delay(500)
+   
+
+    // remove the selected air unit from available CAP units
+    copy = copy.filter((element) => element.name !== copy[selection].name)
+  }
+  GlobalGameState.rollDice = true
+  await delay(10)
+  GlobalGameState.updateGlobalState()
 }

@@ -15,8 +15,11 @@ class JapanHumanTargetDeterminationState {
 
   async nextState(stateObject) {
     console.log("JapanHumanTargetDeterminationState -> nextState() !!!!!!!!!!!!!!!")
-    // GlobalGameState.currentPlayer = GlobalUnitsModel.Side.JAPAN
-    // GlobalGameState.gamePhase = GlobalGameState.PHASE.CAP_INTERCEPTION
+
+
+    // TODO -> USAICapInterception state
+    GlobalGameState.currentPlayer = GlobalUnitsModel.Side.US
+    GlobalGameState.gamePhase = GlobalGameState.PHASE.CAP_INTERCEPTION
   }
 
   getState() {

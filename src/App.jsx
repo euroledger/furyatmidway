@@ -2026,6 +2026,12 @@ export function App() {
             disableButtons = true
        }
     }
+    if (GlobalGameState.gamePhase === GlobalGameState.PHASE.ESCORT_DAMAGE_ALLOCATION) {
+      if (GlobalGameState.sideWithInitiative === GlobalUnitsModel.Side.JAPAN &&     
+          GlobalGameState.usPlayerType === GlobalUnitsModel.TYPE.AI) {
+           disableButtons = true
+      }
+   }
     return disableButtons
   }
   const damageHeaders = (
