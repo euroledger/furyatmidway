@@ -9,6 +9,7 @@ class JapanHumanEscortCounterattackState {
   }
 
   async nextState(stateObject) {
+    const { capAirUnits, setAirUnitUpdate, setEliminatedUnitsPanelShow } = stateObject
     console.log("END OF ESCORT_COUNTERATTACK")
 
     if (GlobalGameState.fighterHits > 0) {
@@ -25,12 +26,7 @@ class JapanHumanEscortCounterattackState {
           GlobalGameState.gamePhase = GlobalGameState.PHASE.ANTI_AIRCRAFT_FIRE
         }
       } else {
-        await endOfAirOperation(
-          GlobalGameState.sideWithInitiative,
-          capAirUnits,
-          setAirUnitUpdate,
-          setEliminatedUnitsPanelShow
-        )
+        await endOfAirOperation(capAirUnits, setAirUnitUpdate, setEliminatedUnitsPanelShow)
         midwayOrAirOps()
       }
     }

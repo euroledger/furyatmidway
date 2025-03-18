@@ -13,6 +13,8 @@ import JapanHumanCapReturnState from "./JapanHumanCapReturnState"
 import JapanHumanTargetDeterminationState from "./JapanHumanTargetDeterminationState"
 import JapanHumanCapDamageAllocationState from "./JapanHumanCapDamageAllocationState"
 import JapanHumanEscortCounterattackState from "./JapanHumanEscortCounterattackState"
+import JapanHumanAttackTargetSelectionState from "./JapanHumanAttackTargetSelectionState"
+import JapanHumanAirAttack1State from "./JapanHumanAirAttack1State"
 
 function mapGameStateToJapanHumanHandlerState() {
   switch (GlobalGameState.gamePhase) {
@@ -54,11 +56,20 @@ function mapGameStateToJapanHumanHandlerState() {
 
     case GlobalGameState.PHASE.CAP_DAMAGE_ALLOCATION:
       return new JapanHumanCapDamageAllocationState()
-      
+
     case GlobalGameState.PHASE.ESCORT_COUNTERATTACK:
       return new JapanHumanEscortCounterattackState()
+
+    case GlobalGameState.PHASE.ATTACK_TARGET_SELECTION:
+      return new JapanHumanAttackTargetSelectionState()
+
+    case GlobalGameState.PHASE.AIR_ATTACK_1:
+      return new JapanHumanAirAttack1State()
+
+    // TODO AttackDamageResolution...
+
     default:
-      console.log("NO JAPAN HUMAN STATE FOUND FOR PHASE", GlobalGameState.gamePhase)
+      console.log("+++++ ERRROR +++++ NO JAPAN HUMAN STATE FOUND FOR PHASE", GlobalGameState.gamePhase)
   }
 }
 

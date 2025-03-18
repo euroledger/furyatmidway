@@ -27,7 +27,6 @@ class USAIEscortCounterattackState {
         }
       } else {
         await endOfAirOperation(
-          GlobalGameState.sideWithInitiative,
           capAirUnits,
           setAirUnitUpdate,
           setEliminatedUnitsPanelShow

@@ -45,7 +45,7 @@ class USAIEscortDamageAllocationState {
       } else {
 
         // TODO ADD USAIAAAFireState..
-
+        GlobalGameState.currentPlayer = GlobalUnitsModel.Side.US
         GlobalGameState.gamePhase = GlobalGameState.PHASE.ANTI_AIRCRAFT_FIRE
       }
     } else {
