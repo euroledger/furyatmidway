@@ -18,6 +18,7 @@ import USAICardResponseState from "./USAICardResponseState"
 import USAICapInterceptionState from "./USAICapInterceptionState"
 import USAIEscortDamageAllocationState from "./USAIEscortDamageAllocationState"
 import USAIAAAFireState from "./USAIAAAFireState"
+import USAICapReturnState from "./USAICapReturnState"
 
 function mapGameStateToUSAIHandlerState() {
   switch (GlobalGameState.gamePhase) {
@@ -59,6 +60,8 @@ function mapGameStateToUSAIHandlerState() {
       return new USAIEscortDamageAllocationState()
     case GlobalGameState.PHASE.ANTI_AIRCRAFT_FIRE:
       return new USAIAAAFireState()
+    case GlobalGameState.PHASE.CAP_RETURN:
+      return new USAICapReturnState()
     
     default:
       console.log("ERROR unexpected game state", GlobalGameState.gamePhase)

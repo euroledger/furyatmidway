@@ -3102,7 +3102,10 @@ export function App() {
         image={GlobalGameState.sideWithInitiative === GlobalUnitsModel.Side.JAPAN
           ? "/images/japanflag.jpg"
           : "/images/usaflag.jpg"}
-      ></CarrierDamageDicePanel>
+        sidebg = {GlobalGameState.sideWithInitiative === GlobalUnitsModel.Side.US 
+          ? GlobalUIConstants.Colors.US : 
+          GlobalUIConstants.Colors.JAPAN}      >    
+      </CarrierDamageDicePanel>
       <MidwayDamageDicePanel
         numDice={1}
         controller={GlobalInit.controller}

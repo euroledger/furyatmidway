@@ -292,6 +292,9 @@ export async function doCapSelection(controller) {
 
   let copy = JSON.parse(JSON.stringify(capUnits))
 
+  GlobalGameState.rollDice = false
+  await delay(10)
+  
   // Allocate one CAP unit per attacker
   for (let i = 0; i < attackers.length; i++) {
     await delay(1000)

@@ -58,6 +58,7 @@ class USAIAttackDamageResolutionState {
         GlobalGameState.gamePhase = GlobalGameState.PHASE.AIR_ATTACK_2
       } else {
         await endOfAirOperation(capAirUnits, setAirUnitUpdate, setEliminatedUnitsPanelShow)
+        
         GlobalGameState.gamePhase = GlobalGameState.PHASE.AIR_OPERATIONS
       }
     }

@@ -15,57 +15,48 @@ import JapanHumanCapDamageAllocationState from "./JapanHumanCapDamageAllocationS
 import JapanHumanEscortCounterattackState from "./JapanHumanEscortCounterattackState"
 import JapanHumanAttackTargetSelectionState from "./JapanHumanAttackTargetSelectionState"
 import JapanHumanAirAttack1State from "./JapanHumanAirAttack1State"
+import JapanHumanAttackDamageResolutionState from "./JapanHumanAttackDamageResolutionState"
+import JapanHumanAAADamageAllocationState from "./JapanHumanAAADamageAllocationState"
 
 function mapGameStateToJapanHumanHandlerState() {
   switch (GlobalGameState.gamePhase) {
     case GlobalGameState.PHASE.JAPAN_SETUP:
       return new JapanHumanSetupAirState()
-
     case GlobalGameState.PHASE.JAPAN_CARD_DRAW:
       return new JapanHumanCardDrawState()
-
     case GlobalGameState.PHASE.JAPAN_MIDWAY:
       return new JapanHumanMidwayDeclarationState()
-
     case GlobalGameState.PHASE.CARD_PLAY:
       return new JapanHumanCardPlayState()
-
     case GlobalGameState.PHASE.JAPAN_FLEET_MOVEMENT:
       return new JapanHumanFleetMovementState()
-
     case GlobalGameState.PHASE.END_OF_AIR_OPERATION:
       return new JapanHumanEndOfAirOperationState()
-
     case GlobalGameState.PHASE.CAP_INTERCEPTION:
       return new JapanHumanCapInterceptionState()
-
     case GlobalGameState.PHASE.ANTI_AIRCRAFT_FIRE:
       return new JapanHumanAAAFireState()
-
     case GlobalGameState.PHASE.ESCORT_DAMAGE_ALLOCATION:
       return new JapanHumanEscortDamageAllocationState()
-
     case GlobalGameState.PHASE.AIR_OPERATIONS:
       return new JapanHumanAirOperationsState()
-
     case GlobalGameState.PHASE.CAP_RETURN:
       return new JapanHumanCapReturnState()
-
     case GlobalGameState.PHASE.TARGET_DETERMINATION:
       return new JapanHumanTargetDeterminationState()
-
     case GlobalGameState.PHASE.CAP_DAMAGE_ALLOCATION:
       return new JapanHumanCapDamageAllocationState()
-
     case GlobalGameState.PHASE.ESCORT_COUNTERATTACK:
       return new JapanHumanEscortCounterattackState()
-
     case GlobalGameState.PHASE.ATTACK_TARGET_SELECTION:
       return new JapanHumanAttackTargetSelectionState()
-
     case GlobalGameState.PHASE.AIR_ATTACK_1:
       return new JapanHumanAirAttack1State()
+    case GlobalGameState.PHASE.ATTACK_DAMAGE_RESOLUTION:
+      return new JapanHumanAttackDamageResolutionState()
 
+    case GlobalGameState.PHASE.AAA_DAMAGE_ALLOCATION:
+      return new JapanHumanAAADamageAllocationState()
     // TODO AttackDamageResolution...
 
     default:

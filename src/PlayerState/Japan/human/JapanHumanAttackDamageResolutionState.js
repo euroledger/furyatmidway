@@ -1,11 +1,10 @@
 import GlobalGameState from "../../../model/GlobalGameState"
 import GlobalInit from "../../../model/GlobalInit"
 import GlobalUnitsModel from "../../../model/GlobalUnitsModel"
-import { delay } from "../../../Utils"
 import { endOfAirOperation } from "../../StateUtils"
 import { removeDMCVFleetForCarrier } from "../../StateUtils"
 
-class JapanHumanDamageResolutionState {
+class JapanHumanAttackDamageResolutionState {
   async doAction(stateObject) {
     console.log("++++++++++++++ JAPAN Attack Damage Resolution")
   }
@@ -37,7 +36,15 @@ class JapanHumanDamageResolutionState {
       GlobalGameState.gamePhase = GlobalGameState.PHASE.AIR_ATTACK_2
     } else {
       await endOfAirOperation(capAirUnits, setAirUnitUpdate, setEliminatedUnitsPanelShow)
-      GlobalGameState.gamePhase = GlobalGameState.PHASE.AIR_OPERATIONS
+      const capUnitsReturning = GlobalInit.controller.getAllCAPDefendersInCAPReturnBoxes(GlobalUnitsModel.Side.US)
+
+      console.log("\t\t=>NUM US CAP UNITS RETURNING=", capUnitsReturning.length)
+      if (capUnitsReturning.length > 0) {
+        GlobalGameState.currentPlayer = GlobalUnitsModel.Side.US
+        GlobalGameState.gamePhase = GlobalGameState.PHASE.CAP_RETURN
+      } else {
+        GlobalGameState.gamePhase = GlobalGameState.PHASE.AIR_OPERATIONS
+      }
     }
   }
 
@@ -46,4 +53,4 @@ class JapanHumanDamageResolutionState {
   }
 }
 
-export default JapanHumanDamageResolutionState
+export default JapanHumanAttackDamageResolutionState

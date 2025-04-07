@@ -17,6 +17,7 @@ class JapanHumanCapDamageAllocationState {
     if (GlobalGameState.taskForceTarget === GlobalUnitsModel.TaskForce.MIDWAY && GlobalGameState.elitePilots) {
       if (GlobalGameState.attackingStepsRemaining > 0) {
         GlobalGameState.currentPlayer = GlobalUnitsModel.Side.US
+        console.log("QUACK 1 GOING TO AAA FIRE")
         GlobalGameState.gamePhase = GlobalGameState.PHASE.ANTI_AIRCRAFT_FIRE
       } else {
         await endOfAirOperation(

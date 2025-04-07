@@ -66,6 +66,7 @@ function CarrierDamageDicePanel(props) {
     setDamageMarkerUpdate,
     damageDone,
     setDamageDone,
+    sidebg,
     setDmcvShipMarkerUpdate,
     ...rest
   } = props
@@ -83,6 +84,8 @@ function CarrierDamageDicePanel(props) {
         ? "/images/japanflag.jpg"
         : "/images/usaflag.jpg"
   }
+  let bg = sidebg
+ 
   useEffect(() => {
     if (button1Ref.current) {
       if (GlobalGameState.rollDice === true) {
@@ -104,7 +107,6 @@ function CarrierDamageDicePanel(props) {
 
   const hits = GlobalGameState.carrierAttackHits
 
-  const bg = "#293a4b"
   const closey = closeButtonStr ?? "Close"
   const msg = "Target For Air Attack:"
 

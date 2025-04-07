@@ -43,9 +43,9 @@ class USAIEscortDamageAllocationState {
       if (GlobalGameState.taskForceTarget === GlobalUnitsModel.TaskForce.MIDWAY && GlobalGameState.elitePilots) {
         GlobalGameState.gamePhase = GlobalGameState.PHASE.CAP_INTERCEPTION
       } else {
-
-        // TODO ADD USAIAAAFireState..
         GlobalGameState.currentPlayer = GlobalUnitsModel.Side.US
+        console.log("QUACK 9 GOING TO AAA FIRE")
+
         GlobalGameState.gamePhase = GlobalGameState.PHASE.ANTI_AIRCRAFT_FIRE
       }
     } else {
