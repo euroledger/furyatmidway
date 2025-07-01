@@ -64,7 +64,9 @@ class JapanHumanEndOfAirOperationState {
     }
   }
 
-  getState() {}
+  getState() {
+    return GlobalGameState.PHASE.END_OF_AIR_OPERATION
+  }
 }
 
 export default JapanHumanEndOfAirOperationState

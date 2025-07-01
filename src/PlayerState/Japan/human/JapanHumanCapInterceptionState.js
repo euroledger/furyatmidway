@@ -22,7 +22,6 @@ class JapanHumanCapInterceptionState {
     } else {
       if (GlobalGameState.taskForceTarget === GlobalUnitsModel.TaskForce.MIDWAY && GlobalGameState.elitePilots) {
         if (GlobalGameState.attackingStepsRemaining > 0 || GlobalGameState.attackingStepsRemaining === undefined) {
-          console.log("QUACK 2 GOING TO AAA FIRE")
           GlobalGameState.gamePhase = GlobalGameState.PHASE.ANTI_AIRCRAFT_FIRE
         } else {
           await endOfAirOperation(
@@ -37,7 +36,6 @@ class JapanHumanCapInterceptionState {
           GlobalGameState.currentPlayer = GlobalUnitsModel.Side.US
           GlobalGameState.gamePhase = GlobalGameState.PHASE.ESCORT_COUNTERATTACK
         } else {
-          console.log("QUACK 3 GOING TO AAA FIRE")
           GlobalGameState.gamePhase = GlobalGameState.PHASE.ANTI_AIRCRAFT_FIRE
         }
       }

@@ -297,16 +297,14 @@ export async function doCapSelection(controller) {
   
   // Allocate one CAP unit per attacker
   for (let i = 0; i < attackers.length; i++) {
-    await delay(1000)
+    await delay(300)
 
     const selection = Math.floor(Math.random() * copy.length)
 
     GlobalGameState.testCapSelection = selection
     GlobalGameState.updateGlobalState()
 
-    await delay(500)
-   
-
+    await delay(10)
     // remove the selected air unit from available CAP units
     copy = copy.filter((element) => element.name !== copy[selection].name)
   }

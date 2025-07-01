@@ -44,8 +44,6 @@ class USAIEscortDamageAllocationState {
         GlobalGameState.gamePhase = GlobalGameState.PHASE.CAP_INTERCEPTION
       } else {
         GlobalGameState.currentPlayer = GlobalUnitsModel.Side.US
-        console.log("QUACK 9 GOING TO AAA FIRE")
-
         GlobalGameState.gamePhase = GlobalGameState.PHASE.ANTI_AIRCRAFT_FIRE
       }
     } else {

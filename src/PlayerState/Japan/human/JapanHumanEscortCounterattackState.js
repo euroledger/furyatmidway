@@ -23,7 +23,6 @@ class JapanHumanEscortCounterattackState {
         } else {
           console.log("GOING TO ANTI AIRCRAFT FIRE....))))))))))))))))))))))")
           GlobalGameState.currentPlayer = GlobalUnitsModel.Side.US
-          console.log("QUACK 4 GOING TO AAA FIRE")
           GlobalGameState.gamePhase = GlobalGameState.PHASE.ANTI_AIRCRAFT_FIRE
         }
       } else {

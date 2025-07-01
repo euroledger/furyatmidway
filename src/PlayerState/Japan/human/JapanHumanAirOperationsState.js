@@ -9,10 +9,9 @@ class JapanHumanAirOperationsState {
 
   async nextState(stateObject) {
     const { setEndOfAirOpAlertShow } = stateObject
-    console.log("MOVE ON FROM JAPAN AIR OPERATIONS!")
-    // GlobalGameState.currentPlayer = GlobalGameState.sideWithInitiative
-    GlobalGameState.gamePhase = GlobalGameState.PHASE.END_OF_AIR_OPERATION
+    console.log("MOVE ON FROM JAPAN AIR OPERATIONS! _____________ SHOW THE FUCKING ALERT _____________")
     setEndOfAirOpAlertShow(true)
+    GlobalGameState.gamePhase = GlobalGameState.PHASE.END_OF_AIR_OPERATION
   }
 
   getState() {

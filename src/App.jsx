@@ -348,10 +348,13 @@ export function App() {
   // *******************************************
 
   const doStateChange = () => {
+
     if (GlobalGameState.currentPlayer === GlobalUnitsModel.Side.US) {
+      console.log("DO STATE CHANGE US")
       StateManager.gameStateManager.setUSState(stateObject)
       StateManager.gameStateManager.doAction(GlobalUnitsModel.Side.US, stateObject) // Used by AI
     } else {
+      console.log("DO STATE CHANGE JAPAN")
       StateManager.gameStateManager.setJapanState(stateObject)
       StateManager.gameStateManager.doAction(GlobalUnitsModel.Side.JAPAN, stateObject) // only used by AI
     }
@@ -502,6 +505,7 @@ export function App() {
   useEffect(() => {
     if (GlobalGameState.gamePhase === GlobalGameState.PHASE.ESCORT_DAMAGE_ALLOCATION) {
       setEliminatedSteps(0)
+      setStepsLeft(0)
       setDamageAllocationPanelShow(true)
       doStateChange()
     }
@@ -805,7 +809,6 @@ export function App() {
       GlobalInit.controller.setAllDefendersToNotInterceptingAndNotSeparated()
       GlobalGameState.nextActionButtonDisabled = false
       GlobalGameState.elitePilots = false // reset for future air combats
-      // StateManager.gameStateManager.setJapanState(stateObject)
       doStateChange()
     }
   }, [GlobalGameState.gamePhase])
@@ -1607,11 +1610,12 @@ export function App() {
     }
     let midwayMsg = ""
     nextActionButtonDisabled()
-    if (GlobalGameState.gamePhase === GlobalGameState.PHASE.END_OF_AIR_OPERATION) {
-      GlobalInit.controller.setAllDefendersToNotInterceptingAndNotSeparated()
-      GlobalGameState.nextActionButtonDisabled = false
-      GlobalGameState.elitePilots = false // reset for future air combats
-    }
+    // if (GlobalGameState.gamePhase === GlobalGameState.PHASE.END_OF_AIR_OPERATION) {
+    //   console.log(">>>>>>>>>>>>>>> FUCKING IN HERE ***********************************")
+    //   GlobalInit.controller.setAllDefendersToNotInterceptingAndNotSeparated()
+    //   GlobalGameState.nextActionButtonDisabled = false
+    //   GlobalGameState.elitePilots = false // reset for future air combats
+    // }
     if (GlobalGameState.gamePhase === GlobalGameState.PHASE.MIDWAY_ATTACK) {
       if (GlobalGameState.midwayAirOp === 1) {
         midwayMsg = "(First Air Op)"
@@ -2565,6 +2569,7 @@ export function App() {
   if (GlobalGameState.gamePhase === GlobalGameState.PHASE.CAP_DAMAGE_ALLOCATION) {
     closeDamageButtonDisabled = eliminatedSteps !== GlobalGameState.capHits && stepsLeft !== 0
   } else if (GlobalGameState.gamePhase === GlobalGameState.PHASE.ESCORT_DAMAGE_ALLOCATION) {
+    console.log("DEBUG: ESCORT DAMAGE ALLOCATION: eliminatedSteps= ", eliminatedSteps, "; stepsLeft=",  stepsLeft)
     closeDamageButtonDisabled = eliminatedSteps !== GlobalGameState.fighterHits && stepsLeft !== 0
   } else if (GlobalGameState.gamePhase === GlobalGameState.PHASE.AAA_DAMAGE_ALLOCATION) {
     closeDamageButtonDisabled = eliminatedSteps !== GlobalGameState.antiaircraftHits && stepsLeft != 0

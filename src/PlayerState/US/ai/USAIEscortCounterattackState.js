@@ -23,7 +23,6 @@ class USAIEscortCounterattackState {
         } else {
           console.log("GOING TO ANTI AIRCRAFT FIRE....))))))))))))))))))))))")
           GlobalGameState.currentPlayer = GlobalUnitsModel.Side.JAPAN
-          console.log("QUACK 8 GOING TO AAA FIRE")
           GlobalGameState.gamePhase = GlobalGameState.PHASE.ANTI_AIRCRAFT_FIRE
         }
       } else {
