@@ -2,6 +2,7 @@ import { endOfTurn } from "../../StateUtils"
 import GlobalGameState from "../../../model/GlobalGameState"
 import GlobalUnitsModel from "../../../model/GlobalUnitsModel"
 import GlobalInit from "../../../model/GlobalInit"
+import { tidyUp } from "../../StateUtils"
 
 class JapanHumanEndOfAirOperationState {
   async doAction(stateObject) {
@@ -9,7 +10,8 @@ class JapanHumanEndOfAirOperationState {
   }
 
   async nextState(stateObject) {
-    const { setCardNumber, setEndOfTurnSummaryShow } = stateObject
+    const { setAirUnitUpdate, setStrikeGroupUpdate, setFleetUnitUpdate, setCardNumber, setEndOfTurnSummaryShow } =
+      stateObject
 
     console.log("NEXT STATE AFTER AIR OPERATION (japan)")
     const unitsInReturnBoxes = GlobalInit.controller.getAllUSCarrierPlanesInReturnBoxes()
@@ -24,6 +26,12 @@ class JapanHumanEndOfAirOperationState {
       GlobalGameState.gamePhase = GlobalGameState.PHASE.CARD_PLAY
       return
     }
+
+    // Add this to decrement air ops points, reset strike groups etc
+
+    console.log("PASTA going to decrement the Japan Air Ops points here...")
+    await tidyUp(setAirUnitUpdate, setStrikeGroupUpdate, setFleetUnitUpdate)
+
     if (endOfTurn()) {
       if (GlobalGameState.gameTurn === 7) {
         determineMidwayInvasion(setCardNumber, setEndOfTurnSummaryShow)

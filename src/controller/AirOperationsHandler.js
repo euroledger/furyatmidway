@@ -732,6 +732,8 @@ export async function resetStrikeGroups(controller, side, setStrikeGroupUpdate) 
     groups = GlobalUnitsModel.usStrikeGroups
   }
 
+  console.log(">>>>>>>>>>> RESETTING STRIKE GROUPS <<<<<<<<<<<<<<<<<<<")
+
   let index = 0
   for (let strikeGroup of groups.values()) {
     if (!strikeGroup.attacked) {
@@ -757,6 +759,7 @@ export async function resetStrikeGroups(controller, side, setStrikeGroupUpdate) 
     strikeGroup.moved = false
     strikeGroup.attacked = false
 
+    console.log("SG ", strikeGroup.name, "SET TO OFFBOARD!!!")
     // strikeGroup.setAttacked(false)
     strikeGroup.position = strikeGroup.initialPosition
     strikeGroup.location = GlobalUnitsModel.AirBox.OFFBOARD
@@ -901,13 +904,16 @@ export async function moveOrphanedCAPUnitsToEliminatedBoxNight(side, box, unit) 
 }
 
 export async function moveOrphanedCAPUnitsToEliminatedBox(side, box, unit) {
+  console.log("*** ORPHANED CRAP ***")
   if (box !== undefined) {
     const reorgUnits = getReorgUnits(side, box, unit)
+    console.log("REORG UNITS:", reorgUnits)
     if (reorgUnits.length > 0) {
-      return
+      return "Reorg the following units:", reorgUnits
     }
   }
   const capUnitsReturning = GlobalInit.controller.getAllCAPDefendersInCAPReturnBoxes(side)
+  console.log("capUnitsReturning=", capUnitsReturning)
   for (const unit of capUnitsReturning) {
     await delay(1)
     const parentCarrier = GlobalInit.controller.getCarrierForAirUnit(unit.name)
@@ -918,6 +924,7 @@ export async function moveOrphanedCAPUnitsToEliminatedBox(side, box, unit) {
     } else {
       destinationsArray = getValidUSDestinationsCAP(GlobalInit.controller, parentCarrier, side, unit.name)
     }
+    console.log(">>>>>>> destinations array =", destinationsArray)
     if (destinationsArray.length === 0) {
       GlobalGameState.orphanedAirUnits.push(unit)
       moveAirUnitToEliminatedBox(GlobalInit.controller, unit)

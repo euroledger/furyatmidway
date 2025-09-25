@@ -5,7 +5,17 @@ import GlobalGameState from "../../../model/GlobalGameState"
 import GlobalUnitsModel from "../../../model/GlobalUnitsModel"
 import { BoardContext } from "../../../App"
 
-function AirCounters({ controller, onDrag, onStop, getAirBox, setAirBox, counterData, airUnitUpdate, setAlertShow }) {
+function AirCounters({
+  controller,
+  onDrag,
+  onStop,
+  getAirBox,
+  setAirBox,
+  counterData,
+  airUnitUpdate,
+  setAlertShow,
+  setReorgAlertShow,
+}) {
   const { loading } = useContext(BoardContext)
   const counters = Array.from(counterData.values())
 
@@ -49,6 +59,7 @@ function AirCounters({ controller, onDrag, onStop, getAirBox, setAirBox, counter
         setAirBox={setAirBox}
         airUnitUpdate={airUnitUpdate}
         setAlertShow={setAlertShow}
+        setReorgAlertShow={setReorgAlertShow}
         side={airUnit.side}
       ></AirCounter>
     )

@@ -159,6 +159,8 @@ export function App() {
   const [testyClicked, setTestyClicked] = useState(false)
 
   const [csfAlertShow, setCSFAlertShow] = useState(false)
+  const [reorgAlertShow, setReorgAlertShow] = useState(false)
+
   const [headerText, setHeaderText] = useState("")
 
   const [saveGameShow, setSaveGameShow] = useState(false)
@@ -1465,7 +1467,6 @@ export function App() {
 
     if (GlobalGameState.gamePhase === GlobalGameState.PHASE.CAP_RETURN) {
       const capUnitsReturning = GlobalInit.controller.getAllCAPDefendersInCAPReturnBoxes(sideBeingAttacked())
-      console.log("Side Being Attacked=", sideBeingAttacked(), "capUnitsReturning.length=", capUnitsReturning.length)
       if (capUnitsReturning.length === 0) {
         GlobalGameState.nextActionButtonDisabled = false
         return
@@ -2423,11 +2424,11 @@ export function App() {
   function doInitiativeRoll(roll0, roll1) {
     // for testing QUACK
     // doIntiativeRoll(GlobalInit.controller, 6, 1, true) // JAPAN initiative
-    doIntiativeRoll(GlobalInit.controller, 1, 6, true) // US initiative
+    // doIntiativeRoll(GlobalInit.controller, 1, 6, true) // US initiative
 
     // doIntiativeRoll(GlobalInit.controller, 3, 3, true) // tie
 
-    // doIntiativeRoll(GlobalInit.controller, roll0, roll1)
+    doIntiativeRoll(GlobalInit.controller, roll0, roll1)
     GlobalGameState.updateGlobalState()
   }
 
@@ -2686,6 +2687,10 @@ export function App() {
       <AlertPanel show={alertShow} onHide={() => setAlertShow(false)}>
         <h4>ALERT</h4>
         <p>This air unit is not a fighter unit so cannot be used for CAP.</p>
+      </AlertPanel>
+       <AlertPanel show={reorgAlertShow} onHide={() => setReorgAlertShow(false)}>
+        <h4>ALERT</h4>
+        <p>Reorganize Hangar Units to allow CAP Unit to land</p>
       </AlertPanel>
       <AlertPanel show={csfAlertShow} onHide={() => setCSFAlertShow(false)}>
         <h4>INFO</h4>
@@ -3462,6 +3467,7 @@ export function App() {
                   damageMarkerUpdate,
                   dmcvShipMarkerUpdate,
                   setAlertShow,
+                  setReorgAlertShow,
                   showZones,
                   setDmcvCarrierSelectionPanelShow,
                   USMapRegions,

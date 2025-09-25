@@ -8,6 +8,8 @@ import { delay } from "../Utils"
 import { japanAF1StartHexesMidway, japanAF1StartHexesNoMidway } from "../components/MapRegions"
 import HexCommand from "../commands/HexCommand"
 import { setUpAirAttack } from "../controller/AirAttackHandler"
+import { getValidUSDestinationsCAP } from "../controller/AirOperationsHandler"
+import USAirBoxOffsets from "../components/draganddrop/USAirBoxOffsets"
 
 
 import {
@@ -803,4 +805,33 @@ export async function rollZeDice() {
   await delay(1)
   GlobalGameState.rollDice = true
   GlobalGameState.updateGlobalState()
+}
+
+export async function moveCAPUnitsFromReturnBoxToCarrier(controller, side, setTestUpdate) {
+  const capUnitsReturning = controller.getAllCAPDefendersInCAPReturnBoxes(side)
+
+  for (const unit of capUnitsReturning) {
+    const parentCarrier = controller.getCarrierForAirUnit(unit.name)
+
+    let destinationsArray =
+    getValidUSDestinationsCAP(controller, parentCarrier, side, unit.name)
+
+    // go to first available destination
+    let update = {
+      name: unit.name,
+      boxName: destinationsArray[0],
+    }
+
+    update.index = controller.getFirstAvailableZone(update.boxName)
+    let position1 = USAirBoxOffsets.find((box) => box.name === update.boxName)
+
+    if (position1 === undefined) {
+      // orphaned CAP Unit, ignore
+      continue
+    }
+    update.position = position1.offsets[update.index]
+
+    setTestUpdate(update)
+    await delay(1)
+  }
 }

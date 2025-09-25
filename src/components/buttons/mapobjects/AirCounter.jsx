@@ -26,6 +26,7 @@ function AirCounter({ getAirBox, setAirBox, counterData, side }) {
     testUpdate,
     setIsMoveable,
     setAlertShow,
+    setReorgAlertShow,
     setEnabledUSBoxes,
     setEnabledJapanBoxes,
     setEnabledJapanReorgBoxes,
@@ -121,6 +122,7 @@ function AirCounter({ getAirBox, setAirBox, counterData, side }) {
   }
 
   const onDrag = () => {
+    console.log("MOUSE ENTERED UNIT:", counterData.name)
     const location = controller.getAirUnitLocation(counterData.name)
 
     if (!location.boxName.includes("CAP RETURNING") && GlobalGameState.gamePhase === GlobalGameState.PHASE.CAP_RETURN) {
@@ -148,6 +150,7 @@ function AirCounter({ getAirBox, setAirBox, counterData, side }) {
     if (location.boxName.includes("ELIMINATED")) {
       return
     }
+    console.log("GAME PHASE=", GlobalGameState.gamePhase)
     if (
       GlobalGameState.gamePhase === GlobalGameState.PHASE.NIGHT_AIR_OPERATIONS_JAPAN ||
       GlobalGameState.gamePhase === GlobalGameState.PHASE.NIGHT_AIR_OPERATIONS_US
@@ -214,6 +217,7 @@ function AirCounter({ getAirBox, setAirBox, counterData, side }) {
       GlobalGameState.gamePhase === GlobalGameState.PHASE.CAP_RETURN 
 
     ) {
+      console.log("SET VALID DESTINATION BOXES !!!!")
       setValidDestinationBoxes(controller, counterData.name, counterData.side)
     }
     setBoxes(counterData, location.boxName)
@@ -443,6 +447,7 @@ function AirCounter({ getAirBox, setAirBox, counterData, side }) {
   }
 
   const setBoxes = async (counterData, box) => {
+    console.log("*** setBoxes() ***")
     if (
       GlobalGameState.gamePhase === GlobalGameState.PHASE.NIGHT_AIR_OPERATIONS_JAPAN ||
       GlobalGameState.gamePhase === GlobalGameState.PHASE.NIGHT_AIR_OPERATIONS_US
@@ -458,8 +463,13 @@ function AirCounter({ getAirBox, setAirBox, counterData, side }) {
       }
     }
 
+    console.log("box=", box)
+
     if (box !== undefined && box.includes("CAP RETURNING")) {
-      await moveOrphanedCAPUnitsToEliminatedBox(counterData.side, box, counterData)
+      const reorgUnits = await moveOrphanedCAPUnitsToEliminatedBox(counterData.side, box, counterData)
+      if (reorgUnits != undefined && reorgUnits.length > 0) {
+        setReorgAlertShow(true)
+      }
     }
     if (box !== undefined && box.includes("RETURNING (1)")) {
       await moveOrphanedAirUnitsInReturn1Boxes(counterData.side, box, counterData)
