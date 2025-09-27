@@ -231,7 +231,6 @@ async function moveAirUnit(controller, unit, setTestUpdate) {
     // this can only happen if all carriers sunk, leave for now
     return
   }
-
   // TODO Decide on best destination!! not just first one
 
   // go to first available destination
@@ -250,7 +249,6 @@ async function moveAirUnit(controller, unit, setTestUpdate) {
 
   await delay(50)
 
-  console.log("MOVE AIR UNIT", unit.name, ">>>>>>>>>>>>>>>>>>>>>>>>>>>>>> to box",update.boxName)
   setTestUpdate(update)
   await delay(50)
 }
@@ -262,7 +260,6 @@ export async function generateUSAirOperationsMovesCarriers(controller, stateObje
   let units = controller.getAirUnitsInStrikeBoxesReadyToReturn(GlobalGameState.sideWithInitiative)
   if (units.length > 0) {
     for (let unit of units) {
-      console.log("WOOOOOOF ************************ UNIT", unit.name, "MOVED=", unit.aircraftUnit.moved)
       if (unit.aircraftUnit.moved) {
         continue
       }
@@ -274,7 +271,6 @@ export async function generateUSAirOperationsMovesCarriers(controller, stateObje
   // ii) MOVE UNITS FROM RETURN BOX 1 -> CARRIER HANGAR
 
   units = controller.getAttackingReturningUnitsNotMoved(GlobalGameState.sideWithInitiative)
-  console.log("------------------> RETURNING UNITS quack=", units)
   if (units.length > 0) {
     for (let unit of units) {
       if (unit.aircraftUnit.moved) {
@@ -283,8 +279,6 @@ export async function generateUSAirOperationsMovesCarriers(controller, stateObje
       await moveAirUnit(controller, unit, setTestUpdate)
     }
   }
-  
-
 
   // for each air unit that we wish to move generate an array of destination boxes
   // (21 element vector, one for each air unit (3 x 5 carrier air units, 6 for Midway do not include B17))
@@ -334,7 +328,6 @@ export async function generateUSAirOperationsMovesCarriers(controller, stateObje
 
   // Set Up Strike Groups first
 
-  console.log("UNITS ON FLIGHT DECK=", usAirUnitsOnFlightDecks)
   for (let unit of usAirUnitsOnFlightDecks) {
     if (unit.carrier.includes("Midway") || unit.aircraftUnit.moved) {
       continue
@@ -342,7 +335,6 @@ export async function generateUSAirOperationsMovesCarriers(controller, stateObje
     setValidDestinationBoxes(controller, unit.name, GlobalUnitsModel.Side.US)
 
     const destinations = controller.getValidAirUnitDestinations(unit.name)
-    console.log("++++++++++++++++++++ CARRIER MOVE: VALID DESTINATIONS FOR", unit.name, "->", destinations)
     const unitsOnCarrierFlighftDeck = controller.getAllUnitsOnUSFlightDeckofNamedCarrier(unit.carrier)
 
     if (unitsOnCarrierFlighftDeck.length === 1) {
@@ -384,6 +376,7 @@ export async function generateUSAirOperationsMovesCarriers(controller, stateObje
         (minDistanceToEnemyFleet > 2 && minDistanceToEnemyFleet <= 4 && remainingUSAirOps > 1))
     ) {
       const strikeBox = destinations.find((box) => box.includes("STRIKE"))
+
       await moveAirUnitToStrikeGroup({
         controller,
         unit,
@@ -396,7 +389,6 @@ export async function generateUSAirOperationsMovesCarriers(controller, stateObje
 
   // get all fighter aircraft
   usAirUnitsOnFlightDecks = controller.getAllUnitsOnUSFlightDecks(true)
-
   for (let unit of usAirUnitsOnFlightDecks) {
     if (unit.carrier.includes("Midway")) {
       continue
@@ -456,6 +448,7 @@ export async function generateUSAirOperationsMovesCarriers(controller, stateObje
   // 8c. Move Units in Return Boxes to next Return Box or Hangar
 
   // const airUnitsOnFlightDeck =
+  console.log("PISSING RETURN")
 }
 
 // TODO Move this somewhere so the Japanese can use it, controller???
@@ -650,18 +643,21 @@ export async function moveStrikeGroups(controller, stateObject, test) {
     if (strikeGroup.attacked) {
       continue // done for this SG
     }
-    console.log("IMPORTANT QUACK =============================== MOVE FOR SG", strikeGroup)
     const unitsInGroup = controller.getAirUnitsInStrikeGroups(strikeGroup.box)
+    // console.log("unitsInGroup =",unitsInGroup)
 
-    if (unitsInGroup.length === 0 && !strikeGroup.attacked) {
+    if ((strikeGroup.units === undefined || strikeGroup.units.length === 0) && !strikeGroup.attacked) {
+
+    // if (unitsInGroup.length === 0 && !strikeGroup.attacked) {
+      // console.log("NO JOY: SG units=", strikeGroup)
       continue
     }
+
     if (isFirstAirOpForStrike(controller, strikeGroup, GlobalUnitsModel.Side.US)) {
-      console.log("((((((((((((((((((((((((((((((( IMPORTANT QUACK 2 first air op for", strikeGroup.name)
       const usRegion = firstAirOpUSStrikeRegion(controller, strikeGroup)
 
       if (strikeGroup.targetsFirstAirOp.length >= 1) {
-        console.log("1. strikeGroup.targetsFirstAirOp=", strikeGroup.targetsFirstAirOp)
+        // console.log("1. strikeGroup.targetsFirstAirOp=", strikeGroup.targetsFirstAirOp)
         if (GlobalGameState.gameTurn === 6 || GlobalGameState.gameTurn === 7) {
           // prioritise MIF
           if (strikeGroup.targetsFirstAirOp.includes("MIF")) {
@@ -685,7 +681,7 @@ export async function moveStrikeGroups(controller, stateObject, test) {
 
         // Only send one SG to attack IJNDMCV -
         // Need to check if 1AF is also in range
-        console.log("2. strikeGroup.targetsFirstAirOp=", strikeGroup.targetsFirstAirOp)
+        // console.log("2. strikeGroup.targetsFirstAirOp=", strikeGroup.targetsFirstAirOp)
 
         if (!ijndmcvTargeted && numTargetsInRange > 1 && strikeGroup.targetsFirstAirOp.includes("IJN-DMCV")) {
           const locationIJNDMCV = controller.getFleetLocation("IJN-DMCV", GlobalUnitsModel.Side.JAPAN)
@@ -912,5 +908,3 @@ export async function generateUSAirOperationsMovesMidway(controller, stateObject
   // 8b. Get valid destinations for units in Return Boxes
   // 8c. Move Units in Return Boxes to next Return Box or Hangar
 }
-
-

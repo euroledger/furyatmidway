@@ -122,7 +122,6 @@ function AirCounter({ getAirBox, setAirBox, counterData, side }) {
   }
 
   const onDrag = () => {
-    console.log("MOUSE ENTERED UNIT:", counterData.name)
     const location = controller.getAirUnitLocation(counterData.name)
 
     if (!location.boxName.includes("CAP RETURNING") && GlobalGameState.gamePhase === GlobalGameState.PHASE.CAP_RETURN) {

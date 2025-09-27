@@ -121,7 +121,6 @@ export default class Controller {
     const targets = Array.from(this.targetMap.values())
     let carriers = [...new Set(targets)]
 
-    console.log("++++++++++ QUACK 1 set carrierTarget1 to", carriers[0])
     GlobalGameState.carrierTarget1 = carriers[0]
 
     if (carriers.length === 2) {

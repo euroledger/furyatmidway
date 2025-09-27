@@ -41,6 +41,7 @@ class JapanHumanAttackDamageResolutionState {
       console.log("\t\t=>NUM US CAP UNITS RETURNING=", capUnitsReturning.length)
       if (capUnitsReturning.length > 0) {
         GlobalGameState.currentPlayer = GlobalUnitsModel.Side.US
+        console.log("SET STATE TO US CAP RETURN")
         GlobalGameState.gamePhase = GlobalGameState.PHASE.CAP_RETURN
       } else {
         GlobalGameState.gamePhase = GlobalGameState.PHASE.AIR_OPERATIONS

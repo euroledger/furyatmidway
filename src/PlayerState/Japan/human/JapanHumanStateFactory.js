@@ -17,6 +17,7 @@ import JapanHumanAttackTargetSelectionState from "./JapanHumanAttackTargetSelect
 import JapanHumanAirAttack1State from "./JapanHumanAirAttack1State"
 import JapanHumanAttackDamageResolutionState from "./JapanHumanAttackDamageResolutionState"
 import JapanHumanAAADamageAllocationState from "./JapanHumanAAADamageAllocationState"
+import JapanHumanEndOfTurnState from "./JapanHumanEndOfTurnState"
 
 function mapGameStateToJapanHumanHandlerState() {
   switch (GlobalGameState.gamePhase) {
@@ -54,6 +55,8 @@ function mapGameStateToJapanHumanHandlerState() {
       return new JapanHumanAirAttack1State()
     case GlobalGameState.PHASE.ATTACK_DAMAGE_RESOLUTION:
       return new JapanHumanAttackDamageResolutionState()
+    case GlobalGameState.PHASE.END_OF_TURN:
+      return new JapanHumanEndOfTurnState()
 
     case GlobalGameState.PHASE.AAA_DAMAGE_ALLOCATION:
       return new JapanHumanAAADamageAllocationState()

@@ -3,9 +3,9 @@ import "./cap.css"
 import GlobalGameState from "../model/GlobalGameState"
 import { doDamageAllocation } from "../DiceHandler"
 import GlobalUnitsModel from "../model/GlobalUnitsModel"
+import GlobalUIConstants from "../components/UIConstants"
 
-
-export function EndOfTurnSummaryHeaders({ controller }) {
+export function EndOfTurnSummaryHeaders({ controller, sidebg }) {
   const japanCVMsg = "IJN CVs Sunk (1 VP each):"
   const usCVMsg = "US CVs Sunk (1 VP each):"
   const midwayControlMsg = "Midway Controlled By:"
@@ -25,6 +25,10 @@ export function EndOfTurnSummaryHeaders({ controller }) {
   const csfVPs = GlobalGameState.CSFLeftMap ? 1 : 0
   const af1VPs = GlobalGameState.AF1LeftMap ? 1 : 0
 
+  let sidey = sidebg
+  if (!sidebg) {
+    sidey = GlobalUIConstants.Colors.JAPAN
+  }
   let japanCVsSunkMsg = ""
   if (numJapanCVsSunk > 0) {
     for (let i = 0; i < japanCVsSunk.length; i++) {
@@ -35,6 +39,7 @@ export function EndOfTurnSummaryHeaders({ controller }) {
     }
     japanCVsSunkMsg = ` (${japanCVsSunkMsg})`
   }
+  const bg = GlobalGameState.gameTurn === 4 ? "black" : sidey
 
   let usCVsSunkMsg = ""
   if (numUSCVsSunk > 0) {
@@ -71,7 +76,7 @@ export function EndOfTurnSummaryHeaders({ controller }) {
   let imageJP = "/images/japanflag.jpg"
   const gameContinuesMsg =
     GlobalGameState.gameTurn === 3 && GlobalGameState.winner === "" ? "Neither Side has Achieved Victory" : ""
-    return (
+  return (
     <>
       <div
         style={{
@@ -191,7 +196,7 @@ export function EndOfTurnSummaryHeaders({ controller }) {
                 marginTop: "5px",
               }}
             >
-              {midwayControlMsg}  &nbsp;<strong>{midwayControl}</strong>&nbsp;&nbsp;<strong>    2</strong>&emsp;  <br></br>
+              {midwayControlMsg} &nbsp;<strong>{midwayControl}</strong>&nbsp;&nbsp;<strong> 2</strong>&emsp; <br></br>
             </p>
             <p
               style={{

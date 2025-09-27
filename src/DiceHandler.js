@@ -93,6 +93,7 @@ export function doIntiativeRoll(controller, roll0, roll1, showDice) {
       jpRolls = [rolls[0]]
       usRolls = [rolls[1]]
     }
+    console.log("ARSE GlobalGameState.sideWithInitiative =",GlobalGameState.sideWithInitiative)
   }
 
   if (GlobalGameState.sideWithInitiative === GlobalUnitsModel.Side.JAPAN) {

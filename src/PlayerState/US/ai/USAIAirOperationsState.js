@@ -15,6 +15,10 @@ class USAIAirOperationsState {
   }
   async doAction(stateObject) {
     console.log("++++++++++++++ DO US AIR UNIT/SG MOVE(S)...")
+    GlobalGameState.currentPlayer = GlobalUnitsModel.Side.US
+
+    GlobalGameState.sideWithInitiative = GlobalUnitsModel.Side.US
+
     const inBattle = await moveStrikeGroups(GlobalInit.controller, stateObject) // strike groups already at sea
 
     if (!inBattle) {
@@ -24,6 +28,7 @@ class USAIAirOperationsState {
       console.log("----m QUACK NO COMBAT -> MOVE CARRIER UNITS !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!")
       await generateUSAirOperationsMovesCarriers(GlobalInit.controller, stateObject)
       await generateUSAirOperationsMovesMidway(GlobalInit.controller, stateObject)
+
       const inBattle = await moveStrikeGroups(GlobalInit.controller, stateObject)
       console.log("FUCKING inBattle=", inBattle)
       if (!inBattle) {
@@ -34,7 +39,7 @@ class USAIAirOperationsState {
         await setStrikeGroupAirUnitsToNotMoved(GlobalGameState.sideWithInitiative)
         await generateUSAirOperationsMovesCarriers(GlobalInit.controller, stateObject)
         await generateUSAirOperationsMovesMidway(GlobalInit.controller, stateObject)
-  
+
         this.nextState(stateObject)
       }
     }
@@ -47,18 +52,17 @@ class USAIAirOperationsState {
     }
     const { setAirUnitUpdate, setStrikeGroupUpdate, setFleetUnitUpdate, setEndOfAirOpAlertShow } = stateObject
 
-    console.log("+++++++++++++++++++++++++ DOING TIDY UP...")
-    await tidyUp(setAirUnitUpdate, setStrikeGroupUpdate, setFleetUnitUpdate)
-
     // if any CAP need to return -> Go to new state JAPAN_CAP_RETURN
-    GlobalGameState.currentPlayer = GlobalUnitsModel.Side.JAPAN
 
     const capUnitsReturning = GlobalInit.controller.getAllCAPDefendersInCAPReturnBoxes(GlobalUnitsModel.Side.JAPAN)
 
     if (capUnitsReturning.length > 0) {
       GlobalGameState.sideWithInitiative = GlobalUnitsModel.Side.US
+      GlobalGameState.currentPlayer = GlobalUnitsModel.Side.JAPAN
       GlobalGameState.gamePhase = GlobalGameState.PHASE.CAP_RETURN
     } else {
+      console.log("+++++++++++++++++++++++++ DOING TIDY UP...")
+      // await tidyUp(setAirUnitUpdate, setStrikeGroupUpdate, setFleetUnitUpdate)
       GlobalGameState.gamePhase = GlobalGameState.PHASE.END_OF_AIR_OPERATION
       setEndOfAirOpAlertShow(true)
     }

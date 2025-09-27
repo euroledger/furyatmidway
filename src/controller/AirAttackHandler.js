@@ -58,6 +58,7 @@ export function setUpAirAttack(controller, location, strikeGroup, setCardNumber,
       }
     } else {
       // may have no targets (all enemy carriers sunk/DMCV)
+      console.log("PUSSY INITIATIVE =", GlobalGameState.sideWithInitiative)
       const sideBeingAttacked =
         GlobalGameState.sideWithInitiative === GlobalUnitsModel.Side.US
           ? GlobalUnitsModel.Side.JAPAN
@@ -65,6 +66,10 @@ export function setUpAirAttack(controller, location, strikeGroup, setCardNumber,
       let anyTargets = controller.anyTargets(sideBeingAttacked)
       if (anyTargets) {
         console.log("---------------------------- GO TO TARGET DETERMINATION ----------------------------------")
+        if (sideBeingAttacked === GlobalUnitsModel.Side.JAPAN) {
+          console.log("SET THE FUCKER")
+          GlobalGameState.currentPlayer = GlobalUnitsModel.Side.US
+        }
         GlobalGameState.gamePhase = GlobalGameState.PHASE.TARGET_DETERMINATION
       } else {
         GlobalGameState.taskForceTarget = fleetTarget

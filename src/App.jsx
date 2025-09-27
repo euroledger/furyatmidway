@@ -474,11 +474,7 @@ export function App() {
   }, [GlobalGameState.gamePhase])
  
 
-  useEffect(() => {
-    if (GlobalGameState.gamePhase === GlobalGameState.PHASE.END_OF_TURN) {
-      GlobalGameState.JP_AF = 6 // in case card 6 was played
-    }
-  }, [GlobalGameState.gamePhase])
+
 
   useEffect(() => {
     if (GlobalGameState.gamePhase === GlobalGameState.PHASE.MIDWAY_INVASION) {
@@ -815,6 +811,14 @@ export function App() {
     }
   }, [GlobalGameState.gamePhase])
 
+  useEffect(() => {
+    if (GlobalGameState.gamePhase === GlobalGameState.PHASE.END_OF_TURN) {
+      console.log(">>>>>>>>>>>>> IN END OF TURN EFFECT hook")
+      GlobalGameState.JP_AF = 6 // in case card 6 was played
+      doStateChange()
+    }
+  }, [GlobalGameState.gamePhase])
+
   window.scrollTo(0,20)
   const nextAction = () => {
     console.log("APP nextAction for side", GlobalGameState.currentPlayer)
@@ -986,6 +990,7 @@ export function App() {
     setCardNumber,
     cardNumber,
     setJapanMapRegions,
+    setEndOfTurnSummaryShow,
     setShowCardFooter,
     setJapanMIFMapRegions,
     setJpAlertShow,
@@ -2193,7 +2198,14 @@ export function App() {
   )
   const endOfTurnHeader =
     GlobalGameState.gameTurn !== 7 ? `End of Turn ${GlobalGameState.gameTurn} - Summary` : "End of Game Summary"
-  const endOfTurnSummaryHeaders = (
+  
+    let sideboog= GlobalGameState.jpPlayerType === GlobalUnitsModel.TYPE.HUMAN ? GlobalUIConstants.Colors.JAPAN : 
+    GlobalUIConstants.Colors.US
+    let imageboog = GlobalGameState.jpPlayerType === GlobalUnitsModel.TYPE.HUMAN 
+      ? "/images/japanflag.jpg"
+      : "/images/usaflag.jpg"
+  
+    const endOfTurnSummaryHeaders = (
     <>
       <EndOfTurnSummaryHeaders
         controller={GlobalInit.controller}
@@ -2424,11 +2436,11 @@ export function App() {
   function doInitiativeRoll(roll0, roll1) {
     // for testing QUACK
     // doIntiativeRoll(GlobalInit.controller, 6, 1, true) // JAPAN initiative
-    // doIntiativeRoll(GlobalInit.controller, 1, 6, true) // US initiative
+    doIntiativeRoll(GlobalInit.controller, 1, 6, true) // US initiative
 
     // doIntiativeRoll(GlobalInit.controller, 3, 3, true) // tie
 
-    doIntiativeRoll(GlobalInit.controller, roll0, roll1)
+    // doIntiativeRoll(GlobalInit.controller, roll0, roll1)
     GlobalGameState.updateGlobalState()
   }
 
@@ -3012,7 +3024,7 @@ export function App() {
           nextAction(e)
         }}
         doRoll={doAttackResolutionRolls}
-        width={74}
+        width={90}
         closeButtonStr={GlobalGameState.taskForceTarget !== GlobalUnitsModel.TaskForce.MIF ? "Next..." : "Close"}
         closeButtonCallback={
           !attackResolved
@@ -3411,6 +3423,8 @@ export function App() {
           nextAction(e)
         }}
         closeButtonDisabled={summaryButtonDisabled}
+        sidebg={sideboog}
+        image={imageboog}
       ></LargeDicePanel>
       <GameStatusPanel show={gameStateShow} gameState={gameState} onHide={() => setGameStateShow(false)} />
       <CardPanel show={jpHandShow} side={GlobalUnitsModel.Side.JAPAN} onHide={() => setjpHandShow(false)}></CardPanel>

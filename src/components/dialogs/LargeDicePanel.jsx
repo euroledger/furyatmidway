@@ -51,6 +51,7 @@ function LargeDicePanel(props) {
     }
   }, [GlobalGameState.closePanel])
 
+  // console.log("POOOOOOOOOOOOOOO sidebg=", sidebg)
   let sidey = sidebg
   if (!sidebg) {
     sidey = GlobalGameState.sideWithInitiative === GlobalUnitsModel.Side.JAPAN ? "#4B0808" : "#293a4b"

@@ -65,6 +65,7 @@ class JapanHumanEndOfAirOperationState {
         GlobalGameState.gamePhase = GlobalGameState.PHASE.CARD_PLAY
         return
       }
+      GlobalGameState.currentPlayer = GlobalUnitsModel.Side.JAPAN
       GlobalGameState.gamePhase = GlobalGameState.PHASE.END_OF_TURN
       setEndOfTurnSummaryShow(true)
     } else {

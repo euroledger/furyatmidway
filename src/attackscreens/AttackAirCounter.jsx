@@ -43,7 +43,6 @@ function AirAttackCounter({
 
     if (i == j) {
       const targets = controller.getAttackTargets()
-      console.log("++++++++++ QUACK 3 set carrierTarget1 to", targets[0])
       GlobalGameState.carrierTarget1 = targets[0]
       if (targets.length === 2) {
         GlobalGameState.carrierTarget2 = targets[1]
@@ -55,8 +54,6 @@ function AirAttackCounter({
     let left, top
     // idx is carrier 1 or 2
     
-    console.log(">>>>>>>>>>>>>>>>>>> CARRIER INDEX=", index)
-
     // index 1 is left carrier, 2 is right carrier
     if (index === 1) {
       // left = size === 1 ? "10.4%" : "13.4%"

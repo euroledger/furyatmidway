@@ -9,6 +9,7 @@ class USAICapReturnState {
 
     console.log(">>>>>>>> US CAP RETURN!!!!!!!!!!!!!!!!! return CAP units to parent carrier")
     await moveCAPUnitsFromReturnBoxToCarrier(GlobalInit.controller, GlobalUnitsModel.Side.US, setTestUpdate)
+    this.nextState(stateObject)
   }
 
   async nextState(stateObject) {
