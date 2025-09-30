@@ -16,7 +16,7 @@ class USAICardPlayState {
   }
   
   async doAction(stateObject) {
-    const { cardNumber } = stateObject
+    const { cardNumber, setCardNumber } = stateObject
     this.cardNumber = cardNumber
 
     console.log("US AI Card Play: DETERMINE WHETHER OR NOT TO PLAY CARD NUMBER", cardNumber)
@@ -30,6 +30,7 @@ class USAICardPlayState {
         this.displayCardPlayedPanel(stateObject)
       }
     } else {
+      setCardNumber(0)
       this.nextState(stateObject)
     }
   }

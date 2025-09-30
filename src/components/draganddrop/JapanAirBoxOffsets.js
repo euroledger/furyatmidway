@@ -202,11 +202,11 @@ const JapanAirBoxOffsets = [
         top: 93.4,
       },
       {
-        left: 22.1,
+        left: 22.2,
         top: 90.5,
       },
       {
-        left: 22.1,
+        left: 22.2,
         top: 93.4,
       },
       {

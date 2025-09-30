@@ -77,7 +77,6 @@ export default class CardModel {
       // all cards form draw deck, note can draw cards from other side
       drawDeck = Array.from(GlobalUnitsModel.cards)
     }
-
     if (testCards !== undefined) {
       for (let i = 0; i < num; i++) {
         const card = GlobalUnitsModel.cards.find((card) => card._number === testCards[i])

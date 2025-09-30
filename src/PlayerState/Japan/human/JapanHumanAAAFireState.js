@@ -1,5 +1,4 @@
 import GlobalGameState from "../../../model/GlobalGameState"
-import GlobalInit from "../../../model/GlobalInit"
 import GlobalUnitsModel from "../../../model/GlobalUnitsModel"
 import { moveOnFromAAAFire } from "../../StateTransition"
 

@@ -332,7 +332,6 @@ export function SubmarineDamagePanelFooters({
     GlobalGameState.carrierAttackHits = 0 // this causes NON firing in the CarrierDamagePanel
     GlobalGameState.sideWithInitiative = side
 
-    // ---- THIS IS DUPLICATE CODE, SEE CarrierDamageDicePanel NEEDS REFACRING QUACK TODO ---
     const damage = autoAllocateDamage(controller, 1)
     sendDamageUpdates(controller, damage, setDamageMarkerUpdate)
 

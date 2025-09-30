@@ -446,9 +446,6 @@ export async function generateUSAirOperationsMovesCarriers(controller, stateObje
 
   // 8b. Get valid destinations for units in Return Boxes
   // 8c. Move Units in Return Boxes to next Return Box or Hangar
-
-  // const airUnitsOnFlightDeck =
-  console.log("PISSING RETURN")
 }
 
 // TODO Move this somewhere so the Japanese can use it, controller???
@@ -646,9 +643,9 @@ export async function moveStrikeGroups(controller, stateObject, test) {
     const unitsInGroup = controller.getAirUnitsInStrikeGroups(strikeGroup.box)
     // console.log("unitsInGroup =",unitsInGroup)
 
-    if ((strikeGroup.units === undefined || strikeGroup.units.length === 0) && !strikeGroup.attacked) {
+    // if ((strikeGroup.units === undefined || strikeGroup.units.length === 0) && !strikeGroup.attacked) {
 
-    // if (unitsInGroup.length === 0 && !strikeGroup.attacked) {
+    if (unitsInGroup.length === 0 && !strikeGroup.attacked) {
       // console.log("NO JOY: SG units=", strikeGroup)
       continue
     }

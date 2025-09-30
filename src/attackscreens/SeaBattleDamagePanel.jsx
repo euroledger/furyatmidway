@@ -246,7 +246,6 @@ export function SeaBattleDamagePanelHeaders({
 
     GlobalGameState.currentCarrierAttackTarget = carrier
 
-    // ---- THIS IS DUPLICATE CODE, SEE CarrierDamageDicePanel NEEDS REFACRING QUACK TODO ---
     const damage = autoAllocateDamage(controller, 1)
     sendDamageUpdates(controller, damage, setDamageMarkerUpdate)
 

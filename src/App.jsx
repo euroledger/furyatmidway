@@ -21,6 +21,7 @@ import { sideBeingAttacked } from "./Utils"
 import StateManager from "./model/StateManager"
 import { allCards } from "./CardLoader"
 import { processPlayedCard } from "./PlayerState/CardUtils"
+import { midwayPossible } from "./PlayerState/StateUtils"
 import {
   doIntiativeRoll,
   doNavalBattleRoll,
@@ -112,7 +113,7 @@ import UITester from "./UIEvents/UITester"
 import UITesterHeadless from "./UIEvents/UITesterHeadless"
 
 import { getJapanEnabledAirBoxes, getUSEnabledAirBoxes } from "./AirBoxZoneHandler"
-import handleAction, { calcAirOpsPointsMidway, getFleetsForDMCVSeaBattle, midwayPossible } from "./GameStateHandler"
+import handleAction, { calcAirOpsPointsMidway, getFleetsForDMCVSeaBattle } from "./GameStateHandler"
 import { setStrikeGroupAirUnitsToNotMoved } from "./controller/AirOperationsHandler"
 import { SeaBattleFooters, SeaBattleHeaders } from "./attackscreens/SeaBattlePanel"
 import HexCommand from "./commands/HexCommand"
@@ -647,6 +648,14 @@ export function App() {
     }
   }, [GlobalGameState.gamePhase])
 
+    useEffect(() => {
+    if (GlobalGameState.gamePhase === GlobalGameState.PHASE.US_DRAWS_ONE_CARD || 
+      GlobalGameState.gamePhase === GlobalGameState.PHASE.JAPAN_DRAWS_ONE_CARD
+    ) {
+        doStateChange()
+    }
+  }, [GlobalGameState.gamePhase])
+
   useEffect(() => {
     if (GlobalGameState.gamePhase === GlobalGameState.PHASE.JAPAN_SETUP) {
       StateManager.gameStateManager.setJapanState(stateObject)
@@ -959,68 +968,8 @@ export function App() {
       },
     })
   }
-  const stateObject = {
-    // FOR AI AND TESTING
-    controller: GlobalInit.controller,
-    cardEventHandler,
-    setCardDicePanelShow7,
-    setTestClicked,
-    setCardPlayedPanelShow,
-    setTestUpdate,
-    setAttackAirCounterUpdate,
-    setFleetUnitUpdate,
-    setStrikeGroupUpdate,
-    nextAction,
-    setJapanStrikePanelEnabled,
-    doInitiativeRoll,
-    setCapAirUnits,
-    setMidwayAIInfoShow,
-    setCapSteps,
-    setFightersPresent,
-    getJapanEnabledAirBoxes,
-    getUSEnabledAirBoxes,
-    setEnabledJapanBoxes, 
-    setEnabledUSBoxes,
-    setUSMapRegions,
-    setUsFleetRegions,
-    setCSFAlertShow,
-    capAirUnits,
-    capSteps,
-    fightersPresent,
-    setCardNumber,
-    cardNumber,
-    setJapanMapRegions,
-    setEndOfTurnSummaryShow,
-    setShowCardFooter,
-    setJapanMIFMapRegions,
-    setJpAlertShow,
-    setEnabledJapanFleetBoxes,
-    setMidwayNoAttackAlertShow,
-    setFleetUnitUpdate, 
-    setJpFleet,
-    setUsFleet,
-    setSearchValues,
-    setSearchResults,
-    setSearchValuesAlertShow,
-    setUsStrikePanelEnabled,
-    setJapanStrikePanelEnabled,
-    setHeaderText,
-    setMidwayDialogShow,
-    setMidwayWarningShow,
-    setCardAlertPanelShow,
-    setAirUnitUpdate, 
-    setEliminatedUnitsPanelShow, 
-    setEndOfAirOpAlertShow
-  }
-
-  const onDrag = () => {
-    setIsMoveable(true)
-  }
-  const onStop = () => {
-    setIsMoveable(false)
-  }
-
-  const setJapanFleetRegions = () => {
+    const setJapanFleetRegions = () => {
+    console.log("SETTING JAPAN FLEET REGIONS")
     const af1Location = GlobalInit.controller.getFleetLocation("1AF", GlobalUnitsModel.Side.JAPAN)
     const mifLocation = GlobalInit.controller.getFleetLocation("MIF", GlobalUnitsModel.Side.JAPAN)
     const ijnDMCVLocation = GlobalInit.controller.getFleetLocation("IJN-DMCV", GlobalUnitsModel.Side.JAPAN)
@@ -1132,6 +1081,69 @@ export function App() {
     }
     setFleetMoveAlertShow(true)
   }
+  const stateObject = {
+    // FOR AI AND TESTING
+    controller: GlobalInit.controller,
+    setJapanFleetRegions,
+    setEnabledUSFleetBoxes,
+    cardEventHandler,
+    setCardDicePanelShow7,
+    setTestClicked,
+    setCardPlayedPanelShow,
+    setTestUpdate,
+    setAttackAirCounterUpdate,
+    setFleetUnitUpdate,
+    setStrikeGroupUpdate,
+    nextAction,
+    setJapanStrikePanelEnabled,
+    doInitiativeRoll,
+    setCapAirUnits,
+    setMidwayAIInfoShow,
+    setCapSteps,
+    setFightersPresent,
+    getJapanEnabledAirBoxes,
+    getUSEnabledAirBoxes,
+    setEnabledJapanBoxes, 
+    setEnabledUSBoxes,
+    setUSMapRegions,
+    setUsFleetRegions,
+    setCSFAlertShow,
+    capAirUnits,
+    capSteps,
+    fightersPresent,
+    setCardNumber,
+    cardNumber,
+    setJapanMapRegions,
+    setEndOfTurnSummaryShow,
+    setShowCardFooter,
+    setJapanMIFMapRegions,
+    setJpAlertShow,
+    setEnabledJapanFleetBoxes,
+    setMidwayNoAttackAlertShow,
+    setFleetUnitUpdate, 
+    setJpFleet,
+    setUsFleet,
+    setSearchValues,
+    setSearchResults,
+    setSearchValuesAlertShow,
+    setUsStrikePanelEnabled,
+    setJapanStrikePanelEnabled,
+    setHeaderText,
+    setMidwayDialogShow,
+    setMidwayWarningShow,
+    setCardAlertPanelShow,
+    setAirUnitUpdate, 
+    setEliminatedUnitsPanelShow, 
+    setEndOfAirOpAlertShow
+  }
+
+  const onDrag = () => {
+    setIsMoveable(true)
+  }
+  const onStop = () => {
+    setIsMoveable(false)
+  }
+
 
   // TODO Move into load handler
   const loadState = () => {
@@ -1147,7 +1159,7 @@ export function App() {
         setCSFAlertShow(true)
       }
     } else if (GlobalGameState.gamePhase === GlobalGameState.PHASE.JAPAN_MIDWAY) {
-      midwayPossible(setMidwayWarningShow, setMidwayDialogShow)
+      midwayPossible(GlobalInit.controller, setMidwayWarningShow, setMidwayDialogShow)
       GlobalGameState.phaseCompleted = false
     } else if (GlobalGameState.gamePhase === GlobalGameState.PHASE.US_FLEET_MOVEMENT_PLANNING) {
       if (!GlobalGameState.usFleetMoved) {
@@ -1649,18 +1661,22 @@ export function App() {
                   !GlobalGameState.usCardsDrawn && GlobalGameState.gamePhase !== GlobalGameState.PHASE.US_CARD_DRAW
                 }
                 onClick={(e) => {
-                  if (
-                    GlobalGameState.gamePhase === GlobalGameState.PHASE.US_CARD_DRAW ||
-                    GlobalGameState.gamePhase === GlobalGameState.PHASE.US_DRAWS_ONE_CARD
-                  ) {
-                    GlobalGameState.phaseCompleted = true
+                  if (GlobalGameState.usPlayerType === GlobalUnitsModel.TYPE.HUMAN) {
+                    if (
+                      GlobalGameState.gamePhase === GlobalGameState.PHASE.US_CARD_DRAW ||
+                      GlobalGameState.gamePhase === GlobalGameState.PHASE.US_DRAWS_ONE_CARD
+                    ) {
+                      GlobalGameState.phaseCompleted = true
+                    }
+                    GlobalGameState.usCardsDrawn = true
+                    if (GlobalGameState.gamePhase === GlobalGameState.PHASE.US_DRAWS_ONE_CARD) {
+                      GlobalInit.controller.drawUSCards(1, false)
+                      nextAction(e)
+                    }
+                    setusHandShow(true)
+                  } else {
+                    setusHandShow(true) // QUACK TEMPORARY FOR TESTING
                   }
-                  GlobalGameState.usCardsDrawn = true
-                  if (GlobalGameState.gamePhase === GlobalGameState.PHASE.US_DRAWS_ONE_CARD) {
-                    GlobalInit.controller.drawUSCards(1, false)
-                    nextAction(e)
-                  }
-                  setusHandShow(true)
                 }}
               >
                 US Hand
@@ -1674,25 +1690,28 @@ export function App() {
                   !GlobalGameState.jpCardsDrawn && GlobalGameState.gamePhase !== GlobalGameState.PHASE.JAPAN_CARD_DRAW
                 }
                 onClick={(e) => {
-                  if (
-                    GlobalGameState.gamePhase === GlobalGameState.PHASE.JAPAN_CARD_DRAW ||
-                    GlobalGameState.gamePhase === GlobalGameState.PHASE.JAPAN_DRAWS_ONE_CARD
-                  ) {
-                    GlobalGameState.phaseCompleted = true
-                  }
-                  GlobalGameState.jpCardsDrawn = true
-                  if (GlobalGameState.gamePhase === GlobalGameState.PHASE.JAPAN_DRAWS_ONE_CARD) {
-                    GlobalInit.controller.drawJapanCards(1, false)
-                    // setMidwayDialogShow(true)
-                    midwayPossible(setMidwayWarningShow, setMidwayDialogShow)
 
-                    console.log("GOING TO JAPAN MIDWAY")
-                    GlobalGameState.gamePhase = GlobalGameState.PHASE.JAPAN_MIDWAY
+                  if (GlobalGameState.jpPlayerType === GlobalUnitsModel.TYPE.HUMAN) {
+                    if (
+                      GlobalGameState.gamePhase === GlobalGameState.PHASE.JAPAN_CARD_DRAW ||
+                      GlobalGameState.gamePhase === GlobalGameState.PHASE.JAPAN_DRAWS_ONE_CARD
+                    ) {
+                      GlobalGameState.phaseCompleted = true
+                    }
+                    GlobalGameState.jpCardsDrawn = true
+                    if (GlobalGameState.gamePhase === GlobalGameState.PHASE.JAPAN_DRAWS_ONE_CARD) {
+                      GlobalInit.controller.drawJapanCards(1, false)
+                      // setMidwayDialogShow(true)
+                      midwayPossible(GlobalInit.controller, setMidwayWarningShow, setMidwayDialogShow)
+
+                      console.log("GOING TO JAPAN MIDWAY")
+                      GlobalGameState.gamePhase = GlobalGameState.PHASE.JAPAN_MIDWAY
+                    }
+                    if (GlobalGameState.gamePhase === GlobalGameState.PHASE.JAPAN_CARD_DRAW) {
+                      // nextAction(e)
+                    }
+                    setjpHandShow(true)
                   }
-                  if (GlobalGameState.gamePhase === GlobalGameState.PHASE.JAPAN_CARD_DRAW) {
-                    // nextAction(e)
-                  }
-                  setjpHandShow(true)
                 }}
               >
                 Japan Hand
@@ -3433,7 +3452,9 @@ export function App() {
         side={GlobalUnitsModel.Side.US}
         onHide={(e) => {
           setusHandShow(false)
-          nextAction(e)
+          if (GlobalGameState.usPlayerType === GlobalUnitsModel.TYPE.HUMAN) {
+            nextAction(e)
+          }
         }}
       ></CardPanel>
       <TransformWrapper

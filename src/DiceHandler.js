@@ -19,7 +19,7 @@ export function doCVDamageControl(roll) {
 
 export function doNavalBombardmentRoll(controller, roll) {
   let theRoll = roll ?? randomDice(1)
-  theRoll = 6 // QUACK TESTING ONLY
+  // theRoll = 6 // QUACK TESTING ONLY
   GlobalGameState.dieRolls = [theRoll]
   const midwayGarrisonReduction = Math.floor(theRoll / 2)
 

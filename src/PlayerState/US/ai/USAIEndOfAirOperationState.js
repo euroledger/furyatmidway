@@ -1,19 +1,24 @@
 import { endOfTurn } from "../../StateUtils"
 import GlobalGameState from "../../../model/GlobalGameState"
-import GlobalUnitsModel from "../../../model/GlobalUnitsModel"
-import GlobalInit from "../../../model/GlobalInit"
 import { tidyUp } from "../../StateUtils"
+import GlobalUnitsModel from "../../../model/GlobalUnitsModel"
+import {
+  moveOrphanedCAPUnitsToEliminatedBox,
+  moveOrphanedAirUnitsInReturn1Boxes,
+} from "../../../controller/AirOperationsHandler"
 
 class USAIEndOfAirOperationState {
   async doAction(stateObject) {
-    console.log("STATE USAIEndOfAirOperationState >>>>>>>>>>>>>> DO NOTHING")
+    console.log("STATE USAIEndOfAirOperationState >>>>>>>>>>>>>> CHECK FOR ORPHANS")
+    await moveOrphanedCAPUnitsToEliminatedBox(GlobalUnitsModel.Side.US)
+    await moveOrphanedAirUnitsInReturn1Boxes(GlobalUnitsModel.Side.US)
   }
 
   async nextState(stateObject) {
     const { setAirUnitUpdate, setStrikeGroupUpdate, setFleetUnitUpdate, setCardNumber, setEndOfTurnSummaryShow } =
       stateObject
 
-    console.log("NEXT STATE AFTER AIR OPERATION (US)")
+    console.log("CHEESE! NEXT STATE AFTER AIR OPERATION (US)")
     // const unitsInReturnBoxes = GlobalInit.controller.getAllUSCarrierPlanesInReturnBoxes()
 
     // if (

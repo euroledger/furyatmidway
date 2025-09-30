@@ -6,14 +6,14 @@ import { setNextStateFollowingCardPlay } from "../../StateUtils"
 
 class JapanHumanCardPlayState {
   async doAction(stateObject) {
-    const { cardNumber, setCardAlertPanelShow } = stateObject
+    const { setCardAlertPanelShow } = stateObject
     setCardAlertPanelShow(true)
 
     // this.nextState(stateObject)
   }
 
   async nextState(stateObject) {
-    const { cardNumber, setCardAlertPanelShow } = stateObject
+    const { cardNumber } = stateObject
 
     console.log("GRABBAGE NEXT STATE FROM JAPAN CARD PLAY cardNumber=", cardNumber)
     await setNextStateFollowingCardPlay(stateObject)

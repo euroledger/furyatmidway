@@ -192,11 +192,11 @@ const USAirBoxOffsets = [
         top: 91.8,
       },
       {
-        left: 62.0,
+        left: 62.1,
         top: 89.0,
       },
       {
-        left: 62.0,
+        left: 62.1,
         top: 91.8,
       },
       {

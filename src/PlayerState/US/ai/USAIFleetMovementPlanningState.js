@@ -11,6 +11,8 @@ import { DELAY_MS } from "../../StateUtils"
 
 class USAIFleetMovementPlanningState {
   async doAction(stateObject) {
+    console.log("%%%%%%%%%%%%%%%%%%%% DOING US FLEET MOVEMENT PLANNING%%%%%%%%%%%%%%%%%%%%%")
+
     const { setFleetUnitUpdate } = stateObject
     const { canCSFMoveFleetOffBoard, usCSFRegions } = getUSFleetRegions()
 
@@ -19,7 +21,12 @@ class USAIFleetMovementPlanningState {
 
     const csfLocation = GlobalInit.controller.getFleetLocation("CSF", GlobalUnitsModel.Side.US)
 
-    const destination = doUSFleetMovementAction(usCSFRegions, canCSFMoveFleetOffBoard)
+    console.log("FOOOOOOOOOOK turn=", GlobalGameState.gameTurn)
+    // if (GlobalGameState.gameTurn === 2) { // QUACK FOR TESTING
+    //   this.nextState(stateObject)
+    //   return
+    // }
+    const destination = doUSFleetMovementAction(GlobalInit.controller, usCSFRegions, canCSFMoveFleetOffBoard)
 
     const c = convertHexCoords(destination)
     console.log("US FLEET DESTINATION:", c)

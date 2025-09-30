@@ -30,9 +30,9 @@ class USAIAirOperationsState {
       await generateUSAirOperationsMovesMidway(GlobalInit.controller, stateObject)
 
       const inBattle = await moveStrikeGroups(GlobalInit.controller, stateObject)
-      console.log("FUCKING inBattle=", inBattle)
+      console.log("QUACK inBattle=", inBattle)
       if (!inBattle) {
-        console.log("NOT IN BATTLE, end the fucking air op NOW!!!!!!!!!!!!")
+        console.log("NOT IN BATTLE, end the air op NOW!!!!!!!!!!!!")
         this.endOfAirOp = true
         // const returningUnitsNotMoved = GlobalInit.controller.getReturningUnitsNotMoved(GlobalUnitsModel.Side.US)
 
@@ -60,6 +60,7 @@ class USAIAirOperationsState {
       GlobalGameState.sideWithInitiative = GlobalUnitsModel.Side.US
       GlobalGameState.currentPlayer = GlobalUnitsModel.Side.JAPAN
       GlobalGameState.gamePhase = GlobalGameState.PHASE.CAP_RETURN
+      GlobalGameState.updateGlobalState()
     } else {
       console.log("+++++++++++++++++++++++++ DOING TIDY UP...")
       // await tidyUp(setAirUnitUpdate, setStrikeGroupUpdate, setFleetUnitUpdate)

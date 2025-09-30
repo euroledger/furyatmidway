@@ -77,6 +77,7 @@ function PoopCardAlertPanel(props) {
     controller.japanHandContainsCard(cardNumber) || controller.getCardPlayed(cardNumber, GlobalUnitsModel.Side.JAPAN)
 
   let image = jpCard ? "/images/japanflag.jpg" : "/images/usaflag.jpg"
+
   return (
     <Modal
       {...rest}
