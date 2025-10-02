@@ -1462,6 +1462,7 @@ export default class Controller {
 
     let numFleetsInSameHexAsCSF = 1,
       numFleetsInSameHexAsUSDMCV = 1
+
     let fleetsInSameHexAsCSF = new Array(),
       fleetsInSameHexAsUSDMCV = new Array()
 
@@ -1497,6 +1498,7 @@ export default class Controller {
   }
 
   getAllFleetsInLocation(location, side, filterOtherSide) {
+    const fleets = this.mapModel.getAllFleetsInLocation(location, side, this.counters, filterOtherSide)
     return this.mapModel.getAllFleetsInLocation(location, side, this.counters, filterOtherSide)
   }
 

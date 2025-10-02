@@ -9,6 +9,7 @@ function MidwayInvasionButton({
   const [position, setPosition] = useState(initialPosition);
 
   useEffect(() => {
+    console.log("QUACK 77 -> midwayInvasionLevel=", GlobalGameState.midwayInvasionLevel)
     setPosition({
       ...position,
       left: MIFOffsets[GlobalGameState.midwayInvasionLevel].left + 0.5,

@@ -58,7 +58,7 @@ function LargeDicePanel(props) {
   }
   let showImg = false
   let img = image
-  if (image != "POO") {
+  if (image != "NOFLAG") {
     showImg = true
   }
   if (!image) {

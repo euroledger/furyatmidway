@@ -21,12 +21,7 @@ class USAIFleetMovementPlanningState {
 
     const csfLocation = GlobalInit.controller.getFleetLocation("CSF", GlobalUnitsModel.Side.US)
 
-    console.log("FOOOOOOOOOOK turn=", GlobalGameState.gameTurn)
-    // if (GlobalGameState.gameTurn === 2) { // QUACK FOR TESTING
-    //   this.nextState(stateObject)
-    //   return
-    // }
-    const destination = doUSFleetMovementAction(GlobalInit.controller, usCSFRegions, canCSFMoveFleetOffBoard)
+     const destination = doUSFleetMovementAction(GlobalInit.controller, usCSFRegions, canCSFMoveFleetOffBoard)
 
     const c = convertHexCoords(destination)
     console.log("US FLEET DESTINATION:", c)

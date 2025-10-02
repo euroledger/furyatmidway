@@ -4,7 +4,7 @@ import { isMidwayAttackPossible } from "../../StateUtils"
 
 class USAIDrawOneCardState {
   async doAction(stateObject) {
-    console.log("FOOOOOOOK !!!!!!! DO DRAW ONE CARD ACTION")
+    console.log("DO DRAW ONE CARD ACTION")
     this.nextState(stateObject)
   }
 

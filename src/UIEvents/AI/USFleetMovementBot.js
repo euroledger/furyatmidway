@@ -46,7 +46,7 @@ export function doUSFleetMovementAction(controller, regions, offboardPossible) {
     // First check if US Naval/Air assets too low
     // If so and within 2 VPs of IJN RUN AWAY
 
-      if (usNavalStrength < 4 || usAirStrength < 6) {
+    if (usNavalStrength < 4 || usAirStrength < 6) {
       // Retreat
       // Rank all hexes, move to furthest away from 1AF
     }
@@ -55,10 +55,10 @@ export function doUSFleetMovementAction(controller, regions, offboardPossible) {
       // there is a crippled carrier not yet in DMCV - close to 1AF
     } else if (controller.getDamagedCarriers()) {
       // there is a DMCV Carrier
-      // Close range to DMCV 
+      // Close range to DMCV
     }
     // 1. VPs and Damage to Carriers/Aircraft
-  
+
     if (GlobalGameState.usVPs > GlobalGameState.japanVPs + 2) {
       // Even if Midway lost currently winning
       // Rank all hexes move to closest to 1AF
@@ -73,7 +73,10 @@ export function doUSFleetMovementAction(controller, regions, offboardPossible) {
   if (GlobalGameState.gameTurn === 2) {
     return { q: 3, r: 3 } // QUACK HARD WIRED FOR TESTING ONLY
   }
-    if (GlobalGameState.gameTurn === 3) {
+  if (GlobalGameState.gameTurn === 3) {
     return { q: 5, r: 4 } // QUACK HARD WIRED FOR TESTING ONLY
+  }
+    if (GlobalGameState.gameTurn === 4) {
+    return { q: 2, r: 5 } // QUACK HARD WIRED FOR TESTING ONLY
   }
 }

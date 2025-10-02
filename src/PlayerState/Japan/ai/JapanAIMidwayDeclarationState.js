@@ -15,7 +15,7 @@ class JapanAIMidwayDeclarationState {
 
   async nextState(stateObject) {
     console.log("NEXT STATE AFTER MIDWAY....")
-              console.log(">>>>>>>>> 2. SET PHASE TO FUCKING US_FLEET_MOVEMENT_PLANNING")
+    console.log(">>>>>>>>> 2. SET PHASE TO US_FLEET_MOVEMENT_PLANNING")
 
     GlobalGameState.gamePhase = GlobalGameState.PHASE.US_FLEET_MOVEMENT_PLANNING
   }

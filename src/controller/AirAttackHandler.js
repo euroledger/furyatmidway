@@ -67,7 +67,6 @@ export function setUpAirAttack(controller, location, strikeGroup, setCardNumber,
       if (anyTargets) {
         console.log("---------------------------- GO TO TARGET DETERMINATION ----------------------------------")
         if (sideBeingAttacked === GlobalUnitsModel.Side.JAPAN) {
-          console.log("SET THE FUCKER")
           GlobalGameState.currentPlayer = GlobalUnitsModel.Side.US
         }
         GlobalGameState.gamePhase = GlobalGameState.PHASE.TARGET_DETERMINATION

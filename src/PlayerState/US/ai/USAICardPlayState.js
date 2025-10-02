@@ -14,7 +14,7 @@ class USAICardPlayState {
     setCardPlayedPanelShow(() => true)
     setShowCardFooter(() => true)
   }
-  
+
   async doAction(stateObject) {
     const { cardNumber, setCardNumber } = stateObject
     this.cardNumber = cardNumber
@@ -42,11 +42,18 @@ class USAICardPlayState {
     stateObject.cardNumber = this.cardNumber
     await setNextStateFollowingCardPlay(stateObject)
     if (displayScreen()) {
+      console.log("QUACKY 1")
       setSearchValuesAlertShow(true)
     }
 
-    GlobalGameState.currentPlayer = GlobalUnitsModel.Side.US
-    return new USAIAirSearchState()
+    if (GlobalGameState.gameTurn === 4) {
+      GlobalGameState.currentPlayer = GlobalUnitsModel.Side.JAPAN
+      GlobalGameState.gamePhase = GlobalGameState.PHASE.NIGHT_AIR_OPERATIONS_JAPAN
+    } else {
+      GlobalGameState.currentPlayer = GlobalUnitsModel.Side.US
+
+      return new USAIAirSearchState()
+    }
   }
 
   getState() {

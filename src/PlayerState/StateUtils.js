@@ -10,6 +10,9 @@ import HexCommand from "../commands/HexCommand"
 import { setUpAirAttack } from "../controller/AirAttackHandler"
 import { getValidUSDestinationsCAP } from "../controller/AirOperationsHandler"
 import USAirBoxOffsets from "../components/draganddrop/USAirBoxOffsets"
+import { japanMIFStartHexes } from "../components/MapRegions"
+import { createFleetUpdate, createRemoveFleetUpdate } from "../AirUnitData"
+import { distanceBetweenHexes, interveningHexes } from "../components/HexUtils"
 
 import {
   setStrikeGroupAirUnitsToNotMoved,
@@ -296,8 +299,12 @@ export async function usFleetMovementNextStateHandler({
 }) {
   const { numFleetsInSameHexAsCSF, numFleetsInSameHexAsUSDMCV } = GlobalInit.controller.opposingFleetsInSameHex()
   if (GlobalGameState.gameTurn === 4) {
+    console.log(">>>>>>>>>>> POO numFleetsInSameHexAsCSF=", numFleetsInSameHexAsCSF)
     if (numFleetsInSameHexAsCSF === 2 || numFleetsInSameHexAsUSDMCV === 2) {
       if (numFleetsInSameHexAsCSF === 2) {
+        // Since Japan player allocates all hits in night battles
+        // set player to Japan
+        GlobalGameState.currentPlayer = GlobalUnitsModel.Side.JAPAN
         GlobalGameState.gamePhase = GlobalGameState.PHASE.NIGHT_BATTLES_1
         getFleetsForCSFSeaBattle({ setJpFleet, setUsFleet })
       } else if (numFleetsInSameHexAsUSDMCV === 2) {
@@ -466,6 +473,39 @@ export function goToIJNFleetMovement({
   setJpAlertShow(true)
   GlobalGameState.phaseCompleted = false
 }
+export function dmcvState(side) {
+  if (side === GlobalUnitsModel.Side.US) {
+    const usDMCVLocation = GlobalInit.controller.getFleetLocation("US-DMCV", GlobalUnitsModel.Side.US)
+    if (usDMCVLocation !== undefined && usDMCVLocation.boxName === HexCommand.FLEET_BOX) {
+      return false
+    }
+    return (
+      (GlobalInit.controller.getDamagedCarriers(side).length > 0 && GlobalGameState.usDMCVFleetPlaced === false) ||
+      (usDMCVLocation !== undefined && GlobalGameState.usDMCVFleetPlaced === true) // could be sunk
+    )
+  }
+  if (GlobalGameState.jpDMCVCarrier === undefined) {
+    return false
+  }
+  const jpDMCVLocation = GlobalInit.controller.getFleetLocation("IJN-DMCV", GlobalUnitsModel.Side.JAPAN)
+
+  if (jpDMCVLocation !== undefined && jpDMCVLocation.boxName === HexCommand.FLEET_BOX) {
+    return false
+  }
+  return (
+    (GlobalInit.controller.getDamagedCarriers(side).length > 0 && GlobalGameState.jpDMCVFleetPlaced === false) ||
+    (jpDMCVLocation !== undefined && GlobalGameState.jpDMCVFleetPlaced === true)
+  )
+}
+export function midwayDeclarationHandler({ setUsFleetRegions }) {
+  console.log("FINISHED MIDWAY DECLARATION...")
+  if (dmcvState(GlobalUnitsModel.Side.US)) {
+    GlobalGameState.gamePhase = GlobalGameState.PHASE.US_DMCV_FLEET_MOVEMENT_PLANNING
+  } else {
+    GlobalGameState.gamePhase = GlobalGameState.PHASE.US_FLEET_MOVEMENT_PLANNING
+  }
+}
+
 export async function setNextStateFollowingCardPlay(stateObject) {
   const {
     cardNumber,
@@ -477,12 +517,24 @@ export async function setNextStateFollowingCardPlay(stateObject) {
     setFleetUnitUpdate,
     setUsFleetRegions,
     setEndOfAirOpAlertShow,
+    setMidwayWarningShow,
+    setMidwayDialogShow,
   } = stateObject
   GlobalGameState.dieRolls = []
   switch (cardNumber) {
     case -1:
       break
 
+    case 5:
+      // Naval Bombardment
+      if (GlobalGameState.gameTurn !== 4) {
+        GlobalGameState.gamePhase = GlobalGameState.PHASE.JAPAN_MIDWAY
+        midwayPossible(setMidwayWarningShow, setMidwayDialogShow)
+      } else {
+        midwayDeclarationHandler({ setUsFleetRegions })
+      }
+
+      break
     case 6:
       // High Speed Reconnaissance
       if (GlobalGameState.gameTurn === 1) {
@@ -871,4 +923,381 @@ export function japanDMCVPlanningHandler({
   // } else {
   // goToMidwayAttackOrUSFleetMovement({ setMidwayNoAttackAlertShow, setJapanMapRegions, setFleetUnitUpdate })
   // }
+}
+
+function locationsEqual(locationA, locationB) {
+  if (
+    locationA === undefined ||
+    locationB === undefined ||
+    locationA.currentHex === undefined ||
+    locationB.currentHex === undefined
+  ) {
+    return false
+  }
+  return locationA.currentHex.q === locationB.currentHex.q && locationA.currentHex.r === locationB.currentHex.r
+}
+
+function carriersSunkForSide(side) {
+  return GlobalInit.controller.allCarriersSunk(side)
+}
+
+async function removeSunkenFleet(side, setFleetUnitUpdate) {
+  // 1. Create Fleet Update to remove the fleet marker for that side
+  const update1 = createRemoveFleetUpdate(side)
+  setFleetUnitUpdate(update1)
+
+  await delay(1)
+  // 2. Create Fleet Update to remove the fleet marker from the other side's map
+  const update2 = createMapUpdateForFleet(GlobalInit.controller, update1.name, side)
+  setFleetUnitUpdate(update2)
+}
+
+export async function doFleetUpdates(setFleetUnitUpdate) {
+  // check if either fleet out of carriers
+
+  GlobalGameState.allUSCarriersSunk = carriersSunkForSide(GlobalUnitsModel.Side.US)
+  GlobalGameState.allJapanCarriersSunk = carriersSunkForSide(GlobalUnitsModel.Side.JAPAN)
+
+  if (GlobalGameState.allUSCarriersSunk) {
+    await removeSunkenFleet(GlobalUnitsModel.Side.US, setFleetUnitUpdate)
+  }
+  if (GlobalGameState.allJapanCarriersSunk) {
+    await removeSunkenFleet(GlobalUnitsModel.Side.JAPAN, setFleetUnitUpdate)
+  }
+  const csfLocation = GlobalInit.controller.getFleetLocation("CSF", GlobalUnitsModel.Side.US)
+  const csfLocationJpMap = GlobalInit.controller.getFleetLocation("CSF-JPMAP", GlobalUnitsModel.Side.JAPAN)
+
+  if (!locationsEqual(csfLocation, csfLocationJpMap)) {
+    if (csfLocation.currentHex !== undefined) {
+      const update1 = createFleetUpdate("CSF-JPMAP", csfLocation.currentHex.q, csfLocation.currentHex.r)
+      if (update1 !== null) {
+        setFleetUnitUpdate(update1)
+      }
+      await delay(1)
+    }
+  }
+
+  // compare position of US-DMCV with US-DMCV-JPMAP
+  // if different -> do update
+  const dmcvLocation = GlobalInit.controller.getFleetLocation("US-DMCV", GlobalUnitsModel.Side.US)
+  const dmcvLocationJpMap = GlobalInit.controller.getFleetLocation("US-DMCV-JPMAP", GlobalUnitsModel.Side.JAPAN)
+  console.log("dmcvLocation=", dmcvLocation)
+  console.log("dmcvLocationJpMap=", dmcvLocationJpMap)
+
+  if (
+    dmcvLocation !== undefined &&
+    dmcvLocation.boxName === HexCommand.FLEET_BOX &&
+    dmcvLocationJpMap !== HexCommand.FLEET_BOX
+  ) {
+    const index1 = GlobalInit.controller.getNextAvailableFleetBox(GlobalUnitsModel.Side.US)
+
+    let update1 = {
+      name: "US-DMCV-JPMAP",
+      position: {
+        currentHex: {
+          boxName: HexCommand.FLEET_BOX,
+          boxIndex: index1,
+        },
+      },
+      initial: false,
+      loading: false,
+      side: GlobalUnitsModel.Side.JAPAN,
+    }
+    if (update1 !== null) {
+      setFleetUnitUpdate(update1)
+    }
+    await delay(1)
+    return
+  }
+  if (
+    dmcvLocation !== undefined &&
+    dmcvLocationJpMap !== undefined &&
+    dmcvLocation.currentHex !== undefined &&
+    dmcvLocation !== HexCommand.OFFBOARD &&
+    dmcvLocation !== HexCommand.OFFBOARD
+  ) {
+    if (!locationsEqual(dmcvLocation, dmcvLocationJpMap)) {
+      const update1 = createFleetUpdate("US-DMCV-JPMAP", dmcvLocation.currentHex.q, dmcvLocation.currentHex.r)
+      if (update1 !== null) {
+        // going to 2,1
+        setFleetUnitUpdate(update1)
+      }
+      await delay(1)
+    }
+  }
+
+  if (dmcvLocation !== undefined) {
+    const update1 = createFleetUpdate("US-DMCV-JPMAP", dmcvLocation.currentHex.q, dmcvLocation.currentHex.r)
+    if (update1 !== null) {
+      // going to 2,1
+      setFleetUnitUpdate(update1)
+    }
+    await delay(1)
+  }
+}
+export async function getFleetsForDMCVSeaBattle(controller, setJpFleet, setUsFleet) {
+  const usDMCVLocation = controller.getFleetLocation("US-DMCV", GlobalUnitsModel.Side.US)
+
+  let fleetsInSameHexAsUSDMCV = new Array()
+  if (usDMCVLocation !== undefined) {
+    fleetsInSameHexAsUSDMCV = controller.getAllFleetsInLocation(usDMCVLocation, GlobalUnitsModel.Side.US, false)
+    if (fleetsInSameHexAsUSDMCV.length === 2) {
+      setUsFleet("US-DMCV")
+      if (fleetsInSameHexAsUSDMCV[0].name === "US-DMCV") {
+        setJpFleet(fleetsInSameHexAsUSDMCV[1].name)
+      } else {
+        setJpFleet(fleetsInSameHexAsUSDMCV[0].name)
+      }
+    }
+  }
+  return { fleetsInSameHexAsUSDMCV }
+}
+
+export async function moveOnFromSeaBattles({ setUSMapRegions, setFleetUnitUpdate, setCardNumber }) {
+  setUSMapRegions([])
+  await doFleetUpdates(setFleetUnitUpdate)
+
+  GlobalGameState.currentPlayer = GlobalUnitsModel.Side.JAPAN
+  GlobalGameState.gamePhase = GlobalGameState.PHASE.NIGHT_AIR_OPERATIONS_JAPAN
+}
+
+function setRetreatRegions(location, setUSMapRegions, fleet) {
+  // For the given location, get list of all surrounding hexes
+  let hexes = allHexesWithinDistance(location.currentHex, 1, true)
+  // traverse the list of hexes, check if any fleets there, if so remove
+
+  const regions = new Array()
+  for (let h of hexes) {
+    let hex = {
+      currentHex: {
+        q: h.q,
+        r: h.r,
+      },
+    }
+    const fleets = GlobalInit.controller.getAllFleetsInLocation(hex, GlobalUnitsModel.Side.US, false)
+    if (fleets.length === 0) {
+      regions.push(h)
+    }
+  }
+
+  // TODO IF AI return regions
+  if (GlobalGameState.usPlayerType === GlobalUnitsModel.TYPE.AI) {
+    return regions
+  }
+
+  // there is a tiny chance of no available hexes for four of the top row hexes -> move somewhere @TODO QUACK
+
+  // set US Regions to allow drag and drop into this hex
+  setUSMapRegions(regions)
+
+  // set gamePhaseCompleted to false until no more fleets to move
+  GlobalGameState.phaseCompleted = false
+  GlobalGameState.retreatFleet = fleet
+
+  // will probably need to do the check for fleets in same hex a second time
+}
+
+async function retreatOneHexTo(hex, fleet, setFleetUnitUpdate) {
+  const q = hex.q
+  const r = hex.r
+
+  const update1 = createFleetUpdate(fleet, q, r)
+  if (update1 !== null) {
+    setFleetUnitUpdate(update1)
+  }
+  await delay(1)
+  const update2 = createFleetUpdate(fleet + "-JPMAP", q, r)
+  if (update2 !== null) {
+    setFleetUnitUpdate(update2)
+  }
+}
+
+export async function checkFleetsInSameHex(
+  controller,
+  setFleetUnitUpdate,
+  setPreviousPosition,
+  previousPosition,
+  setUSMapRegions
+) {
+  const { numFleetsInSameHexAsCSF, numFleetsInSameHexAsUSDMCV } = controller.opposingFleetsInSameHex()
+  // 1. loop through US Fleets
+
+  // 2.   get location of fleet
+
+  // 3.   if in same hex as any Japanese fleet
+  let usMapRegions
+
+  GlobalGameState.phaseCompleted = true
+
+  if (numFleetsInSameHexAsUSDMCV === 2) {
+    // USDMCV can only move 1 hex - go to start position
+    const usDMCVLocation = GlobalInit.controller.getFleetLocation("US-DMCV", GlobalUnitsModel.Side.US)
+    const usDMCVStartLocation = previousPosition.get("US-DMCV")
+    const distanceMoved = distanceBetweenHexes(usDMCVStartLocation.currentHex, usDMCVLocation.currentHex)
+
+    if (distanceMoved === 1) {
+      if (previousPosition !== HexCommand.OFFBOARD) {
+        // if start hex is not occuped go back there
+        const fleets = GlobalInit.controller.getAllFleetsInLocation(
+          usDMCVStartLocation,
+          GlobalUnitsModel.Side.US,
+          false
+        )
+        if (fleets.length === 0) {
+          await retreatOneHexTo(usDMCVStartLocation.currentHex, "US-DMCV", setFleetUnitUpdate)
+        } else {
+          // setRetreatRegions(usDMCVLocation, setUSMapRegions, "US-DMCV")
+          if (GlobalGameState.usPlayerType === GlobalUnitsModel.TYPE.HUMAN) {
+            setRetreatRegions(usDMCVLocation, setUSMapRegions, "US-DMCV")
+          } else {
+            usMapRegions = setRetreatRegions(usDMCVLocation, setUSMapRegions, "US-DMCV")
+            const retreatHex = usMapRegions[Math.floor(Math.random() * usMapRegions.length)]
+            await retreatOneHexTo(retreatHex, "US-DMCV", setFleetUnitUpdate)
+          }
+        }
+      }
+    } else {
+      // setRetreatRegions(usDMCVLocation, setUSMapRegions, "US-DMCV")
+      if (GlobalGameState.usPlayerType === GlobalUnitsModel.TYPE.HUMAN) {
+        setRetreatRegions(usDMCVLocation, setUSMapRegions, "US-DMCV")
+      } else {
+        usMapRegions = setRetreatRegions(usDMCVLocation, setUSMapRegions, "US-DMCV")
+        const retreatHex = usMapRegions[Math.floor(Math.random() * usMapRegions.length)]
+        await retreatOneHexTo(retreatHex, "US-DMCV", setFleetUnitUpdate)
+      }
+      return
+    }
+  }
+
+  if (numFleetsInSameHexAsCSF === 2) {
+    const csfLocation = controller.getFleetLocation("CSF", GlobalUnitsModel.Side.US)
+
+    const usStartLocation = previousPosition.get("CSF")
+    const distanceMoved = distanceBetweenHexes(usStartLocation.currentHex, csfLocation.currentHex)
+
+    // ----------------------------------------------------
+    // TODO IF AI SELECT A RETREAT HEX AT RANDOM
+    // ----------------------------------------------------
+    if (distanceMoved === 2) {
+      let hexes = interveningHexes(usStartLocation.currentHex, csfLocation.currentHex)
+      if (hexes.length === 1) {
+        // one intervening hex
+        let hex = {
+          currentHex: {
+            q: hexes[0].q,
+            r: hexes[0].r,
+          },
+        }
+        const fleets = controller.getAllFleetsInLocation(hex, GlobalUnitsModel.Side.US, false)
+        if (fleets.length === 0) {
+          await retreatOneHexTo(hex.currentHex, "CSF", setFleetUnitUpdate)
+        } else {
+          // go to region selection for human or random for AI
+          if (GlobalGameState.usPlayerType === GlobalUnitsModel.TYPE.HUMAN) {
+            setRetreatRegions(csfLocation, setUSMapRegions, "CSF")
+          } else {
+            usMapRegions = setRetreatRegions(csfLocation, setUSMapRegions, "CSF")
+            const retreatHex = usMapRegions[Math.floor(Math.random() * usMapRegions.length)]
+            await retreatOneHexTo(retreatHex, "CSF", setFleetUnitUpdate)
+          }
+        }
+      } else if (hexes.length == 2) {
+        // two possible intervening hexes
+        let hex1 = {
+          currentHex: {
+            q: hexes[0].q,
+            r: hexes[0].r,
+          },
+        }
+        let hex2 = {
+          currentHex: {
+            q: hexes[1].q,
+            r: hexes[1].r,
+          },
+        }
+        const fleetsHex1 = GlobalInit.controller.getAllFleetsInLocation(hex1, GlobalUnitsModel.Side.US, false)
+        const fleetsHex2 = GlobalInit.controller.getAllFleetsInLocation(hex2, GlobalUnitsModel.Side.US, false)
+        // 1. hex1 occupied, hex2 unoccupied -> move to hex2
+        if (fleetsHex1.length === 1 && fleetsHex2.length === 0) {
+          await retreatOneHexTo(hex2.currentHex, "CSF", setFleetUnitUpdate)
+        }
+        // 2. hex1 unoccupied, hex2 occupied -> move to hex1
+        if (fleetsHex1.length === 0 && fleetsHex2.length === 1) {
+          await retreatOneHexTo(hex1.currentHex, "CSF", setFleetUnitUpdate)
+        }
+        // 3. hex2 occupied, hex1 occupied -> region selection
+        // 4. hex1 unoccupied, hex2 unoccupied -> region selection
+        if (fleetsHex1.length == fleetsHex2.length) {
+          // setRetreatRegions(csfLocation, setUSMapRegions, "CSF")
+          // go to region selection for human or random for AI
+          if (GlobalGameState.usPlayerType === GlobalUnitsModel.TYPE.HUMAN) {
+            setRetreatRegions(csfLocation, setUSMapRegions, "CSF")
+          } else {
+            usMapRegions = setRetreatRegions(csfLocation, setUSMapRegions, "CSF")
+            const retreatHex = usMapRegions[Math.floor(Math.random() * usMapRegions.length)]
+            await retreatOneHexTo(retreatHex, "CSF", setFleetUnitUpdate)
+          }
+        }
+      } else {
+        // rare case where there has been a sea battle at night and the CSF has moved > 3 hexes
+        // setRetreatRegions(csfLocation, setUSMapRegions, "CSF")
+        // go to region selection for human or random for AI
+        if (GlobalGameState.usPlayerType === GlobalUnitsModel.TYPE.HUMAN) {
+          setRetreatRegions(csfLocation, setUSMapRegions, "CSF")
+        } else {
+          usMapRegions = setRetreatRegions(csfLocation, setUSMapRegions, "CSF")
+          const retreatHex = usMapRegions[Math.floor(Math.random() * usMapRegions.length)]
+          await retreatOneHexTo(retreatHex, "CSF", setFleetUnitUpdate)
+        }
+      }
+    } else if (distanceMoved === 1) {
+      // if start hex is not occuped go back there
+      const fleets = GlobalInit.controller.getAllFleetsInLocation(usStartLocation, GlobalUnitsModel.Side.US, false)
+      if (fleets.length === 0) {
+        await retreatOneHexTo(usStartLocation.currentHex, "CSF", setFleetUnitUpdate)
+      } else {
+        // else region selection
+        // go to region selection for human or random for AI
+        if (GlobalGameState.usPlayerType === GlobalUnitsModel.TYPE.HUMAN) {
+          setRetreatRegions(csfLocation, setUSMapRegions, "CSF")
+        } else {
+          usMapRegions = setRetreatRegions(csfLocation, setUSMapRegions, "CSF")
+          const retreatHex = usMapRegions[Math.floor(Math.random() * usMapRegions.length)]
+          await retreatOneHexTo(retreatHex, "CSF", setFleetUnitUpdate)
+        }
+        // setRetreatRegions(csfLocation, setUSMapRegions, "CSF")
+      }
+    } else {
+      // hasn't moved - region selection
+      // go to region selection for human or random for AI
+      if (GlobalGameState.usPlayerType === GlobalUnitsModel.TYPE.HUMAN) {
+        setRetreatRegions(csfLocation, setUSMapRegions, "CSF")
+      } else {
+        usMapRegions = setRetreatRegions(csfLocation, setUSMapRegions, "CSF")
+        console.log("REGIONS=", usMapRegions)
+        const retreatHex = usMapRegions[Math.floor(Math.random() * usMapRegions.length)]
+        console.log("\t=> retreat hex=", retreatHex)
+        await retreatOneHexTo(retreatHex, "CSF", setFleetUnitUpdate)
+      }
+      // setRetreatRegions(csfLocation, setUSMapRegions, "CSF")
+    }
+  }
+
+  //        determine distance US Fleet has moved
+  //        if 2
+  //          get intervening hexes between current location and starting location (if any)
+  //          if single unoccupied location move there
+  //          if two unoccupied locatios move to either
+  //          if no unoccupied locations set US regions to all adjacent unoccupied hexes
+  //            and allow drag and drop
+  //        if 1
+  //          if start hex unoccupied move back
+
+  //        if no unoccupied hexes or distance moved == 0
+  //          set US Regions to all eligible adjavent hexes
+  //          wait for move
+
+  // leave game state at RETREAT and return
+  setPreviousPosition(() => new Map())
+  // nextAction()
 }

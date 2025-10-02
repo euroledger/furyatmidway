@@ -269,6 +269,7 @@ export function SeaBattleDamagePanelHeaders({
     let allCarriers = controller.getAllCarriersForSide(side, true)
 
     allCarriers = allCarriers.filter((carrier) => !carrier.dmcv)
+    allCarriers = allCarriers.filter((carrier) => carrier.name !== "Midway")
 
     const hitsLeft = allCarriers.reduce(function (acc, carrier) {
       return acc + (3 - carrier.hits)
@@ -305,11 +306,17 @@ export function SeaBattleDamagePanelHeaders({
   const japanDone =
     GlobalGameState.usSeaBattleHits === 0 || (hlJapan === 0 && hlJapan < GlobalGameState.usSeaBattleHits)
   const usDone = GlobalGameState.jpSeaBattleHits === 0 || (hlUS === 0 && hlUS < GlobalGameState.jpSeaBattleHits)
-  if (mif && usDone) {
-    GlobalGameState.midwayInvasionLevel -= GlobalGameState.usSeaBattleHits
-    setSeaBattleDamageDone(true)
-  }
-  if (japanDone && usDone) {
+  console.log("japanDone=", japanDone)
+  console.log("usDone=", usDone)
+  // if (mif && usDone) {
+  //   console.log("1 ,,,,,,,,,,,,,REDUCE MIDWAY INVASION LEVEL BY ", GlobalGameState.usSeaBattleHits)
+  //   GlobalGameState.midwayInvasionLevel -= GlobalGameState.usSeaBattleHits
+  //       console.log("2 ,,,,,,,,,,,,,NOW GlobalGameState.midwayInvasionLevel= ", GlobalGameState.midwayInvasionLevel)
+
+  //   setSeaBattleDamageDone(true)
+  // }
+  if ((mif || japanDone) && usDone) {
+    console.log("SET SEA BATTLE DONE!!!")
     setSeaBattleDamageDone(true)
   }
   
@@ -339,6 +346,9 @@ export function SeaBattleDamagePanelHeaders({
 
     if (mif && usDone) {
       GlobalGameState.midwayInvasionLevel -= GlobalGameState.usSeaBattleHits
+      if (GlobalGameState.midwayInvasionLevel < 0) {
+        GlobalGameState.midwayInvasionLevel = 0
+      }
       setSeaBattleDamageDone(true)
     }
     if (japanDone && usDone) {

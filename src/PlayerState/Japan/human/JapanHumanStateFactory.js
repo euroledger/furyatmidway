@@ -19,6 +19,8 @@ import JapanHumanAttackDamageResolutionState from "./JapanHumanAttackDamageResol
 import JapanHumanAAADamageAllocationState from "./JapanHumanAAADamageAllocationState"
 import JapanHumanEndOfTurnState from "./JapanHumanEndOfTurnState"
 import JapanHumanDMCVFleetMovementState from "./JapanHumanDMCVFleetMovementState"
+import JapanHumanNightBattleState from "./JapanHumanNightBattleState"
+import JapanHumanNightAirOperationsState from "./JapanHumanNightAirOperationsState"
 
 function mapGameStateToJapanHumanHandlerState() {
   switch (GlobalGameState.gamePhase) {
@@ -62,6 +64,10 @@ function mapGameStateToJapanHumanHandlerState() {
       return new JapanHumanAAADamageAllocationState()
     case GlobalGameState.PHASE.JAPAN_DMCV_FLEET_MOVEMENT:
       return new JapanHumanDMCVFleetMovementState()
+    case GlobalGameState.PHASE.NIGHT_BATTLES_1:
+      return new JapanHumanNightBattleState()
+    case GlobalGameState.PHASE.NIGHT_AIR_OPERATIONS_JAPAN:
+      return new JapanHumanNightAirOperationsState()
 
     default:
       console.log("+++++ ERRROR +++++ NO JAPAN HUMAN STATE FOUND FOR PHASE", GlobalGameState.gamePhase)

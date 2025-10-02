@@ -654,20 +654,32 @@ export function doHangarNight(controller, name, side) {
   const carrierName = controller.getCarrierForAirBox(location.boxName)
 
   // At night fighters can be moved to CAP box
+
+  // TODO all units can be moved to flight deck
   const unit = controller.getAirUnitForName(name)
   if (!unit.aircraftUnit.attack) {
     const capBox = controller.getCapBoxForNamedCarrier(carrierName, side)
     destinationsArray.push(capBox)
   }
 
+  console.log("GET FLIGHT DECK BOX FOR ", carrierName)
   const destBox = controller.getAirBoxForNamedShip(side, carrierName, "FLIGHT_DECK")
 
   // check there is room on this carrier's flight deck
   const destAvailable = controller.isFlightDeckAvailable(carrierName, side, true)
 
-  // only check if flight deck is available for attack aircraft - fighters can go straigh to CAP
-  if (!destAvailable && unit.aircraftUnit.attack) {
-    controller.setValidAirUnitDestinations(name, new Array())
+  // if fighter add other carrier's flight deck if available
+  if (!unit.aircraftUnit.attack) {
+    let carrier = controller.getOtherCarrierInTF(carrierName, side)
+    const otherFlightDeckAvailable = controller.isFlightDeckAvailable(carrier.name, side, true)
+    if (otherFlightDeckAvailable) {
+      const destBox = controller.getAirBoxForNamedShip(side, carrier.name, "FLIGHT_DECK")
+      destinationsArray.push(destBox)
+    }
+  }
+  // check flight deck available
+  if (!destAvailable) {
+    // controller.setValidAirUnitDestinations(name, new Array())
     return
   }
   if (destBox) {
@@ -1378,14 +1390,17 @@ export function setValidDestinationBoxesNightOperations(controller, airUnitName,
 
   const location = controller.getAirUnitLocation(airUnitName)
 
-  // Fighter Units can move in to hangar and back out again during night operations
+  // ALL units can move to flight deck during night operations
+  // FIGHTERS can move to CAP box
+  // FIGHTERS can also move to other carrier in TF/division
+
   const unit = controller.getAirUnitForName(airUnitName)
   if (moved && !location.boxName.includes("HANGAR") && unit.aircraftUnit.attack) {
     return
   }
-  if (!moved && location.boxName.includes("HANGAR") && unit.aircraftUnit.attack) {
-    return
-  }
+  // if (!moved && location.boxName.includes("HANGAR") && unit.aircraftUnit.attack) {
+  //   return
+  // }
 
   if (location.boxName.includes("RETURNING (1)")) {
     // see if US CSF within two hexes of Midway
@@ -1411,6 +1426,7 @@ export function setValidDestinationBoxesNightOperations(controller, airUnitName,
     doCapNight(controller, airUnitName, side)
   }
   if (location.boxName.includes("HANGAR")) {
+    console.log("----------------> DO HANGAR NIGHT")
     doHangarNight(controller, airUnitName, side)
   }
   if (location.boxName.includes("FLIGHT")) {
@@ -1589,10 +1605,10 @@ export function isFirstAirOpForStrike(controller, counterData, side) {
   const locationOfStrikeGroup = controller.getStrikeGroupLocation(counterData.name, side)
 
   const sg = controller.getStrikeGroupForBox(side, counterData.box)
-  return !((
+  return !(
     (sg.gameTurnMoved !== undefined && sg.gameTurnMoved !== GlobalGameState.gameTurn) ||
     (locationOfStrikeGroup !== undefined &&
       counterData.airOpMoved !== undefined &&
       GlobalGameState.airOpUS !== counterData.airOpMoved)
-  ))
+  )
 }

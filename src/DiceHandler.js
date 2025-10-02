@@ -93,7 +93,7 @@ export function doIntiativeRoll(controller, roll0, roll1, showDice) {
       jpRolls = [rolls[0]]
       usRolls = [rolls[1]]
     }
-    console.log("ARSE GlobalGameState.sideWithInitiative =",GlobalGameState.sideWithInitiative)
+    console.log("ARSE GlobalGameState.sideWithInitiative =", GlobalGameState.sideWithInitiative)
   }
 
   if (GlobalGameState.sideWithInitiative === GlobalUnitsModel.Side.JAPAN) {
@@ -744,12 +744,12 @@ export function doAttackFireRolls(controller, testRolls) {
       dbDRM = -1
       torpDRM = -1
     } else {
-      const attackAircraftOnDeck =
-        controller.attackAircraftOnDeck() 
+      const attackAircraftOnDeck = controller.attackAircraftOnDeck()
       if (attackAircraftOnDeck) {
         dbDRM = 1
       }
-      const combinedAttack = controller.combinedAttack() && GlobalGameState.sideWithInitiative === GlobalUnitsModel.Side.JAPAN
+      const combinedAttack =
+        controller.combinedAttack() && GlobalGameState.sideWithInitiative === GlobalUnitsModel.Side.JAPAN
       if (combinedAttack) {
         torpDRM = 1
       }
@@ -810,8 +810,8 @@ export function doAttackFireRolls(controller, testRolls) {
     GlobalGameState.carrierAttackHitsThisAttack = hits
 
     // QUACK REMOVE TEESTING ONLY
-    // GlobalGameState.carrierAttackHits = 2
-    // GlobalGameState.carrierAttackHitsThisAttack = 2
+    // GlobalGameState.carrierAttackHits = 0
+    // GlobalGameState.carrierAttackHitsThisAttack = 0
   }
   return hits
 }

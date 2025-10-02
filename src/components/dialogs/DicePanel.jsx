@@ -60,12 +60,13 @@ function DicePanel(props) {
     sidebg = GlobalGameState.sideWithInitiative === GlobalUnitsModel.Side.JAPAN ?  "#4B0808" : "#293a4b" 
   }
   let showImg = false
-  if (image != "POO") {
+  if (image != "NOFLAG") {
     showImg = true
   }
-  image =
-    GlobalGameState.sideWithInitiative === GlobalUnitsModel.Side.JAPAN ? "/images/japanflag.jpg" : "/images/usaflag.jpg"
-
+  if (!image) {
+    image =
+      GlobalGameState.sideWithInitiative === GlobalUnitsModel.Side.JAPAN ? "/images/japanflag.jpg" : "/images/usaflag.jpg"
+  }
   const bg = GlobalGameState.gameTurn === 4 ? "black" : sidebg
 
   const rowClass = `g-${numDice}`
@@ -109,7 +110,7 @@ function DicePanel(props) {
           style={{
             width: "100px",
             height: "60px",
-            marginLeft: "-235px",
+            marginLeft: "-165px",
             marginRight: "155px",
           }}
         >

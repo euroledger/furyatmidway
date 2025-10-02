@@ -14,8 +14,8 @@ export function NavalBombardmentHeader() {
         <img
           src={cardImage}
           style={{
-            width: "90px",
-            height: "120px",
+            width: "120px",
+            height: "160px",
             marginLeft: "10px",
             marginRight: "10px",
             marginTop: "20px",

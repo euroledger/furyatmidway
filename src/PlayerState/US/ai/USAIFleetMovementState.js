@@ -8,10 +8,11 @@ import USAICardPlayState from "./USAICardPlayState"
 class USAIFleetMovementState {
   async doAction(stateObject) {
     const { setFleetUnitUpdate } = stateObject
-    usFleetMovementHandler({
+    console.log("------------> QUACK 1 DO US FLEET MOVEMENT")
+    await usFleetMovementHandler({
       setFleetUnitUpdate,
     })
-    this.nextState(stateObject)
+    // this.nextState(stateObject)
   }
 
   async nextState(stateObject) {
@@ -19,7 +20,9 @@ class USAIFleetMovementState {
       stateObject
     console.log("NEXT STATE AFTER US AI FLEET MOVEMENT")
 
-    usFleetMovementNextStateHandler({
+        console.log("------------> QUACK 2 DO US FLEET NEXT STATE")
+
+    await usFleetMovementNextStateHandler({
       setJpFleet,
       setUsFleet,
       setCardNumber,

@@ -22,6 +22,7 @@ import StateManager from "./model/StateManager"
 import { allCards } from "./CardLoader"
 import { processPlayedCard } from "./PlayerState/CardUtils"
 import { midwayPossible } from "./PlayerState/StateUtils"
+import { allMidwayBoxesDamaged } from "./DiceHandler"
 import {
   doIntiativeRoll,
   doNavalBattleRoll,
@@ -384,18 +385,14 @@ export function App() {
       setNightLandingDone(false)
       GlobalGameState.sideWithInitiative = side // needed in view event handler
 
-      if (
-        GlobalGameState.gamePhase === GlobalGameState.PHASE.NIGHT_AIR_OPERATIONS_US ||
-        GlobalGameState.gamePhase === GlobalGameState.PHASE.NIGHT_AIR_OPERATIONS_JAPAN
-      ) {
-        let unitsReturn2 = GlobalInit.controller.getAllAirUnitsInReturn2Boxes(side)
-        if (unitsReturn2.length > 0) {
-          const steps = GlobalInit.controller.getTotalSteps(unitsReturn2)
-          setNightSteps(steps)
-          setNightAirUnits(unitsReturn2)
-          setNightLandingPanelShow(true)
-        }
+      let unitsReturn2 = GlobalInit.controller.getAllAirUnitsInReturn2Boxes(side)
+      if (unitsReturn2.length > 0) {
+        const steps = GlobalInit.controller.getTotalSteps(unitsReturn2)
+        setNightSteps(steps)
+        setNightAirUnits(unitsReturn2)
+        setNightLandingPanelShow(true)
       }
+ 
       GlobalGameState.phaseCompleted = false
       GlobalGameState.nextActionButtonDisabled = true
       GlobalGameState.updateGlobalState()
@@ -429,19 +426,6 @@ export function App() {
     }
   }, [GlobalInit.controller.getAllAirUnitsInReturn2Boxes(GlobalUnitsModel.Side.JAPAN).length])
 
-  useEffect(() => {
-    if (GlobalGameState.gamePhase === GlobalGameState.PHASE.NIGHT_BATTLES_1) {
-      GlobalGameState.dieRolls = []
-      GlobalGameState.jpSeaBattleHits = 0
-      GlobalGameState.usSeaBattleHits = 0
-      setDamageDone(false)
-      setDamagedCV("")
-      const { numFleetsInSameHexAsCSF } = GlobalInit.controller.opposingFleetsInSameHex()
-      if (numFleetsInSameHexAsCSF == 2) {
-        setSeaBattlePanelShow(true)
-      }
-    }
-  }, [GlobalGameState.gamePhase])
   useEffect(() => {
     if (GlobalGameState.gamePhase === GlobalGameState.PHASE.NIGHT_BATTLES_2) {
       GlobalGameState.dieRolls = []
@@ -522,6 +506,17 @@ export function App() {
       GlobalGameState.eliminatedAirUnits = new Array()
       setAttackResolved(false)
       setAttackResolutionPanelShow(true)
+      doStateChange()
+    }
+  }, [GlobalGameState.gamePhase])
+
+    useEffect(() => {
+    if (
+      GlobalGameState.gamePhase === GlobalGameState.PHASE.NIGHT_AIR_OPERATIONS_JAPAN
+    ) {
+      const side = GlobalUnitsModel.Side.JAPAN
+      GlobalGameState.currentPlayer = GlobalUnitsModel.Side.JAPAN
+       
       doStateChange()
     }
   }, [GlobalGameState.gamePhase])
@@ -820,10 +815,29 @@ export function App() {
     }
   }, [GlobalGameState.gamePhase])
 
+   useEffect(() => {
+    if (GlobalGameState.gamePhase === GlobalGameState.PHASE.NIGHT_BATTLES_1) {
+      GlobalGameState.dieRolls = []
+      GlobalGameState.jpSeaBattleHits = 0
+      GlobalGameState.usSeaBattleHits = 0
+      setDamageDone(false)
+      setDamagedCV("")
+      doStateChange()
+    }
+  }, [GlobalGameState.gamePhase])
+
   useEffect(() => {
     if (GlobalGameState.gamePhase === GlobalGameState.PHASE.END_OF_TURN) {
       console.log(">>>>>>>>>>>>> IN END OF TURN EFFECT hook")
       GlobalGameState.JP_AF = 6 // in case card 6 was played
+      doStateChange()
+    }
+  }, [GlobalGameState.gamePhase])
+
+    useEffect(() => {
+    if (GlobalGameState.gamePhase === GlobalGameState.PHASE.RETREAT_US_FLEET) {
+      GlobalGameState.currentPlayer = GlobalUnitsModel.Side.US
+      console.log(">>>>>>>>>>>>> IN RETREAT_US_FLEET EFFECT hook")
       doStateChange()
     }
   }, [GlobalGameState.gamePhase])
@@ -1084,6 +1098,11 @@ export function App() {
   const stateObject = {
     // FOR AI AND TESTING
     controller: GlobalInit.controller,
+    setNightLandingDone,
+    setNightSteps,
+    setNightAirUnits,
+    setNightLandingPanelShow,
+    setSeaBattlePanelShow,
     setJapanFleetRegions,
     setEnabledUSFleetBoxes,
     cardEventHandler,
@@ -1106,6 +1125,7 @@ export function App() {
     setEnabledJapanBoxes, 
     setEnabledUSBoxes,
     setUSMapRegions,
+    USMapRegions,
     setUsFleetRegions,
     setCSFAlertShow,
     capAirUnits,
@@ -1113,6 +1133,8 @@ export function App() {
     fightersPresent,
     setCardNumber,
     cardNumber,
+    previousPosition,
+    setPreviousPosition,
     setJapanMapRegions,
     setEndOfTurnSummaryShow,
     setShowCardFooter,
@@ -1629,7 +1651,6 @@ export function App() {
     let midwayMsg = ""
     nextActionButtonDisabled()
     // if (GlobalGameState.gamePhase === GlobalGameState.PHASE.END_OF_AIR_OPERATION) {
-    //   console.log(">>>>>>>>>>>>>>> FUCKING IN HERE ***********************************")
     //   GlobalInit.controller.setAllDefendersToNotInterceptingAndNotSeparated()
     //   GlobalGameState.nextActionButtonDisabled = false
     //   GlobalGameState.elitePilots = false // reset for future air combats
@@ -2334,6 +2355,7 @@ export function App() {
       ></SeaBattleFooters>
     </>
   )
+
   const seaBattleDamageHeaders = (
     <>
       <SeaBattleDamagePanelHeaders
@@ -2455,11 +2477,11 @@ export function App() {
   function doInitiativeRoll(roll0, roll1) {
     // for testing QUACK
     // doIntiativeRoll(GlobalInit.controller, 6, 1, true) // JAPAN initiative
-    doIntiativeRoll(GlobalInit.controller, 1, 6, true) // US initiative
+    // doIntiativeRoll(GlobalInit.controller, 1, 6, true) // US initiative
 
     // doIntiativeRoll(GlobalInit.controller, 3, 3, true) // tie
 
-    // doIntiativeRoll(GlobalInit.controller, roll0, roll1)
+    doIntiativeRoll(GlobalInit.controller, roll0, roll1)
     GlobalGameState.updateGlobalState()
   }
 
@@ -2697,8 +2719,8 @@ export function App() {
     damagedCV === "NO TARGETS"
 
 
-  const summaryButtonDisabled = GlobalInit.controller.victoryCheck() !== ""
-
+  // const summaryButtonDisabled = GlobalInit.controller.victoryCheck() !== ""
+  const summaryButtonDisabled = false // QUACK TESTING
   return (
     <>
       <LoadGamePanel
@@ -2857,7 +2879,7 @@ export function App() {
         doRoll={doInitiativeRoll}
         diceButtonDisabled={airOpsDiceButtonDisabled}
         closeButtonDisabled={!airOpsDiceButtonDisabled}
-        image="POO"
+        image="NOFLAG"
       ></DicePanel>
       <DicePanel
         numDice={2}
@@ -2866,6 +2888,7 @@ export function App() {
         headers={seaBattleHeaders}
         footers={seaBattleFooters}
         showDice={showSeaBattleDice}
+        image="NOFLAG"
         margin={25}
         onHide={(e) => {
           setSeaBattlePanelShow(false)
@@ -3270,6 +3293,7 @@ export function App() {
         headerText="Naval Bombardment"
         headers={cardDicePanelHeaders}
         footers={cardDicePanelFooters}
+        image={"/images/japanflag.jpg"}
         width={30}
         showDice={true}
         margin={315}

@@ -31,6 +31,7 @@ export default class CardModel {
     let fleets = new Array()
 
     const mapMap = side === GlobalUnitsModel.Side.JAPAN ? this.jpMap : this.usMap
+
     // this gives us a map where keys are all non strike groups at this location
     const fleetLocations = new Map(
       [...mapMap].filter(([k, v]) => !k.includes("SG") && this.locationsEqual(v, location))
