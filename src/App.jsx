@@ -372,32 +372,32 @@ export function App() {
     }
   }, [GlobalGameState.gamePhase])
 
-  useEffect(() => {
-    if (
-      GlobalGameState.gamePhase === GlobalGameState.PHASE.NIGHT_AIR_OPERATIONS_JAPAN ||
-      GlobalGameState.gamePhase === GlobalGameState.PHASE.NIGHT_AIR_OPERATIONS_US
-    ) {
-      const side =
-        GlobalGameState.gamePhase === GlobalGameState.PHASE.NIGHT_AIR_OPERATIONS_JAPAN
-          ? GlobalUnitsModel.Side.JAPAN
-          : GlobalUnitsModel.Side.US
+  // useEffect(() => {
+  //   if (
+  //     GlobalGameState.gamePhase === GlobalGameState.PHASE.NIGHT_AIR_OPERATIONS_JAPAN ||
+  //     GlobalGameState.gamePhase === GlobalGameState.PHASE.NIGHT_AIR_OPERATIONS_US
+  //   ) {
+  //     const side =
+  //       GlobalGameState.gamePhase === GlobalGameState.PHASE.NIGHT_AIR_OPERATIONS_JAPAN
+  //         ? GlobalUnitsModel.Side.JAPAN
+  //         : GlobalUnitsModel.Side.US
 
-      setNightLandingDone(false)
-      GlobalGameState.sideWithInitiative = side // needed in view event handler
+  //     setNightLandingDone(false)
+  //     GlobalGameState.sideWithInitiative = side // needed in view event handler
 
-      let unitsReturn2 = GlobalInit.controller.getAllAirUnitsInReturn2Boxes(side)
-      if (unitsReturn2.length > 0) {
-        const steps = GlobalInit.controller.getTotalSteps(unitsReturn2)
-        setNightSteps(steps)
-        setNightAirUnits(unitsReturn2)
-        setNightLandingPanelShow(true)
-      }
+  //     let unitsReturn2 = GlobalInit.controller.getAllAirUnitsInReturn2Boxes(side)
+  //     if (unitsReturn2.length > 0) {
+  //       const steps = GlobalInit.controller.getTotalSteps(unitsReturn2)
+  //       setNightSteps(steps)
+  //       setNightAirUnits(unitsReturn2)
+  //       setNightLandingPanelShow(true)
+  //     }
  
-      GlobalGameState.phaseCompleted = false
-      GlobalGameState.nextActionButtonDisabled = true
-      GlobalGameState.updateGlobalState()
-    }
-  }, [GlobalGameState.gamePhase])
+  //     GlobalGameState.phaseCompleted = false
+  //     GlobalGameState.nextActionButtonDisabled = true
+  //     GlobalGameState.updateGlobalState()
+  //   }
+  // }, [GlobalGameState.gamePhase])
 
   // useEffect(() => {
   //   if (GlobalGameState.gamePhase === GlobalGameState.PHASE.INITIATIVE_DETERMINATION) {
@@ -409,22 +409,22 @@ export function App() {
   //   }
   // }, [GlobalGameState.gamePhase])
 
-  useEffect(() => {
-    if (GlobalGameState.gamePhase === GlobalGameState.PHASE.NIGHT_AIR_OPERATIONS_JAPAN) {
-      setCapAirUnits([])
-      let unitsReturn2 = GlobalInit.controller.getAllAirUnitsInReturn2Boxes(GlobalUnitsModel.Side.JAPAN)
+  // useEffect(() => {
+  //   if (GlobalGameState.gamePhase === GlobalGameState.PHASE.NIGHT_AIR_OPERATIONS_JAPAN) {
+  //     setCapAirUnits([])
+  //     let unitsReturn2 = GlobalInit.controller.getAllAirUnitsInReturn2Boxes(GlobalUnitsModel.Side.JAPAN)
 
-      let unitsAtSea = GlobalInit.controller.getAllStrikeUnits(GlobalUnitsModel.Side.JAPAN)
+  //     let unitsAtSea = GlobalInit.controller.getAllStrikeUnits(GlobalUnitsModel.Side.JAPAN)
 
-      if (unitsReturn2.length > 0 && unitsAtSea.length === 0 && !nightLandingDone) {
-        console.log("found some units in return2")
-        const steps = GlobalInit.controller.getTotalSteps(unitsReturn2)
-        setNightSteps(steps)
-        setNightAirUnits(unitsReturn2)
-        setNightLandingPanelShow(true)
-      }
-    }
-  }, [GlobalInit.controller.getAllAirUnitsInReturn2Boxes(GlobalUnitsModel.Side.JAPAN).length])
+  //     if (unitsReturn2.length > 0 && unitsAtSea.length === 0 && !nightLandingDone) {
+  //       console.log("found some units in return2")
+  //       const steps = GlobalInit.controller.getTotalSteps(unitsReturn2)
+  //       setNightSteps(steps)
+  //       setNightAirUnits(unitsReturn2)
+  //       setNightLandingPanelShow(true)
+  //     }
+  //   }
+  // }, [GlobalInit.controller.getAllAirUnitsInReturn2Boxes(GlobalUnitsModel.Side.JAPAN).length])
 
   useEffect(() => {
     if (GlobalGameState.gamePhase === GlobalGameState.PHASE.NIGHT_BATTLES_2) {
@@ -516,6 +516,17 @@ export function App() {
     ) {
       const side = GlobalUnitsModel.Side.JAPAN
       GlobalGameState.currentPlayer = GlobalUnitsModel.Side.JAPAN
+       
+      doStateChange()
+    }
+  }, [GlobalGameState.gamePhase])
+
+      useEffect(() => {
+    if (
+      GlobalGameState.gamePhase === GlobalGameState.PHASE.NIGHT_AIR_OPERATIONS_US
+    ) {
+      const side = GlobalUnitsModel.Side.US
+      GlobalGameState.currentPlayer = GlobalUnitsModel.Side.US
        
       doStateChange()
     }
@@ -1099,6 +1110,7 @@ export function App() {
     // FOR AI AND TESTING
     controller: GlobalInit.controller,
     setNightLandingDone,
+    nightLandingDone,
     setNightSteps,
     setNightAirUnits,
     setNightLandingPanelShow,
@@ -2352,6 +2364,7 @@ export function App() {
         setDmcvShipMarkerUpdate={setDmcvShipMarkerUpdate}
         setDamageDone={setDamageDone}
         damageDone={damageDone}
+        setFleetUnitUpdate={setFleetUnitUpdate}
       ></SeaBattleFooters>
     </>
   )
@@ -3113,6 +3126,7 @@ export function App() {
             sendNightLandingEvent()
           }
           doNightRollsDamage()
+          nextAction(e)
         }}
         doRoll={doNightLandingRolls}
         disabled={true}

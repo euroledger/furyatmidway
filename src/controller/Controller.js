@@ -393,6 +393,23 @@ export default class Controller {
     }
     return units
   }
+  
+  getAllUnitsInUSHangars() {
+    const airUnits = Array.from(this.counters.values())
+    const defenders = airUnits.filter(
+      (unit) => unit.constructor.name === "AirUnit" && unit.side === GlobalUnitsModel.Side.US
+    )
+
+    let units = new Array()
+    for (const unit of defenders) {
+      const location = this.getAirUnitLocation(unit.name)
+
+      if (location.boxName.includes("HANGAR")) {
+        units.push(unit)
+      }
+    }
+    return units
+  }
 
   getAllUnitsOnJapaneseFlightDecks(fighters) {
     const airUnits = Array.from(this.counters.values())
@@ -777,6 +794,15 @@ export default class Controller {
     const strikeGroups = this.getAllStrikeGroups(side)
     for (const group of strikeGroups) {
       if (!group.attacked) {
+        // If turn4 -> all units return (night)
+
+        if (GlobalGameState.gameTurn === 4) {
+          const unitsInGroup = this.getAirUnitsInStrikeGroups(group.box)
+          for (const unit of unitsInGroup) {
+            units.push(unit)
+          }
+          units.push(unit)
+        }
         continue
       }
       const unitsInGroup = this.getAirUnitsInStrikeGroups(group.box)
@@ -891,11 +917,7 @@ export default class Controller {
   }
 
   attackAircraftOnDeckForNamedCarrier(side, carrier) {
-    const flightDeckBox = this.airOperationsModel.getAirBoxForNamedShip(
-      side,
-      carrier,
-      "FLIGHT"
-    )
+    const flightDeckBox = this.airOperationsModel.getAirBoxForNamedShip(side, carrier, "FLIGHT")
     let boxName = Object.values(flightDeckBox)[0]
     const attackUnitsOnFlightDeck = this.getAttackAircraftInBox(boxName)
     return attackUnitsOnFlightDeck.length > 0
@@ -1368,7 +1390,6 @@ export default class Controller {
   anyFightersInStrike(tf, side) {
     const units = this.getAttackingStrikeUnitsForTF(tf, side).filter((airUnit) => !airUnit.aircraftUnit.attack)
     return units.length > 0
-
   }
 
   anyFightersInStrikeGroup(name) {

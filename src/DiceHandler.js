@@ -6,6 +6,7 @@ import GlobalInit from "./model/GlobalInit"
 import USAirBoxOffsets from "./components/draganddrop/USAirBoxOffsets"
 import JapanAirBoxOffsets from "./components/draganddrop/JapanAirBoxOffsets"
 import HexCommand from "./commands/HexCommand"
+import { createRemoveDMCVFleetUpdate, createMapUpdateForFleet} from "./AirUnitData"
 
 export function doSubmarineDamageRoll(roll) {
   let theRoll = roll ?? randomDice(1)
@@ -378,7 +379,8 @@ export async function doDMCVFleetDamage(
   sendDMCVUpdate,
   setDamageMarkerUpdate,
   setDmcvShipMarkerUpdate,
-  setDamageDone
+  setDamageDone,
+  setFleetUnitUpdate
 ) {
   if (show1) {
     await doDMCVDamage(
@@ -387,6 +389,7 @@ export async function doDMCVFleetDamage(
       sendDMCVUpdate,
       setDamageMarkerUpdate,
       setDmcvShipMarkerUpdate,
+      setFleetUnitUpdate,
       GlobalUnitsModel.Side.JAPAN
     )
   }
@@ -398,6 +401,7 @@ export async function doDMCVFleetDamage(
       sendDMCVUpdate,
       setDamageMarkerUpdate,
       setDmcvShipMarkerUpdate,
+      setFleetUnitUpdate,
       GlobalUnitsModel.Side.US
     )
   }
@@ -409,6 +413,7 @@ export async function doDMCVDamage(
   sendDMCVUpdate,
   setDamageMarkerUpdate,
   setDmcvShipMarkerUpdate,
+  setFleetUnitUpdate,
   side
 ) {
   await delay(1)
@@ -424,6 +429,19 @@ export async function doDMCVDamage(
   sendDamageUpdates(controller, damage, setDamageMarkerUpdate)
   if (damage.sunk) {
     sendDMCVUpdate(controller, GlobalGameState.currentCarrierAttackTarget, setDmcvShipMarkerUpdate, side)
+
+    // remove the fleet counters
+    // 1. Create Fleet Update to remove the fleet marker for that side
+    const update1 = createRemoveDMCVFleetUpdate(side)
+        console.log("UPDATE1=", update1)
+
+    setFleetUnitUpdate(update1)
+
+    await delay(1)
+    // 2. Create Fleet Update to remove the fleet marker from the other side's map
+    const update2 = createMapUpdateForFleet(GlobalInit.controller, update1.name, side)
+    console.log("UPDATE2=", update2)
+    setFleetUnitUpdate(update2)
   }
   await delay(1)
 

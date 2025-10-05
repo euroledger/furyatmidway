@@ -74,9 +74,9 @@ export function doUSFleetMovementAction(controller, regions, offboardPossible) {
     return { q: 3, r: 3 } // QUACK HARD WIRED FOR TESTING ONLY
   }
   if (GlobalGameState.gameTurn === 3) {
-    return { q: 5, r: 4 } // QUACK HARD WIRED FOR TESTING ONLY
+    return { q: 1, r: 4 } // QUACK HARD WIRED FOR TESTING ONLY
   }
     if (GlobalGameState.gameTurn === 4) {
-    return { q: 2, r: 5 } // QUACK HARD WIRED FOR TESTING ONLY
+    return { q: 1, r: 1 } // QUACK HARD WIRED FOR TESTING ONLY
   }
 }

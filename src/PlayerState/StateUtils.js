@@ -13,6 +13,8 @@ import USAirBoxOffsets from "../components/draganddrop/USAirBoxOffsets"
 import { japanMIFStartHexes } from "../components/MapRegions"
 import { createFleetUpdate, createRemoveFleetUpdate } from "../AirUnitData"
 import { distanceBetweenHexes, interveningHexes } from "../components/HexUtils"
+import { setValidDestinationBoxesNightOperations } from "../controller/AirOperationsHandler"
+import { moveAirUnitNight, moveAirUnitsFromHangarEndOfNightOperation } from "../UIEvents/AI/USAirOperationsBot"
 
 import {
   setStrikeGroupAirUnitsToNotMoved,
@@ -720,8 +722,62 @@ export function midwayOrAirOps() {
   }
 }
 
-export async function endOfAirOperation(capAirUnits, setAirUnitUpdate, setEliminatedUnitsPanelShow) {
-  console.log("&&&&&&&&&& FOOOOOOOOOOOOOOK endOfAirOperaation!! &&&&&&&&&&&&")
+// TODO new function generateAirOperationsMovesNight()
+
+// 1. For each unit in SG
+//    (Use setValidDestinationBoxesNightOperations)
+
+// 2. Display Night Landing panel -> determine damaage
+
+// 3. Move return2 units to return1 box
+
+// 4. Move return1 units to hangars of parent carriers
+
+// 5. Move fighters to CAP/flight deck
+// 6. Move attack aircraft to flight deck
+
+// (ensure no flight deck is empty)
+export async function endOfNightAirOperation(controller, setTestUpdate, side) {
+  // 1. Move CAP Units to Return 2 Bpx
+  const capAirUnits = controller.getAllAirUnitsInCAPBoxes(side)
+
+  if (capAirUnits.length > 0) {
+    for (const unit of capAirUnits) {
+      setValidDestinationBoxesNightOperations(controller, unit.name, side, true)
+      const destBoxes = controller.getValidAirUnitDestinations(unit.name)
+
+      await moveAirUnitNight(controller, unit, setTestUpdate, destBoxes)
+    }
+  }
+
+  await delay(10)
+  // Move Return 2 Units to Return 1
+  const return2AirUnits = controller.getAllAirUnitsInReturn2Boxes(side)
+  if (return2AirUnits.length > 0) {
+    for (const unit of return2AirUnits) {
+      setValidDestinationBoxesNightOperations(controller, unit.name, side, false)
+      const destBoxes = controller.getValidAirUnitDestinations(unit.name)
+      await moveAirUnitNight(controller, unit, setTestUpdate, destBoxes)
+    }
+  }
+
+  await delay(10)
+
+  // Move Return 1 Units to Hangar
+  const return1AirUnits = controller.getAllAirUnitsInReturn1Boxes(side)
+  if (return1AirUnits.length > 0) {
+    for (const unit of return1AirUnits) {
+      setValidDestinationBoxesNightOperations(controller, unit.name, side, false)
+      const destBoxes = controller.getValidAirUnitDestinations(unit.name)
+      await moveAirUnitNight(controller, unit, setTestUpdate, destBoxes)
+    }
+  }
+
+  await moveAirUnitsFromHangarEndOfNightOperation(controller, side, setTestUpdate)
+  
+}
+
+export async function endOfAirOperation(capAirUnits, setAirUnitUpdate) {
   if (
     GlobalGameState.taskForceTarget !== GlobalUnitsModel.TaskForce.JAPAN_DMCV &&
     GlobalGameState.taskForceTarget !== GlobalUnitsModel.TaskForce.US_DMCV

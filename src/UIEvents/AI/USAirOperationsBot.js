@@ -9,6 +9,7 @@ import {
   isFirstAirOpForStrike,
   firstAirOpUSStrikeRegion,
   secondAirOpUSStrikeRegion,
+  setValidDestinationBoxesNightOperations,
 } from "../../controller/AirOperationsHandler"
 import { usAirBoxArray } from "../../AirUnitData"
 import USAirBoxOffsets from "../../components/draganddrop/USAirBoxOffsets"
@@ -222,7 +223,55 @@ async function hangarToFlightDeck({ controller, unit, setTestUpdate, test }) {
   }
 }
 
-async function moveAirUnit(controller, unit, setTestUpdate) {
+export async function moveAirUnitsFromHangarEndOfNightOperation(controller, side, setTestUpdate) {
+  // Move Fighters First -> All go to CAP
+  // Move Attack aircraft to Flight Deck
+  const units = controller.getAllUnitsInUSHangars()
+
+  // get the fighters
+  const fighters = units.filter((unit) => !unit.aircraftUnit.attack)
+  const attackAircraft = units.filter((unit) => unit.aircraftUnit.attack)
+  for (const unit of fighters) {
+    setValidDestinationBoxesNightOperations(controller, unit.name, side, true)
+    const destBoxes = controller.getValidAirUnitDestinations(unit.name)
+    await moveAirUnitNight(controller, unit, setTestUpdate, destBoxes)
+  }
+
+  for (const unit of attackAircraft) {
+    setValidDestinationBoxesNightOperations(controller, unit.name, side, true)
+    const destBoxes = controller.getValidAirUnitDestinations(unit.name)
+    await moveAirUnitNight(controller, unit, setTestUpdate, destBoxes)
+  }
+}
+// TODO JAPAN
+export async function moveAirUnitNight(controller, unit, setTestUpdate, destBoxes) {
+  if (destBoxes.length === 0) {
+    return
+  }
+  // go to first available destination
+  let update = {
+    name: unit.name,
+    boxName: destBoxes[0],
+  }
+
+  console.log("WIZZ 1 destBoxes=", destBoxes)
+  console.log("WIZZ 2 boxName=", update.boxName)
+
+  const position1 = USAirBoxOffsets.find((box) => box.name === update.boxName)
+  update.index = controller.getFirstAvailableZone(update.boxName)
+  if (position1 === undefined) {
+    console.log("ERROR: position1 undefined in return strike units")
+    return
+  }
+  console.log("MOVE", unit.name, "TO", update.boxName, "INDEX", update.index)
+  update.position = position1.offsets[update.index]
+  update.log = true
+  await delay(50)
+
+  setTestUpdate(update)
+  await delay(50)
+}
+export async function moveAirUnit(controller, unit, setTestUpdate) {
   setValidDestinationBoxes(controller, unit.name, GlobalUnitsModel.Side.US)
 
   const destBoxes = controller.getValidAirUnitDestinations(unit.name)

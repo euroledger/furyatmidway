@@ -25,6 +25,7 @@ class JapanHumanNightAirOperationsState {
 
   async nextState(stateObject) {
     console.log(">>>>> MOVING ON FROM JAPAN NIGHT AIR OPERATIONS<<<<<<<<<")
+    GlobalGameState.gamePhase = GlobalGameState.PHASE.NIGHT_AIR_OPERATIONS_US
   }
 
   getState() {

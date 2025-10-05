@@ -32,22 +32,11 @@ class USAIEndOfAirOperationState {
     //   return
     // }
 
-    // Add this to decrement air ops points, reset strike groups etc
-
-    console.log("POTATOES going to decrement the US Air Ops points here...")
+    // decrement air ops points, reset strike groups etc
     await tidyUp(setAirUnitUpdate, setStrikeGroupUpdate, setFleetUnitUpdate)
 
     if (endOfTurn()) {
-      // if (GlobalGameState.gameTurn === 7) {
-      //   determineMidwayInvasion(setCardNumber, setEndOfTurnSummaryShow)
-      //   if (
-      //     GlobalGameState.gamePhase === GlobalGameState.PHASE.MIDWAY_INVASION ||
-      //     GlobalGameState.gamePhase === GlobalGameState.PHASE.CARD_PLAY
-      //   ) {
-      //     return
-      //   }
-      // }
-      GlobalGameState.currentPlayer = GlobalGameState.Side.JAPAN
+      GlobalGameState.currentPlayer = GlobalUnitsModel.Side.JAPAN
       GlobalGameState.gamePhase = GlobalGameState.PHASE.END_OF_TURN
       setEndOfTurnSummaryShow(true)
     } else {

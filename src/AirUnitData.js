@@ -541,6 +541,28 @@ export function calcStrikeDataUS(unit) {
   return update
 }
 
+export function createRemoveDMCVFleetUpdate(side) {
+  let name
+  if (side === GlobalUnitsModel.Side.JAPAN) {
+    name = "IJN-DMCV"
+  } else {
+    name = "US-DMCV"
+  }
+  const index = GlobalInit.controller.getNextAvailableFleetBox(side)
+  const location = {
+    boxName: HexCommand.FLEET_BOX,
+    boxIndex: index,
+  }
+  const update = {
+    name,
+    position: {
+      currentHex: location,
+    },
+    loading: false,
+    side,
+  }
+  return update
+}
 export function createRemoveFleetUpdate(side) {
   let name
   if (side === GlobalUnitsModel.Side.JAPAN) {
@@ -566,7 +588,7 @@ export function createRemoveFleetUpdate(side) {
 
 export function createMapUpdateForFleet(controller, name, side) {
   const location = controller.getFleetLocation(name, side)
-
+  console.log("POOOOOOOOOO name=", name, "side=", side, "location=", location)
   let otherName
   if (name === "CSF") {
     otherName = "CSF-JPMAP"
@@ -585,6 +607,7 @@ export function createMapUpdateForFleet(controller, name, side) {
     side = GlobalUnitsModel.Side.US
   }
   if (location === undefined) {
+    console.log("FUCK THIS null 00000000000")
     return null
   }
   if (location.boxName == HexCommand.FLEET_BOX) {
@@ -597,6 +620,7 @@ export function createMapUpdateForFleet(controller, name, side) {
       side,
     }
   }
+  console.log(">>>>>>>> bollocks location.currentHex.q, location.currentHex.r=", location.currentHex.q, location.currentHex.r)
   return createFleetUpdate(otherName, location.currentHex.q, location.currentHex.r)
 }
 

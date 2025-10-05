@@ -272,7 +272,6 @@ export function doReturn2(controller, name, side) {
   const { boxName } = controller.getAirUnitLocation(name)
   const tf = controller.getTaskForceForAirBox(boxName)
   const destBox = controller.getReturn1AirBoxForNamedTaskForce(side, tf)
-
   const boxArray = new Array()
   if (destBox) {
     boxArray.push(destBox)
@@ -671,10 +670,12 @@ export function doHangarNight(controller, name, side) {
   // if fighter add other carrier's flight deck if available
   if (!unit.aircraftUnit.attack) {
     let carrier = controller.getOtherCarrierInTF(carrierName, side)
-    const otherFlightDeckAvailable = controller.isFlightDeckAvailable(carrier.name, side, true)
-    if (otherFlightDeckAvailable) {
-      const destBox = controller.getAirBoxForNamedShip(side, carrier.name, "FLIGHT_DECK")
-      destinationsArray.push(destBox)
+    if (carrier !== undefined) {
+      const otherFlightDeckAvailable = controller.isFlightDeckAvailable(carrier.name, side, true)
+      if (otherFlightDeckAvailable) {
+        const destBox = controller.getAirBoxForNamedShip(side, carrier.name, "FLIGHT_DECK")
+        destinationsArray.push(destBox)
+      }
     }
   }
   // check flight deck available
@@ -1426,7 +1427,6 @@ export function setValidDestinationBoxesNightOperations(controller, airUnitName,
     doCapNight(controller, airUnitName, side)
   }
   if (location.boxName.includes("HANGAR")) {
-    console.log("----------------> DO HANGAR NIGHT")
     doHangarNight(controller, airUnitName, side)
   }
   if (location.boxName.includes("FLIGHT")) {
@@ -1524,7 +1524,8 @@ export function handleAirUnitMoves(controller, side) {
 }
 
 export function firstAirOpUSStrikeRegion(controller, counterData) {
-  let locationOfCarrier, usRegion
+  let locationOfCarrier,
+    usRegion = new Array()
   const unitsInGroup = controller.getAirUnitsInStrikeGroups(counterData.box)
   if (unitsInGroup[0].carrier === GlobalUnitsModel.Carrier.MIDWAY) {
     locationOfCarrier = Controller.MIDWAY_HEX

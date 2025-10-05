@@ -101,6 +101,7 @@ export function SeaBattleFooters({
   setDmcvShipMarkerUpdate,
   setDamageDone,
   damageDone,
+  setFleetUnitUpdate
 }) {
   // show the footer panel if:
   //  1. either fleet is a DMCV fleet (no die roll), or
@@ -164,7 +165,8 @@ export function SeaBattleFooters({
         sendDMCVUpdate,
         setDamageMarkerUpdate,
         setDmcvShipMarkerUpdate,
-        setDamageDone
+        setDamageDone,
+        setFleetUnitUpdate
       )
     }
   }
