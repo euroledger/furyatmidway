@@ -22,7 +22,8 @@ class USAIAttackDamageResolutionState {
   }
 
   async nextState(stateObject) {
-    const { capAirUnits, setAirUnitUpdate, setEliminatedUnitsPanelShow, setFleetUnitUpdate } = stateObject
+    const { capAirUnits, setAirUnitUpdate, setEliminatedUnitsPanelShow, setFleetUnitUpdate, setCardNumber } =
+      stateObject
     console.log("MOVE ON FROM US AI ATTACK DAMGE RESOLUTION")
 
     // check for card 13 critical hit
@@ -58,7 +59,7 @@ class USAIAttackDamageResolutionState {
         GlobalGameState.gamePhase = GlobalGameState.PHASE.AIR_ATTACK_2
       } else {
         await endOfAirOperation(capAirUnits, setAirUnitUpdate, setEliminatedUnitsPanelShow)
-        
+
         GlobalGameState.gamePhase = GlobalGameState.PHASE.AIR_OPERATIONS
       }
     }

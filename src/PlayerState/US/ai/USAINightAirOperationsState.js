@@ -7,13 +7,8 @@ import { moveAirUnit } from "../../../UIEvents/AI/USAirOperationsBot"
 
 class USAINightAirOperationsState {
   async doAction(stateObject) {
-    const {
-      setNightLandingDone,
-      setNightSteps,
-      setNightAirUnits,
-      setNightLandingPanelShow,
-      setTestUpdate
-    } = stateObject
+    const { setNightLandingDone, setNightSteps, setNightAirUnits, setNightLandingPanelShow, setTestUpdate } =
+      stateObject
     console.log(">>>>>>>> US NIGHT AIR OPERATIONS <<<<<<<<<< ")
 
     setNightLandingDone(false)
@@ -57,12 +52,42 @@ class USAINightAirOperationsState {
   }
 
   async nextState(stateObject) {
-    const { setTestUpdate } = stateObject
-    console.log(">>>>> MOVING ON FROM US NIGHT AIR OPERATIONS<<<<<<<<<")
+    const { setTestUpdate, setEliminatedUnitsPanelShow, setCardNumber, setEndOfTurnSummaryShow } = stateObject
 
-
-    // TODO move on to US AI NIGHT AIR OPERATIONS...
+    // Return units to carriers and move to hangar then flight deck or CAP
     await endOfNightAirOperation(GlobalInit.controller, setTestUpdate, GlobalUnitsModel.Side.US)
+    console.log(">>>>> MOVING ON FROM US NIGHT AIR OPERATIONS<<<<<<<<<")
+    if (GlobalGameState.orphanedAirUnits.length > 0) {
+      setEliminatedUnitsPanelShow(true)
+    } else {
+      if (
+        GlobalInit.controller.usHandContainsCard(1) &&
+        GlobalInit.controller.getSunkCarriers(GlobalUnitsModel.Side.US).length > 0
+      ) {
+        setCardNumber(() => 1)
+        GlobalGameState.gamePhase = GlobalGameState.PHASE.CARD_PLAY
+        return
+      }
+      if (GlobalInit.controller.usHandContainsCard(2) || GlobalInit.controller.japanHandContainsCard(2)) {
+        setCardNumber(() => 2)
+        GlobalGameState.gamePhase = GlobalGameState.PHASE.CARD_PLAY
+        return
+      }
+      if (GlobalInit.controller.usHandContainsCard(3) || GlobalInit.controller.japanHandContainsCard(3)) {
+        setCardNumber(() => 3)
+        GlobalGameState.gamePhase = GlobalGameState.PHASE.CARD_PLAY
+        return
+      }
+      if (GlobalInit.controller.usHandContainsCard(4) || GlobalInit.controller.japanHandContainsCard(4)) {
+        setCardNumber(() => 4)
+        GlobalGameState.gamePhase = GlobalGameState.PHASE.CARD_PLAY
+        return
+      }
+      console.log("END OF TURN BABY!!!!!!! current state=", GlobalGameState.gamePhase)
+      GlobalGameState.currentPlayer = GlobalUnitsModel.Side.JAPAN
+      GlobalGameState.gamePhase = GlobalGameState.PHASE.END_OF_TURN
+      setEndOfTurnSummaryShow(true)
+    }
   }
 
   getState() {

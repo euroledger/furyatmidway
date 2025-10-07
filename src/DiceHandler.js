@@ -158,7 +158,7 @@ export function doFighterCounterattack(controller, testRolls) {
   }
   // GlobalGameState.dieRolls = 1
   GlobalGameState.fighterHits = hits
-  // GlobalGameState.fighterHits = 1 // QUACK TESTING ONLY
+  // GlobalGameState.fighterHits = 2 // QUACK TESTING ONLY
 }
 
 export function getAirUnitOnFlightDeck(controller, carrier, bowOrStern) {

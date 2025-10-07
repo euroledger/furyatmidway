@@ -162,7 +162,7 @@ function CardAlertPanel(props) {
 
   if (GlobalGameState.gameTurn !== 4) {
     bg = GlobalUIConstants.Colors.US
-    if (cardNumber === 10) {
+    if (cardNumber === 10 || cardNumber === 12) {
       bg = GlobalUIConstants.Colors.JAPAN
     }
   }

@@ -14,6 +14,7 @@ import { japanMIFStartHexes } from "../components/MapRegions"
 import { createFleetUpdate, createRemoveFleetUpdate } from "../AirUnitData"
 import { distanceBetweenHexes, interveningHexes } from "../components/HexUtils"
 import { setValidDestinationBoxesNightOperations } from "../controller/AirOperationsHandler"
+import Controller from "../controller/Controller"
 import { moveAirUnitNight, moveAirUnitsFromHangarEndOfNightOperation } from "../UIEvents/AI/USAirOperationsBot"
 
 import {
@@ -301,7 +302,6 @@ export async function usFleetMovementNextStateHandler({
 }) {
   const { numFleetsInSameHexAsCSF, numFleetsInSameHexAsUSDMCV } = GlobalInit.controller.opposingFleetsInSameHex()
   if (GlobalGameState.gameTurn === 4) {
-    console.log(">>>>>>>>>>> POO numFleetsInSameHexAsCSF=", numFleetsInSameHexAsCSF)
     if (numFleetsInSameHexAsCSF === 2 || numFleetsInSameHexAsUSDMCV === 2) {
       if (numFleetsInSameHexAsCSF === 2) {
         // Since Japan player allocates all hits in night battles
@@ -601,6 +601,24 @@ export async function setNextStateFollowingCardPlay(stateObject) {
         setUpAirAttack(GlobalInit.controller, location, GlobalGameState.attackingStrikeGroup, setCardNumber, true)
       }
       break
+    case 12:
+      // Elite Pilots
+      // if (GlobalInit.controller.getCardPlayed(12, GlobalUnitsModel.Side.JAPAN)) {
+      //   if (GlobalGameState.taskForceTarget !== GlobalUnitsModel.TaskForce.MIDWAY) {
+      //     GlobalGameState.gamePhase = GlobalGameState.PHASE.CAP_INTERCEPTION
+      //   } else {
+      //     GlobalGameState.gamePhase = GlobalGameState.PHASE.ESCORT_COUNTERATTACK
+      //   }
+      // } else {
+      // Need to do CAP interception choice first even with elite pilots
+      // so that defenders are selected
+      GlobalGameState.currentPlayer = GlobalUnitsModel.Side.US
+      GlobalGameState.testCapSelection = -1
+
+      GlobalGameState.doneCapSelection = false
+      GlobalGameState.gamePhase = GlobalGameState.PHASE.CAP_INTERCEPTION
+      // }
+      break
     default:
       console.log("ERROR unknown card number: ", cardNumber)
   }
@@ -757,6 +775,7 @@ export async function endOfNightAirOperation(controller, setTestUpdate, side) {
     for (const unit of return2AirUnits) {
       setValidDestinationBoxesNightOperations(controller, unit.name, side, false)
       const destBoxes = controller.getValidAirUnitDestinations(unit.name)
+      await delay(10)
       await moveAirUnitNight(controller, unit, setTestUpdate, destBoxes)
     }
   }
@@ -774,7 +793,6 @@ export async function endOfNightAirOperation(controller, setTestUpdate, side) {
   }
 
   await moveAirUnitsFromHangarEndOfNightOperation(controller, side, setTestUpdate)
-  
 }
 
 export async function endOfAirOperation(capAirUnits, setAirUnitUpdate) {

@@ -231,8 +231,15 @@ export async function moveAirUnitsFromHangarEndOfNightOperation(controller, side
   // get the fighters
   const fighters = units.filter((unit) => !unit.aircraftUnit.attack)
   const attackAircraft = units.filter((unit) => unit.aircraftUnit.attack)
+
+  // TODO If there are 2 free flight deck slots and only one attack unit (same parent carrier)
+  // move one fighter unit to flight deck
+
+  
   for (const unit of fighters) {
-    setValidDestinationBoxesNightOperations(controller, unit.name, side, true)
+    const numFreeFlightDeckSlots = setValidDestinationBoxesNightOperations(controller, unit.name, side, true)
+    
+    console.log("NUM FREE SLOTS ON FLIGHT DECK =", numFreeFlightDeckSlots)
     const destBoxes = controller.getValidAirUnitDestinations(unit.name)
     await moveAirUnitNight(controller, unit, setTestUpdate, destBoxes)
   }
@@ -246,6 +253,7 @@ export async function moveAirUnitsFromHangarEndOfNightOperation(controller, side
 // TODO JAPAN
 export async function moveAirUnitNight(controller, unit, setTestUpdate, destBoxes) {
   if (destBoxes.length === 0) {
+    console.log("MUFFIN !!!!!!!!!!!!!!")
     return
   }
   // go to first available destination
@@ -260,7 +268,7 @@ export async function moveAirUnitNight(controller, unit, setTestUpdate, destBoxe
   const position1 = USAirBoxOffsets.find((box) => box.name === update.boxName)
   update.index = controller.getFirstAvailableZone(update.boxName)
   if (position1 === undefined) {
-    console.log("ERROR: position1 undefined in return strike units")
+    console.log("MUFFIN !!!!!! ERROR: position1 undefined in return strike units")
     return
   }
   console.log("MOVE", unit.name, "TO", update.boxName, "INDEX", update.index)

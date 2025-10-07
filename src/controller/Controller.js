@@ -393,7 +393,7 @@ export default class Controller {
     }
     return units
   }
-  
+
   getAllUnitsInUSHangars() {
     const airUnits = Array.from(this.counters.values())
     const defenders = airUnits.filter(
@@ -510,6 +510,25 @@ export default class Controller {
     }
     return this.getCarrierForAirBox(loc)
   }
+  midwayAttackCheck(strikeBoxes, side) {
+    const groups = this.getAllStrikeGroups(GlobalUnitsModel.Side.JAPAN)
+
+    if (GlobalGameState.midwayAttackGroup === undefined && groups.length > 0) {
+      GlobalGameState.midwayAttackGroup = groups[0].name
+    }
+    for (let group of groups) {
+      if (group.name === GlobalGameState.midwayAttackGroup) {
+        strikeBoxes = new Array()
+        const strikeGroup = this.getStrikeGroupForBox(side, groups[0].box)
+        if (!strikeGroup.moved) {
+          strikeBoxes.push(groups[0].box)
+          GlobalGameState.midwayAttackGroup = group.name
+          break
+        }
+      }
+    }
+    return strikeBoxes
+  }
   getStrikeBoxes(name, side) {
     const unit = this.getAirUnitForName(name)
     let strikeBoxes = Object.values(this.airOperationsModel.getStrikeBoxesForSide(side))
@@ -561,22 +580,7 @@ export default class Controller {
       //    => if none, we're done
       //    => If 1 or more check if any are already set to midway attack group
       if (GlobalGameState.gamePhase === GlobalGameState.PHASE.MIDWAY_ATTACK) {
-        const groups = this.getAllStrikeGroups(GlobalUnitsModel.Side.JAPAN)
-
-        if (GlobalGameState.midwayAttackGroup === undefined && groups.length > 0) {
-          GlobalGameState.midwayAttackGroup = groups[0].name
-        }
-        for (let group of groups) {
-          if (group.name === GlobalGameState.midwayAttackGroup) {
-            strikeBoxes = new Array()
-            const strikeGroup = this.getStrikeGroupForBox(side, groups[0].box)
-            if (!strikeGroup.moved) {
-              strikeBoxes.push(groups[0].box)
-              GlobalGameState.midwayAttackGroup = group.name
-              break
-            }
-          }
-        }
+          strikeBoxes = this.midwayAttackCheck(strikeBoxes, side)
       }
     }
     return strikeBoxes
@@ -1758,6 +1762,38 @@ export default class Controller {
       return this.getFirstAvailableZone(box)
     }
     return this.getCarrierBowDamaged(carrierName) ? 1 : 0
+  }
+
+  getNumFreeSlotsOnFlightDeck(carrierName, side) {
+    let hits = 0
+    let carrier
+    if (side === GlobalUnitsModel.Side.JAPAN) {
+      carrier = GlobalUnitsModel.jpFleetUnits.get(carrierName)
+      hits = carrier.hits
+    } else {
+      carrier = GlobalUnitsModel.usFleetUnits.get(carrierName)
+      hits = carrier.hits
+    }
+
+    if (carrier.name === GlobalUnitsModel.Carrier.MIDWAY) {
+      if (GlobalGameState.midwayBox0Damaged) hits++
+      if (GlobalGameState.midwayBox1Damaged) hits++
+      if (GlobalGameState.midwayBox2Damaged) hits++
+    }
+    if (carrierName === GlobalUnitsModel.Carrier.MIDWAY && hits === 3) {
+      return 0
+    }
+    const flightDeckBox = this.airOperationsModel.getAirBoxForNamedShip(side, carrierName, "FLIGHT")
+
+    let boxName = Object.values(flightDeckBox)[0]
+
+    const airUnitsOnFlightDeck = this.getAllAirUnitsInBox(boxName)
+    let capacity = 2
+    if (carrier.name === GlobalUnitsModel.Carrier.MIDWAY) {
+      capacity = 3
+    }
+
+    return capacity - hits - airUnitsOnFlightDeck
   }
 
   isFlightDeckAvailable(carrierName, side, comingFromHangar) {

@@ -27,6 +27,9 @@ export function CAPHeaders({ controller, setCapAirUnits, capSteps, setCapSteps }
         .fill()
         .map((_, i) => elRefs[i] || createRef())
     )
+    if (GlobalGameState.testCapSelection >= elRefs.length) {
+      return
+    }
     const myRef = elRefs[GlobalGameState.testCapSelection]
     if (myRef !== undefined) {
       myRef.current.click(myRef.current)

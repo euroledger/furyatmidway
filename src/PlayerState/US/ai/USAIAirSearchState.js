@@ -8,9 +8,7 @@ class USAIAirSearchState {
   }
 
   async nextState(stateObject) {
-    
     GlobalGameState.gamePhase = GlobalGameState.PHASE.INITIATIVE_DETERMINATION
-    console.log("LOTS OF US AI POO NOW GLOBAL GAME STATE game phase=", GlobalGameState.gamePhase)
     return new USAIInitiativeDeterminationState()
   }
 

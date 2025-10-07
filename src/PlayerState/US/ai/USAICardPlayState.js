@@ -38,11 +38,10 @@ class USAICardPlayState {
   async nextState(stateObject) {
     const { setSearchValuesAlertShow } = stateObject
 
-    console.log("TRASH NEXT STATE FROM US CARD PLAY cardNumber=", this.cardNumber)
+    console.log("NEXT STATE FROM US CARD PLAY cardNumber=", this.cardNumber)
     stateObject.cardNumber = this.cardNumber
     await setNextStateFollowingCardPlay(stateObject)
     if (displayScreen()) {
-      console.log("QUACKY 1")
       setSearchValuesAlertShow(true)
     }
 

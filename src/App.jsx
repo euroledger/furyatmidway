@@ -426,6 +426,8 @@ export function App() {
   //   }
   // }, [GlobalInit.controller.getAllAirUnitsInReturn2Boxes(GlobalUnitsModel.Side.JAPAN).length])
 
+  // TODO test and refactor this
+  // Need DMCV and CSF both in night battles in same turn
   useEffect(() => {
     if (GlobalGameState.gamePhase === GlobalGameState.PHASE.NIGHT_BATTLES_2) {
       GlobalGameState.dieRolls = []
@@ -441,13 +443,15 @@ export function App() {
     }
   }, [GlobalGameState.gamePhase])
 
-  useEffect(() => {
-    if (GlobalGameState.gamePhase === GlobalGameState.PHASE.MIDWAY_ATTACK) {
-      GlobalGameState.dieRolls = []
-      GlobalGameState.midwayAttackGroup = undefined
-      GlobalGameState.sideWithInitiative = GlobalUnitsModel.Side.JAPAN
-    }
-  }, [GlobalGameState.gamePhase])
+  // useEffect(() => {
+  //   if (GlobalGameState.gamePhase === GlobalGameState.PHASE.MIDWAY_ATTACK) {
+  //     GlobalGameState.dieRolls = []
+  //     GlobalGameState.midwayAttackGroup = undefined
+  //     GlobalGameState.sideWithInitiative = GlobalUnitsModel.Side.JAPAN
+  //   }
+  // }, [GlobalGameState.gamePhase])
+
+  // TODO create JapanHumanMidwayDamageResolutionState class
   useEffect(() => {
     if (GlobalGameState.gamePhase === GlobalGameState.PHASE.MIDWAY_DAMAGE_RESOLUTION) {
       GlobalGameState.dieRolls = []
@@ -550,8 +554,6 @@ export function App() {
       GlobalGameState.dieRolls = []
       GlobalGameState.carrierHitsDetermined = false
       GlobalGameState.carrierAttackHitsThisAttack = 0
-
-      console.log("+++++++++++ QUACK SET CARRIER ATTACK TARGET TO", GlobalGameState.carrierTarget1)
       GlobalGameState.currentCarrierAttackTarget = GlobalGameState.carrierTarget1
       GlobalGameState.eliminatedAirUnits = new Array()
       GlobalGameState.midwayHits = 0
@@ -573,6 +575,7 @@ export function App() {
 
   useEffect(() => {
     if (GlobalGameState.gamePhase === GlobalGameState.PHASE.ESCORT_COUNTERATTACK) {
+      console.log(">>>>>>>>>> GO TO ESCORT COUNTERATTACK player=", GlobalGameState.currentPlayer)
       GlobalGameState.dieRolls = []
       GlobalGameState.fighterHits = 0
       setEscortPanelShow(true)
@@ -603,13 +606,16 @@ export function App() {
 
   useEffect(() => {
     if (GlobalGameState.gamePhase === GlobalGameState.PHASE.CAP_INTERCEPTION) {
-      setFightersPresent(true)
-      setCapInterceptionPanelShow(true)
-      setCapSteps(0)
-      setCapAirUnits([])
-      GlobalInit.controller.setAllDefendersToNotIntercepting()
-      GlobalGameState.dieRolls = []
+      if (!GlobalGameState.doneCapSelection) {
+        setFightersPresent(true)
+        setCapSteps(0)
+        setCapAirUnits([])
+        GlobalInit.controller.setAllDefendersToNotIntercepting()
+      }
       GlobalGameState.capHits = 0
+      GlobalGameState.rollDice = false
+      GlobalGameState.dieRolls = []
+      setCapInterceptionPanelShow(true)
       console.log("CAP INTERCEPTION current player=", GlobalGameState.currentPlayer)      
       doStateChange()
     }
@@ -740,12 +746,16 @@ export function App() {
   
   useEffect(() => {
     if (GlobalGameState.gamePhase === GlobalGameState.PHASE.AIR_SEARCH && GlobalGameState.isFirstAirOp) {
+      console.log("SMASH!!!! doing air search")
       GlobalGameState.isFirstAirOp = false
-      if (GlobalGameState.currentPlayer === GlobalUnitsModel.Side.US, stateObject) {
-        StateManager.gameStateManager.setUSState(stateObject)
-      } else {
-        StateManager.gameStateManager.setJapanState(stateObject)
-      }
+      // if (GlobalGameState.currentPlayer === GlobalUnitsModel.Side.US, stateObject) {
+      //   StateManager.gameStateManager.setUSState(stateObject)
+      // } else {
+      //   StateManager.gameStateManager.setJapanState(stateObject)
+      // }
+      doStateChange()
+    } else {
+      console.log("MUFFIN! NOWHERE TO GO")
     }
   }, [GlobalGameState.gamePhase])
 
@@ -753,7 +763,6 @@ export function App() {
     if (GlobalGameState.gamePhase === GlobalGameState.PHASE.CARD_PLAY) {
       setEliminatedSteps(0)
       setHeaderText("Possible Card Play: Card #" + cardNumber)
-      console.log("useEffect POSSIBLE CARD PLAY: cardNumber=", cardNumber)
       GlobalGameState.dieRolls = []
       if (cardNumber === 2 || cardNumber === 4) {
         setDamagedCV("")
@@ -845,10 +854,16 @@ export function App() {
     }
   }, [GlobalGameState.gamePhase])
 
-    useEffect(() => {
+  useEffect(() => {
     if (GlobalGameState.gamePhase === GlobalGameState.PHASE.RETREAT_US_FLEET) {
       GlobalGameState.currentPlayer = GlobalUnitsModel.Side.US
       console.log(">>>>>>>>>>>>> IN RETREAT_US_FLEET EFFECT hook")
+      doStateChange()
+    }
+  }, [GlobalGameState.gamePhase])
+
+  useEffect(() => {
+    if (GlobalGameState.gamePhase === GlobalGameState.PHASE.MIDWAY_ATTACK) {
       doStateChange()
     }
   }, [GlobalGameState.gamePhase])
@@ -948,8 +963,9 @@ export function App() {
         }
         // }
         setUSMapRegions(regionsMinusAllFleets)
-
-        setFleetMoveAlertShow(true)
+        if (GlobalGameState.usPlayerType === GlobalUnitsModel.TYPE.HUMAN) {
+          setFleetMoveAlertShow(true)
+        }
       }
     } else if (GlobalGameState.gamePhase === GlobalGameState.PHASE.US_DMCV_FLEET_MOVEMENT_PLANNING) {
       let usRegion
@@ -1355,6 +1371,8 @@ export function App() {
     if (GlobalGameState.midwayAttackResolved) {
       return true
     }
+    GlobalInit.controller.midwayAttackCheck(new Array(), GlobalUnitsModel.Side.JAPAN)
+
     const strikeGroups = GlobalInit.controller.getAllStrikeGroups(GlobalUnitsModel.Side.JAPAN)
 
     let midwaySGMoved = false
@@ -1512,7 +1530,6 @@ export function App() {
     getAllAirUnitsRequiringMovesNightAirOperation(GlobalUnitsModel.Side.US)
   }
   const csfLocation = GlobalInit.controller.getFleetLocation("CSF", GlobalUnitsModel.Side.US)
-
   const nextActionButtonDisabled = async () => {
     const prevButton = GlobalGameState.nextActionButtonDisabled
 
@@ -1561,12 +1578,11 @@ export function App() {
       GlobalGameState.nextActionButtonDisabled = false
       return
     }
-
     if (GlobalGameState.gamePhase === GlobalGameState.PHASE.MIDWAY_ATTACK) {
       // 1. If strike has not moved -> Button Disabled
       const strikeReady = await midwayStrikeReady()
       if (!strikeReady) {
-        GlobalGameState.nextActionButtonDisabled = true
+          GlobalGameState.nextActionButtonDisabled = true
         if (prevButton !== GlobalGameState.nextActionButtonDisabled) {
           GlobalGameState.updateGlobalState()
         }
@@ -1576,6 +1592,7 @@ export function App() {
 
       if (GlobalGameState.midwayAirOp === 2 || GlobalInit.controller.getDistanceBetween1AFAndMidway() <= 2) {
         const endOfAirOps = await endOfMidwayOperation()
+
         if (endOfAirOps) {
           GlobalGameState.nextActionButtonDisabled = false
         } else {
@@ -2636,7 +2653,7 @@ export function App() {
   if (GlobalGameState.gamePhase === GlobalGameState.PHASE.CAP_DAMAGE_ALLOCATION) {
     closeDamageButtonDisabled = eliminatedSteps !== GlobalGameState.capHits && stepsLeft !== 0
   } else if (GlobalGameState.gamePhase === GlobalGameState.PHASE.ESCORT_DAMAGE_ALLOCATION) {
-    console.log("DEBUG: ESCORT DAMAGE ALLOCATION: eliminatedSteps= ", eliminatedSteps, "; stepsLeft=",  stepsLeft)
+    // console.log("DEBUG: ESCORT DAMAGE ALLOCATION: eliminatedSteps= ", eliminatedSteps, "; stepsLeft=",  stepsLeft)
     closeDamageButtonDisabled = eliminatedSteps !== GlobalGameState.fighterHits && stepsLeft !== 0
   } else if (GlobalGameState.gamePhase === GlobalGameState.PHASE.AAA_DAMAGE_ALLOCATION) {
     closeDamageButtonDisabled = eliminatedSteps !== GlobalGameState.antiaircraftHits && stepsLeft != 0
@@ -2682,7 +2699,13 @@ export function App() {
     autoAllocateMidwayDamage(GlobalInit.controller)
   }
 
-  let capInterceptionDiceButtonDisabled = capAirUnits.length === 0 || GlobalGameState.dieRolls.length > 0
+  let capInterceptionDiceButtonDisabled = (capAirUnits.length === 0 || GlobalGameState.dieRolls.length > 0)
+
+  if (GlobalGameState.taskForceTarget === GlobalUnitsModel.TaskForce.MIDWAY && GlobalGameState.elitePilots) {
+    if (GlobalGameState.usPlayerType === GlobalUnitsModel.TYPE.AI && !GlobalGameState.doneCapSelection) {
+      capInterceptionDiceButtonDisabled = true
+    }
+  }
 
   let nightLandingDiceButtonDisabled = nightLandingDone
 
@@ -2979,6 +3002,7 @@ export function App() {
         showDice={true}
         margin={0}
         onHide={(e) => {
+          GlobalGameState.doneCapSelection = true
           setCapInterceptionPanelShow(false)
           if (capAirUnits.length > 0) {
             sendCapEvent()

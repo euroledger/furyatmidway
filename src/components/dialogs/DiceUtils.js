@@ -1,4 +1,4 @@
-import GlobalGameState from "../../model/GlobalGameState";
+import GlobalGameState from "../../model/GlobalGameState"
 
 // just get the result, no dice graphics
 export const randomDieRolls = (num) => {
@@ -66,22 +66,20 @@ const spin = (r, dice) => {
 }
 const rollDice = (rolls, ix) => {
   const diceElements = new Array()
-  var audio = new Audio("/sounds/dice.wav");
+  var audio = new Audio("/sounds/dice.wav")
 
-  audio.play();
+  audio.play()
   for (let i = 0; i < rolls.length; i++) {
     let dix = i
     if (ix) {
       dix = i + ix
     }
-    const dice = document.querySelector(".dice" + (dix+1))
-   
-    dice.style.animation = `rolling${i+1} 1s`  
+    const dice = document.querySelector(".dice" + (dix + 1))
+    dice.style.animation = `rolling${i + 1} 1s`
     diceElements.push(dice)
   }
 
   setTimeout(() => {
-   
     for (let i = 0; i < rolls.length; i++) {
       spin(rolls[i], diceElements[i])
     }
@@ -90,6 +88,5 @@ const rollDice = (rolls, ix) => {
     }
     GlobalGameState.dieRolls = rolls
     GlobalGameState.updateGlobalState()
-   
   }, 400)
 }

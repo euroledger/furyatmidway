@@ -4,7 +4,7 @@ import JapanHumanCardDrawState from "./JapanHumanCardDrawState"
 
 class JapanHumanSetupAirState {
   async doAction(stateObject) {
-    console.log("BIG CHIPS AND POO stateObject=", stateObject)
+    console.log("JAPAN SETUP AIR STATE")
     const { getJapanEnabledAirBoxes, setEnabledJapanBoxes } = stateObject
 
     const enabledBoxes = getJapanEnabledAirBoxes()

@@ -588,7 +588,6 @@ export function createRemoveFleetUpdate(side) {
 
 export function createMapUpdateForFleet(controller, name, side) {
   const location = controller.getFleetLocation(name, side)
-  console.log("POOOOOOOOOO name=", name, "side=", side, "location=", location)
   let otherName
   if (name === "CSF") {
     otherName = "CSF-JPMAP"
@@ -607,7 +606,6 @@ export function createMapUpdateForFleet(controller, name, side) {
     side = GlobalUnitsModel.Side.US
   }
   if (location === undefined) {
-    console.log("FUCK THIS null 00000000000")
     return null
   }
   if (location.boxName == HexCommand.FLEET_BOX) {

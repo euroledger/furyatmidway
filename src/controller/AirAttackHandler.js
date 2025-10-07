@@ -37,6 +37,8 @@ export function setUpAirAttack(controller, location, strikeGroup, setCardNumber,
       setCardNumber(() => 12)
       GlobalGameState.gamePhase = GlobalGameState.PHASE.CARD_PLAY
     } else {
+      GlobalGameState.doneCapSelection = false
+      GlobalGameState.testCapSelection = -1
       GlobalGameState.gamePhase = GlobalGameState.PHASE.CAP_INTERCEPTION
     }
     // }

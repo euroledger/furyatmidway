@@ -1,34 +1,38 @@
 import GlobalGameState from "../../../model/GlobalGameState"
 import GlobalUnitsModel from "../../../model/GlobalUnitsModel"
 import { endOfAirOperation, midwayOrAirOps } from "../../StateUtils"
-import { allocateEscortDamageToAttackingStrikeUnit } from "../../../UIEvents/AI/USAirCombatBot"
+import { allocateEscortDamageToDefendingCapUnits } from "../../../UIEvents/AI/USAirCombatBot"
 import GlobalInit from "../../../model/GlobalInit"
 import { delay } from "../../../Utils"
 
-
 class USAIEscortDamageAllocationState {
   async doAction(stateObject) {
+    const { setCapSteps, capSteps } = stateObject
     console.log("DO ESCORT DAMAGE ALLOCATION FOR US number hits= ", GlobalGameState.fighterHits)
 
     // Only fighters so select by combat strength
 
+    // Allocate damage to defending CAP
+    let numHitsAllocated = 0
     for (let i = 0; i < GlobalGameState.fighterHits; i++) {
       await delay(1000)
 
       GlobalGameState.testStepLossSelection = -1
       GlobalGameState.updateGlobalState()
       await delay(10)
-      let strikeUnits = GlobalInit.controller.getAttackingStrikeUnits()
-
-      if (strikeUnits.length === 0) {
+      // let strikeUnits = GlobalInit.controller.getAttackingStrikeUnits()
+      // US Damage Allocation Bot...picks one unit to take this hit
+      let capUnits = GlobalInit.controller.getAllCAPDefenders(GlobalUnitsModel.Side.US)
+      if (capUnits.length === 0) {
         break // all strike units eliminated
       }
-      // US Damage Allocation Bot...picks one unit to take this hit
-      const { index } = await allocateEscortDamageToAttackingStrikeUnit(strikeUnits)
-
+      const { index } = await allocateEscortDamageToDefendingCapUnits(capUnits, setCapSteps)
+      numHitsAllocated++
       GlobalGameState.testStepLossSelection = index
       GlobalGameState.updateGlobalState()
     }
+
+    setCapSteps(() => capSteps - numHitsAllocated)
 
     // TODO change wording on the damage allocation screen
     // Remove "Click on air unit to eliminate a step"

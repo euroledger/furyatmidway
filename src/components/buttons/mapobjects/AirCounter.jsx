@@ -446,7 +446,6 @@ function AirCounter({ getAirBox, setAirBox, counterData, side }) {
   }
 
   const setBoxes = async (counterData, box) => {
-    console.log("*** setBoxes() ***")
     if (
       GlobalGameState.gamePhase === GlobalGameState.PHASE.NIGHT_AIR_OPERATIONS_JAPAN ||
       GlobalGameState.gamePhase === GlobalGameState.PHASE.NIGHT_AIR_OPERATIONS_US
@@ -461,9 +460,6 @@ function AirCounter({ getAirBox, setAirBox, counterData, side }) {
         await moveOrphanedCAPUnitsToEliminatedBoxNight(counterData.side, box, counterData)
       }
     }
-
-    console.log("box=", box)
-
     if (box !== undefined && box.includes("CAP RETURNING")) {
       const reorgUnits = await moveOrphanedCAPUnitsToEliminatedBox(counterData.side, box, counterData)
       if (reorgUnits != undefined && reorgUnits.length > 0) {

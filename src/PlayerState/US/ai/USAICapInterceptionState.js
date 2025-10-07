@@ -2,15 +2,32 @@ import GlobalGameState from "../../../model/GlobalGameState"
 import GlobalUnitsModel from "../../../model/GlobalUnitsModel"
 import { endOfAirOperation, midwayOrAirOps } from "../../StateUtils"
 import GlobalInit from "../../../model/GlobalInit"
-import { delay } from "../../../Utils"
 import { doCapSelection } from "../../../UIEvents/AI/USAirCombatBot"
-
+import { delay } from "../../../Utils"
 
 class USAICapInterceptionState {
   async doAction(stateObject) {
-    console.log(">>>>>>>> US AI CAP INTERCEPTION")
+    const { capSteps } = stateObject
 
-    await doCapSelection(GlobalInit.controller)
+    console.log(">>>>>>>> US AI CAP INTERCEPTION GlobalGameState.doneCapSelection=", GlobalGameState.doneCapSelection)
+
+    if (!GlobalGameState.doneCapSelection) {
+      await doCapSelection(GlobalInit.controller)
+      this.capDiceRolled = false
+    } else {
+      // already done cap steps (elite pilots) -> just roll the dice
+      console.log(
+        "DEBUG: second CAP interception, no selection, just roll dice, GlobalGameState.rollDice=",
+        GlobalGameState.rollDice
+      )
+      GlobalGameState.rollDice = false
+      GlobalGameState.updateGlobalState()
+      GlobalGameState.testCapSelection = -1
+      await delay(300)
+      GlobalGameState.rollDice = true
+      GlobalGameState.updateGlobalState()
+      this.capDiceRolled = true
+    }
   }
 
   async nextState(stateObject) {
@@ -19,6 +36,11 @@ class USAICapInterceptionState {
     console.log("MOVE ON FROM US AI CAP INTERCEPTION! capSteps=", capSteps, "CAP AIR UNITS=", capAirUnits)
 
     console.log("STATE CHANGE CAP -> AAA FIRE OR ESCORT COUNTERATTACK OR CAP DAMAGE")
+    if (!this.capDiceRolled && GlobalGameState.taskForceTarget === GlobalUnitsModel.TaskForce.MIDWAY && GlobalGameState.elitePilots) {
+      GlobalGameState.currentPlayer = GlobalUnitsModel.Side.JAPAN
+      GlobalGameState.gamePhase = GlobalGameState.PHASE.ESCORT_COUNTERATTACK
+      return
+    }
     GlobalGameState.midwayAttackResolved = true
 
     if (GlobalGameState.capHits > 0) {

@@ -122,6 +122,7 @@ export default class GlobalGameState {
 
   static stateHandler = () => {};
 
+  static doneCapSelection = false
   static dieRolls = new Array()
 
   static carrierHitsDetermined = false

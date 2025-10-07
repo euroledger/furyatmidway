@@ -667,6 +667,8 @@ export function doHangarNight(controller, name, side) {
   // check there is room on this carrier's flight deck
   const destAvailable = controller.isFlightDeckAvailable(carrierName, side, true)
 
+  // const numFreeSlotsOnFlightDeck = controller.getNumFreeSlotsOnFlightDeck(carrierName, side)
+
   // if fighter add other carrier's flight deck if available
   if (!unit.aircraftUnit.attack) {
     let carrier = controller.getOtherCarrierInTF(carrierName, side)
@@ -681,12 +683,13 @@ export function doHangarNight(controller, name, side) {
   // check flight deck available
   if (!destAvailable) {
     // controller.setValidAirUnitDestinations(name, new Array())
-    return
+    return 0
   }
   if (destBox) {
     destinationsArray.push(destBox)
     controller.setValidAirUnitDestinations(name, destinationsArray)
   }
+  // return numFreeSlotsOnFlightDeck
 }
 
 export function doHangar(controller, name, side) {
@@ -1426,8 +1429,9 @@ export function setValidDestinationBoxesNightOperations(controller, airUnitName,
   if (location.boxName.includes("CAP") && !location.boxName.includes("RETURNING")) {
     doCapNight(controller, airUnitName, side)
   }
+  let numFree = 0
   if (location.boxName.includes("HANGAR")) {
-    doHangarNight(controller, airUnitName, side)
+    numFree = doHangarNight(controller, airUnitName, side)
   }
   if (location.boxName.includes("FLIGHT")) {
     doFlightDeck(controller, airUnitName, side)
@@ -1442,6 +1446,7 @@ export function setValidDestinationBoxesNightOperations(controller, airUnitName,
       doStrikeBoxUSNight(controller, airUnitName, side)
     }
   }
+  return numFree
 }
 export function setValidDestinationBoxes(controller, airUnitName, side) {
   controller.setValidAirUnitDestinations(airUnitName, new Array()) // just to be sure last entries are gone

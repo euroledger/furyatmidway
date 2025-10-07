@@ -58,15 +58,15 @@ function is1StepDiveBomber(unit) {
   return unit.aircraftUnit.diveBomber && unit.aircraftUnit.steps === 1
 }
 
-export async function allocateEscortDamageToAttackingStrikeUnit(strikeUnits) {
-  let originalUnits = JSON.parse(JSON.stringify(strikeUnits))
+export async function allocateEscortDamageToDefendingCapUnits(capUnits) {
+  let originalUnits = JSON.parse(JSON.stringify(capUnits))
 
-  // sort by combat strength 
-  strikeUnits = strikeUnits.sort(function (a, b) {
+  // sort by combat strength
+  capUnits = capUnits.sort(function (a, b) {
     return a.aircraftUnit.strength - b.aircraftUnit.strength
   })
-  const index = originalUnits.findIndex((unit) => unit._name === strikeUnits[0].name)
-  const unit = strikeUnits[0]
+  const index = originalUnits.findIndex((unit) => unit._name === capUnits[0].name)
+  const unit = capUnits[0]
   return { unit, index }
 }
 
@@ -294,21 +294,22 @@ export async function doCapSelection(controller) {
 
   GlobalGameState.rollDice = false
   await delay(10)
-  
+
   // Allocate one CAP unit per attacker
   for (let i = 0; i < attackers.length; i++) {
     await delay(300)
 
-    const selection = Math.floor(Math.random() * copy.length)
-
-    GlobalGameState.testCapSelection = selection
+    GlobalGameState.testCapSelection = i
     GlobalGameState.updateGlobalState()
-
-    await delay(10)
-    // remove the selected air unit from available CAP units
-    copy = copy.filter((element) => element.name !== copy[selection].name)
   }
-  GlobalGameState.rollDice = true
+  // Do not do the attack if elite pilots in play
+  await delay(100)
+  if (GlobalGameState.taskForceTarget !== GlobalUnitsModel.TaskForce.MIDWAY || !GlobalGameState.elitePilots) {
+    GlobalGameState.rollDice = true
+  } else {
+    // GlobalGameState.elitePilots = false // not needed for next iteration into here
+    GlobalGameState.rollDice = false
+  }
   await delay(10)
   GlobalGameState.updateGlobalState()
 }

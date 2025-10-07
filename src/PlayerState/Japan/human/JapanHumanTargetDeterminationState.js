@@ -16,9 +16,10 @@ class JapanHumanTargetDeterminationState {
   async nextState(stateObject) {
     console.log("JapanHumanTargetDeterminationState -> nextState() !!!!!!!!!!!!!!!")
 
-
-    // TODO -> USAICapInterception state
     GlobalGameState.currentPlayer = GlobalUnitsModel.Side.US
+    GlobalGameState.testCapSelection = -1
+
+    GlobalGameState.doneCapSelection = false
     GlobalGameState.gamePhase = GlobalGameState.PHASE.CAP_INTERCEPTION
   }
 
