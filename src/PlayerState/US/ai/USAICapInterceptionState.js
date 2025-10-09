@@ -23,7 +23,7 @@ class USAICapInterceptionState {
       GlobalGameState.rollDice = false
       GlobalGameState.updateGlobalState()
       GlobalGameState.testCapSelection = -1
-      await delay(300)
+      await delay(1000)
       GlobalGameState.rollDice = true
       GlobalGameState.updateGlobalState()
       this.capDiceRolled = true

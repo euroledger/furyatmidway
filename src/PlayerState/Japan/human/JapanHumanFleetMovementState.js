@@ -1,7 +1,6 @@
 import GlobalGameState from "../../../model/GlobalGameState"
 import { goToIJNFleetMovement, goToMidwayAttackOrUSFleetMovement } from "../../StateUtils"
 
-
 class JapanHumanFleetMovementState {
   async doAction(stateObject) {
     const { setUSMapRegions, setJapanMapRegions, setJapanMIFMapRegions, setJpAlertShow, setEnabledJapanFleetBoxes } =
@@ -26,6 +25,8 @@ class JapanHumanFleetMovementState {
       setJapanMIFMapRegions,
       setFleetUnitUpdate,
     })
+    GlobalGameState.midwayAirOp = 1
+    GlobalGameState.airOpJapan = 1
   }
 
   getState() {

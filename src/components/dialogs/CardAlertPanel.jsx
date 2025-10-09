@@ -51,7 +51,6 @@ function CardAlertPanel(props) {
     // setButtonPressed(() => false)
     setShowCardFooter(false)
     onHide(e)
-    nextAction()
   }
 
   const yesHandler = (e) => {

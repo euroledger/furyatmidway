@@ -23,6 +23,8 @@ import JapanHumanNightBattleState from "./JapanHumanNightBattleState"
 import JapanHumanNightAirOperationsState from "./JapanHumanNightAirOperationsState"
 import JapanHumanAirSearchState from "./JapanHumanAirSearchState"
 import JapanHumanMidwayAirAttackState from "./JapanHumanMidwayAirAttackState"
+import JapanHumanMidwayDamageResolutionState from "./JapanHumanMidwayDamageResolutionState"
+import JapanHumanDrawOneCardState from "./JapanHumanDrawOneCardState"
 
 function mapGameStateToJapanHumanHandlerState() {
   switch (GlobalGameState.gamePhase) {
@@ -74,6 +76,10 @@ function mapGameStateToJapanHumanHandlerState() {
       return new JapanHumanAirSearchState()
     case GlobalGameState.PHASE.MIDWAY_ATTACK:
       return new JapanHumanMidwayAirAttackState()
+    case GlobalGameState.PHASE.MIDWAY_DAMAGE_RESOLUTION:
+      return new JapanHumanMidwayDamageResolutionState()
+    case GlobalGameState.PHASE.JAPAN_DRAWS_ONE_CARD:
+      return new JapanHumanDrawOneCardState()
 
     default:
       console.log("+++++ ERRROR +++++ NO JAPAN HUMAN STATE FOUND FOR PHASE", GlobalGameState.gamePhase)

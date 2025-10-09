@@ -155,6 +155,8 @@ export default class GlobalGameState {
   static jpCardsDrawn = false
   static usCardsDrawn = false
 
+  static cardsChecked = new Array()
+
   static usFleetPlaced = false
   static usFleetMoved = false
   static jpFleetPlaced = false

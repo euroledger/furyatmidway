@@ -1,7 +1,7 @@
 import GlobalGameState from "../../../model/GlobalGameState"
 import GlobalInit from "../../../model/GlobalInit"
 import GlobalUnitsModel from "../../../model/GlobalUnitsModel"
-import { moveCAPUnitsFromReturnBoxToCarrier } from "../../StateUtils"
+import { moveCAPUnitsFromReturnBoxToCarrier, midwayOrAirOps } from "../../StateUtils"
 
 class USAICapReturnState {
   async doAction(stateObject) {
@@ -13,12 +13,10 @@ class USAICapReturnState {
   }
 
   async nextState(stateObject) {
-    console.log("CURRENT GAME STATE=", GlobalGameState.gamePhase)
     console.log(">>>>> MOVING ON FROM US CAP RETURN")
-    // const { setEndOfAirOpAlertShow } = stateObject
     GlobalGameState.currentPlayer = GlobalUnitsModel.Side.JAPAN
-    GlobalGameState.gamePhase = GlobalGameState.PHASE.AIR_OPERATIONS
-    // setEndOfAirOpAlertShow(true)
+    midwayOrAirOps()
+    GlobalGameState.updateGlobalState()
   }
 
   getState() {

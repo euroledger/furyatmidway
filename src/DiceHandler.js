@@ -20,7 +20,7 @@ export function doCVDamageControl(roll) {
 
 export function doNavalBombardmentRoll(controller, roll) {
   let theRoll = roll ?? randomDice(1)
-  // theRoll = 6 // QUACK TESTING ONLY
+  // theRoll = 6 //  QUACK TESTINGONLY
   GlobalGameState.dieRolls = [theRoll]
   const midwayGarrisonReduction = Math.floor(theRoll / 2)
 
@@ -158,7 +158,7 @@ export function doFighterCounterattack(controller, testRolls) {
   }
   // GlobalGameState.dieRolls = 1
   GlobalGameState.fighterHits = hits
-  // GlobalGameState.fighterHits = 2 // QUACK TESTING ONLY
+  // GlobalGameState.fighterHits = 1 // QUACK TESTING ONLY
 }
 
 export function getAirUnitOnFlightDeck(controller, carrier, bowOrStern) {

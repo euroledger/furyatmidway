@@ -37,8 +37,8 @@ class USAIEndOfAirOperationState {
 
     if (endOfTurn()) {
       GlobalGameState.currentPlayer = GlobalUnitsModel.Side.JAPAN
+      GlobalGameState.cardsChecked = new Array()
       GlobalGameState.gamePhase = GlobalGameState.PHASE.END_OF_TURN
-      setEndOfTurnSummaryShow(true)
     } else {
       GlobalGameState.gamePhase = GlobalGameState.PHASE.INITIATIVE_DETERMINATION
     }

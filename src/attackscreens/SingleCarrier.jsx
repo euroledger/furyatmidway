@@ -92,7 +92,7 @@ export function SingleCarrier({ controller }) {
     carrierTarget = usYorktown
   } else if (GlobalGameState.currentCarrierAttackTarget === GlobalUnitsModel.Carrier.MIDWAY) {
     carrierTarget = usMidway
-    marginL = "-60px"
+    marginL = "-10px"
   } else {
     console.log(
       "ERROR: NO CARRIER TARGET, GlobalGameState.currentCarrierAttackTarget=",

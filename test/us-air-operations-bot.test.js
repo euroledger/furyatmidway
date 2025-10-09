@@ -302,8 +302,8 @@ describe("Numeric Evaluation Of State of Each Side's Naval and Air Power", () =>
     let unitsInGroup = controller.getAirUnitsInStrikeGroups(strikeGroup.box)
     expect(unitsInGroup.length).toEqual(3)
     expect(unitsInGroup[0].name).toEqual(mdb.name)
-    expect(unitsInGroup[1].name).toEqual(mf1.name)
-    expect(unitsInGroup[2].name).toEqual(mdb2.name)
+    expect(unitsInGroup[1].name).toEqual(mdb2.name)
+    expect(unitsInGroup[2].name).toEqual(mf1.name)
 
     let airUnits = controller.getAllAirUnitsInBox(GlobalUnitsModel.AirBox.US_MIDWAY_FLIGHT_DECK)
     expect(airUnits.length).toEqual(2)
@@ -365,7 +365,7 @@ describe("Numeric Evaluation Of State of Each Side's Naval and Air Power", () =>
     controller.addAirUnitToBox(GlobalUnitsModel.AirBox.US_ENTERPRISE_HANGAR, 1, ef2)
 
     await generateUSAirOperationsMovesCarriers(controller, { setTestUpdate: undefined }, true)
- 
+
     await moveStrikeGroups(controller, { setStrikeGroupUpdate: undefined }, true)
 
     let strikeUnits = controller.getStrikeUnits(GlobalUnitsModel.Side.US)

@@ -78,7 +78,6 @@ class GameStateManager {
   async doAction(side, stateObject) {
     this.stateObject = stateObject
     if (side === GlobalUnitsModel.Side.JAPAN) {
-      console.log("++++ doAction firing +++ this.stateObject=", this.stateObject)
       await this.japanStateHandler.doAction(this.stateObject)
     } else {
       await this.usStateHandler.doAction(this.stateObject)

@@ -152,6 +152,23 @@ async function moveAirUnitToHangar({ controller, unit, setTestUpdate, test, box,
   await delay(DELAY_MS)
 }
 
+async function moveAirUnitToCAP({ controller, unit, setTestUpdate, test, box, index }) {
+  const update = {
+    name: unit.name,
+    boxName: box,
+    index: index,
+  }
+  let position1 = USAirBoxOffsets.find((box) => box.name === update.boxName)
+  update.position = position1.offsets[update.index]
+  if (test) {
+    controller.addAirUnitToBox(update.boxName, update.index, unit)
+    return
+  }
+  setTestUpdate(update)
+
+  await delay(DELAY_MS)
+}
+
 async function moveAirUnitToStrikeGroup({ controller, unit, setTestUpdate, test, strikeBox }) {
   await delay(40)
   const airBox = strikeBox ?? getNextAvailableStrikeBox(controller, GlobalUnitsModel.Side.US)
@@ -223,6 +240,28 @@ async function hangarToFlightDeck({ controller, unit, setTestUpdate, test }) {
   }
 }
 
+async function flightDecktoCAP({ controller, unit, setTestUpdate, test }) {
+  await delay(10)
+  // 7b. Get valid destinations for units in Hangar
+  // 7c. Move Units from Hangar to Flight Deck
+  setValidDestinationBoxes(controller, unit.name, GlobalUnitsModel.Side.US)
+
+  const destinations = controller.getValidAirUnitDestinations(unit.name)
+
+  if (destinations.length === 0) {
+    return
+  }
+  const box = destinations.find((box) => box === "MIDWAY CAP")
+
+  if (!box) {
+    return
+  }
+  const index = controller.getFirstAvailableZone(box)
+  if (index !== -1) {
+    await moveAirUnitToCAP({ controller, unit, setTestUpdate, test, box, index })
+  }
+}
+
 export async function moveAirUnitsFromHangarEndOfNightOperation(controller, side, setTestUpdate) {
   // Move Fighters First -> All go to CAP
   // Move Attack aircraft to Flight Deck
@@ -235,10 +274,9 @@ export async function moveAirUnitsFromHangarEndOfNightOperation(controller, side
   // TODO If there are 2 free flight deck slots and only one attack unit (same parent carrier)
   // move one fighter unit to flight deck
 
-  
   for (const unit of fighters) {
     const numFreeFlightDeckSlots = setValidDestinationBoxesNightOperations(controller, unit.name, side, true)
-    
+
     console.log("NUM FREE SLOTS ON FLIGHT DECK =", numFreeFlightDeckSlots)
     const destBoxes = controller.getValidAirUnitDestinations(unit.name)
     await moveAirUnitNight(controller, unit, setTestUpdate, destBoxes)
@@ -812,13 +850,9 @@ export async function moveStrikeGroups(controller, stateObject, test) {
 }
 
 export async function generateUSAirOperationsMovesMidway(controller, stateObject, test) {
-  // TODO
-  // Whether to form Midway strike should be random at first
-
   const { setTestUpdate } = stateObject
 
   // for each air unit that we wish to move generate an array of destination boxes
-  // (21 element vector, one for each air unit (3 x 5 carrier air units, 6 for Midway do not include B17))
 
   // Need to take into account:
   // - Overall Game Strategy
@@ -866,8 +900,6 @@ export async function generateUSAirOperationsMovesMidway(controller, stateObject
 
     const destinations = controller.getValidAirUnitDestinations(unit.name)
 
-    console.log("(MIDWAY) VALID DESTINATIONS FOR", unit.name, "->", destinations)
-
     const unitsOnCarrierFlighftDeck = controller.getAllUnitsOnUSFlightDeckofNamedCarrier("Midway")
 
     if (unitsOnCarrierFlighftDeck.length === 1) {
@@ -897,34 +929,40 @@ export async function generateUSAirOperationsMovesMidway(controller, stateObject
         test,
         strikeBox,
       })
+      continue
     }
 
-    // get all fighter aircraft
-    usAirUnitsOnFlightDecks = controller.getAllUnitsOnUSFlightDecks(true)
-
-    for (let unit of usAirUnitsOnFlightDecks) {
-      if (!unit.carrier.includes("Midway") || unit.aircraftUnit.moved === true) {
-        continue
-      }
-      setValidDestinationBoxes(controller, unit.name, GlobalUnitsModel.Side.US)
-
-      const destinations = controller.getValidAirUnitDestinations(unit.name)
-
-      // 5. if destinations includes a strike box then we know there is an attack unit there so we can move this fighter
-      const strikeBox = destinations.find((box) => box.includes("STRIKE"))
-      if (strikeBox !== undefined) {
-        await moveAirUnitToStrikeGroup({
-          controller,
-          unit,
-          setTestUpdate,
-          test,
-          strikeBox,
-        })
-      }
-    }
   }
 
-  // 6. Move Unit from Flight Deck to CAP Boxes
+  // get all fighter aircraft
+  usAirUnitsOnFlightDecks = controller.getAllUnitsOnUSFlightDecks(true)
+
+  for (let unit of usAirUnitsOnFlightDecks) {
+    if (!unit.carrier.includes("Midway") || unit.aircraftUnit.moved === true) {
+      continue
+    }
+    setValidDestinationBoxes(controller, unit.name, GlobalUnitsModel.Side.US)
+
+    const destinations = controller.getValidAirUnitDestinations(unit.name)
+
+    // 5. if destinations includes a strike box then we know there is an attack unit there so we can move this fighter
+    const strikeBox = destinations.find((box) => box.includes("STRIKE"))
+    if (strikeBox !== undefined) {
+      await moveAirUnitToStrikeGroup({
+        controller,
+        unit,
+        setTestUpdate,
+        test,
+        strikeBox,
+      })
+      continue
+    }
+        // If CAP is valid destination -> move to CAP
+    const capBox = destinations.find((box) => box.includes("MIDWAY CAP"))
+    if (capBox !== undefined) {
+      flightDecktoCAP({ controller, unit, setTestUpdate, test })
+    }
+  }
   // 7a. Get all air units in Hangar
 
   let unitsInHangar = controller.getAllUnitsInUSHangars()

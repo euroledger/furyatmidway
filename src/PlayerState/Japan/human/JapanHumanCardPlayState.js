@@ -8,7 +8,6 @@ class JapanHumanCardPlayState {
   async doAction(stateObject) {
     const { setCardAlertPanelShow } = stateObject
     setCardAlertPanelShow(true)
-
     // this.nextState(stateObject)
   }
 

@@ -31,6 +31,7 @@ class USAIRetreatFleetState {
     } else {
       GlobalGameState.currentPlayer = GlobalUnitsModel.Side.JAPAN
       GlobalGameState.isFirstAirOp = true
+      console.log(">>>>>>>>>>>>>> POOOOOO 1 change to air search")
       GlobalGameState.gamePhase = GlobalGameState.PHASE.AIR_SEARCH
     }
   }

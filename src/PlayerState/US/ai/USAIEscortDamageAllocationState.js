@@ -24,19 +24,17 @@ class USAIEscortDamageAllocationState {
       // US Damage Allocation Bot...picks one unit to take this hit
       let capUnits = GlobalInit.controller.getAllCAPDefenders(GlobalUnitsModel.Side.US)
       if (capUnits.length === 0) {
-        break // all strike units eliminated
+        break // all cap units eliminated
       }
-      const { index } = await allocateEscortDamageToDefendingCapUnits(capUnits, setCapSteps)
+      const { unit, index } = await allocateEscortDamageToDefendingCapUnits(capUnits)
       numHitsAllocated++
       GlobalGameState.testStepLossSelection = index
       GlobalGameState.updateGlobalState()
+
+      GlobalInit.controller.removeUnitFromCAPDefenders(unit)
     }
 
     setCapSteps(() => capSteps - numHitsAllocated)
-
-    // TODO change wording on the damage allocation screen
-    // Remove "Click on air unit to eliminate a step"
-    // Replace with "US Selects Air Units to Eliminate etc."
   }
 
   async nextState(stateObject) {

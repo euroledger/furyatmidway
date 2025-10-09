@@ -44,15 +44,6 @@ class USAICardPlayState {
     if (displayScreen()) {
       setSearchValuesAlertShow(true)
     }
-
-    if (GlobalGameState.gameTurn === 4) {
-      GlobalGameState.currentPlayer = GlobalUnitsModel.Side.JAPAN
-      GlobalGameState.gamePhase = GlobalGameState.PHASE.NIGHT_AIR_OPERATIONS_JAPAN
-    } else {
-      GlobalGameState.currentPlayer = GlobalUnitsModel.Side.US
-
-      return new USAIAirSearchState()
-    }
   }
 
   getState() {

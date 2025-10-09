@@ -430,6 +430,10 @@ export default class Controller {
     return units
   }
 
+  removeUnitFromCAPDefenders(unitToRemove) {
+    unitToRemove.aircraftUnit.intercepting = false
+  }
+
   getAllCAPDefenders(side) {
     const units = Array.from(this.counters.values())
     const defenders = units.filter(
@@ -580,7 +584,7 @@ export default class Controller {
       //    => if none, we're done
       //    => If 1 or more check if any are already set to midway attack group
       if (GlobalGameState.gamePhase === GlobalGameState.PHASE.MIDWAY_ATTACK) {
-          strikeBoxes = this.midwayAttackCheck(strikeBoxes, side)
+        strikeBoxes = this.midwayAttackCheck(strikeBoxes, side)
       }
     }
     return strikeBoxes
@@ -1438,8 +1442,30 @@ export default class Controller {
     return zones
   }
 
+  getFirstAvailableZoneMidway = (boxName) => {
+    const zones = this.getNumberZonesInBox(boxName)
+    console
+    for (let index = 0; index < zones; index++) {
+      if (index === 0 && GlobalGameState.midwayBox0Damaged) {
+        continue
+      }
+      if (index === 1 && GlobalGameState.midwayBox1Damaged) {
+        continue
+      }
+      if (index === 2 && GlobalGameState.midwayBox2Damaged) {
+        continue
+      }
+      const airUnit = this.getAirUnitInBox(boxName, index)
+      if (!airUnit) {
+        return index
+      }
+    }
+    // box is full - return -1
+    return -1
+  }
   getFirstAvailableZone = (boxName) => {
     const zones = this.getNumberZonesInBox(boxName)
+    console
     for (let index = 0; index < zones; index++) {
       const airUnit = this.getAirUnitInBox(boxName, index)
       if (!airUnit) {

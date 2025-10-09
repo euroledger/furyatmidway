@@ -38,6 +38,7 @@ export function DamageHeaders({
     if (GlobalGameState.testStepLossSelection === -1) {
       return
     }
+    console.log(">>>>>>>>>>>>>> elRefs=", elRefs, "selection=", GlobalGameState.testStepLossSelection)
     const myRef = elRefs[GlobalGameState.testStepLossSelection]
     if (myRef !== undefined && myRef.current !== undefined && myRef.current !== null) {
       myRef.current.click(myRef.current)

@@ -2,6 +2,7 @@ import GlobalGameState from "../../../model/GlobalGameState"
 import GlobalUnitsModel from "../../../model/GlobalUnitsModel"
 import { endOfAirOperation } from "../../StateUtils"
 import GlobalInit from "../../../model/GlobalInit"
+import { midwayTidyUp } from "../../StateUtils"
 
 class JapanHumanMidwayAirAttackState {
   async doAction(stateObject) {
@@ -12,7 +13,7 @@ class JapanHumanMidwayAirAttackState {
   }
 
   async nextState(stateObject) {
-    const { midwayTidyUp, setJapanStrikePanelEnabled, setUSMapRegions, setStrikeGroupUpdate, setJapanMapRegions } =
+    const { setJapanStrikePanelEnabled, setUSMapRegions, setStrikeGroupUpdate, setJapanMapRegions } =
       stateObject
     if (GlobalInit.controller.getDistanceBetween1AFAndMidway() <= 2) {
       await midwayTidyUp(setJapanStrikePanelEnabled, setUSMapRegions, setStrikeGroupUpdate)
@@ -20,7 +21,6 @@ class JapanHumanMidwayAirAttackState {
     }
     if (GlobalGameState.midwayAirOp === 1) {
       setJapanMapRegions([])
-      console.log(">>>>>>>>>>>> GET READY FOR SECOND OP <<<<<<<<<<<<<<<<")
       GlobalGameState.midwayAirOp = 2
       GlobalGameState.airOpJapan = 2
       GlobalGameState.airOperationPoints.japan = 1

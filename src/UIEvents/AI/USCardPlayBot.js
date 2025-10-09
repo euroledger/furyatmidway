@@ -33,5 +33,7 @@ export function playCardAction(controller, cardNumber) {
         return true 
       }
       return false
+    default: 
+      return false // for now
   }
 }

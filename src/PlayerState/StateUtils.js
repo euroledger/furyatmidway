@@ -326,6 +326,8 @@ export async function usFleetMovementNextStateHandler({
         GlobalGameState.gamePhase = GlobalGameState.PHASE.CARD_PLAY
       } else {
         calcAirOpsPoints({ setSearchValues, setSearchResults })
+        console.log(">>>>>>>>>>>>>> POOOOOO 2 change to air search")
+
         GlobalGameState.gamePhase = GlobalGameState.PHASE.AIR_SEARCH
       }
     }
@@ -521,17 +523,33 @@ export async function setNextStateFollowingCardPlay(stateObject) {
     setEndOfAirOpAlertShow,
     setMidwayWarningShow,
     setMidwayDialogShow,
+    setEndOfTurnSummaryShow,
   } = stateObject
   GlobalGameState.dieRolls = []
   switch (cardNumber) {
     case -1:
       break
-
+    case 4:
+      if (GlobalGameState.gameTurn === 7) {
+        determineMidwayInvasion(setCardNumber, setEndOfTurnSummaryShow, 4)
+      } else {
+        // if playing this card has resulted in a DMCV carrier being sunk, need to remove
+        // the DMCV Fleet from the map
+        const carrier = GlobalInit.controller.getCarrier(GlobalGameState.currentCarrierAttackTarget)
+        if (carrier && carrier.dmcv && GlobalInit.controller.isSunk(carrier.name)) {
+          await removeDMCVFleetForCarrier(carrier.side, setFleetUnitUpdate)
+        }
+        // GlobalGameState.currentPlayer = GlobalUnitsModel.Side.JAPAN
+        GlobalGameState.gamePhase = GlobalGameState.PHASE.END_OF_TURN
+        console.log(">>>>>>>>>>>>> GOING BACK TO END OF TURN <<<<<<<<<<<<<<<<<<")
+      }
+      break
     case 5:
       // Naval Bombardment
       if (GlobalGameState.gameTurn !== 4) {
-        GlobalGameState.gamePhase = GlobalGameState.PHASE.JAPAN_MIDWAY
-        midwayPossible(setMidwayWarningShow, setMidwayDialogShow)
+        console.log(">>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>> TOSS GO TO JAPAN DRAW ONE CARD >>>>>>>>>>>>>>>>>>>")
+        GlobalGameState.gamePhase = GlobalGameState.PHASE.JAPAN_DRAWS_ONE_CARD
+        // midwayPossible(GlobalInit.controller, setMidwayWarningShow, setMidwayDialogShow)
       } else {
         midwayDeclarationHandler({ setUsFleetRegions })
       }
@@ -574,6 +592,8 @@ export async function setNextStateFollowingCardPlay(stateObject) {
     case 7:
       // Troubled Reconnaissance
       GlobalGameState.isFirstAirOp = true
+      console.log(">>>>>>>>>>>>>> POOOOOO 3 change to air search")
+
       GlobalGameState.gamePhase = GlobalGameState.PHASE.AIR_SEARCH
       calcAirOpsPoints({ setSearchValues, setSearchResults })
       break
@@ -734,23 +754,18 @@ export async function tidyUp(setAirUnitUpdate, setStrikeGroupUpdate, setFleetUni
 export function midwayOrAirOps() {
   if (GlobalGameState.taskForceTarget === GlobalUnitsModel.TaskForce.MIDWAY) {
     GlobalGameState.midwayAirOpsCompleted = GlobalGameState.midwayAirOp
+    console.log(">>>>>>>>>>> GO TO MIDWAY_ATTACK >>>>>>>>>>")
     GlobalGameState.gamePhase = GlobalGameState.PHASE.MIDWAY_ATTACK
   } else {
     GlobalGameState.gamePhase = GlobalGameState.PHASE.AIR_OPERATIONS
   }
 }
 
-// TODO new function generateAirOperationsMovesNight()
-
 // 1. For each unit in SG
 //    (Use setValidDestinationBoxesNightOperations)
-
 // 2. Display Night Landing panel -> determine damaage
-
 // 3. Move return2 units to return1 box
-
 // 4. Move return1 units to hangars of parent carriers
-
 // 5. Move fighters to CAP/flight deck
 // 6. Move attack aircraft to flight deck
 
@@ -796,6 +811,8 @@ export async function endOfNightAirOperation(controller, setTestUpdate, side) {
 }
 
 export async function endOfAirOperation(capAirUnits, setAirUnitUpdate) {
+  console.log("In endOfAirOperation().....")
+  console.trace()
   if (
     GlobalGameState.taskForceTarget !== GlobalUnitsModel.TaskForce.JAPAN_DMCV &&
     GlobalGameState.taskForceTarget !== GlobalUnitsModel.TaskForce.US_DMCV
@@ -949,7 +966,7 @@ export async function moveCAPUnitsFromReturnBoxToCarrier(controller, side, setTe
       boxName: destinationsArray[0],
     }
 
-    update.index = controller.getFirstAvailableZone(update.boxName)
+    update.index = controller.getFirstAvailableZoneMidway(update.boxName)
     let position1 = USAirBoxOffsets.find((box) => box.name === update.boxName)
 
     if (position1 === undefined) {
@@ -1374,4 +1391,19 @@ export async function checkFleetsInSameHex(
   // leave game state at RETREAT and return
   setPreviousPosition(() => new Map())
   // nextAction()
+}
+
+export async function midwayTidyUp(setJapanStrikePanelEnabled, setUSMapRegions, setStrikeGroupUpdate) {
+  await resetStrikeGroups(GlobalInit.controller, GlobalGameState.sideWithInitiative, setStrikeGroupUpdate)
+
+  await GlobalInit.controller.setAllUnitsToNotMoved()
+
+  GlobalGameState.airOperationPoints.japan = 0
+
+  GlobalGameState.phaseCompleted = true
+  GlobalGameState.gamePhase = GlobalGameState.PHASE.US_FLEET_MOVEMENT
+  setJapanStrikePanelEnabled(false)
+  setUSMapRegions([])
+  GlobalGameState.usFleetMoved = false
+  GlobalGameState.dieRolls = []
 }

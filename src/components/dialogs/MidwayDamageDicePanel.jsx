@@ -259,7 +259,7 @@ function MidwayDamageDicePanel(props) {
             style={{
               display: "inline-block",
               marginTop: "20px",
-              marginLeft: "335px",
+              marginLeft: "290px",
             }}
           >
             <div

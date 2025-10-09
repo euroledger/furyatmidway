@@ -451,19 +451,6 @@ export function App() {
   //   }
   // }, [GlobalGameState.gamePhase])
 
-  // TODO create JapanHumanMidwayDamageResolutionState class
-  useEffect(() => {
-    if (GlobalGameState.gamePhase === GlobalGameState.PHASE.MIDWAY_DAMAGE_RESOLUTION) {
-      GlobalGameState.dieRolls = []
-      setAttackResolutionPanelShow(false)
-      setDamageDone(false)
-      setMidwayDamagePanelShow(true)
-      setAttackResolved(false)
-    }
-  }, [GlobalGameState.gamePhase])
- 
-
-
 
   useEffect(() => {
     if (GlobalGameState.gamePhase === GlobalGameState.PHASE.MIDWAY_INVASION) {
@@ -485,6 +472,14 @@ export function App() {
 
   useEffect(() => {
     if (GlobalGameState.gamePhase === GlobalGameState.PHASE.CAP_RETURN) {
+      doStateChange()
+    }
+  }, [GlobalGameState.gamePhase])
+
+    // TODO create JapanHumanMidwayDamageResolutionState class
+  useEffect(() => {
+    if (GlobalGameState.gamePhase === GlobalGameState.PHASE.MIDWAY_DAMAGE_RESOLUTION) {
+      GlobalGameState.currentPlayer = GlobalUnitsModel.Side.JAPAN
       doStateChange()
     }
   }, [GlobalGameState.gamePhase])
@@ -864,13 +859,13 @@ export function App() {
 
   useEffect(() => {
     if (GlobalGameState.gamePhase === GlobalGameState.PHASE.MIDWAY_ATTACK) {
+      console.log(">>>>>>>>>> GOING TO MIDWAY_ATTACK.........")
       doStateChange()
     }
   }, [GlobalGameState.gamePhase])
 
   window.scrollTo(0,20)
   const nextAction = () => {
-    console.log("APP nextAction for side", GlobalGameState.currentPlayer)
     StateManager.gameStateManager.doNextState(GlobalGameState.currentPlayer, stateObject)
   }
   // const nextAction = () => {
@@ -1126,6 +1121,10 @@ export function App() {
     // FOR AI AND TESTING
     controller: GlobalInit.controller,
     setNightLandingDone,
+    setAttackResolutionPanelShow,
+    setDamageDone,
+    setMidwayDamagePanelShow,
+    setAttackResolved,
     nightLandingDone,
     setNightSteps,
     setNightAirUnits,
@@ -2698,12 +2697,13 @@ export function App() {
   if (totalHits >= 3 && GlobalGameState.midwayHits > 0) {
     autoAllocateMidwayDamage(GlobalInit.controller)
   }
-
+  let showCAPDice = true
   let capInterceptionDiceButtonDisabled = (capAirUnits.length === 0 || GlobalGameState.dieRolls.length > 0)
 
   if (GlobalGameState.taskForceTarget === GlobalUnitsModel.TaskForce.MIDWAY && GlobalGameState.elitePilots) {
     if (GlobalGameState.usPlayerType === GlobalUnitsModel.TYPE.AI && !GlobalGameState.doneCapSelection) {
       capInterceptionDiceButtonDisabled = true
+      showCAPDice = false
     }
   }
 
@@ -2999,7 +2999,7 @@ export function App() {
         headers={capHeaders}
         footers={capFooters}
         closeButtonStr="Next..."
-        showDice={true}
+        showDice={showCAPDice}
         margin={0}
         onHide={(e) => {
           GlobalGameState.doneCapSelection = true
@@ -3292,6 +3292,7 @@ export function App() {
         setSubmarineDamagePanelShow={setSubmarineDamagePanelShow}
         onHide={(e) => {
           setCardAlertPanelShow(false)
+          nextAction(e)
         }}
         nextAction={nextAction}
         width={30}
