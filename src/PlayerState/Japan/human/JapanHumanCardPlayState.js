@@ -1,18 +1,22 @@
 import GlobalGameState from "../../../model/GlobalGameState"
-import GlobalUnitsModel from "../../../model/GlobalUnitsModel"
-import { playCardAction } from "../../../UIEvents/AI/JapanCardPlayBot"
+
 import GlobalInit from "../../../model/GlobalInit"
 import { setNextStateFollowingCardPlay } from "../../StateUtils"
 
 class JapanHumanCardPlayState {
   async doAction(stateObject) {
-    const { setCardAlertPanelShow } = stateObject
-    setCardAlertPanelShow(true)
-    // this.nextState(stateObject)
+    const { cardNumber, setCardAlertPanelShow } = stateObject
+    console.log(">>>>>>> JAPAN HUMAN CARD PLAY >>>>>>>>>>")
+    if (GlobalInit.controller.japanHandContainsCard(cardNumber)) {
+      setCardAlertPanelShow(true)
+    }
   }
 
   async nextState(stateObject) {
-    const { cardNumber } = stateObject
+    const { cardNumber, setCardNumber, setCardAlertPanelShow } = stateObject
+
+    setCardNumber(0)
+    setCardAlertPanelShow(false)
 
     console.log("GRABBAGE NEXT STATE FROM JAPAN CARD PLAY cardNumber=", cardNumber)
     await setNextStateFollowingCardPlay(stateObject)

@@ -19,9 +19,7 @@ class USAIFleetMovementPlanningState {
     // @TODO vary the start location and opening move according to
     // Fleet Strategy, game state and IJN Fleet Location
 
-    const csfLocation = GlobalInit.controller.getFleetLocation("CSF", GlobalUnitsModel.Side.US)
-
-     const destination = doUSFleetMovementAction(GlobalInit.controller, usCSFRegions, canCSFMoveFleetOffBoard)
+    const destination = doUSFleetMovementAction(GlobalInit.controller, usCSFRegions, canCSFMoveFleetOffBoard)
 
     const c = convertHexCoords(destination)
     console.log("US FLEET DESTINATION:", c)

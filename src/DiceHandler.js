@@ -616,6 +616,8 @@ export async function sendMidwayDamageUpdates(controller, box, setDamageMarkerUp
   }
   setDamageMarkerUpdate(markerUpdate)
   controller.setMarkerLocation(marker.name, boxName, box)
+
+  moveMidwayAirUnitsToEliminated(controller, box)
 }
 
 export async function sendRemoveDamageMarkerUpdate(

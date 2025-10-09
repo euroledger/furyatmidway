@@ -452,15 +452,15 @@ export function App() {
   // }, [GlobalGameState.gamePhase])
 
 
-  useEffect(() => {
-    if (GlobalGameState.gamePhase === GlobalGameState.PHASE.MIDWAY_INVASION) {
-      GlobalGameState.dieRolls = []
-      if (GlobalGameState.semperFi) {
-        GlobalGameState.nextMidwayInvasionRoll = GlobalUnitsModel.Side.US
-      }
-      setMidwayInvasionPanelShow(true)
-    }
-  }, [GlobalGameState.gamePhase])
+  // useEffect(() => {
+  //   if (GlobalGameState.gamePhase === GlobalGameState.PHASE.MIDWAY_INVASION) {
+  //     GlobalGameState.dieRolls = []
+  //     if (GlobalGameState.semperFi) {
+  //       GlobalGameState.nextMidwayInvasionRoll = GlobalUnitsModel.Side.US
+  //     }
+  //     setMidwayInvasionPanelShow(true)
+  //   }
+  // }, [GlobalGameState.gamePhase])
 
   // // NEW AI-HUMAN SIDE EFFECTS....
 
@@ -741,7 +741,6 @@ export function App() {
   
   useEffect(() => {
     if (GlobalGameState.gamePhase === GlobalGameState.PHASE.AIR_SEARCH && GlobalGameState.isFirstAirOp) {
-      console.log("SMASH!!!! doing air search")
       GlobalGameState.isFirstAirOp = false
       // if (GlobalGameState.currentPlayer === GlobalUnitsModel.Side.US, stateObject) {
       //   StateManager.gameStateManager.setUSState(stateObject)
@@ -749,9 +748,7 @@ export function App() {
       //   StateManager.gameStateManager.setJapanState(stateObject)
       // }
       doStateChange()
-    } else {
-      console.log("MUFFIN! NOWHERE TO GO")
-    }
+    } 
   }, [GlobalGameState.gamePhase])
 
   useEffect(() => {
@@ -864,6 +861,16 @@ export function App() {
     }
   }, [GlobalGameState.gamePhase])
 
+  useEffect(() => {
+    if (GlobalGameState.gamePhase === GlobalGameState.PHASE.MIDWAY_INVASION) {
+      GlobalGameState.dieRolls = []
+      if (GlobalGameState.semperFi) {
+        GlobalGameState.nextMidwayInvasionRoll = GlobalUnitsModel.Side.US
+      }
+      GlobalGameState.currentPlayer = GlobalUnitsModel.Side.JAPAN
+      doStateChange()
+    }
+  }, [GlobalGameState.gamePhase])
   window.scrollTo(0,20)
   const nextAction = () => {
     StateManager.gameStateManager.doNextState(GlobalGameState.currentPlayer, stateObject)
@@ -1120,6 +1127,8 @@ export function App() {
   const stateObject = {
     // FOR AI AND TESTING
     controller: GlobalInit.controller,
+    setMidwayInvasionPanelShow,
+    setCardDicePanelShow5,
     setNightLandingDone,
     setAttackResolutionPanelShow,
     setDamageDone,
@@ -1930,6 +1939,7 @@ export function App() {
     setMidwayDialogShow(false)
     GlobalGameState.gamePhase = GlobalGameState.PHASE.US_FLEET_MOVEMENT_PLANNING
   }
+
 
   function loadMyGame(id) {
     setLoading(() => true)
@@ -2755,8 +2765,7 @@ export function App() {
     damagedCV === "NO TARGETS"
 
 
-  // const summaryButtonDisabled = GlobalInit.controller.victoryCheck() !== ""
-  const summaryButtonDisabled = false // QUACK TESTING
+  const summaryButtonDisabled = GlobalInit.controller.victoryCheck() !== ""
   return (
     <>
       <LoadGamePanel
@@ -2907,10 +2916,7 @@ export function App() {
         sidebg={GlobalUIConstants.Colors.BOTH}
         onHide={(e) => {
           setInitiativePanelShow(false)
-          console.log("CLOSE INITIATIVE DETERMINATION SCREEN")
           GlobalGameState.gamePhase = GlobalGameState.PHASE.AIR_OPERATIONS
-
-          // nextAction(e)
         }}
         doRoll={doInitiativeRoll}
         diceButtonDisabled={airOpsDiceButtonDisabled}
@@ -3171,6 +3177,7 @@ export function App() {
         width={74}
         onHide={(e) => {
           setMidwayInvasionPanelShow(false)
+          nextAction(e)
         }}
         doRoll={doMidwayInvasionRoll}
         disabled={true}
@@ -3292,6 +3299,7 @@ export function App() {
         setSubmarineDamagePanelShow={setSubmarineDamagePanelShow}
         onHide={(e) => {
           setCardAlertPanelShow(false)
+          setCardNumber(0) // reset for next card
           nextAction(e)
         }}
         nextAction={nextAction}
@@ -3322,7 +3330,7 @@ export function App() {
         setSubmarineDamagePanelShow={setSubmarineDamagePanelShow}
         onHide={(e) => {
           setCardPlayedPanelShow(false)
-          processPlayedCard(stateObject) 
+          // processPlayedCard(stateObject) 
         }}
         width={30}
       ></PoopCardAlertPanel>
@@ -3388,6 +3396,8 @@ export function App() {
         headerText="Submarine"
         headers={submarineHeaders}
         footers={submarineFooters}
+        sidebg={sideboog}
+        image={imageboog}
         width={30}
         showDice={true}
         margin={350}

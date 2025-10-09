@@ -1,6 +1,6 @@
 import { getRandomElementFrom } from "../../Utils"
 import { getAllHexes } from "../../components/HexUtils"
-import { usCSFStartHexes } from "../../components/MapRegions"
+import { usCSFStartHexes, usCSFPreferredStartHexes } from "../../components/MapRegions"
 import GlobalGameState from "../../model/GlobalGameState"
 import GlobalUnitsModel from "../../model/GlobalUnitsModel"
 
@@ -10,6 +10,12 @@ const HEXES = getAllHexes()
 
 export function placeUSCSFFleetAction() {
   // initial setup choose randomly from start regions
+  const num = Math.floor(Math.random() * 7)
+  // 66% chance US Sets up in preferred region, 33% random
+
+  if (num <= 4) {
+    return getRandomElementFrom(usCSFPreferredStartHexes)
+  }
   return getRandomElementFrom(usCSFStartHexes)
 }
 
@@ -35,6 +41,8 @@ export function doUSFleetMovementAction(controller, regions, offboardPossible) {
   const usNavalStrength = controller.getFleetStrength(GlobalUnitsModel.Side.US)
   const japanNavalStrength = controller.getFleetStrength(GlobalUnitsModel.Side.JAPAN)
   const usAirStrength = controller.getAirStrength(GlobalUnitsModel.Side.US) // num air steps left
+
+  // TODO function for attack air strength only
   const japanAirStrength = controller.getAirStrength(GlobalUnitsModel.Side.JAPAN)
   // regions is all valid hexes this fleet can move to
 
@@ -68,9 +76,21 @@ export function doUSFleetMovementAction(controller, regions, offboardPossible) {
   }
 
   if (GlobalGameState.gameTurn === 1) {
+    // close range with IJN
+
+    for (const region of regions) {
+      console.log("REGION HEX =", region)
+    }
+ 
     return { q: 4, r: 1 } // QUACK HARD WIRED FOR TESTING ONLY
   }
   if (GlobalGameState.gameTurn === 2) {
+
+    // Take into account AirUnitSetupBot GAME_STRATEGIES
+
+    // eg defensive move away on last air op
+    // aggressive close range
+    // ...etc  
     return { q: 3, r: 3 } // QUACK HARD WIRED FOR TESTING ONLY
   }
   if (GlobalGameState.gameTurn === 3) {
@@ -80,6 +100,8 @@ export function doUSFleetMovementAction(controller, regions, offboardPossible) {
     return { q: 1, r: 1 } // QUACK HARD WIRED FOR TESTING ONLY
   }
   if (GlobalGameState.gameTurn === 5) {
+
+    // NOTE ALWAYS RUN AWAY IF NO STRIKE AIRCRAFT
     return { q: 3, r: 1 } // QUACK HARD WIRED FOR TESTING ONLY
   }
   if (GlobalGameState.gameTurn === 6) {

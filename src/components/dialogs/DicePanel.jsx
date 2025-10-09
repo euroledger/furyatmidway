@@ -110,7 +110,7 @@ function DicePanel(props) {
           style={{
             width: "100px",
             height: "60px",
-            marginLeft: "-165px",
+            marginLeft: "-265px",
             marginRight: "155px",
           }}
         >
@@ -122,7 +122,9 @@ function DicePanel(props) {
             src={image}
           ></img>
         </div>)}
-        <p className="text-center">
+        <p   style={{
+            marginLeft: "65px",
+          }}className="text-center">
           <h4>{headerText}</h4>
         </p>
       </Modal.Header>

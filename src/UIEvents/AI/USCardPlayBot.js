@@ -17,7 +17,7 @@ export function playCardAction(controller, cardNumber) {
         location1AF !== undefined &&
         location1AF.currentHex !== undefined
       ) {
-        distanceBetweenCSFand1AF = distanceBetweenHexes(locationCSF.currentHex, location1AF.currentHex) 
+        distanceBetweenCSFand1AF = distanceBetweenHexes(locationCSF.currentHex, location1AF.currentHex)
       }
 
       if (
@@ -26,14 +26,17 @@ export function playCardAction(controller, cardNumber) {
         location1AF !== undefined &&
         location1AF.currentHex !== undefined
       ) {
-        distanceBetweenUSDMCVand1AF = distanceBetweenHexes(locationUSDMCV.currentHex, location1AF.currentHex) 
+        distanceBetweenUSDMCVand1AF = distanceBetweenHexes(locationUSDMCV.currentHex, location1AF.currentHex)
       }
 
       if (distanceBetweenCSFand1AF <= 2 || distanceBetweenUSDMCVand1AF <= 2 || GlobalGameState.gameTurn === 7) {
-        return true 
+        return true
       }
       return false
-    default: 
+    case 8:
+      // semper fi - always play if Midway Garrison is < 5
+      return GlobalGameState.midwayGarrisonLevel < 5
+    default:
       return false // for now
   }
 }

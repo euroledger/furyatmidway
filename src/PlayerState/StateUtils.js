@@ -223,6 +223,7 @@ export async function goToMidwayAttackOrUSFleetMovement({
 }) {
   if (GlobalGameState.gameTurn !== 4) {
     if (!GlobalGameState.midwayAttackDeclaration) {
+      console.log("QUACK MARSHY SWAMP ****************************************** 1")
       setMidwayNoAttackAlertShow(true)
     } else {
       GlobalGameState.midwayAttackResolved = false
@@ -322,12 +323,9 @@ export async function usFleetMovementNextStateHandler({
     } else {
       if (GlobalInit.controller.usHandContainsCard(7)) {
         setCardNumber(() => 7)
-        console.log("US HAS CARD 7 so GO TO CARD_PLAY!!!")
         GlobalGameState.gamePhase = GlobalGameState.PHASE.CARD_PLAY
       } else {
         calcAirOpsPoints({ setSearchValues, setSearchResults })
-        console.log(">>>>>>>>>>>>>> POOOOOO 2 change to air search")
-
         GlobalGameState.gamePhase = GlobalGameState.PHASE.AIR_SEARCH
       }
     }
@@ -592,10 +590,13 @@ export async function setNextStateFollowingCardPlay(stateObject) {
     case 7:
       // Troubled Reconnaissance
       GlobalGameState.isFirstAirOp = true
-      console.log(">>>>>>>>>>>>>> POOOOOO 3 change to air search")
-
+      GlobalGameState.currentPlayer = GlobalUnitsModel.Side.JAPAN
       GlobalGameState.gamePhase = GlobalGameState.PHASE.AIR_SEARCH
       calcAirOpsPoints({ setSearchValues, setSearchResults })
+      break
+    case 8:
+      // Semper Fi
+      GlobalGameState.gamePhase = GlobalGameState.PHASE.MIDWAY_INVASION
       break
     case 10:
       // US Carrier Planes Ditch
@@ -698,7 +699,9 @@ export function determineMidwayInvasion(setCardNumber, setEndOfTurnSummaryShow, 
     const distance = distanceBetweenHexes(jpMIFLocation.currentHex, Controller.MIDWAY_HEX.currentHex)
     if (distance === 1) {
       if (GlobalInit.controller.usHandContainsCard(8)) {
+        console.log(">>>>>>>>>>> SET CARD NUMBER To 8!!!!!!!!!!!!!!!!")
         setCardNumber(() => 8)
+        GlobalGameState.currentPlayer = GlobalUnitsModel.Side.US
         GlobalGameState.gamePhase = GlobalGameState.PHASE.CARD_PLAY
       } else {
         GlobalGameState.gamePhase = GlobalGameState.PHASE.MIDWAY_INVASION
@@ -757,6 +760,8 @@ export function midwayOrAirOps() {
     console.log(">>>>>>>>>>> GO TO MIDWAY_ATTACK >>>>>>>>>>")
     GlobalGameState.gamePhase = GlobalGameState.PHASE.MIDWAY_ATTACK
   } else {
+    console.log("############### QuaCK 3")
+
     GlobalGameState.gamePhase = GlobalGameState.PHASE.AIR_OPERATIONS
   }
 }
@@ -1406,4 +1411,5 @@ export async function midwayTidyUp(setJapanStrikePanelEnabled, setUSMapRegions, 
   setUSMapRegions([])
   GlobalGameState.usFleetMoved = false
   GlobalGameState.dieRolls = []
+  GlobalGameState.taskForceTarget = undefined
 }

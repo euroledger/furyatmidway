@@ -3,7 +3,7 @@ import { displayScreen, setNextStateFollowingCardPlay } from "../../StateUtils"
 import { playCardAction } from "../../../UIEvents/AI/USCardPlayBot"
 import GlobalInit from "../../../model/GlobalInit"
 import GlobalUnitsModel from "../../../model/GlobalUnitsModel"
-import USAIAirSearchState from "./USAIAirSearchState"
+import { calcAirOpsPoints } from "../../StateUtils"
 
 class USAICardPlayState {
   displayCardPlayedPanel(stateObject) {
@@ -30,18 +30,18 @@ class USAICardPlayState {
         this.displayCardPlayedPanel(stateObject)
       }
     } else {
-      setCardNumber(0)
       this.nextState(stateObject)
     }
   }
 
   async nextState(stateObject) {
-    const { setSearchValuesAlertShow } = stateObject
+    const { setSearchValuesAlertShow, setSearchValues, setSearchResults, cardNumber } = stateObject
 
-    console.log("NEXT STATE FROM US CARD PLAY cardNumber=", this.cardNumber)
-    stateObject.cardNumber = this.cardNumber
+    console.log("NEXT STATE FROM US CARD PLAY cardNumber=", cardNumber)
     await setNextStateFollowingCardPlay(stateObject)
     if (displayScreen()) {
+      calcAirOpsPoints({ setSearchValues, setSearchResults, setSearchValuesAlertShow })
+      GlobalGameState.currentPlayer = GlobalUnitsModel.Side.JAPAN
       setSearchValuesAlertShow(true)
     }
   }

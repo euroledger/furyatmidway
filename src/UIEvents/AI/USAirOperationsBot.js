@@ -291,7 +291,6 @@ export async function moveAirUnitsFromHangarEndOfNightOperation(controller, side
 // TODO JAPAN
 export async function moveAirUnitNight(controller, unit, setTestUpdate, destBoxes) {
   if (destBoxes.length === 0) {
-    console.log("MUFFIN !!!!!!!!!!!!!!")
     return
   }
   // go to first available destination
@@ -300,16 +299,11 @@ export async function moveAirUnitNight(controller, unit, setTestUpdate, destBoxe
     boxName: destBoxes[0],
   }
 
-  console.log("WIZZ 1 destBoxes=", destBoxes)
-  console.log("WIZZ 2 boxName=", update.boxName)
-
   const position1 = USAirBoxOffsets.find((box) => box.name === update.boxName)
   update.index = controller.getFirstAvailableZone(update.boxName)
   if (position1 === undefined) {
-    console.log("MUFFIN !!!!!! ERROR: position1 undefined in return strike units")
     return
   }
-  console.log("MOVE", unit.name, "TO", update.boxName, "INDEX", update.index)
   update.position = position1.offsets[update.index]
   update.log = true
   await delay(50)
@@ -899,7 +893,6 @@ export async function generateUSAirOperationsMovesMidway(controller, stateObject
     setValidDestinationBoxes(controller, unit.name, GlobalUnitsModel.Side.US)
 
     const destinations = controller.getValidAirUnitDestinations(unit.name)
-
     const unitsOnCarrierFlighftDeck = controller.getAllUnitsOnUSFlightDeckofNamedCarrier("Midway")
 
     if (unitsOnCarrierFlighftDeck.length === 1) {

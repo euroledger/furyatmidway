@@ -11,6 +11,7 @@ class JapanAICardPlayState {
     const { cardNumber, setShowCardFooter, setHeaderText, setCardPlayedPanelShow } = stateObject
     const msg = `CARD #${cardNumber} PLAYED`
     setHeaderText(msg)
+
     setCardPlayedPanelShow(() => true)
     setShowCardFooter(() => true)
   }

@@ -81,6 +81,7 @@ function CardAlertPanel(props) {
         side = GlobalUnitsModel.Side.US
         controller.setCardPlayed(4, GlobalUnitsModel.Side.US)
       } else {
+        console.log("JAPAN PLAYING CARD #4 SUBMARINE >>>>>>>>>>>>>>>>>")
         side = GlobalUnitsModel.Side.JAPAN
         controller.setCardPlayed(4, GlobalUnitsModel.Side.JAPAN)
       }
@@ -93,7 +94,7 @@ function CardAlertPanel(props) {
       } else {
         setSubmarineAlertPanelShow(true)
       }
-      onHide(e)
+      // onHide(e)
     } else if (cardNumber === 5) {
       setCardDicePanelShow5(true)
       controller.setCardPlayed(5, GlobalUnitsModel.Side.JAPAN)
@@ -109,6 +110,7 @@ function CardAlertPanel(props) {
     } else if (cardNumber === 8) {
       controller.setCardPlayed(8, GlobalUnitsModel.Side.US)
       setShowCardFooter(() => true)
+      onHide(e)
     } else if (cardNumber === 9) {
       controller.setCardPlayed(9, GlobalUnitsModel.Side.JAPAN)
       setShowCardFooter(() => true)

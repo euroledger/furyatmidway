@@ -3,7 +3,7 @@ import GlobalUnitsModel from "../model/GlobalUnitsModel"
 import GlobalInit from "../model/GlobalInit"
 
 export function processPlayedCard(stateObject) {
-  const { setCardDicePanelShow7, cardNumber, cardEventHandler, nextAction } = stateObject
+  const { setCardDicePanelShow7, cardNumber, cardEventHandler, setShowCardFooter, setCardDicePanelShow5 } = stateObject
   if (cardNumber === 1) {
     setTowedToFriendlyPortPanelShow(true)
     GlobalInit.controller.setCardPlayed(1, GlobalUnitsModel.Side.US)
@@ -25,6 +25,7 @@ export function processPlayedCard(stateObject) {
     }
     onHide(e)
   } else if (cardNumber === 4) {
+    console.log(">>>>>>>>>> PROCESS CARD #4 PLAYED>>>>>>>>>>>>>")
     let side
     setDamagedCV("")
     if (GlobalInit.controller.usHandContainsCard(4)) {
@@ -38,7 +39,10 @@ export function processPlayedCard(stateObject) {
     // if towed to friendly port has been played, go to SubmarainAlertPanel
     // otherwise straight to SubmarineDamagePanel
 
-    if (side === GlobalUnitsModel.Side.US || GlobalInit.controller.getCardPlayed(1, GlobalUnitsModel.Side.US) === false) {
+    if (
+      side === GlobalUnitsModel.Side.US ||
+      GlobalInit.controller.getCardPlayed(1, GlobalUnitsModel.Side.US) === false
+    ) {
       setSubmarineDamagePanelShow(true)
     } else {
       setSubmarineAlertPanelShow(true)
@@ -56,6 +60,7 @@ export function processPlayedCard(stateObject) {
     setCardDicePanelShow7(true)
     GlobalInit.controller.setCardPlayed(7, GlobalUnitsModel.Side.US)
   } else if (cardNumber === 8) {
+    console.log(">>>>>>>>>>>>>>>> POOP CARD 8 PLAYED >>>>>>>>>>>>>>")
     GlobalInit.controller.setCardPlayed(8, GlobalUnitsModel.Side.US)
     setShowCardFooter(() => true)
   } else if (cardNumber === 9) {

@@ -26,6 +26,20 @@ export const usCSFStartHexes = [
   { q: 9, r: 1 },
   { q: 9, r: 2 },
 ]
+
+export const usCSFPreferredStartHexes = [
+  { q: 6, r: -2 },
+  { q: 6, r: -1 },
+  { q: 6, r: 0 },
+  { q: 6, r: 1 },
+  { q: 6, r: 2 },
+
+  { q: 7, r: -2 },
+  { q: 7, r: -1 },
+  { q: 7, r: 0 },
+  { q: 7, r: 1 }
+]
+
 export const japanAF1StartHexesMidway = [
   { q: 1, r: 3 },
   { q: 1, r: 4 },
