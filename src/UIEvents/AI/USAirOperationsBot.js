@@ -318,6 +318,8 @@ export async function moveAirUnit(controller, unit, setTestUpdate) {
 
   if (destBoxes.length === 0) {
     // this can only happen if all carriers sunk, leave for now
+
+    // TODO MOVE TO ELIMINATED UNITS (ORPHAN!)
     return
   }
   // TODO Decide on best destination!! not just first one
@@ -347,11 +349,13 @@ export async function generateUSAirOperationsMovesCarriers(controller, stateObje
 
   // Get all air units in Return Boxes - do this first to free up strike boxes
   let units = controller.getAirUnitsInStrikeBoxesReadyToReturn(GlobalGameState.sideWithInitiative)
+
   if (units.length > 0) {
     for (let unit of units) {
       if (unit.aircraftUnit.moved) {
         continue
       }
+      await delay(50)
       await moveAirUnit(controller, unit, setTestUpdate)
     }
   }
@@ -365,6 +369,7 @@ export async function generateUSAirOperationsMovesCarriers(controller, stateObje
       if (unit.aircraftUnit.moved) {
         continue
       }
+      await delay(50)
       await moveAirUnit(controller, unit, setTestUpdate)
     }
   }
@@ -924,7 +929,6 @@ export async function generateUSAirOperationsMovesMidway(controller, stateObject
       })
       continue
     }
-
   }
 
   // get all fighter aircraft
@@ -950,7 +954,7 @@ export async function generateUSAirOperationsMovesMidway(controller, stateObject
       })
       continue
     }
-        // If CAP is valid destination -> move to CAP
+    // If CAP is valid destination -> move to CAP
     const capBox = destinations.find((box) => box.includes("MIDWAY CAP"))
     if (capBox !== undefined) {
       flightDecktoCAP({ controller, unit, setTestUpdate, test })

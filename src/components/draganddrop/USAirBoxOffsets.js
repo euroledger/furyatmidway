@@ -53,35 +53,35 @@ const USAirBoxOffsets = [
     carriers: [GlobalUnitsModel.Carrier.ENTERPRISE, GlobalUnitsModel.Carrier.HORNET],
     offsets: [
       {
-        left: 47.2,
+        left: 47.21,
         top: 78.3,
       },
       {
-        left: 49.1,
+        left: 49.11,
         top: 78.3,
       },
       {
-        left: 50.8,
+        left: 50.81,
         top: 78.3,
       },
       {
-        left: 47.2,
+        left: 47.21,
         top: 81.0,
       },
       {
-        left: 49.1,
+        left: 49.11,
         top: 81.0,
       },
       {
-        left: 50.8,
+        left: 50.81,
         top: 81.0,
       },
       {
-        left: 45.5,
+        left: 45.51,
         top: 78.3,
       },
       {
-        left: 45.5,
+        left: 45.51,
         top: 81.0,
       },
     ],
@@ -267,35 +267,35 @@ const USAirBoxOffsets = [
     carriers: [GlobalUnitsModel.Carrier.YORKTOWN],
     offsets: [
       {
-        left: 66.7,
+        left: 66.71,
         top: 78.7,
       },
       {
-        left: 68.6,
+        left: 68.61,
         top: 78.7,
       },
       {
-        left: 70.5,
+        left: 70.51,
         top: 78.7,
       },
       {
-        left: 66.7,
+        left: 66.71,
         top: 81.5,
       },
       {
-        left: 68.6,
+        left: 68.61,
         top: 81.5,
       },
       {
-        left: 70.5,
+        left: 70.51,
         top: 81.5,
       },
       {
-        left: 72.2,
+        left: 72.21,
         top: 78.7
       },
       {
-        left: 72.2,
+        left: 72.21,
         top: 81.5,
       }
     ],

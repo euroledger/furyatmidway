@@ -149,7 +149,6 @@ function AirCounter({ getAirBox, setAirBox, counterData, side }) {
     if (location.boxName.includes("ELIMINATED")) {
       return
     }
-    console.log("GAME PHASE=", GlobalGameState.gamePhase)
     if (
       GlobalGameState.gamePhase === GlobalGameState.PHASE.NIGHT_AIR_OPERATIONS_JAPAN ||
       GlobalGameState.gamePhase === GlobalGameState.PHASE.NIGHT_AIR_OPERATIONS_US
@@ -216,7 +215,6 @@ function AirCounter({ getAirBox, setAirBox, counterData, side }) {
       GlobalGameState.gamePhase === GlobalGameState.PHASE.CAP_RETURN 
 
     ) {
-      console.log("SET VALID DESTINATION BOXES !!!!")
       setValidDestinationBoxes(controller, counterData.name, counterData.side)
     }
     setBoxes(counterData, location.boxName)

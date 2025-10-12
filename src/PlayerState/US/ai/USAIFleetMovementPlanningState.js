@@ -11,7 +11,7 @@ import { DELAY_MS } from "../../StateUtils"
 
 class USAIFleetMovementPlanningState {
   async doAction(stateObject) {
-    console.log("%%%%%%%%%%%%%%%%%%%% DOING US FLEET MOVEMENT PLANNING%%%%%%%%%%%%%%%%%%%%%")
+    console.log("DOING US FLEET MOVEMENT PLANNING")
 
     const { setFleetUnitUpdate } = stateObject
     const { canCSFMoveFleetOffBoard, usCSFRegions } = getUSFleetRegions()

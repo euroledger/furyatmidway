@@ -1,7 +1,7 @@
 import GlobalGameState from "../../model/GlobalGameState"
 import GlobalUnitsModel from "../../model/GlobalUnitsModel"
 
-export function playCardAction(controller, cardNumber) {
+export function playCardAction(controller, cardNumber, setAttackResolved) {
   switch (cardNumber) {
     case 7:
       // factor would be position of CSF fleet, e.g., if too far away this card be useless
@@ -36,6 +36,11 @@ export function playCardAction(controller, cardNumber) {
     case 8:
       // semper fi - always play if Midway Garrison is < 5
       return GlobalGameState.midwayGarrisonLevel < 5
+
+    case 13:
+      setAttackResolved(false)
+      // critical hit - always play at first opportunity
+      return true
     default:
       return false // for now
   }

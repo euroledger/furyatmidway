@@ -31,11 +31,25 @@ class USAIAttackDamageResolutionState {
     const carrier = GlobalInit.controller.getCarrier(carrierName)
 
     // if carrier is in DMCV fleet and sunk - remove DMCV fleets from map
+    console.log(">>>>>>>>>> CHECKING FOR CRITICAL HIT <<<<<<<<<<<")
+
+    console.log(
+      "GlobalGameState.carrierAttackHitsThisAttack=",
+      GlobalGameState.carrierAttackHitsThisAttack,
+      "GlobalGameState.sideWithInitiative=",
+      GlobalGameState.sideWithInitiative,
+      "GlobalGameState.taskForceTarget=",
+      GlobalGameState.taskForceTarget,
+      "GlobalInit.controller.getDamagedCarriersOneOrTwoHits().length=",
+      GlobalInit.controller.getDamagedCarriersOneOrTwoHits(GlobalUnitsModel.Side.JAPAN).length,
+      "GlobalInit.controller.usHandContainsCard(13)=",
+      GlobalInit.controller.usHandContainsCard(13)
+    )
     if (
       GlobalGameState.carrierAttackHitsThisAttack > 0 &&
       GlobalGameState.sideWithInitiative === GlobalUnitsModel.Side.US &&
       GlobalGameState.taskForceTarget !== GlobalUnitsModel.TaskForce.JAPAN_DMCV &&
-      GlobalInit.controller.getDamagedCarriersOneOrTwoHits().length > 0 &&
+      GlobalInit.controller.getDamagedCarriersOneOrTwoHits(GlobalUnitsModel.Side.JAPAN).length > 0 &&
       GlobalInit.controller.usHandContainsCard(13)
     ) {
       setCardNumber(() => 13)

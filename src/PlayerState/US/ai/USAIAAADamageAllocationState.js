@@ -19,6 +19,10 @@ class USAIAAADamageAllocationState {
         await delay(10)
         let strikeUnits = GlobalInit.controller.getAttackingStrikeUnits(true) // exclude fighters for AAA Fire
 
+        console.log("POOOOOOOOOOO strikeUnits=", strikeUnits)
+        if (strikeUnits.length === 0) {
+          return // all strike units gone (if more than one '1' rolled this can happen)
+        }
         // US AAA Damage Allocation Bot...picks one unit to take this hit
         const { index } = await allocateAAADamageToAttackingStrikeUnit(strikeUnits)
 

@@ -13,9 +13,8 @@ class JapanHumanCardPlayState {
   }
 
   async nextState(stateObject) {
-    const { cardNumber, setCardNumber, setCardAlertPanelShow } = stateObject
+    const { cardNumber, setCardAlertPanelShow } = stateObject
 
-    setCardNumber(0)
     setCardAlertPanelShow(false)
 
     console.log("GRABBAGE NEXT STATE FROM JAPAN CARD PLAY cardNumber=", cardNumber)

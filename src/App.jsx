@@ -1977,11 +1977,11 @@ export function App() {
       setInitComplete(true)
     }
   }
-  // window height
-  const height = window.innerHeight
+  // // window height
+  // const height = window.innerHeight
 
-  // window width
-  const width = window.innerWidth
+  // // window width
+  // const width = window.innerWidth
 
   if (splash) {
     return (
@@ -2525,6 +2525,7 @@ export function App() {
   }
 
   function doTargetSelectionRoll(roll0) {
+    // roll0 = 3 // QUACK TESTING
     doSelectionRoll(GlobalInit.controller, roll0)
 
     setTargetDetermined(true)
@@ -2540,6 +2541,12 @@ export function App() {
     }
   }
 
+
+  if(attackResolutionPanelShow) {
+
+  console.log("***** QUACK POO QNAK attackResolved attackResolved=",attackResolved)
+  }
+  
   function doNightRollsDamage() {
     for (let i = 0; i < nightAirUnits.length; i++) {
       for (let j = 0; j < nightStepsLost[i]; j++) {
@@ -2580,6 +2587,7 @@ export function App() {
   }
 
   function doCriticalHit() {
+    console.log("DO CRITICAL HIT........)))))))))))))))))))))))))))))")
     let damage = autoAllocateDamage(GlobalInit.controller, 1)
     sendDamageUpdates(GlobalInit.controller, damage, setDamageMarkerUpdate)
 
@@ -3123,6 +3131,7 @@ export function App() {
               }
             : (e) => {
                 setAttackResolutionPanelShow(false)
+                setAttackResolved(true)
                 nextAction(e)
               }
         }
@@ -3299,7 +3308,6 @@ export function App() {
         setSubmarineDamagePanelShow={setSubmarineDamagePanelShow}
         onHide={(e) => {
           setCardAlertPanelShow(false)
-          setCardNumber(0) // reset for next card
           nextAction(e)
         }}
         nextAction={nextAction}
@@ -3330,6 +3338,9 @@ export function App() {
         setSubmarineDamagePanelShow={setSubmarineDamagePanelShow}
         onHide={(e) => {
           setCardPlayedPanelShow(false)
+          if (cardNumber === 13) {
+            nextAction()
+          }
           // processPlayedCard(stateObject) 
         }}
         width={30}

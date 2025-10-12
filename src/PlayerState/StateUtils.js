@@ -521,6 +521,7 @@ export async function setNextStateFollowingCardPlay(stateObject) {
     setEndOfAirOpAlertShow,
     setMidwayWarningShow,
     setMidwayDialogShow,
+    capAirUnits,
     setEndOfTurnSummaryShow,
   } = stateObject
   GlobalGameState.dieRolls = []
@@ -539,13 +540,11 @@ export async function setNextStateFollowingCardPlay(stateObject) {
         }
         // GlobalGameState.currentPlayer = GlobalUnitsModel.Side.JAPAN
         GlobalGameState.gamePhase = GlobalGameState.PHASE.END_OF_TURN
-        console.log(">>>>>>>>>>>>> GOING BACK TO END OF TURN <<<<<<<<<<<<<<<<<<")
       }
       break
     case 5:
       // Naval Bombardment
       if (GlobalGameState.gameTurn !== 4) {
-        console.log(">>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>> TOSS GO TO JAPAN DRAW ONE CARD >>>>>>>>>>>>>>>>>>>")
         GlobalGameState.gamePhase = GlobalGameState.PHASE.JAPAN_DRAWS_ONE_CARD
         // midwayPossible(GlobalInit.controller, setMidwayWarningShow, setMidwayDialogShow)
       } else {
@@ -611,6 +610,7 @@ export async function setNextStateFollowingCardPlay(stateObject) {
       break
 
     case 11:
+      console.log("GOING TO NEXT STATE AFTER CARD PLAY 11..................")
       // US Strike Lost
       // if the card was played we go back to AIR OPERATIONS
       // otherwise TARGET DETERMINATION
@@ -639,6 +639,20 @@ export async function setNextStateFollowingCardPlay(stateObject) {
       GlobalGameState.doneCapSelection = false
       GlobalGameState.gamePhase = GlobalGameState.PHASE.CAP_INTERCEPTION
       // }
+      break
+
+    case 13:
+      setCardNumber(() => -1) // reset for next card play
+      if (GlobalGameState.carrierTarget2 !== "" && GlobalGameState.carrierTarget2 !== undefined) {
+        GlobalGameState.gamePhase = GlobalGameState.PHASE.AIR_ATTACK_2
+      } else {
+        await endOfAirOperation(
+          capAirUnits,
+          setAirUnitUpdate
+        )
+        GlobalGameState.gamePhase = GlobalGameState.PHASE.AIR_OPERATIONS
+        GlobalGameState.updateGlobalState()
+      }
       break
     default:
       console.log("ERROR unknown card number: ", cardNumber)
@@ -817,7 +831,6 @@ export async function endOfNightAirOperation(controller, setTestUpdate, side) {
 
 export async function endOfAirOperation(capAirUnits, setAirUnitUpdate) {
   console.log("In endOfAirOperation().....")
-  console.trace()
   if (
     GlobalGameState.taskForceTarget !== GlobalUnitsModel.TaskForce.JAPAN_DMCV &&
     GlobalGameState.taskForceTarget !== GlobalUnitsModel.TaskForce.US_DMCV

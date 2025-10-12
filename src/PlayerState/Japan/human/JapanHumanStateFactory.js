@@ -15,6 +15,7 @@ import JapanHumanCapDamageAllocationState from "./JapanHumanCapDamageAllocationS
 import JapanHumanEscortCounterattackState from "./JapanHumanEscortCounterattackState"
 import JapanHumanAttackTargetSelectionState from "./JapanHumanAttackTargetSelectionState"
 import JapanHumanAirAttack1State from "./JapanHumanAirAttack1State"
+import JapanHumanAirAttack2State from "./JapanHumanAirAttack2State"
 import JapanHumanAttackDamageResolutionState from "./JapanHumanAttackDamageResolutionState"
 import JapanHumanAAADamageAllocationState from "./JapanHumanAAADamageAllocationState"
 import JapanHumanEndOfTurnState from "./JapanHumanEndOfTurnState"
@@ -61,6 +62,8 @@ function mapGameStateToJapanHumanHandlerState() {
       return new JapanHumanAttackTargetSelectionState()
     case GlobalGameState.PHASE.AIR_ATTACK_1:
       return new JapanHumanAirAttack1State()
+    case GlobalGameState.PHASE.AIR_ATTACK_2:
+      return new JapanHumanAirAttack2State()
     case GlobalGameState.PHASE.ATTACK_DAMAGE_RESOLUTION:
       return new JapanHumanAttackDamageResolutionState()
     case GlobalGameState.PHASE.END_OF_TURN:

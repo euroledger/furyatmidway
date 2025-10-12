@@ -3,6 +3,8 @@ import { getAllHexes } from "../../components/HexUtils"
 import { usCSFStartHexes, usCSFPreferredStartHexes } from "../../components/MapRegions"
 import GlobalGameState from "../../model/GlobalGameState"
 import GlobalUnitsModel from "../../model/GlobalUnitsModel"
+import { distanceBetweenHexes } from "../../components/HexUtils"
+import GlobalInit from "../../model/GlobalInit"
 
 // Create array of all hexes
 
@@ -13,6 +15,7 @@ export function placeUSCSFFleetAction() {
   const num = Math.floor(Math.random() * 7)
   // 66% chance US Sets up in preferred region, 33% random
 
+  // TODO make it 50-50 if US using defensive strategy
   if (num <= 4) {
     return getRandomElementFrom(usCSFPreferredStartHexes)
   }
@@ -77,9 +80,20 @@ export function doUSFleetMovementAction(controller, regions, offboardPossible) {
 
   if (GlobalGameState.gameTurn === 1) {
     // close range with IJN
+    console.log("TURN 1 -> DECIDE WETHER TO CLOSE RANGE OR NOT...")
 
+    // Close range to top left of board (assume 1AF is here)
+
+    const hexesCloserToTopLeft = new Array()
+    const csfLocation = GlobalInit.controller.getFleetLocation("CSF", GlobalUnitsModel.Side.US)
+    const distanceFromCSFToTopLeft = distanceBetweenHexes(locationCSF.currentHex, {q:1, r:1})
+
+    console.log("DISTANCE FROM CSF TO A-1 IS", distanceFromCSFToTopLeft)
+    // top left is q:1, r:1
     for (const region of regions) {
-      console.log("REGION HEX =", region)
+      const distanceFromRegionToTopLeft = distanceBetweenHexes(region, {q:1, r:1})
+      console.log("\tREGION HEX =", region, "DISTANCE TO A-1 IS")
+
     }
  
     return { q: 4, r: 1 } // QUACK HARD WIRED FOR TESTING ONLY

@@ -105,9 +105,11 @@ class JapanHumanEndOfTurnState {
         GlobalGameState.gamePhase = GlobalGameState.PHASE.CARD_PLAY
       } else {
         if (GlobalGameState.gameTurn === 2 || GlobalGameState.gameTurn === 4 || GlobalGameState.gameTurn === 6) {
+          GlobalGameState.currentPlayer = GlobalUnitsModel.Side.US
           GlobalGameState.gamePhase = GlobalGameState.PHASE.US_DRAWS_ONE_CARD
         }
         if (GlobalGameState.gameTurn === 3 || GlobalGameState.gameTurn === 5 || GlobalGameState.gameTurn === 7) {
+          GlobalGameState.currentPlayer = GlobalUnitsModel.Side.JAPAN
           GlobalGameState.gamePhase = GlobalGameState.PHASE.JAPAN_DRAWS_ONE_CARD
         }
       }

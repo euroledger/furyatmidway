@@ -2,6 +2,7 @@ import { React, useEffect, useState, createRef } from "react"
 import "./cap.css"
 import GlobalGameState from "../model/GlobalGameState"
 import { doDamageAllocation } from "../DiceHandler"
+import GlobalUnitsModel from "../model/GlobalUnitsModel"
 
 export function StrikeLostDamageHeaders({ controller, eliminatedSteps, setEliminatedSteps, cardNumber, setStepsLeft }) {
   const [elRefs, setElRefs] = useState([])
@@ -86,6 +87,12 @@ export function StrikeLostDamageHeaders({ controller, eliminatedSteps, setElimin
     GlobalGameState.updateGlobalState()
   }
 
+  let elimMsg = "Select Steps to Eliminate"
+  let clickMsg = "(click on air unit to eliminate a step)"
+  if (GlobalGameState.usPlayerType === GlobalUnitsModel.TYPE.AI) {
+    elimMsg = "US Player eliminates two steps"
+    clickMsg = ""
+  }
   const hitsToAllocate = 2
   return (
     <>
@@ -121,7 +128,7 @@ export function StrikeLostDamageHeaders({ controller, eliminatedSteps, setElimin
             marginLeft: "10px",
           }}
         >
-          Select Steps to Eliminate <br></br>
+          {elimMsg}<br></br>
         </p>
         <p
           style={{
@@ -133,7 +140,7 @@ export function StrikeLostDamageHeaders({ controller, eliminatedSteps, setElimin
             marginLeft: "10px",
           }}
         >
-          (click on air unit to eliminate a step)
+          {clickMsg}
         </p>
       </div>
       <div>

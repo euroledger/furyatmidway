@@ -16,11 +16,11 @@ class USAICardPlayState {
   }
 
   async doAction(stateObject) {
-    const { cardNumber, setCardNumber } = stateObject
+    const { cardNumber, setAttackResolved } = stateObject
     this.cardNumber = cardNumber
 
     console.log("US AI Card Play: DETERMINE WHETHER OR NOT TO PLAY CARD NUMBER", cardNumber)
-    const playThisCard = playCardAction(GlobalInit.controller, cardNumber)
+    const playThisCard = playCardAction(GlobalInit.controller, cardNumber, setAttackResolved)
 
     console.log("playThisCard=", playThisCard)
     if (playThisCard) {
@@ -39,11 +39,14 @@ class USAICardPlayState {
 
     console.log("NEXT STATE FROM US CARD PLAY cardNumber=", cardNumber)
     await setNextStateFollowingCardPlay(stateObject)
-    if (displayScreen()) {
-      calcAirOpsPoints({ setSearchValues, setSearchResults, setSearchValuesAlertShow })
-      GlobalGameState.currentPlayer = GlobalUnitsModel.Side.JAPAN
-      setSearchValuesAlertShow(true)
-    }
+
+    // This should be done in next state (eg AIR SEARCH)
+    // See Card 7 in above function for example
+    // if (displayScreen()) {
+    //   calcAirOpsPoints({ setSearchValues, setSearchResults, setSearchValuesAlertShow })
+    //   GlobalGameState.currentPlayer = GlobalUnitsModel.Side.JAPAN
+    //   setSearchValuesAlertShow(true)
+    // }
   }
 
   getState() {

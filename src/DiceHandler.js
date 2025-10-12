@@ -94,7 +94,6 @@ export function doIntiativeRoll(controller, roll0, roll1, showDice) {
       jpRolls = [rolls[0]]
       usRolls = [rolls[1]]
     }
-    console.log("ARSE GlobalGameState.sideWithInitiative =", GlobalGameState.sideWithInitiative)
   }
 
   if (GlobalGameState.sideWithInitiative === GlobalUnitsModel.Side.JAPAN) {
@@ -473,6 +472,7 @@ export function autoAllocateDamage(controller, theHits) {
     return damage
   }
 
+  console.log("ALLOCATING CRITICAL HIT to carrier", carrier)
   if (hits == 1) {
     if (!controller.getCarrierBowDamaged(carrier)) {
       controller.setCarrierBowDamaged(carrier)
@@ -830,8 +830,8 @@ export function doAttackFireRolls(controller, testRolls) {
     GlobalGameState.carrierAttackHitsThisAttack = hits
 
     // QUACK REMOVE TEESTING ONLY
-    // GlobalGameState.carrierAttackHits = 0
-    // GlobalGameState.carrierAttackHitsThisAttack = 0
+    // GlobalGameState.carrierAttackHits = 1
+    // GlobalGameState.carrierAttackHitsThisAttack = 1
   }
   return hits
 }
@@ -849,7 +849,7 @@ export function doAAAFireRolls(numDice, testRolls) {
   GlobalGameState.antiaircraftHits = hits
 
   // QUACK TESTING TAKE THIS OUT
-  // GlobalGameState.antiaircraftHits = 0
+  // GlobalGameState.antiaircraftHits = 2
 }
 
 function getFightersForStrikeGroup(controller) {
@@ -1139,7 +1139,7 @@ export function doCAP(controller, capAirUnits, fightersPresent, testRolls) {
   GlobalGameState.dieRolls = rolls
 
   // QUACK TESTING PUT THIS BACK
-  // GlobalGameState.capHits = 4
+  // GlobalGameState.capHits = 0
 
   GlobalGameState.capHits = hits
 }

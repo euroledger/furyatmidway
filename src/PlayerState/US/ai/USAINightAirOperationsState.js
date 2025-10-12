@@ -83,7 +83,7 @@ class USAINightAirOperationsState {
         GlobalGameState.gamePhase = GlobalGameState.PHASE.CARD_PLAY
         return
       }
-      console.log("END OF TURN BABY!!!!!!! current state=", GlobalGameState.gamePhase)
+      console.log("END OF TURN current state=", GlobalGameState.gamePhase)
       GlobalGameState.currentPlayer = GlobalUnitsModel.Side.JAPAN
       GlobalGameState.cardsChecked = new Array()
       GlobalGameState.gamePhase = GlobalGameState.PHASE.END_OF_TURN

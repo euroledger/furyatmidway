@@ -34,7 +34,6 @@ class USAIFleetMovementState {
       GlobalGameState.currentPlayer = GlobalUnitsModel.Side.US
       return new USAIAirSearchState()
     } else if (GlobalGameState.gamePhase === GlobalGameState.PHASE.CARD_PLAY) {
-      console.log("NOW GLOBAL GAME STATE game phase=", GlobalGameState.gamePhase)
       return new USAICardPlayState()
     }
   }

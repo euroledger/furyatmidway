@@ -57,7 +57,7 @@ function DicePanel(props) {
   }, [GlobalGameState.closePanel])
 
   if (!sidebg) {
-    sidebg = GlobalGameState.sideWithInitiative === GlobalUnitsModel.Side.JAPAN ?  "#4B0808" : "#293a4b" 
+    sidebg = GlobalGameState.sideWithInitiative === GlobalUnitsModel.Side.JAPAN ? "#4B0808" : "#293a4b"
   }
   let showImg = false
   if (image != "NOFLAG") {
@@ -65,7 +65,9 @@ function DicePanel(props) {
   }
   if (!image) {
     image =
-      GlobalGameState.sideWithInitiative === GlobalUnitsModel.Side.JAPAN ? "/images/japanflag.jpg" : "/images/usaflag.jpg"
+      GlobalGameState.sideWithInitiative === GlobalUnitsModel.Side.JAPAN
+        ? "/images/japanflag.jpg"
+        : "/images/usaflag.jpg"
   }
   const bg = GlobalGameState.gameTurn === 4 ? "black" : sidebg
 
@@ -106,25 +108,30 @@ function DicePanel(props) {
           color: "white",
         }}
       >
-        {showImg && (<div
-          style={{
-            width: "100px",
-            height: "60px",
-            marginLeft: "-265px",
-            marginRight: "155px",
-          }}
-        >
-          <img
+        {showImg && (
+          <div
             style={{
-              width: "60px",
-              height: "40px",
+              width: "100px",
+              height: "60px",
+              marginLeft: "-265px",
+              marginRight: "155px",
             }}
-            src={image}
-          ></img>
-        </div>)}
-        <p   style={{
-            marginLeft: "65px",
-          }}className="text-center">
+          >
+            <img
+              style={{
+                width: "60px",
+                height: "40px",
+              }}
+              src={image}
+            ></img>
+          </div>
+        )}
+        <p
+          style={{
+            // marginLeft: "65px",
+          }}
+          // className="text-center"
+        >
           <h4>{headerText}</h4>
         </p>
       </Modal.Header>

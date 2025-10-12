@@ -162,6 +162,8 @@ export function EventCardFooter({ cardNumber, showCardFooter, setShowDice, doCri
     setShowDice(false)
     // Add additional damage to just attacked carrier
     let airMsg = "Additional Hit Added to " + GlobalGameState.currentCarrierAttackTarget
+
+    console.log("showCardFooter=", showCardFooter, "attackResolved=", attackResolved)
     if (showCardFooter && !attackResolved) {
       GlobalGameState.carrierAttackHits = 1
       doCriticalHit()

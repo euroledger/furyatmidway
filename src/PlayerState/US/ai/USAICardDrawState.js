@@ -13,6 +13,7 @@ class USAICardDrawState {
 
     if (GlobalGameState.gameTurn !== 1) {
       if (GlobalGameState.gameTurn === 2 || GlobalGameState.gameTurn === 4 || GlobalGameState.gameTurn === 6) {
+        GlobalGameState.currentPlayer = GlobalUnitsModel.Side.US
         GlobalGameState.gamePhase = GlobalGameState.PHASE.US_DRAWS_ONE_CARD
       }
     } else {
