@@ -25,7 +25,7 @@ class USAISetupAirState {
         index: -1,
       }
       let boxName
-      console.log("UNIT=", unit.name)
+      await delay(GlobalGameState.DELAY)
 
       if (unit.name.includes(GlobalUnitsModel.Carrier.MIDWAY)) {
         let airBoxes = getAirSetupBoxes(GlobalUnitsModel.Carrier.MIDWAY)
@@ -42,7 +42,6 @@ class USAISetupAirState {
 
       setTestUpdate(update)
 
-      await delay(GlobalGameState.DELAY)
       i++
       if (unit.nextAction) {
         await this.nextState()

@@ -528,6 +528,22 @@ export async function setNextStateFollowingCardPlay(stateObject) {
   switch (cardNumber) {
     case -1:
       break
+    case 1:
+      if (GlobalInit.controller.usHandContainsCard(2) || GlobalInit.controller.japanHandContainsCard(2)) {
+        setCardNumber(() => 2)
+      } else if (GlobalInit.controller.usHandContainsCard(3) || GlobalInit.controller.japanHandContainsCard(3)) {
+        setCardNumber(() => 3)
+      } else if (GlobalInit.controller.usHandContainsCard(4) || GlobalInit.controller.japanHandContainsCard(4)) {
+        setCardNumber(() => 4)
+      } else {
+        if (GlobalGameState.gameTurn === 7) {
+          determineMidwayInvasion(setCardNumber, setEndOfTurnSummaryShow, 1)
+        } else {
+          GlobalGameState.currentPlayer = GlobalUnitsModel.Side.JAPAN
+          GlobalGameState.gamePhase = GlobalGameState.PHASE.END_OF_TURN
+        }
+      }
+      break
     case 4:
       if (GlobalGameState.gameTurn === 7) {
         determineMidwayInvasion(setCardNumber, setEndOfTurnSummaryShow, 4)
@@ -538,7 +554,7 @@ export async function setNextStateFollowingCardPlay(stateObject) {
         if (carrier && carrier.dmcv && GlobalInit.controller.isSunk(carrier.name)) {
           await removeDMCVFleetForCarrier(carrier.side, setFleetUnitUpdate)
         }
-        // GlobalGameState.currentPlayer = GlobalUnitsModel.Side.JAPAN
+        GlobalGameState.currentPlayer = GlobalUnitsModel.Side.JAPAN
         GlobalGameState.gamePhase = GlobalGameState.PHASE.END_OF_TURN
       }
       break
@@ -597,6 +613,16 @@ export async function setNextStateFollowingCardPlay(stateObject) {
       // Semper Fi
       GlobalGameState.gamePhase = GlobalGameState.PHASE.MIDWAY_INVASION
       break
+    case 9:
+      if (GlobalInit.controller.japanHandContainsCard(12)) {
+        setCardNumber(() => 12)
+        GlobalGameState.currentPlayer = GlobalUnitsModel.Side.JAPAN
+        GlobalGameState.gamePhase = GlobalGameState.PHASE.CARD_PLAY
+      } else {
+        setCardNumber(() => -1)
+        GlobalGameState.gamePhase = GlobalGameState.PHASE.CAP_INTERCEPTION
+      }
+      break
     case 10:
       // US Carrier Planes Ditch
       GlobalGameState.isFirstAirOp = true
@@ -624,21 +650,14 @@ export async function setNextStateFollowingCardPlay(stateObject) {
       break
     case 12:
       // Elite Pilots
-      // if (GlobalInit.controller.getCardPlayed(12, GlobalUnitsModel.Side.JAPAN)) {
-      //   if (GlobalGameState.taskForceTarget !== GlobalUnitsModel.TaskForce.MIDWAY) {
-      //     GlobalGameState.gamePhase = GlobalGameState.PHASE.CAP_INTERCEPTION
-      //   } else {
-      //     GlobalGameState.gamePhase = GlobalGameState.PHASE.ESCORT_COUNTERATTACK
-      //   }
-      // } else {
-      // Need to do CAP interception choice first even with elite pilots
-      // so that defenders are selected
-      GlobalGameState.currentPlayer = GlobalUnitsModel.Side.US
-      GlobalGameState.testCapSelection = -1
-
-      GlobalGameState.doneCapSelection = false
+      if (GlobalGameState.gamePhase === GlobalGameState.PHASE.MIDWAY_ATTACK) {
+        GlobalGameState.currentPlayer = GlobalUnitsModel.Side.US
+        GlobalGameState.testCapSelection = -1
+        GlobalGameState.doneCapSelection = false
+      } else {
+        GlobalGameState.currentPlayer = GlobalUnitsModel.Side.JAPAN
+      }
       GlobalGameState.gamePhase = GlobalGameState.PHASE.CAP_INTERCEPTION
-      // }
       break
 
     case 13:
@@ -646,10 +665,7 @@ export async function setNextStateFollowingCardPlay(stateObject) {
       if (GlobalGameState.carrierTarget2 !== "" && GlobalGameState.carrierTarget2 !== undefined) {
         GlobalGameState.gamePhase = GlobalGameState.PHASE.AIR_ATTACK_2
       } else {
-        await endOfAirOperation(
-          capAirUnits,
-          setAirUnitUpdate
-        )
+        await endOfAirOperation(capAirUnits, setAirUnitUpdate)
         GlobalGameState.gamePhase = GlobalGameState.PHASE.AIR_OPERATIONS
         GlobalGameState.updateGlobalState()
       }
@@ -774,8 +790,6 @@ export function midwayOrAirOps() {
     console.log(">>>>>>>>>>> GO TO MIDWAY_ATTACK >>>>>>>>>>")
     GlobalGameState.gamePhase = GlobalGameState.PHASE.MIDWAY_ATTACK
   } else {
-    console.log("############### QuaCK 3")
-
     GlobalGameState.gamePhase = GlobalGameState.PHASE.AIR_OPERATIONS
   }
 }

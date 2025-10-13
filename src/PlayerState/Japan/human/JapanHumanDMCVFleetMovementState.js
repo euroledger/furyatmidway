@@ -5,7 +5,7 @@ class JapanHumanDMCVFleetMovementState {
   async doAction(stateObject) {
     const { setUSMapRegions, setJapanFleetRegions, setEnabledUSFleetBoxes } = stateObject
 
-    console.log("++++++++++ WANK -> DO DMCV FLEET MOVEMENT JAPAN")
+    console.log("++++++++++ DO DMCV FLEET MOVEMENT JAPAN")
 
     GlobalGameState.jpDMCVFleetMoved = false
     GlobalGameState.phaseCompleted = true // placing DMCV is not mandatory

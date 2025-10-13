@@ -36,6 +36,8 @@ class JapanHumanEndOfTurnState {
       GlobalInit.controller.getSunkCarriers(GlobalUnitsModel.Side.US).length > 0
     ) {
       setCardNumber(() => 1)
+      this.markCard(1)
+      GlobalGameState.currentPlayer = GlobalUnitsModel.Side.US
       GlobalGameState.gamePhase = GlobalGameState.PHASE.CARD_PLAY
       return
     }
@@ -44,6 +46,12 @@ class JapanHumanEndOfTurnState {
       (GlobalInit.controller.usHandContainsCard(2) || GlobalInit.controller.japanHandContainsCard(2))
     ) {
       setCardNumber(() => 2)
+      this.markCard(2)
+      if (GlobalInit.controller.usHandContainsCard(2)) {
+        GlobalGameState.currentPlayer = GlobalUnitsModel.Side.US
+      } else {
+        GlobalGameState.currentPlayer = GlobalUnitsModel.Side.JAPAN
+      }
       GlobalGameState.gamePhase = GlobalGameState.PHASE.CARD_PLAY
       return
     }
@@ -52,6 +60,12 @@ class JapanHumanEndOfTurnState {
       (GlobalInit.controller.usHandContainsCard(3) || GlobalInit.controller.japanHandContainsCard(3))
     ) {
       setCardNumber(() => 3)
+      this.markCard(3)
+      if (GlobalInit.controller.usHandContainsCard(2)) {
+        GlobalGameState.currentPlayer = GlobalUnitsModel.Side.US
+      } else {
+        GlobalGameState.currentPlayer = GlobalUnitsModel.Side.JAPAN
+      }
       GlobalGameState.gamePhase = GlobalGameState.PHASE.CARD_PLAY
       return
     }
@@ -59,9 +73,13 @@ class JapanHumanEndOfTurnState {
       !this.cardChecked(4) &&
       (GlobalInit.controller.usHandContainsCard(4) || GlobalInit.controller.japanHandContainsCard(4))
     ) {
-      console.log("*********** CARD 4 cardsChecked=", GlobalGameState.cardsChecked)
       setCardNumber(() => 4)
       this.markCard(4)
+      if (GlobalInit.controller.usHandContainsCard(2)) {
+        GlobalGameState.currentPlayer = GlobalGameState.Side.US
+      } else {
+        GlobalGameState.currentPlayer = GlobalGameState.Side.JAPAN
+      }
       GlobalGameState.gamePhase = GlobalGameState.PHASE.CARD_PLAY
       return
     }

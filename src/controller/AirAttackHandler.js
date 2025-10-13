@@ -33,8 +33,14 @@ export function setUpAirAttack(controller, location, strikeGroup, setCardNumber,
     //   GlobalGameState.gamePhase = GlobalGameState.PHASE.CARD_PLAY
     //   setCardNumber(() => 9)
     // } else {
-    if (controller.japanHandContainsCard(12)) {
+    if (controller.japanHandContainsCard(9)) {
+      setCardNumber(() => 9)
+      GlobalGameState.currentPlayer = GlobalUnitsModel.Side.JAPAN
+      GlobalGameState.gamePhase = GlobalGameState.PHASE.CARD_PLAY
+    }
+    else if (controller.japanHandContainsCard(12)) {
       setCardNumber(() => 12)
+      GlobalGameState.currentPlayer = GlobalUnitsModel.Side.JAPAN
       GlobalGameState.gamePhase = GlobalGameState.PHASE.CARD_PLAY
     } else {
       GlobalGameState.doneCapSelection = false
@@ -53,21 +59,18 @@ export function setUpAirAttack(controller, location, strikeGroup, setCardNumber,
       } else if (fleetTarget.includes("US-DMCV")) {
         GlobalGameState.taskForceTarget = GlobalUnitsModel.TaskForce.US_DMCV
         GlobalGameState.currentCarrierAttackTarget = GlobalUnitsModel.TaskForce.US_DMCV
-        
       } else if (fleetTarget.includes("MIF")) {
         GlobalGameState.taskForceTarget = GlobalUnitsModel.TaskForce.MIF
         GlobalGameState.currentCarrierAttackTarget = GlobalUnitsModel.TaskForce.MIF
       }
     } else {
       // may have no targets (all enemy carriers sunk/DMCV)
-      console.log("PUSSY INITIATIVE =", GlobalGameState.sideWithInitiative)
       const sideBeingAttacked =
         GlobalGameState.sideWithInitiative === GlobalUnitsModel.Side.US
           ? GlobalUnitsModel.Side.JAPAN
           : GlobalUnitsModel.Side.US
       let anyTargets = controller.anyTargets(sideBeingAttacked)
       if (anyTargets) {
-        console.log("---------------------------- GO TO TARGET DETERMINATION ----------------------------------")
         if (sideBeingAttacked === GlobalUnitsModel.Side.JAPAN) {
           GlobalGameState.currentPlayer = GlobalUnitsModel.Side.US
         }
@@ -80,13 +83,13 @@ export function setUpAirAttack(controller, location, strikeGroup, setCardNumber,
     if (
       controller.japanHandContainsCard(11) &&
       side === GlobalUnitsModel.Side.US && // card 11 only valid for US Strikes
-      GlobalGameState.gamePhase !== GlobalGameState.PHASE.CARD_PLAY
-      && cardPlayed === undefined
+      GlobalGameState.gamePhase !== GlobalGameState.PHASE.CARD_PLAY &&
+      cardPlayed === undefined
     ) {
       GlobalGameState.gamePhase = GlobalGameState.PHASE.CARD_PLAY
       GlobalGameState.currentPlayer = GlobalUnitsModel.Side.JAPAN
       setCardNumber(() => 11)
-    } 
+    }
   }
 
   controller.resetTargetMap()

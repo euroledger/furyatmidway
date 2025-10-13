@@ -33,11 +33,6 @@ export const usCSFPreferredStartHexes = [
   { q: 6, r: 0 },
   { q: 6, r: 1 },
   { q: 6, r: 2 },
-
-  { q: 7, r: -2 },
-  { q: 7, r: -1 },
-  { q: 7, r: 0 },
-  { q: 7, r: 1 }
 ]
 
 export const japanAF1StartHexesMidway = [

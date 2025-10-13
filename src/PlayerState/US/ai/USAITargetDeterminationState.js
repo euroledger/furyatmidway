@@ -16,10 +16,21 @@ class USAITargetDeterminationState {
   }
 
   async nextState(stateObject) {
+    const { setCardNumber } = stateObject
     console.log("USAITargetDetermination -> nextState() !!!!!!!!!!!!!!!")
     GlobalGameState.currentPlayer = GlobalUnitsModel.Side.JAPAN
     GlobalGameState.doneCapSelection = false
-    GlobalGameState.gamePhase = GlobalGameState.PHASE.CAP_INTERCEPTION
+    if (GlobalInit.controller.japanHandContainsCard(9)) {
+      setCardNumber(() => 9)
+      GlobalGameState.currentPlayer = GlobalUnitsModel.Side.JAPAN
+      GlobalGameState.gamePhase = GlobalGameState.PHASE.CARD_PLAY
+    } else if (GlobalInit.controller.japanHandContainsCard(12)) {
+      setCardNumber(() => 12)
+      GlobalGameState.currentPlayer = GlobalUnitsModel.Side.JAPAN
+      GlobalGameState.gamePhase = GlobalGameState.PHASE.CARD_PLAY
+    } else {
+      GlobalGameState.gamePhase = GlobalGameState.PHASE.CAP_INTERCEPTION
+    }
   }
 
   getState() {

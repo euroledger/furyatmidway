@@ -112,11 +112,15 @@ function CardAlertPanel(props) {
       setShowCardFooter(() => true)
       onHide(e)
     } else if (cardNumber === 9) {
+      setHeaderText("CARD #9 PLAYED")
       controller.setCardPlayed(9, GlobalUnitsModel.Side.JAPAN)
       setShowCardFooter(() => true)
     } else if (cardNumber === 10) {
-      setCarrierPlanesDitchPanelShow(true)
+      console.log(">>>>>>> SHOULD GO TO CARD RESPONSE NOW )))")
       GlobalGameState.currentPlayer = GlobalUnitsModel.Side.US
+      GlobalGameState.testStepLossSelection = -1
+      GlobalGameState.updateGlobalState()
+      setCarrierPlanesDitchPanelShow(true)
       GlobalGameState.gamePhase = GlobalGameState.PHASE.CARD_RESPONSE
       controller.setCardPlayed(10, GlobalUnitsModel.Side.JAPAN)
       onHide(e)

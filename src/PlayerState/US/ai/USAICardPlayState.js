@@ -3,7 +3,7 @@ import { displayScreen, setNextStateFollowingCardPlay } from "../../StateUtils"
 import { playCardAction } from "../../../UIEvents/AI/USCardPlayBot"
 import GlobalInit from "../../../model/GlobalInit"
 import GlobalUnitsModel from "../../../model/GlobalUnitsModel"
-import { calcAirOpsPoints } from "../../StateUtils"
+import { delay } from "../../../Utils"
 
 class USAICardPlayState {
   displayCardPlayedPanel(stateObject) {
@@ -16,7 +16,7 @@ class USAICardPlayState {
   }
 
   async doAction(stateObject) {
-    const { cardNumber, setAttackResolved } = stateObject
+    const { cardNumber, setAttackResolved, setTowedToFriendlyPortPanelShow } = stateObject
     this.cardNumber = cardNumber
 
     console.log("US AI Card Play: DETERMINE WHETHER OR NOT TO PLAY CARD NUMBER", cardNumber)
@@ -25,9 +25,23 @@ class USAICardPlayState {
     console.log("playThisCard=", playThisCard)
     if (playThisCard) {
       GlobalInit.controller.setCardPlayed(cardNumber, GlobalUnitsModel.Side.US)
+      if (cardNumber === 1) {
+        GlobalGameState.testCapSelection = -1
+        GlobalGameState.updateGlobalState()
+        setTowedToFriendlyPortPanelShow(true)
+        await delay(1500)
+        const usCVsSunk = GlobalInit.controller.getSunkCarriers(GlobalUnitsModel.Side.US)
 
-      if (displayScreen) {
-        this.displayCardPlayedPanel(stateObject)
+        // select random number between 0 and number of sunk CVs (will usually be 1)
+        // Returns a random integer from 0 to 9:
+        const cv = Math.floor(Math.random() * usCVsSunk.length)
+
+        GlobalGameState.testCapSelection = cv
+        GlobalGameState.updateGlobalState()
+      } else {
+        if (displayScreen) {
+          this.displayCardPlayedPanel(stateObject)
+        }
       }
     } else {
       this.nextState(stateObject)

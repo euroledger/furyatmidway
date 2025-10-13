@@ -9,7 +9,7 @@ class USAICardResponseState {
   }
   async doAction(stateObject) {
     const { cardNumber } = stateObject
-    console.log("DO CARD RESPONSE cardNumber=", cardNumber)
+    console.log("**************** DO CARD RESPONSE cardNumber=", cardNumber)
 
     if (cardNumber === 10) {
       await delay(1000)

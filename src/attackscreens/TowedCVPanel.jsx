@@ -1,8 +1,11 @@
-import { React, useState, useRef, useEffect } from "react"
+import { useState, createRef, useEffect } from "react"
 import Button from "react-bootstrap/Button"
 import GlobalUnitsModel from "../model/GlobalUnitsModel"
+import GlobalGameState from "../model/GlobalGameState"
 
-export function TowedCVHeaders({ controller, setTowedCVSelected, towedCVSelected}) {
+export function TowedCVHeaders({ controller, setTowedCVSelected, towedCVSelected }) {
+  const [elRefs, setElRefs] = useState([])
+
   let usEnterprise = {
     image: "/images/fleetcounters/enterprise.jpg",
     name: GlobalUnitsModel.Carrier.ENTERPRISE,
@@ -24,7 +27,22 @@ export function TowedCVHeaders({ controller, setTowedCVSelected, towedCVSelected
     marginLeft: "3px",
   }
 
-  const createImage = (cv) => {
+  const usCVsSunk = controller.getSunkCarriers(GlobalUnitsModel.Side.US)
+  const arrLength = usCVsSunk.length
+  useEffect(() => {
+    // add or remove refs
+    setElRefs((elRefs) =>
+      Array(arrLength)
+        .fill()
+        .map((_, i) => elRefs[i] || createRef())
+    )
+    const myRef = elRefs[GlobalGameState.testCapSelection]
+    if (myRef !== undefined && myRef.current !== undefined) {
+      myRef.current.click(myRef.current)
+    }
+  }, [GlobalGameState.testCapSelection])
+
+  const createImage = (cv, i) => {
     let carrier = usYorktown
     if (cv === GlobalUnitsModel.Carrier.ENTERPRISE) {
       carrier = usEnterprise
@@ -32,6 +50,7 @@ export function TowedCVHeaders({ controller, setTowedCVSelected, towedCVSelected
       carrier = usHornet
     }
 
+    const id = "bollocks" + i
     return (
       <>
         <div>
@@ -47,27 +66,38 @@ export function TowedCVHeaders({ controller, setTowedCVSelected, towedCVSelected
         </div>
         <div
           style={{
-            marginLeft: "43px",
+            marginLeft: "41px",
             marginTop: "20px",
           }}
         >
-          <Button disabled={towedCVSelected} style={{
-            minWidth:"100px",
-          }} onClick={() => handleClick(cv)}>{cv}</Button>
+          <Button
+            disabled={towedCVSelected}
+            style={{
+              minWidth: "100px",
+            }}
+            ref={elRefs[i]}
+            onClick={() => handleClick(cv)}
+            id={id}
+          >
+            {cv}
+          </Button>
         </div>
       </>
     )
   }
 
-  const usCVsSunk = controller.getSunkCarriers(GlobalUnitsModel.Side.US)
-
+  let cvMsg = "Choose CV (lost in combat) to tow to Friendly Port:"
+  if (GlobalGameState.usPlayerType === GlobalUnitsModel.TYPE.AI) {
+    cvMsg = "US chooses CV (lost in combat) to tow to Friendly Port:"
+  }
   const handleClick = (cv) => {
     setTowedCVSelected(cv)
   }
-  const sunkCVImages = usCVsSunk.map((cv, idx) => {
+  const sunkCVImages = usCVsSunk.map((cv, i) => {
+    console.log("CREATE IMAGE FOR CARRIER",cv, "i=", i)
     return (
       <>
-        <div>{createImage(cv)}</div>
+        <div>{createImage(cv, i)}</div>
       </>
     )
   })
@@ -86,7 +116,7 @@ export function TowedCVHeaders({ controller, setTowedCVSelected, towedCVSelected
           color: "white",
         }}
       >
-        <p>Choose CV (lost in combat) to tow to Friendly Port:</p>
+        <p>{cvMsg}</p>
       </div>
       <div
         style={{

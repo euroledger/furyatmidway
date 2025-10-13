@@ -35,6 +35,8 @@ export function CarrierPlanesDitchDamageHeaders({
   const unitsInGroup = controller.getAllUSCarrierPlanesInReturnBoxes()
   const arrLength = unitsInGroup.length
   useEffect(() => {
+    console.log("ARSE 31 GlobalGameState.testStepLossSelection=", GlobalGameState.testStepLossSelection)
+
     // add or remove refs
     setElRefs((elRefs) =>
       Array(arrLength)
@@ -44,18 +46,20 @@ export function CarrierPlanesDitchDamageHeaders({
   }, [])
 
   useEffect(() => {
+    console.log("ARSE 2 GlobalGameState.testStepLossSelection=", GlobalGameState.testStepLossSelection)
     if (GlobalGameState.testStepLossSelection === -1) {
       return
     }
     const myRef = elRefs[GlobalGameState.testStepLossSelection]
     if (myRef !== undefined && myRef.current !== undefined && myRef.current !== null) {
       myRef.current.click(myRef.current)
-    }
+    } 
   }, [GlobalGameState.testStepLossSelection])
 
   let totalSteps = 0
 
   const airCounterImage = (airUnit, i) => {
+    console.log("SET UNIT", airUnit.name, "i=", i)
     totalSteps += airUnit.aircraftUnit.steps
 
     return (
@@ -89,13 +93,16 @@ export function CarrierPlanesDitchDamageHeaders({
     return airCounterImage(airUnit, i)
   })
   const airCountersTF16Return2 = airUnitsTF16Return2.map((airUnit, i) => {
-    return airCounterImage(airUnit, i)
+    return airCounterImage(airUnit, i + airCountersTF16Return1.length)
   })
   const airCountersTF17Return1 = airUnitsTF17Return1.map((airUnit, i) => {
-    return airCounterImage(airUnit, i)
+    return airCounterImage(airUnit, i + airCountersTF16Return1.length + airCountersTF16Return2.length)
   })
   const airCountersTF17Return2 = airUnitsTF17Return2.map((airUnit, i) => {
-    return airCounterImage(airUnit, i)
+    return airCounterImage(
+      airUnit,
+      airCountersTF17Return1.length + airCountersTF16Return2.length + airCountersTF16Return1.length + i
+    )
   })
 
   setStepsLeft(totalSteps)

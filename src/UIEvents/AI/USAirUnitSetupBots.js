@@ -54,9 +54,7 @@ export const AIR_STRATEGIES = new Array()
 export const GAME_STRATEGIES = {
   STANDARD_AGGRESSIVE: 0,
   STANDARD_DEFENSIVE: 1,
-  MIXED: 2,
-  ULTRA_DEFENSIVE: 3,
-  ULTRA_AGGRESSIVE: 4,
+  MIXED: 2
 }
 const MIDWAY_SETUP = [8, 8, 9, 10, 9, 9]
 

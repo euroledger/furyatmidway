@@ -3,6 +3,10 @@ import GlobalUnitsModel from "../../model/GlobalUnitsModel"
 
 export function playCardAction(controller, cardNumber, setAttackResolved) {
   switch (cardNumber) {
+    case 1: 
+      // Towed to a Friendly Port
+      // If this card is eligible to be played always play it
+      return true
     case 7:
       // factor would be position of CSF fleet, e.g., if too far away this card be useless
 

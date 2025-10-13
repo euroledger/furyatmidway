@@ -753,6 +753,7 @@ export function App() {
 
   useEffect(() => {
     if (GlobalGameState.gamePhase === GlobalGameState.PHASE.CARD_PLAY) {
+      console.log("****************** POSSIBLE CARD PLAY-> cardNumber =", cardNumber)
       setEliminatedSteps(0)
       setHeaderText("Possible Card Play: Card #" + cardNumber)
       GlobalGameState.dieRolls = []
@@ -771,7 +772,7 @@ export function App() {
         // nextAction()
       }
     }
-  }, [cardNumber])
+  }, [GlobalGameState.gamePhase, cardNumber])
 
   useEffect(() => {
     if (GlobalGameState.gamePhase === GlobalGameState.PHASE.INITIATIVE_DETERMINATION) {
@@ -1127,6 +1128,7 @@ export function App() {
   const stateObject = {
     // FOR AI AND TESTING
     controller: GlobalInit.controller,
+    setTowedToFriendlyPortPanelShow,
     setMidwayInvasionPanelShow,
     setCardDicePanelShow5,
     setNightLandingDone,
@@ -2516,11 +2518,11 @@ export function App() {
   function doInitiativeRoll(roll0, roll1) {
     // for testing QUACK
     // doIntiativeRoll(GlobalInit.controller, 6, 1, true) // JAPAN initiative
-    // doIntiativeRoll(GlobalInit.controller, 1, 6, true) // US initiative
+    doIntiativeRoll(GlobalInit.controller, 1, 6, true) // US initiative
 
     // doIntiativeRoll(GlobalInit.controller, 3, 3, true) // tie
 
-    doIntiativeRoll(GlobalInit.controller, roll0, roll1)
+    // doIntiativeRoll(GlobalInit.controller, roll0, roll1)
     GlobalGameState.updateGlobalState()
   }
 
@@ -2681,7 +2683,7 @@ export function App() {
     if (cardNumber === 11) {
       closeDamageButtonDisabled = eliminatedSteps !== 2 && stepsLeft != 0
     } else if (cardNumber === 10) {
-      closeDamageButtonDisabled = eliminatedSteps !== 1 && stepsLeft != 0
+      closeDamageButtonDisabled = eliminatedSteps === 0 && stepsLeft !== 0
     }
   }
   let carrieDamageDiceButtonDisabled
@@ -3480,9 +3482,11 @@ export function App() {
         headerText="DMCV Carrier Selection"
         headers={dmcvSelectionHeaders}
         footers={dmcvSelectionFooters}
-        width={74}
+        width={3}
         showDice={false}
         margin={0}
+        sidebg={sideboog}
+        image={imageboog}
         onHide={(e) => {
           setDmcvCarrierSelectionPanelShow(false)
           // sendDamageEvent(eliminatedSteps)

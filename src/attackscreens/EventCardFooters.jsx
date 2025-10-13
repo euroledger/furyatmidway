@@ -3,6 +3,7 @@ import GlobalInit from "../model/GlobalInit"
 import GlobalUnitsModel from "../model/GlobalUnitsModel"
 
 export function EventCardFooter({ cardNumber, showCardFooter, setShowDice, doCriticalHit, attackResolved }) {
+  console.log("showCardFooter=", showCardFooter)
   if (cardNumber === 6 && showCardFooter) {
     setShowDice(false)
     GlobalGameState.JP_AF = 8
@@ -40,8 +41,7 @@ export function EventCardFooter({ cardNumber, showCardFooter, setShowDice, doCri
         "Midway Garrison increases from " +
         GlobalGameState.midwayGarrisonLevel +
         " to " +
-        (GlobalGameState.midwayGarrisonLevel +
-        1)
+        (GlobalGameState.midwayGarrisonLevel + 1)
       GlobalGameState.midwayGarrisonLevel++
     }
     setShowDice(false)
@@ -63,7 +63,8 @@ export function EventCardFooter({ cardNumber, showCardFooter, setShowDice, doCri
                 color: "white",
               }}
             >
-              {garrisonStr} <br></br><br></br>
+              {garrisonStr} <br></br>
+              <br></br>
               Midway Garrison fires first in land combat.
             </p>
           </div>
@@ -71,22 +72,22 @@ export function EventCardFooter({ cardNumber, showCardFooter, setShowDice, doCri
       </>
     )
   }
-  if (cardNumber === 9) {
+  if (cardNumber === 9 && showCardFooter) {
     setShowDice(false)
     // remove US Fighter From Strike Group
     let airMsg = ""
     let airMsg2 = ""
-    if (showCardFooter) {
-      const units = GlobalInit.controller.getAttackingStrikeUnits()
-      for (const unit of units) {
-        if (!unit.aircraftUnit.attack) {
-          unit.aircraftUnit.separated = true
-          airMsg = "Fighter Unit Removed from Air Strike: " + unit.name
-          airMsg2 = "(Move to Return Box Following Completion of Air Strike)"
-          break
-        }
+
+    const units = GlobalInit.controller.getAllStrikeUnits(GlobalUnitsModel.Side.US)
+    for (const unit of units) {
+      if (!unit.aircraftUnit.attack) {
+        unit.aircraftUnit.separated = true
+        airMsg = "Fighter Unit Removed from Air Strike: " + unit.name
+        airMsg2 = "(Move to Return Box Following Completion of Air Strike)"
+        break
       }
     }
+    console.log("airMsg=", airMsg)
 
     return (
       <>

@@ -460,9 +460,9 @@ function AirCounter({ getAirBox, setAirBox, counterData, side }) {
     }
     if (box !== undefined && box.includes("CAP RETURNING")) {
       const reorgUnits = await moveOrphanedCAPUnitsToEliminatedBox(counterData.side, box, counterData)
-      if (reorgUnits != undefined && reorgUnits.length > 0) {
-        setReorgAlertShow(true)
-      }
+      // if (reorgUnits != undefined && reorgUnits.length > 0) {
+      //   setReorgAlertShow(true)
+      // }
     }
     if (box !== undefined && box.includes("RETURNING (1)")) {
       await moveOrphanedAirUnitsInReturn1Boxes(counterData.side, box, counterData)

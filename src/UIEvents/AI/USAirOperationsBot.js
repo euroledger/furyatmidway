@@ -240,7 +240,7 @@ async function hangarToFlightDeck({ controller, unit, setTestUpdate, test }) {
   }
 }
 
-async function flightDecktoCAP({ controller, unit, setTestUpdate, test }) {
+async function flightDecktoCAP(controller, unit, setTestUpdate, test, midway) {
   await delay(10)
   // 7b. Get valid destinations for units in Hangar
   // 7c. Move Units from Hangar to Flight Deck
@@ -251,7 +251,14 @@ async function flightDecktoCAP({ controller, unit, setTestUpdate, test }) {
   if (destinations.length === 0) {
     return
   }
-  const box = destinations.find((box) => box === "MIDWAY CAP")
+  let box = destinations.find((box) => box === "MIDWAY CAP")
+
+  if (!midway) {
+    box = destinations.find((box) => box === "TF16 CAP")
+    if (!box) {
+      box = destinations.find((box) => box === "TF17 CAP")
+    }
+  }
 
   if (!box) {
     return
@@ -483,6 +490,7 @@ export async function generateUSAirOperationsMovesCarriers(controller, stateObje
 
   // get all fighter aircraft
   usAirUnitsOnFlightDecks = controller.getAllUnitsOnUSFlightDecks(true)
+
   for (let unit of usAirUnitsOnFlightDecks) {
     if (unit.carrier.includes("Midway")) {
       continue
@@ -501,6 +509,12 @@ export async function generateUSAirOperationsMovesCarriers(controller, stateObje
         test,
         strikeBox,
       })
+    } else {
+      // If CAP is valid destination -> move to CAP
+      const capBox = destinations.find((box) => box.includes("TF16 CAP") || box.includes("TF17 CAP"))
+      if (capBox !== undefined) {
+        flightDecktoCAP(controller, unit, setTestUpdate, test, false)
+      }
     }
   }
 
@@ -957,7 +971,7 @@ export async function generateUSAirOperationsMovesMidway(controller, stateObject
     // If CAP is valid destination -> move to CAP
     const capBox = destinations.find((box) => box.includes("MIDWAY CAP"))
     if (capBox !== undefined) {
-      flightDecktoCAP({ controller, unit, setTestUpdate, test })
+      flightDecktoCAP(controller, unit, setTestUpdate, test, true)
     }
   }
   // 7a. Get all air units in Hangar

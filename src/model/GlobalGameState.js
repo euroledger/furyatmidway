@@ -2,7 +2,7 @@ import GlobalUnitsModel from './GlobalUnitsModel';
 
 export default class GlobalGameState {
 
-  static DELAY = 1
+  static DELAY = 10
   static replay = false
   
   static PHASE = {
