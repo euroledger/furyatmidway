@@ -826,12 +826,12 @@ export function doAttackFireRolls(controller, testRolls) {
     // GlobalGameState.midwayHits = 2
     // GlobalGameState.midwayHitsThisAttack = 2
   } else {
-    GlobalGameState.carrierAttackHits = hits
-    GlobalGameState.carrierAttackHitsThisAttack = hits
+    // GlobalGameState.carrierAttackHits = hits
+    // GlobalGameState.carrierAttackHitsThisAttack = hits
 
     // QUACK REMOVE TEESTING ONLY
-    // GlobalGameState.carrierAttackHits = 1
-    // GlobalGameState.carrierAttackHitsThisAttack = 1
+    GlobalGameState.carrierAttackHits = 2
+    GlobalGameState.carrierAttackHitsThisAttack = 2
   }
   return hits
 }
@@ -849,7 +849,7 @@ export function doAAAFireRolls(numDice, testRolls) {
   GlobalGameState.antiaircraftHits = hits
 
   // QUACK TESTING TAKE THIS OUT
-  // GlobalGameState.antiaircraftHits = 2
+  // GlobalGameState.antiaircraftHits = 1
 }
 
 function getFightersForStrikeGroup(controller) {
@@ -1139,7 +1139,7 @@ export function doCAP(controller, capAirUnits, fightersPresent, testRolls) {
   GlobalGameState.dieRolls = rolls
 
   // QUACK TESTING PUT THIS BACK
-  // GlobalGameState.capHits = 0
+  // GlobalGameState.capHits = 3
 
   GlobalGameState.capHits = hits
 }

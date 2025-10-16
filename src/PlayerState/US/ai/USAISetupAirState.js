@@ -40,6 +40,7 @@ class USAISetupAirState {
       let position1 = USAirBoxOffsets.find((box) => box.name === boxName)
       update.position = position1.offsets[update.index]
 
+      console.log("DEBUG air unit:", unit.name, "update=", update)
       setTestUpdate(update)
 
       i++

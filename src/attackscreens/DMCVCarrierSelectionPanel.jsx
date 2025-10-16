@@ -99,11 +99,11 @@ export function DMCVCarrierSelectionPanelHeaders({ controller, DMCVCarrierSelect
     )
   }
 
-  const usDamagedCarriers = controller.getDamagedCarriers(side)
+  const damagedCarriers = controller.getDamagedCarriers(side)
   const handleClick = (cv) => {
     setDMCVCarrierSelected(cv)
   }
-  const damagedCVImages = usDamagedCarriers.map((cv, idx) => {
+  const damagedCVImages = damagedCarriers.map((cv, idx) => {
     return (
       <>
         <div>{createImage(cv)}</div>

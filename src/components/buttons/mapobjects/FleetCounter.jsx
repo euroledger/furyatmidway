@@ -523,28 +523,12 @@ function FleetCounter({
 
   if (fleets.length === 1 && smallOffset.x !== 0) {
     // if -7, -7 do -x and +y
-    if (smallOffset.x == -7) {
-      if (counterData.name === "CSF-JPMAP") {
-        setPosition({
-          ...position,
-          left: position.left + smallOffset.x,
-          top: position.top - smallOffset.y,
-        })
-      } else {
-        setPosition({
-          ...position,
-          left: position.left - smallOffset.x,
-          top: position.top + smallOffset.y,
-        })
-      }
-    } else {
-      if (counterData.name === "CSF") {
-        setPosition({
-          ...position,
-          left: position.left - smallOffset.x,
-          top: position.top + smallOffset.y,
-        })
-      } else {
+    console.log("---------------->>>>>>>>>>>>>> SHIT! NEED TO REWORK FLEET", counterData.name)
+    // WHEN UNIT MOVES AWAY FROM STACK, HAVE TO REVERT OFFSETS TO ZERO FOR
+    // FLEET LEFT BEHIND
+
+    if (counterData.name === "CSF") {
+      if (smallOffset.x == -7) {
         setPosition({
           ...position,
           left: position.left + smallOffset.x,
@@ -552,9 +536,39 @@ function FleetCounter({
         })
       }
     }
+    // TODO -> REWORK
+    // if (smallOffset.x == -7) {
+    //   if (counterData.name === "CSF-JPMAP") {
+    //     setPosition({
+    //       ...position,
+    //       left: position.left + smallOffset.x,
+    //       top: position.top - smallOffset.y,
+    //     })
+    //   } else {
+    //     setPosition({
+    //       ...position,
+    //       left: position.left - smallOffset.x,
+    //       top: position.top + smallOffset.y,
+    //     })
+    //   }
+    // } else {
+    //   if (counterData.name === "CSF") {
+    //     setPosition({
+    //       ...position,
+    //       left: position.left - smallOffset.x,
+    //       top: position.top + smallOffset.y,
+    //     })
+    //   } else {
+    //     setPosition({
+    //       ...position,
+    //       left: position.left + smallOffset.x,
+    //       top: position.top - smallOffset.y,
+    //     })
+    //   }
+    // }
     smallOffset.x = 0
     smallOffset.y = 0
-    setSmallOffset(smallOffset)
+    setSmallOffset(() => smallOffset)
   }
 
   let zIndex = 0
@@ -576,7 +590,7 @@ function FleetCounter({
       if (side === GlobalUnitsModel.Side.US) {
         enabled = enabledUSFleetBoxes
       }
-      zIndex=250
+      zIndex = 250
     }
   }
 

@@ -212,7 +212,6 @@ async function moveStrikeGroup(controller, unit, fromHex, toHex, setStrikeGroupU
       },
     })
   } else {
-    console.log("SG UPDATE:", usStrikeGroupMove)
     setStrikeGroupUpdate(usStrikeGroupMove)
   }
 

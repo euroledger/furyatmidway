@@ -3,7 +3,6 @@ import GlobalInit from "../model/GlobalInit"
 import GlobalUnitsModel from "../model/GlobalUnitsModel"
 
 export function EventCardFooter({ cardNumber, showCardFooter, setShowDice, doCriticalHit, attackResolved }) {
-  console.log("showCardFooter=", showCardFooter)
   if (cardNumber === 6 && showCardFooter) {
     setShowDice(false)
     GlobalGameState.JP_AF = 8
@@ -87,8 +86,6 @@ export function EventCardFooter({ cardNumber, showCardFooter, setShowDice, doCri
         break
       }
     }
-    console.log("airMsg=", airMsg)
-
     return (
       <>
         {showCardFooter && (
@@ -164,7 +161,6 @@ export function EventCardFooter({ cardNumber, showCardFooter, setShowDice, doCri
     // Add additional damage to just attacked carrier
     let airMsg = "Additional Hit Added to " + GlobalGameState.currentCarrierAttackTarget
 
-    console.log("showCardFooter=", showCardFooter, "attackResolved=", attackResolved)
     if (showCardFooter && !attackResolved) {
       GlobalGameState.carrierAttackHits = 1
       doCriticalHit()

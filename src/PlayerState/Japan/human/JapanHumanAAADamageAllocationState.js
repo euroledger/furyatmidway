@@ -7,13 +7,12 @@ import { endOfAirOperation, midwayOrAirOps } from "../../StateUtils"
 class JapanHumanAAADamageAllocationState {
   async doAction(stateObject) {
     console.log("++++++++++++++ JAPAN AAA DAMAGE ALLOCATION...num hits to eliminate:", GlobalGameState.antiaircraftHits)
-
   }
 
   async nextState(stateObject) {
     const { capAirUnits, setAirUnitUpdate, setEliminatedUnitsPanelShow } = stateObject
     console.log(
-      "************************ WOGS !!!!!!!!!!!!!!!! MOVE ON FROM JAPAN AI AAA DAMAGE...attacking steps remaining=",
+      "MOVE ON FROM JAPAN AI AAA DAMAGE...attacking steps remaining=",
       GlobalInit.controller.getAttackingStepsRemaining()
     )
     GlobalGameState.currentPlayer = GlobalUnitsModel.Side.JAPAN
@@ -34,7 +33,17 @@ class JapanHumanAAADamageAllocationState {
       }
     } else {
       await endOfAirOperation(capAirUnits, setAirUnitUpdate, setEliminatedUnitsPanelShow)
-      midwayOrAirOps()
+      const capUnitsReturning = GlobalInit.controller.getAllCAPDefendersInCAPReturnBoxes(GlobalUnitsModel.Side.US)
+
+      console.log("\t\t=>NUM US CAP UNITS RETURNING=", capUnitsReturning.length)
+      if (capUnitsReturning.length > 0) {
+        GlobalGameState.currentPlayer = GlobalUnitsModel.Side.US
+        console.log("SET STATE TO US CAP RETURN")
+        GlobalGameState.gamePhase = GlobalGameState.PHASE.CAP_RETURN
+        GlobalGameState.updateGlobalState()
+      } else {
+        midwayOrAirOps()
+      }
     }
   }
 

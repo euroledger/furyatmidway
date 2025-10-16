@@ -23,6 +23,7 @@ import USAIDrawOneCardState from "./USAIDrawOneCardState"
 import USAIRetreatFleetState from "./USAIRetreatFleetState"
 import USAICapReturnState from "./USAICapReturnState"
 import USAINightAirOperationsState from "./USAINightAirOperationsState"
+import USAIDMCVFleetMovementPlanningState from "./USAIDMCVFleetMovementPlanningState"
 
 function mapGameStateToUSAIHandlerState() {
   switch (GlobalGameState.gamePhase) {
@@ -74,6 +75,8 @@ function mapGameStateToUSAIHandlerState() {
       return new USAIRetreatFleetState()
     case GlobalGameState.PHASE.NIGHT_AIR_OPERATIONS_US:
       return new USAINightAirOperationsState()
+    case GlobalGameState.PHASE.US_DMCV_FLEET_MOVEMENT_PLANNING:
+      return new USAIDMCVFleetMovementPlanningState()
 
     default:
       console.log("ERROR unexpected game state", GlobalGameState.gamePhase)

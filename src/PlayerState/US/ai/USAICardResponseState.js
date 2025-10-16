@@ -2,19 +2,25 @@ import GlobalGameState from "../../../model/GlobalGameState"
 import GlobalInit from "../../../model/GlobalInit"
 import { delay } from "../../../Utils"
 import { setNextStateFollowingCardPlay } from "../../StateUtils"
+import GlobalUnitsModel from "../../../model/GlobalUnitsModel"
 
 class USAICardResponseState {
   isTorpedoPlane(unit) {
     return unit.aircraftUnit.attack && !unit.aircraftUnit.diveBomber
   }
   async doAction(stateObject) {
-    const { cardNumber } = stateObject
+    const { cardNumber, setCarrierPlanesDitchPanelShow, setCardAlertPanelShow } = stateObject
     console.log("**************** DO CARD RESPONSE cardNumber=", cardNumber)
 
     if (cardNumber === 10) {
-      await delay(1000)
+      setCardAlertPanelShow(false)
+      GlobalGameState.testStepLossSelection = -1
+      GlobalGameState.updateGlobalState()
+      setCarrierPlanesDitchPanelShow(true)
+      GlobalInit.controller.setCardPlayed(10, GlobalUnitsModel.Side.JAPAN)
       const unitsInGroup = GlobalInit.controller.getAllUSCarrierPlanesInReturnBoxes()
       const selection = Math.floor(Math.random() * unitsInGroup.length)
+      await delay(1000)
       GlobalGameState.testStepLossSelection = selection
       GlobalGameState.updateGlobalState()
       return

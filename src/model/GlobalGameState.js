@@ -109,6 +109,8 @@ export default class GlobalGameState {
 
   static attackingStrikeGroup= ""
 
+  static distanceBetweenCarrierFleets = undefined
+
   static usCVsSunk = 0
   static japanCVsSunk = 0
   static midwayControl = GlobalUnitsModel.Side.US
@@ -156,6 +158,7 @@ export default class GlobalGameState {
   static usCardsDrawn = false
 
   static cardsChecked = new Array()
+  static dmcvChecked = undefined
 
   static usFleetPlaced = false
   static usFleetMoved = false

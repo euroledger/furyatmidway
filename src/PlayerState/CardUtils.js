@@ -1,6 +1,7 @@
 // may need separate processPlayedCard functions for Japan and US
 import GlobalUnitsModel from "../model/GlobalUnitsModel"
 import GlobalInit from "../model/GlobalInit"
+import GlobalGameState from "../model/GlobalGameState"
 
 export function processPlayedCard(stateObject) {
   const { setCardDicePanelShow7, cardNumber, cardEventHandler, setShowCardFooter, setCardDicePanelShow5 } = stateObject
@@ -67,7 +68,8 @@ export function processPlayedCard(stateObject) {
     GlobalInit.controller.setCardPlayed(9, GlobalUnitsModel.Side.JAPAN)
     setShowCardFooter(() => true)
   } else if (cardNumber === 10) {
-    setCarrierPlanesDitchPanelShow(true)
+    GlobalGameState.currentPlayer = GlobalUnitsModel.Side.US
+    GlobalGameState.gamePhase = GlobalGameState.PHASE.CARD_RESPONSE
     GlobalInit.controller.setCardPlayed(10, GlobalUnitsModel.Side.JAPAN)
     onHide(e)
   } else if (cardNumber === 11) {

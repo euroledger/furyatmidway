@@ -16,10 +16,8 @@ class USAIFleetMovementPlanningState {
     const { setFleetUnitUpdate } = stateObject
     const { canCSFMoveFleetOffBoard, usCSFRegions } = getUSFleetRegions()
 
-    // @TODO vary the start location and opening move according to
-    // Fleet Strategy, game state and IJN Fleet Location
-
-    const destination = doUSFleetMovementAction(GlobalInit.controller, usCSFRegions, canCSFMoveFleetOffBoard)
+    await delay(GlobalGameState.DELAY)
+    let destination = doUSFleetMovementAction(GlobalInit.controller, usCSFRegions, canCSFMoveFleetOffBoard)
 
     const c = convertHexCoords(destination)
     console.log("US FLEET DESTINATION:", c)
@@ -27,32 +25,13 @@ class USAIFleetMovementPlanningState {
     const usFleetMove = createFleetUpdate("CSF", destination.q, destination.r)
     setFleetUnitUpdate(usFleetMove)
 
-    await delay(DELAY_MS)
-
     this.nextState(stateObject)
   }
 
-  dmcvState(side) {
-    if (GlobalGameState.jpDMCVCarrier === undefined) {
-      return false
-    }
-    const jpDMCVLocation = GlobalInit.controller.getFleetLocation("IJN-DMCV", GlobalUnitsModel.Side.JAPAN)
-
-    if (jpDMCVLocation !== undefined && jpDMCVLocation.boxName === HexCommand.FLEET_BOX) {
-      return false
-    }
-    return (
-      (GlobalInit.controller.getDamagedCarriers(side).length > 0 && GlobalGameState.jpDMCVFleetPlaced === false) ||
-      (jpDMCVLocation !== undefined && GlobalGameState.jpDMCVFleetPlaced === true)
-    )
-  }
   async nextState(stateObject) {
     console.log("GOOD POINT")
-    if (goToDMCVState(GlobalUnitsModel.Side.JAPAN)) {
-      GlobalGameState.gamePhase = GlobalGameState.PHASE.JAPAN_DMCV_FLEET_MOVEMENT
-    } else {
-      GlobalGameState.gamePhase = GlobalGameState.PHASE.JAPAN_FLEET_MOVEMENT
-    }
+    GlobalGameState.currentPlayer = GlobalUnitsModel.Side.JAPAN
+    GlobalGameState.gamePhase = GlobalGameState.PHASE.JAPAN_FLEET_MOVEMENT
     GlobalGameState.updateGlobalState()
   }
 

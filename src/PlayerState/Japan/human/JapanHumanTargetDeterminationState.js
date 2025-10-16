@@ -21,11 +21,7 @@ class JapanHumanTargetDeterminationState {
     GlobalGameState.testCapSelection = -1
 
     GlobalGameState.doneCapSelection = false
-    if (GlobalInit.controller.japanHandContainsCard(9)) {
-      setCardNumber(() => 9)
-      GlobalGameState.currentPlayer = GlobalUnitsModel.Side.JAPAN
-      GlobalGameState.gamePhase = GlobalGameState.PHASE.CARD_PLAY
-    } else if (GlobalInit.controller.japanHandContainsCard(12)) {
+    if (GlobalInit.controller.japanHandContainsCard(12)) {
       setCardNumber(() => 12)
       GlobalGameState.currentPlayer = GlobalUnitsModel.Side.JAPAN
       GlobalGameState.gamePhase = GlobalGameState.PHASE.CARD_PLAY

@@ -717,12 +717,20 @@ export function App() {
 
   useEffect(() => {
     if (
-        GlobalGameState.gamePhase === GlobalGameState.PHASE.US_FLEET_MOVEMENT_PLANNING ||
-        GlobalGameState.gamePhase === GlobalGameState.PHASE.US_DMCV_FLEET_MOVEMENT_PLANNING
+        GlobalGameState.gamePhase === GlobalGameState.PHASE.US_FLEET_MOVEMENT_PLANNING
         ) {
       GlobalGameState.currentPlayer = GlobalUnitsModel.Side.US
-      setDMCVCarrierSelected(() => "")
       console.log("US FLEET MOVEMENT PLANNING set STATE")
+      StateManager.gameStateManager.setUSState(stateObject)
+      StateManager.gameStateManager.doAction(GlobalUnitsModel.Side.US, stateObject)
+    }
+  }, [GlobalGameState.gamePhase])
+
+    useEffect(() => {
+    if (GlobalGameState.gamePhase === GlobalGameState.PHASE.US_DMCV_FLEET_MOVEMENT_PLANNING) {
+      GlobalGameState.currentPlayer = GlobalUnitsModel.Side.US
+      setDMCVCarrierSelected(() => "")
+      console.log("(naughty!!) US DMCV FLEET MOVEMENT PLANNING set STATE")
       StateManager.gameStateManager.setUSState(stateObject)
       StateManager.gameStateManager.doAction(GlobalUnitsModel.Side.US, stateObject)
     }
@@ -873,6 +881,8 @@ export function App() {
     }
   }, [GlobalGameState.gamePhase])
   window.scrollTo(0,20)
+
+
   const nextAction = () => {
     StateManager.gameStateManager.doNextState(GlobalGameState.currentPlayer, stateObject)
   }
@@ -1128,7 +1138,9 @@ export function App() {
   const stateObject = {
     // FOR AI AND TESTING
     controller: GlobalInit.controller,
+    doAIDMCVShipMarkerUpdate,
     setTowedToFriendlyPortPanelShow,
+    setCarrierPlanesDitchPanelShow,
     setMidwayInvasionPanelShow,
     setCardDicePanelShow5,
     setNightLandingDone,
@@ -1932,14 +1944,15 @@ export function App() {
   function midwayYesHandler(e) {
     setMidwayDialogShow(false)
     GlobalGameState.midwayAttackDeclaration = true
-    GlobalGameState.gamePhase = GlobalGameState.PHASE.US_FLEET_MOVEMENT_PLANNING
+    nextAction()
   }
 
   function midwayNoHandler(e) {
     GlobalGameState.midwayAttackDeclaration = false
     GlobalGameState.midwayAirOpsCompleted = 0
     setMidwayDialogShow(false)
-    GlobalGameState.gamePhase = GlobalGameState.PHASE.US_FLEET_MOVEMENT_PLANNING
+    console.log("++++++++++++++ QUACK 1 state=", GlobalGameState.gamePhase)
+    nextAction()
   }
 
 
@@ -2542,12 +2555,6 @@ export function App() {
       GlobalGameState.nextMidwayInvasionRoll = GlobalUnitsModel.Side.JAPAN
     }
   }
-
-
-  if(attackResolutionPanelShow) {
-
-  console.log("***** QUACK POO QNAK attackResolved attackResolved=",attackResolved)
-  }
   
   function doNightRollsDamage() {
     for (let i = 0; i < nightAirUnits.length; i++) {
@@ -2581,7 +2588,21 @@ export function App() {
   }
 
   function doDMCVShipMarkerUpdate() {
+    console.log("DMCVCarrierSelected=", DMCVCarrierSelected, "dmcvSide=", dmcvSide)
     sendDMCVUpdate(GlobalInit.controller, DMCVCarrierSelected, setDmcvShipMarkerUpdate, dmcvSide)
+  }
+
+    function doDMCVShipMarkerUpdate() {
+    sendDMCVUpdate(GlobalInit.controller, DMCVCarrierSelected, setDmcvShipMarkerUpdate, dmcvSide)
+  }
+
+  function doAIDMCVShipMarkerUpdate(side) {
+    let dmcvSelected = GlobalGameState.usDMCVCarrier
+    if (side === GlobalUnitsModel.Side.JAPAN) {
+      dmcvSelected = GlobalGameState.jpDMCVCarrier
+    }
+    console.log("DMCVCarrierSelected=", dmcvSelected)
+    sendDMCVUpdate(GlobalInit.controller, dmcvSelected, setDmcvShipMarkerUpdate, side)
   }
 
   function doDamageMarkerUpdate() {

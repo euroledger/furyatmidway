@@ -133,6 +133,7 @@ function Board({
       setZIndex({ ...zProps, us: zProps[side] + increment })
     }
   }
+
   return (
     <>
       <div>

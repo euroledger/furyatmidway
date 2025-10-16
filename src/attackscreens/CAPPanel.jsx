@@ -21,7 +21,6 @@ export function CAPHeaders({ controller, setCapAirUnits, capSteps, setCapSteps }
       : ""
 
   useEffect(() => {
-    console.log("********************** QUACK !!!!!!!!!!!!!!!!!! CAP SELECTION BUTTON FIRES!!!!!!!!!!!!  *************")
     // add or remove refs
     setElRefs((elRefs) =>
       Array(arrLength)

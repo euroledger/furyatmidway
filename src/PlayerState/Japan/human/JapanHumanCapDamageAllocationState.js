@@ -4,38 +4,39 @@ import { endOfAirOperation, midwayOrAirOps } from "../../StateUtils"
 import GlobalUnitsModel from "../../../model/GlobalUnitsModel"
 import { getNumEscortFighterSteps } from "../../../DiceHandler"
 
-
 class JapanHumanCapDamageAllocationState {
   async doAction(stateObject) {
     console.log("++++++++++++++ JAPAN DAMAGE ALLOCATION...num hits to eliminate:", GlobalGameState.capHits)
-
   }
 
   async nextState(stateObject) {
     const { capAirUnits, setAirUnitUpdate, setEliminatedUnitsPanelShow } = stateObject
 
+    console.log("******* GlobalGameState.attackingStepsRemaining=", GlobalGameState.attackingStepsRemaining)
     if (GlobalGameState.taskForceTarget === GlobalUnitsModel.TaskForce.MIDWAY && GlobalGameState.elitePilots) {
       if (GlobalGameState.attackingStepsRemaining > 0) {
         GlobalGameState.currentPlayer = GlobalUnitsModel.Side.US
         GlobalGameState.gamePhase = GlobalGameState.PHASE.ANTI_AIRCRAFT_FIRE
       } else {
-        await endOfAirOperation(
-          capAirUnits,
-          setAirUnitUpdate,
-          setEliminatedUnitsPanelShow
-        )
+        await endOfAirOperation(capAirUnits, setAirUnitUpdate, setEliminatedUnitsPanelShow)
         midwayOrAirOps()
       }
     } else {
       if (GlobalGameState.attackingStepsRemaining > 0 || getNumEscortFighterSteps(GlobalInit.controller) > 0) {
         GlobalGameState.gamePhase = GlobalGameState.PHASE.ESCORT_COUNTERATTACK
       } else {
-        await endOfAirOperation(
-          capAirUnits,
-          setAirUnitUpdate,
-          setEliminatedUnitsPanelShow
-        )
-        midwayOrAirOps()
+        await endOfAirOperation(capAirUnits, setAirUnitUpdate, setEliminatedUnitsPanelShow)
+        const capUnitsReturning = GlobalInit.controller.getAllCAPDefendersInCAPReturnBoxes(GlobalUnitsModel.Side.US)
+
+        console.log("\t\t=>NUM US CAP UNITS RETURNING=", capUnitsReturning.length)
+        if (capUnitsReturning.length > 0) {
+          GlobalGameState.currentPlayer = GlobalUnitsModel.Side.US
+          console.log("SET STATE TO US CAP RETURN")
+          GlobalGameState.gamePhase = GlobalGameState.PHASE.CAP_RETURN
+          GlobalGameState.updateGlobalState()
+        } else {
+          midwayOrAirOps()
+        }
       }
     }
   }

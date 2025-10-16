@@ -1,5 +1,7 @@
 import GlobalGameState from "../../../model/GlobalGameState"
 import { goToIJNFleetMovement, goToMidwayAttackOrUSFleetMovement } from "../../StateUtils"
+import GlobalInit from "../../../model/GlobalInit"
+import GlobalUnitsModel from "../../../model/GlobalUnitsModel"
 
 class JapanHumanFleetMovementState {
   async doAction(stateObject) {
@@ -18,6 +20,15 @@ class JapanHumanFleetMovementState {
 
   async nextState(stateObject) {
     console.log("NEXT STATE AFTER FLEET MOVEMENT....")
+    GlobalGameState.distanceBetweenCarrierFleets = GlobalInit.controller.numHexesBetweenFleets(
+      { name: "1AF", side: GlobalUnitsModel.Side.JAPAN },
+      { name: "CSF", side: GlobalUnitsModel.Side.US }
+    )
+
+      console.log(
+          "********** IJN FLEET MOVEMENT distance between fleets THIS turn =>",
+          GlobalGameState.distanceBetweenCarrierFleets
+        )
     const { setMidwayNoAttackAlertShow, setJapanMapRegions, setJapanMIFMapRegions, setFleetUnitUpdate } = stateObject
     await goToMidwayAttackOrUSFleetMovement({
       setMidwayNoAttackAlertShow,

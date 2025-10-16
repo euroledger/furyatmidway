@@ -17,6 +17,8 @@ class USAIDrawOneCardState {
       GlobalGameState.gamePhase = GlobalGameState.PHASE.JAPAN_MIDWAY
       return
     } else {
+          console.log("++++++++++++++ QUACK 30")
+
       GlobalGameState.gamePhase = GlobalGameState.PHASE.US_FLEET_MOVEMENT_PLANNING
       GlobalGameState.usFleetMoved = false
       GlobalGameState.phaseCompleted = true

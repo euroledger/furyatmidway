@@ -3,9 +3,10 @@ import { getAllHexes } from "../../components/HexUtils"
 import { usCSFStartHexes, usCSFPreferredStartHexes } from "../../components/MapRegions"
 import GlobalGameState from "../../model/GlobalGameState"
 import GlobalUnitsModel from "../../model/GlobalUnitsModel"
-import { distanceBetweenHexes, allHexesWithinDistance } from "../../components/HexUtils"
+import { distanceBetweenHexes, allHexesWithinDistance, removeHexFromRegion } from "../../components/HexUtils"
 import GlobalInit from "../../model/GlobalInit"
 import Controller from "../../controller/Controller"
+import { rowIHexes } from "../../components/MapRegions"
 
 // Create array of all hexes
 
@@ -35,14 +36,34 @@ function sortDistances(regions, location) {
 
   return sortedRegions
 }
+export function doUSDMCVFleetMovementAction(controller, regions, offboardPossible) {
+  const dmcvLocation = controller.getFleetLocation("US-DMCV", GlobalUnitsModel.Side.US)
+  const csfLocation = controller.getFleetLocation("CSF", GlobalUnitsModel.Side.US)
+
+  if (dmcvLocation === undefined) {
+    // Initial placement should be any hex adjacent to CSF closest to a hex in row I
+
+    const usRegions = allHexesWithinDistance(csfLocation.currentHex, 1, true)
+    let targetHex
+    let dist = 100
+    for (const hex of usRegions) {
+      for (const rowIHex of rowIHexes) {
+        if (distanceBetweenHexes(hex, rowIHex) < dist) {
+          targetHex = hex
+        }
+      }
+    }
+
+    console.log("********** WOOOSH targetHex =", targetHex)
+
+    return targetHex
+  }
+  return { q: 3, r: 1 } // QUACK HARD WIRED FOR TESTING ONLY
+}
 
 export function doUSFleetMovementAction(controller, regions, offboardPossible) {
   console.log(">>>>>>> MOVE US FLEET: PLANNING <<<<<<<<")
 
-  let hexesBetween1AFAndCSF = controller.numHexesBetweenFleets(
-    { name: "1AF", side: GlobalUnitsModel.Side.JAPAN },
-    { name: "CSF", side: GlobalUnitsModel.Side.US }
-  )
   const dmcvLocation = controller.getFleetLocation("US-DMCV", GlobalUnitsModel.Side.US)
   let hexesBetweenDMCVAndCSF = -1
 
@@ -118,7 +139,7 @@ export function doUSFleetMovementAction(controller, regions, offboardPossible) {
 
     const fleetHex = getRandomElementFrom(targetHexes)
     return fleetHex
-    // return { q: 4, r: 1 } // QUACK HARD WIRED FOR TESTING ONLY
+    // return { q: 2, r: 1 } // QUACK HARD WIRED FOR TESTING ONLY
   }
   if (GlobalGameState.gameTurn === 2) {
     // CLOSE RANGE EITHER TO 1AF or WHERE WE EXPECT 1AF TO GO (ie CLOSER TO MIDWAY)
@@ -127,46 +148,69 @@ export function doUSFleetMovementAction(controller, regions, offboardPossible) {
     // COULD MOVE AWAY TO PREVENT STRIKE ?????????
     // IF DISTANCE BETWEEN FLEETS WAS 3-5 ON TURN 1 - MOVE AWAY
 
+    console.log(
+      "********** US FLEET MOVEMENT distance between fleets last turn =>",
+      GlobalGameState.distanceBetweenCarrierFleets
+    )
+
     // IJN region hex closes to Midway
     const current1AFLocation = GlobalInit.controller.getFleetLocation("1AF", GlobalUnitsModel.Side.JAPAN)
     const currentCSFLocation = GlobalInit.controller.getFleetLocation("CSF", GlobalUnitsModel.Side.US)
 
-    console.log("DEBUG current1AFLocation=", current1AFLocation)
+    // console.log("DEBUG current1AFLocation=", current1AFLocation)
     const ijnRegions = allHexesWithinDistance(current1AFLocation.currentHex, 2, true)
-    console.log("DEBUG ijnRegions=", ijnRegions)
+    // console.log("DEBUG ijnRegions=", ijnRegions)
     const sortedHexes = sortDistances(ijnRegions, Controller.MIDWAY_HEX)
-    console.log("DEBUG sortedHexes=", sortedHexes)
+    // console.log("DEBUG sortedHexes=", sortedHexes)
 
     let oneOrZero = Math.random() >= 0.5 ? 1 : 0
 
     // either use currrent 1AF location or hex closest to Midway that it can get to
     let ijnFleetLocation = oneOrZero === 1 ? current1AFLocation.currentHex : sortedHexes[0]
-    console.log("DEBUG US FLEET HEADING TOWARD", ijnFleetLocation)
+    // console.log("DEBUG US FLEET HEADING TOWARD", ijnFleetLocation)
     const distanceFrom1AFToCSF = distanceBetweenHexes(currentCSFLocation.currentHex, ijnFleetLocation)
 
     let targetHexes = new Array()
     for (const region of regions) {
       const distanceFromRegionTo1AF = distanceBetweenHexes(region, ijnFleetLocation)
 
-      console.log(
-        "***DEBUG region=",
-        region,
-        "distanceFrom1AFToCSF=",
-        distanceFrom1AFToCSF,
-        "distanceFromRegionTo1AF=",
-        distanceFromRegionTo1AF
-      )
+      // console.log(
+      //   "***DEBUG region=",
+      //   region,
+      //   "distanceFrom1AFToCSF=",
+      //   distanceFrom1AFToCSF,
+      //   "distanceFromRegionTo1AF=",
+      //   distanceFromRegionTo1AF
+      // )
       if (distanceFromRegionTo1AF < distanceFrom1AFToCSF) {
         targetHexes.push(region)
       }
     }
-    console.log("QUACK*************** targetHexes=", targetHexes)
+
+    if (dmcvLocation.currentHex !== undefined && targetHexes.length > 1) {
+      targetHexes = removeHexFromRegion(targetHexes, dmcvLocation.currentHex)
+    }
+
     if (targetHexes.length === 0) {
       targetHexes = regions
     }
+    // console.log(
+    //   "DEBUG distanceBetweenHexes(targetHexes[0], dmcvLocation.currentHex)=",
+    //   distanceBetweenHexes(targetHexes[0], dmcvLocation.currentHex)
+    // )
 
-    const fleetHex = getRandomElementFrom(targetHexes)
-    return fleetHex
+    // make sure the two fleets (US CSF AND DMCV DON'T END UP IN THE SAME HEX)
+    if (
+      targetHexes.length === 1 &&
+      dmcvLocation.currentHex !== undefined &&
+      distanceBetweenHexes(targetHexes[0], dmcvLocation.currentHex) === 0
+    ) {
+      targetHexes = regions
+    }
+    let fleetHex = getRandomElementFrom(targetHexes)
+
+    return {q:1, r:1}
+    // return fleetHex
   }
   if (GlobalGameState.gameTurn === 3) {
     return { q: 1, r: 4 } // QUACK HARD WIRED FOR TESTING ONLY

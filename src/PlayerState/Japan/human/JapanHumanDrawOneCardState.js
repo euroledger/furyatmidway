@@ -1,6 +1,5 @@
 import GlobalGameState from "../../../model/GlobalGameState"
 import GlobalInit from "../../../model/GlobalInit"
-import { isMidwayAttackPossible } from "../../StateUtils"
 import { midwayPossible, midwayDeclarationHandler } from "../../StateUtils"
 
 class JapanHumanDrawOneCardState {
@@ -11,13 +10,12 @@ class JapanHumanDrawOneCardState {
   }
 
   async nextState(stateObject) {
-    const { setMidwayWarningShow, setMidwayDialogShow, setUsFleetRegions } = stateObject
+    const { setMidwayWarningShow, setMidwayDialogShow, nextAction } = stateObject
     if (GlobalGameState.gameTurn !== 4) {
       GlobalGameState.gamePhase = GlobalGameState.PHASE.JAPAN_MIDWAY
-      // setMidwayDialogShow(true)
       midwayPossible(GlobalInit.controller, setMidwayWarningShow, setMidwayDialogShow)
     } else {
-      midwayDeclarationHandler({ setUsFleetRegions })
+      nextAction()
     }
   }
 

@@ -969,7 +969,7 @@ export async function moveCAPtoReturnBox(controller, capAirUnits, setAirUnitUpda
       : GlobalUnitsModel.Side.US
 
   for (const capUnit of capAirUnits) {
-    await delay(1)
+    await delay(10)
 
     const steps = capUnit.aircraftUnit.steps
 
@@ -999,6 +999,7 @@ export async function moveCAPtoReturnBox(controller, capAirUnits, setAirUnitUpda
     update.log = false
 
     setAirUnitUpdate(update)
+    await delay(10)
 
     controller.viewEventHandler({
       type: Controller.EventTypes.AIR_UNIT_MOVE,
