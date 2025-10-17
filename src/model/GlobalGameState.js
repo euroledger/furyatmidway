@@ -140,7 +140,9 @@ export default class GlobalGameState {
   static midwayBox0Damaged = false
   static midwayBox1Damaged = false
   static midwayBox2Damaged = false
-   
+
+  static midwayAttackGroup = ""
+
   static jpSeaBattleHits = 0
   static usSeaBattleHits = 0
 

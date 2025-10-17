@@ -41,34 +41,38 @@ class JapanHumanEndOfTurnState {
       GlobalGameState.gamePhase = GlobalGameState.PHASE.CARD_PLAY
       return
     }
-    if (
-      !this.cardChecked(2) &&
-      (GlobalInit.controller.usHandContainsCard(2) || GlobalInit.controller.japanHandContainsCard(2))
-    ) {
-      setCardNumber(() => 2)
-      this.markCard(2)
-      if (GlobalInit.controller.usHandContainsCard(2)) {
-        GlobalGameState.currentPlayer = GlobalUnitsModel.Side.US
-      } else {
-        GlobalGameState.currentPlayer = GlobalUnitsModel.Side.JAPAN
-      }
-      GlobalGameState.gamePhase = GlobalGameState.PHASE.CARD_PLAY
-      return
-    }
-    if (
-      !this.cardChecked(3) &&
-      (GlobalInit.controller.usHandContainsCard(3) || GlobalInit.controller.japanHandContainsCard(3))
-    ) {
-      setCardNumber(() => 3)
-      this.markCard(3)
-      if (GlobalInit.controller.usHandContainsCard(2)) {
-        GlobalGameState.currentPlayer = GlobalUnitsModel.Side.US
-      } else {
-        GlobalGameState.currentPlayer = GlobalUnitsModel.Side.JAPAN
-      }
-      GlobalGameState.gamePhase = GlobalGameState.PHASE.CARD_PLAY
-      return
-    }
+
+        // QUACK TESTING PUT THIS CODE BACK FUCK WANK
+
+    // if (
+    //   !this.cardChecked(2) &&
+    //   (GlobalInit.controller.usHandContainsCard(2) || GlobalInit.controller.japanHandContainsCard(2))
+    // ) {
+    //   setCardNumber(() => 2)
+    //   this.markCard(2)
+    //   if (GlobalInit.controller.usHandContainsCard(2)) {
+    //     GlobalGameState.currentPlayer = GlobalUnitsModel.Side.US
+    //   } else {
+    //     GlobalGameState.currentPlayer = GlobalUnitsModel.Side.JAPAN
+    //   }
+    //   GlobalGameState.gamePhase = GlobalGameState.PHASE.CARD_PLAY
+    //   return
+    // }
+
+    // if (
+    //   !this.cardChecked(3) &&
+    //   (GlobalInit.controller.usHandContainsCard(3) || GlobalInit.controller.japanHandContainsCard(3))
+    // ) {
+    //   setCardNumber(() => 3)
+    //   this.markCard(3)
+    //   if (GlobalInit.controller.usHandContainsCard(3)) {
+    //     GlobalGameState.currentPlayer = GlobalUnitsModel.Side.US
+    //   } else {
+    //     GlobalGameState.currentPlayer = GlobalUnitsModel.Side.JAPAN
+    //   }
+    //   GlobalGameState.gamePhase = GlobalGameState.PHASE.CARD_PLAY
+    //   return
+    // }
     if (
       !this.cardChecked(4) &&
       (GlobalInit.controller.usHandContainsCard(4) || GlobalInit.controller.japanHandContainsCard(4))
@@ -76,9 +80,9 @@ class JapanHumanEndOfTurnState {
       setCardNumber(() => 4)
       this.markCard(4)
       if (GlobalInit.controller.usHandContainsCard(2)) {
-        GlobalGameState.currentPlayer = GlobalGameState.Side.US
+        GlobalGameState.currentPlayer = GlobalUnitsModel.Side.US
       } else {
-        GlobalGameState.currentPlayer = GlobalGameState.Side.JAPAN
+        GlobalGameState.currentPlayer = GlobalUnitsModel.Side.JAPAN
       }
       GlobalGameState.gamePhase = GlobalGameState.PHASE.CARD_PLAY
       return
@@ -118,6 +122,7 @@ class JapanHumanEndOfTurnState {
 
       GlobalGameState.airOpJapan = 0
       GlobalGameState.airOpUS = 0
+      GlobalGameState.midwayAttackGroup = ""
       if (GlobalInit.controller.japanHandContainsCard(6) && GlobalGameState.gameTurn !== 4) {
         setCardNumber(() => 6)
         GlobalGameState.gamePhase = GlobalGameState.PHASE.CARD_PLAY

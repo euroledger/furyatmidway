@@ -201,8 +201,6 @@ export async function usFleetMovementHandler({ setFleetUnitUpdate }) {
   if (GlobalGameState.usDMCVCarrier !== undefined) {
     update2 = createMapUpdateForFleet(GlobalInit.controller, "US-DMCV", GlobalUnitsModel.Side.US)
   }
-
-  console.log("QUACK 1 --------------> GlobalGameState.usDMCVCarrier=", GlobalGameState.usDMCVCarrier)
   if (update2 !== null) {
     await setFleetUnitUpdate(update2)
   }
@@ -500,16 +498,7 @@ export function dmcvState(side) {
   )
 }
 export function midwayDeclarationHandler({ nextAction }) {
-  console.log("-------------- QUACKING ---------- FINISHED MIDWAY DECLARATION...")
   nextAction()
-  // if (dmcvState(GlobalUnitsModel.Side.US)) {
-  //   console.log("QUACK 1")
-  //   GlobalGameState.gamePhase = GlobalGameState.PHASE.US_DMCV_FLEET_MOVEMENT_PLANNING
-  // } else {
-  //       console.log("QUACK 2")
-
-  //   GlobalGameState.gamePhase = GlobalGameState.PHASE.US_FLEET_MOVEMENT_PLANNING
-  // }
 }
 
 export async function setNextStateFollowingCardPlay(stateObject) {
@@ -522,6 +511,7 @@ export async function setNextStateFollowingCardPlay(stateObject) {
     setStrikeGroupUpdate,
     setFleetUnitUpdate,
     setUsFleetRegions,
+    setCarrierPlanesDitchPanelShow,
     setEndOfAirOpAlertShow,
     setMidwayWarningShow,
     setMidwayDialogShow,
@@ -546,6 +536,20 @@ export async function setNextStateFollowingCardPlay(stateObject) {
         } else {
           GlobalGameState.currentPlayer = GlobalUnitsModel.Side.JAPAN
           GlobalGameState.gamePhase = GlobalGameState.PHASE.END_OF_TURN
+        }
+      }
+      break
+
+    case 3:
+      if (GlobalInit.controller.usHandContainsCard(4) || GlobalInit.controller.japanHandContainsCard(4)) {
+        setCardNumber(() => 4)
+      } else {
+        if (GlobalGameState.gameTurn === 7) {
+          determineMidwayInvasion(setCardNumber, setEndOfTurnSummaryShow, 3)
+        } else {
+          GlobalGameState.currentPlayer = GlobalUnitsModel.Side.JAPAN
+          GlobalGameState.gamePhase = GlobalGameState.PHASE.END_OF_TURN
+          setEndOfTurnSummaryShow(true)
         }
       }
       break
@@ -584,8 +588,6 @@ export async function setNextStateFollowingCardPlay(stateObject) {
           return
         } else {
           GlobalGameState.currentPlayer = GlobalUnitsModel.Side.US
-              console.log("++++++++++++++ QUACK 20")
-
           GlobalGameState.gamePhase = GlobalGameState.PHASE.US_FLEET_MOVEMENT_PLANNING
           GlobalGameState.usFleetMoved = false
           GlobalGameState.phaseCompleted = true
@@ -1085,16 +1087,11 @@ async function removeSunkenFleet(side, setFleetUnitUpdate) {
   await delay(1)
   // 2. Create Fleet Update to remove the fleet marker from the other side's map
   const update2 = createMapUpdateForFleet(GlobalInit.controller, update1.name, side)
-    console.log("QUACK 2 -------------->")
-
   setFleetUnitUpdate(update2)
 }
 
 export async function doFleetUpdates(setFleetUnitUpdate) {
   // check if either fleet out of carriers
-
-    console.log("QUACK 3 -------------->")
-
   GlobalGameState.allUSCarriersSunk = carriersSunkForSide(GlobalUnitsModel.Side.US)
   GlobalGameState.allJapanCarriersSunk = carriersSunkForSide(GlobalUnitsModel.Side.JAPAN)
 
@@ -1143,8 +1140,6 @@ export async function doFleetUpdates(setFleetUnitUpdate) {
       loading: false,
       side: GlobalUnitsModel.Side.JAPAN,
     }
-      console.log("QUACK 4 -------------->")
-
     if (update1 !== null) {
       setFleetUnitUpdate(update1)
     }
@@ -1285,8 +1280,6 @@ export async function checkFleetsInSameHex(
           GlobalUnitsModel.Side.US,
           false
         )
-          console.log("QUACK 5 -------------->")
-
         if (fleets.length === 0) {
           await retreatOneHexTo(usDMCVStartLocation.currentHex, "US-DMCV", setFleetUnitUpdate)
         } else {

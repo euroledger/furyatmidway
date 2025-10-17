@@ -20,37 +20,45 @@ class USAIDMCVFleetMovementPlanningState {
     const { canUSDMCVMoveFleetOffBoard, usDMCVRegions } = getUSFleetRegions()
     const destination = doUSDMCVFleetMovementAction(GlobalInit.controller, usDMCVRegions, canUSDMCVMoveFleetOffBoard)
 
-    const c = convertHexCoords(destination)
-    console.log("US DMCV FLEET DESTINATION:", c)
+    if (destination !== undefined) {
+      const c = convertHexCoords(destination)
+      console.log("US DMCV FLEET DESTINATION:", c)
 
-    const usFleetMove = createFleetUpdate("US-DMCV", destination.q, destination.r)
-    GlobalGameState.usDMCVFleetPlaced = true
-    setFleetUnitUpdate(usFleetMove)
+      const usFleetMove = createFleetUpdate("US-DMCV", destination.q, destination.r)
+      GlobalGameState.usDMCVFleetPlaced = true
+      setFleetUnitUpdate(usFleetMove)
 
-    // Set the damaged carrier
-    // 1. get the list of damaged carriers
-    const damagedCarriers = GlobalInit.controller.getDamagedCarriers(GlobalUnitsModel.Side.US)
+      // Set the damaged carrier
+      // 1. get the list of damaged carriers
+      const damagedCarriers = GlobalInit.controller.getDamagedCarriers(GlobalUnitsModel.Side.US)
 
-    // 2. select a carrier
-    const cv = getRandomElementFrom(damagedCarriers)
+      // 2. select a carrier
+      const cv = getRandomElementFrom(damagedCarriers)
 
-    // 3. do the DMCV marker update
-    let carrierUnit = GlobalInit.controller.getCarrier(cv)
-    GlobalGameState.usDMCVCarrier = carrierUnit.name
-    GlobalGameState.updateGlobalState()
+      // 3. do the DMCV marker update
+      let carrierUnit = GlobalInit.controller.getCarrier(cv)
+      GlobalGameState.usDMCVCarrier = carrierUnit.name
+      GlobalGameState.updateGlobalState()
 
-    if (!carrierUnit.dmcv) {
-      console.log(">>>>>>>>>>>>>>>>>>> DO DMCV SHIP MARKER UPDATE !!")
-      doAIDMCVShipMarkerUpdate(GlobalUnitsModel.Side.US)
+      if (!carrierUnit.dmcv) {
+        console.log(">>>>>>>>>>>>>>>>>>> DO DMCV SHIP MARKER UPDATE !!")
+        doAIDMCVShipMarkerUpdate(GlobalUnitsModel.Side.US)
+      }
+
+      carrierUnit.dmcv = true
     }
 
-    carrierUnit.dmcv = true
     this.nextState(stateObject)
   }
 
   async nextState(stateObject) {
     console.log("MOVING ON FROM US DMCV FLEET MOVEMENT PLANNING")
     GlobalGameState.gamePhase = GlobalGameState.PHASE.US_FLEET_MOVEMENT_PLANNING
+
+    console.log("GOOD POINT")
+    GlobalGameState.currentPlayer = GlobalUnitsModel.Side.JAPAN
+    GlobalGameState.gamePhase = GlobalGameState.PHASE.JAPAN_FLEET_MOVEMENT
+    GlobalGameState.updateGlobalState()
   }
 
   getState() {

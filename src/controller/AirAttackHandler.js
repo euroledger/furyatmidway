@@ -37,14 +37,14 @@ export function setUpAirAttack(controller, location, strikeGroup, setCardNumber,
       setCardNumber(() => 9)
       GlobalGameState.currentPlayer = GlobalUnitsModel.Side.JAPAN
       GlobalGameState.gamePhase = GlobalGameState.PHASE.CARD_PLAY
-    }
-    else if (controller.japanHandContainsCard(12)) {
+    } else if (controller.japanHandContainsCard(12)) {
       setCardNumber(() => 12)
       GlobalGameState.currentPlayer = GlobalUnitsModel.Side.JAPAN
       GlobalGameState.gamePhase = GlobalGameState.PHASE.CARD_PLAY
     } else {
       GlobalGameState.doneCapSelection = false
       GlobalGameState.testCapSelection = -1
+      GlobalGameState.currentPlayer = GlobalUnitsModel.Side.US
       GlobalGameState.gamePhase = GlobalGameState.PHASE.CAP_INTERCEPTION
     }
     // }

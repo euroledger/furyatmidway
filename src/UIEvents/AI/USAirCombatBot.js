@@ -295,8 +295,10 @@ export async function doCapSelection(controller) {
   GlobalGameState.rollDice = false
   await delay(10)
 
-  // Allocate one CAP unit per attacker
-  for (let i = 0; i < attackers.length; i++) {
+  let defenders = GlobalGameState.taskForceTarget === GlobalUnitsModel.TaskForce.MIDWAY ?  2 : attackers.length
+
+  // Allocate one CAP unit per attacker (unless Midway in which case allocate 2 if possible)
+  for (let i = 0; i < defenders; i++) {
     await delay(300)
 
     GlobalGameState.testCapSelection = i

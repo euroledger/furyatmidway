@@ -16,11 +16,11 @@ class USAICardPlayState {
   }
 
   async doAction(stateObject) {
-    const { cardNumber, setAttackResolved, setTowedToFriendlyPortPanelShow } = stateObject
+    const { cardNumber, setAttackResolved, setTowedToFriendlyPortPanelShow, setAirReplacementsPanelShow } = stateObject
     this.cardNumber = cardNumber
 
     console.log("US AI Card Play: DETERMINE WHETHER OR NOT TO PLAY CARD NUMBER", cardNumber)
-    const playThisCard = playCardAction(GlobalInit.controller, cardNumber, setAttackResolved)
+    const playThisCard = playCardAction(GlobalInit.controller, cardNumber, setAttackResolved, GlobalUnitsModel.Side.US)
 
     console.log("playThisCard=", playThisCard)
     if (playThisCard) {
@@ -38,6 +38,13 @@ class USAICardPlayState {
 
         GlobalGameState.testCapSelection = cv
         GlobalGameState.updateGlobalState()
+      } else if (cardNumber === 3) {
+        GlobalGameState.testCapSelection = -1
+        GlobalGameState.updateGlobalState()
+        setAirReplacementsPanelShow(true)
+        await delay(1500)
+
+        // TODO select air replacement
       } else {
         if (displayScreen) {
           this.displayCardPlayedPanel(stateObject)

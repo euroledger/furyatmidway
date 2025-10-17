@@ -24,11 +24,17 @@ class USAICardDrawState {
         setCardNumber(() => 6)
         GlobalGameState.gamePhase = GlobalGameState.PHASE.CARD_PLAY
       } else {
-        GlobalGameState.gamePhase = GlobalGameState.PHASE.JAPAN_MIDWAY
-        GlobalGameState.updateGlobalState()
+        if (GlobalGameState.gameTurn !== 4) {
+          GlobalGameState.gamePhase = GlobalGameState.PHASE.JAPAN_MIDWAY
+          GlobalGameState.updateGlobalState()
+        } else {
+          GlobalGameState.currentPlayer = GlobalUnitsModel.Side.US
+          GlobalGameState.gamePhase = GlobalGameState.PHASE.US_FLEET_MOVEMENT_PLANNING
+          GlobalGameState.usFleetMoved = false
+          GlobalGameState.phaseCompleted = true
+        }
       }
     }
-    GlobalGameState.phaseCompleted = true
     GlobalGameState.setupPhase++
   }
 

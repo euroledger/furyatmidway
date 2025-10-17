@@ -303,11 +303,30 @@ export default class Controller {
   }
 
   getAllReducedUnitsForSide(side) {
+    // do not include any air units from carriers that have 2 hits or are sunk
     const units = this.getAllAirUnits(side)
-    const reducedUnits = units.filter(
+    let reducedUnits = units.filter(
       (unit) => unit.aircraftUnit.steps === 1 && unit.carrier !== GlobalUnitsModel.Carrier.MIDWAY
     )
-    return reducedUnits
+
+    let allowedUnits = new Array()
+    for (const unit of reducedUnits) {
+      const location = this.getAirUnitLocation(unit.name)
+      console.log("UNIT: ", unit.name, "********* QUACK ********* AIR UNIT LOCATION=", location)
+      if (location.boxName.includes("ELIMINATED")) {
+        continue
+      }
+      const carrierName = this.getCarrierForAirBox(location.boxName)
+
+      console.log("\t => CARRIER=", carrierName)
+
+      if (this.isSunk(carrierName, true) || this.getCarrierHits(carrierName) == 2) {
+        continue
+      }
+      allowedUnits.push(unit)
+    }
+
+    return allowedUnits
   }
 
   getAllEliminatedUnits(side) {
@@ -514,18 +533,26 @@ export default class Controller {
     }
     return this.getCarrierForAirBox(loc)
   }
+
   midwayAttackCheck(strikeBoxes, side) {
     const groups = this.getAllStrikeGroups(GlobalUnitsModel.Side.JAPAN)
 
-    if (GlobalGameState.midwayAttackGroup === undefined && groups.length > 0) {
-      GlobalGameState.midwayAttackGroup = groups[0].name
+    if (GlobalGameState.midwayAttackGroup === "" && groups.length > 0) {
+      // could beother SG(s) on the map
+      for (let group of groups) {
+        if (!group.moved) {
+          console.log("QUACK 1 set GlobalGameState.midwayAttackGroup")
+          GlobalGameState.midwayAttackGroup = group.name
+        }
+      }
     }
     for (let group of groups) {
       if (group.name === GlobalGameState.midwayAttackGroup) {
         strikeBoxes = new Array()
-        const strikeGroup = this.getStrikeGroupForBox(side, groups[0].box)
+        const strikeGroup = this.getStrikeGroupForBox(side, group.box)
         if (!strikeGroup.moved) {
-          strikeBoxes.push(groups[0].box)
+          strikeBoxes.push(group.box)
+          console.log("QUACK 2 set GlobalGameState.midwayAttackGroup")
           GlobalGameState.midwayAttackGroup = group.name
           break
         }

@@ -3,6 +3,7 @@ import "./cap.css"
 import GlobalUnitsModel from "../model/GlobalUnitsModel"
 import Button from "react-bootstrap/Button"
 import { moveAirUnitFromEliminatedBox } from "../DiceHandler"
+import GlobalGameState from "../model/GlobalGameState"
 
 export function AirReplacementsHeaders({
   controller,
@@ -19,7 +20,12 @@ export function AirReplacementsHeaders({
     side = GlobalUnitsModel.Side.US
   }
 
-  const msg = "Select a one step air unit to flip to full strength or eliminated air unit to return to hangar"
+  let msg = "Select a one step air unit to flip to full strength or eliminated air unit to return to hangar"
+  
+  if (side === GlobalUnitsModel.Side.US && GlobalGameState.usPlayerType === GlobalUnitsModel.TYPE.AI) {
+    msg = "US Player selects a one step air unit to flip to full strength or eliminated air unit to return to hangar"
+  }
+  
   const redUnits = controller.getAllReducedUnitsForSide(side)
   if (reducedAirUnits.length === 0 && redUnits.length > 0) {
     const redAirUnits = controller.getAllReducedUnitsForSide(side)

@@ -5,8 +5,6 @@ import GlobalGameState from "../../model/GlobalGameState"
 import "./modal.css"
 
 function CardPanel(props) {
-
-
   const cardArray =
     props.side === GlobalUnitsModel.Side.JAPAN
       ? GlobalUnitsModel.jpCards.map((c) => c._number)

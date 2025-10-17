@@ -116,9 +116,6 @@ function CardAlertPanel(props) {
       controller.setCardPlayed(9, GlobalUnitsModel.Side.JAPAN)
       setShowCardFooter(() => true)
     } else if (cardNumber === 10) {
-      console.log("MUCKY QUACKS 2 setCarrierPlanesDitchPanelShow(true) !!!!!!!!!!!!!!!!")
-
-      console.log(">>>>>>> SHOULD GO TO CARD RESPONSE NOW )))")
       GlobalGameState.currentPlayer = GlobalUnitsModel.Side.US
       GlobalGameState.gamePhase = GlobalGameState.PHASE.CARD_RESPONSE
 

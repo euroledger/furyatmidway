@@ -269,10 +269,13 @@ async function flightDecktoCAP(controller, unit, setTestUpdate, test, midway) {
 }
 
 export async function moveAirUnitsFromHangarEndOfNightOperation(controller, side, setTestUpdate) {
+  console.log("NIGHT SHIT => move units out of hangar")
   // Move Fighters First -> All go to CAP
   // Move Attack aircraft to Flight Deck
   const units = controller.getAllUnitsInUSHangars()
 
+
+  console.log("*** UNITS IN HANGAR=", units)
   // get the fighters
   const fighters = units.filter((unit) => !unit.aircraftUnit.attack)
   const attackAircraft = units.filter((unit) => unit.aircraftUnit.attack)
@@ -282,9 +285,8 @@ export async function moveAirUnitsFromHangarEndOfNightOperation(controller, side
 
   for (const unit of fighters) {
     const numFreeFlightDeckSlots = setValidDestinationBoxesNightOperations(controller, unit.name, side, true)
-
-    console.log("NUM FREE SLOTS ON FLIGHT DECK =", numFreeFlightDeckSlots)
     const destBoxes = controller.getValidAirUnitDestinations(unit.name)
+    console.log("PUCKA!!!!!!! unit:", unit.name, "DESTINATIONS=", destBoxes)
     await moveAirUnitNight(controller, unit, setTestUpdate, destBoxes)
   }
 
@@ -314,6 +316,7 @@ export async function moveAirUnitNight(controller, unit, setTestUpdate, destBoxe
   update.log = true
   await delay(50)
 
+  console.log("************* NIGHT MOVE: update=", update)
   setTestUpdate(update)
   await delay(50)
 }
@@ -351,6 +354,9 @@ export async function moveAirUnit(controller, unit, setTestUpdate) {
 }
 
 export async function generateUSAirOperationsMovesCarriers(controller, stateObject, test) {
+  return // QUACK TESTING US DOES NOTHING...
+
+
   const { setTestUpdate } = stateObject
 
   // Get all air units in Return Boxes - do this first to free up strike boxes

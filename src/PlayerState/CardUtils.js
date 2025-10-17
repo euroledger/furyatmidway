@@ -61,7 +61,6 @@ export function processPlayedCard(stateObject) {
     setCardDicePanelShow7(true)
     GlobalInit.controller.setCardPlayed(7, GlobalUnitsModel.Side.US)
   } else if (cardNumber === 8) {
-    console.log(">>>>>>>>>>>>>>>> POOP CARD 8 PLAYED >>>>>>>>>>>>>>")
     GlobalInit.controller.setCardPlayed(8, GlobalUnitsModel.Side.US)
     setShowCardFooter(() => true)
   } else if (cardNumber === 9) {

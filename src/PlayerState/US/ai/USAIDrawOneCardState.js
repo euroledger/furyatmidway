@@ -13,12 +13,10 @@ class USAIDrawOneCardState {
     GlobalGameState.usCardsDrawn = true
     GlobalInit.controller.drawUSCards(1, false)
 
-    if (isMidwayAttackPossible()) {
+    if (GlobalGameState.gameTurn !== 4 && isMidwayAttackPossible()) {
       GlobalGameState.gamePhase = GlobalGameState.PHASE.JAPAN_MIDWAY
       return
     } else {
-          console.log("++++++++++++++ QUACK 30")
-
       GlobalGameState.gamePhase = GlobalGameState.PHASE.US_FLEET_MOVEMENT_PLANNING
       GlobalGameState.usFleetMoved = false
       GlobalGameState.phaseCompleted = true

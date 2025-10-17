@@ -618,7 +618,6 @@ export function createMapUpdateForFleet(controller, name, side) {
       side,
     }
   }
-  console.log(">>>>>>>> bollocks location.currentHex.q, location.currentHex.r=", location.currentHex.q, location.currentHex.r)
   return createFleetUpdate(otherName, location.currentHex.q, location.currentHex.r)
 }
 

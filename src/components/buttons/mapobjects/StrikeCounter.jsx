@@ -177,12 +177,12 @@ function StrikeCounter({ setStrikeGroupPopup, currentUSHex, currentJapanHex, cou
     ) {
       setCurrentHex(locationOfStrikeGroup)
       // hack to make sure midway attack group is set, fuck knows where we did this before
-      if (GlobalGameState.gamePhase === GlobalGameState.PHASE.MIDWAY_ATTACK) {
-        const groups = controller.getAllStrikeGroups(GlobalUnitsModel.Side.JAPAN)
-        if (GlobalGameState.midwayAttackGroup === undefined && groups.length > 0) {
-          GlobalGameState.midwayAttackGroup = groups[0].name
-        }
-      }
+      // if (GlobalGameState.gamePhase === GlobalGameState.PHASE.MIDWAY_ATTACK) {
+      //   const groups = controller.getAllStrikeGroups(GlobalUnitsModel.Side.JAPAN)
+      //   if (GlobalGameState.midwayAttackGroup === "" && groups.length > 0) {
+      //     GlobalGameState.midwayAttackGroup = groups[0].name
+      //   }
+      // }
       if (
         GlobalGameState.gamePhase === GlobalGameState.PHASE.MIDWAY_ATTACK &&
         counterData.name !== GlobalGameState.midwayAttackGroup
@@ -546,6 +546,16 @@ function StrikeCounter({ setStrikeGroupPopup, currentUSHex, currentJapanHex, cou
     ) {
       setIsMoveable(true)
       const sg = controller.getStrikeGroupForBox(side, counterData.box)
+            console.log("SG:", sg)
+
+      if (GlobalGameState.gamePhase === GlobalGameState.PHASE.MIDWAY_ATTACK) {
+        console.log("SG NAME=", sg.name, "MIDWAY ATTACK GROUP=",GlobalGameState.midwayAttackGroup)
+        if (sg.moved && sg.name !== GlobalGameState.midwayAttackGroup) {
+          // another sg is on the map from last turn
+          setJapanRegions([])
+          return // don't allow it to do anything
+        }
+      }
       if (!sg.attacked) {
         if (side === GlobalUnitsModel.Side.JAPAN) {
           setJapanRegions()

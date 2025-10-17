@@ -646,18 +646,23 @@ export function doHangarNight(controller, name, side) {
   let unitsReturn1 = controller.getAttackingReturningUnitsNotMoved(side)
   const capUnits = controller.getAllAirUnitsInCAPBoxes(side)
 
-  if (unitsReturn1.length > 0 || capUnits.length > 0) {
-    return
-  }
+  // if (unitsReturn1.length > 0 || capUnits.length > 0) {
+  //   console.log("BUFFY 2")
+  //   return
+  // }
 
   const location = controller.getAirUnitLocation(name)
   const carrierName = controller.getCarrierForAirBox(location.boxName)
+
+      console.log("BUFFY 3")
 
   // At night fighters can be moved to CAP box
 
   // TODO all units can be moved to flight deck
   const unit = controller.getAirUnitForName(name)
   if (!unit.aircraftUnit.attack) {
+        console.log("BUFFY 4")
+
     const capBox = controller.getCapBoxForNamedCarrier(carrierName, side)
     destinationsArray.push(capBox)
   }
@@ -668,7 +673,7 @@ export function doHangarNight(controller, name, side) {
   // check there is room on this carrier's flight deck
   const destAvailable = controller.isFlightDeckAvailable(carrierName, side, true)
 
-  // const numFreeSlotsOnFlightDeck = controller.getNumFreeSlotsOnFlightDeck(carrierName, side)
+  const numFreeSlotsOnFlightDeck = controller.getNumFreeSlotsOnFlightDeck(carrierName, side)
 
   // if fighter add other carrier's flight deck if available
   if (!unit.aircraftUnit.attack) {
@@ -684,13 +689,15 @@ export function doHangarNight(controller, name, side) {
   // check flight deck available
   if (!destAvailable) {
     // controller.setValidAirUnitDestinations(name, new Array())
+        console.log("BUFFY 5")
+
     return 0
   }
   if (destBox) {
     destinationsArray.push(destBox)
     controller.setValidAirUnitDestinations(name, destinationsArray)
   }
-  // return numFreeSlotsOnFlightDeck
+  return numFreeSlotsOnFlightDeck
 }
 
 export function doHangar(controller, name, side) {
@@ -1403,6 +1410,7 @@ export function setValidDestinationBoxesNightOperations(controller, airUnitName,
 
   const unit = controller.getAirUnitForName(airUnitName)
   if (moved && !location.boxName.includes("HANGAR") && unit.aircraftUnit.attack) {
+    console.log("NO CHANCE BUFFY!")
     return
   }
   // if (!moved && location.boxName.includes("HANGAR") && unit.aircraftUnit.attack) {

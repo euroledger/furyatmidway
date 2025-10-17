@@ -1141,6 +1141,7 @@ export function App() {
     doAIDMCVShipMarkerUpdate,
     setTowedToFriendlyPortPanelShow,
     setCarrierPlanesDitchPanelShow,
+    setAirReplacementsPanelShow,
     setMidwayInvasionPanelShow,
     setCardDicePanelShow5,
     setNightLandingDone,
@@ -1387,9 +1388,6 @@ export function App() {
   }
 
   async function midwayStrikeReady() {
-    // TODO
-    // check if 1st air op and no attack units on flight deck...allow next action
-
     if (GlobalGameState.midwayAttackResolved) {
       return true
     }
@@ -1430,8 +1428,15 @@ export function App() {
     if (GlobalGameState.midwayAirOpsCompleted < 2 && GlobalInit.controller.getDistanceBetween1AFAndMidway() > 2) {
       return false
     }
+    // 1. Returning units must still move during Midway operations
+
     let unitsReturn1 = GlobalInit.controller.getAirUnitsInStrikeBoxesReadyToReturn(GlobalUnitsModel.Side.JAPAN)
     if (unitsReturn1.length > 0) {
+      return false
+    }
+
+   let unitsReturn2 = GlobalInit.controller.getAllAirUnitsInReturn2Boxes(GlobalUnitsModel.Side.JAPAN)
+    if (unitsReturn2.length > 0) {
       return false
     }
 
