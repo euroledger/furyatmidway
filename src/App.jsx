@@ -1916,6 +1916,7 @@ export function App() {
       </Navbar>
     )
   }
+
   function gameStateHandler() {
     setGameState(!gameState)
   }
@@ -1956,7 +1957,6 @@ export function App() {
     GlobalGameState.midwayAttackDeclaration = false
     GlobalGameState.midwayAirOpsCompleted = 0
     setMidwayDialogShow(false)
-    console.log("++++++++++++++ QUACK 1 state=", GlobalGameState.gamePhase)
     nextAction()
   }
 
@@ -2831,7 +2831,7 @@ export function App() {
         <p>Drag the US CSF Fleet Unit to any hex in the shaded blue area of the map.</p>
       </AlertPanel>
       <AlertPanel show={jpAlertShow} onHide={() => setJpAlertShow(false)} sidebg={GlobalUIConstants.Colors.JAPAN}>
-        <h4>INFO</h4>
+        <h4>IJN FLEET MOVEMENT</h4>
         <p>{jpMsg}</p>
       </AlertPanel>
       <AlertPanel

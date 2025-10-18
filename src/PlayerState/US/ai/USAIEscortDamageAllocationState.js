@@ -15,6 +15,7 @@ class USAIEscortDamageAllocationState {
     // Allocate damage to defending CAP
     let numHitsAllocated = 0
     for (let i = 0; i < GlobalGameState.fighterHits; i++) {
+      console.log("+++++++++ HIT ON UNIT", i)
       await delay(1000)
 
       GlobalGameState.testStepLossSelection = -1
@@ -24,13 +25,16 @@ class USAIEscortDamageAllocationState {
       // US Damage Allocation Bot...picks one unit to take this hit
       let capUnits = GlobalInit.controller.getAllCAPDefenders(GlobalUnitsModel.Side.US)
       if (capUnits.length === 0) {
+        console.log("MONKEY QUACK FUCK NO MORE UNITS")
         break // all cap units eliminated
       }
       const { unit, index } = await allocateEscortDamageToDefendingCapUnits(capUnits)
+      console.log("QUACK unit=", unit.name, "index=", index)
       numHitsAllocated++
       GlobalGameState.testStepLossSelection = index
       GlobalGameState.updateGlobalState()
 
+      console.log("HIT ON ", unit.name)
       GlobalInit.controller.removeUnitFromCAPDefenders(unit)
     }
 

@@ -450,7 +450,9 @@ export default class Controller {
   }
 
   removeUnitFromCAPDefenders(unitToRemove) {
-    unitToRemove.aircraftUnit.intercepting = false
+    if (unitToRemove.aircraftUnit.steps === 1) {
+      unitToRemove.aircraftUnit.intercepting = false
+    }
   }
 
   getAllCAPDefenders(side) {
@@ -458,6 +460,8 @@ export default class Controller {
     const defenders = units.filter(
       (unit) => unit.constructor.name === "AirUnit" && unit.side === side && unit.aircraftUnit.intercepting
     )
+    console.log("ALL CAP DEFENDERS=", defenders)
+
     return defenders
   }
 
@@ -537,11 +541,13 @@ export default class Controller {
   midwayAttackCheck(strikeBoxes, side) {
     const groups = this.getAllStrikeGroups(GlobalUnitsModel.Side.JAPAN)
 
-    if (GlobalGameState.midwayAttackGroup === "" && groups.length > 0) {
+    if (
+      GlobalGameState.midwayAttackGroup === undefined ||
+      (GlobalGameState.midwayAttackGroup === "" && groups.length > 0)
+    ) {
       // could beother SG(s) on the map
       for (let group of groups) {
         if (!group.moved) {
-          console.log("QUACK 1 set GlobalGameState.midwayAttackGroup")
           GlobalGameState.midwayAttackGroup = group.name
         }
       }
@@ -552,7 +558,6 @@ export default class Controller {
         const strikeGroup = this.getStrikeGroupForBox(side, group.box)
         if (!strikeGroup.moved) {
           strikeBoxes.push(group.box)
-          console.log("QUACK 2 set GlobalGameState.midwayAttackGroup")
           GlobalGameState.midwayAttackGroup = group.name
           break
         }

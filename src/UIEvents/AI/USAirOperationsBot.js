@@ -356,7 +356,6 @@ export async function moveAirUnit(controller, unit, setTestUpdate) {
 export async function generateUSAirOperationsMovesCarriers(controller, stateObject, test) {
   return // QUACK TESTING US DOES NOTHING...
 
-
   const { setTestUpdate } = stateObject
 
   // Get all air units in Return Boxes - do this first to free up strike boxes

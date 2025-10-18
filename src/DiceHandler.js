@@ -826,12 +826,12 @@ export function doAttackFireRolls(controller, testRolls) {
     // GlobalGameState.midwayHits = 2
     // GlobalGameState.midwayHitsThisAttack = 2
   } else {
-    // GlobalGameState.carrierAttackHits = hits
-    // GlobalGameState.carrierAttackHitsThisAttack = hits
+    GlobalGameState.carrierAttackHits = hits
+    GlobalGameState.carrierAttackHitsThisAttack = hits
 
     // QUACK REMOVE TEESTING ONLY
-    GlobalGameState.carrierAttackHits = 2
-    GlobalGameState.carrierAttackHitsThisAttack = 2
+    // GlobalGameState.carrierAttackHits = 2
+    // GlobalGameState.carrierAttackHitsThisAttack = 2
   }
   return hits
 }

@@ -428,8 +428,11 @@ export function goToIJNFleetMovement({
     if (locationOfCarrier !== undefined && locationOfCarrier.currentHex !== undefined) {
       // IJN 1AF Fleet is not allowed to move to same hex as other fleets, remove IJN-DMCV hex from region
       let jpRegion = allHexesWithinDistance(locationOfCarrier.currentHex, GlobalGameState.fleetSpeed, true)
-      const jpDMCVLocation = GlobalInit.controller.getFleetLocation("IJN-DMCV", GlobalUnitsModel.Side.JAPAN)
+      let jpDMCVLocation = GlobalInit.controller.getFleetLocation("IJN-DMCV", GlobalUnitsModel.Side.JAPAN)
 
+      if (GlobalGameState.initial1AFLocation !== undefined) {
+        jpDMCVLocation = GlobalGameState.initial1AFLocation
+      }
       if (jpDMCVLocation !== undefined && jpDMCVLocation.currentHex !== undefined) {
         jpRegion = removeHexFromRegion(jpRegion, jpDMCVLocation.currentHex)
       }

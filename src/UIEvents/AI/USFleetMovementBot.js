@@ -149,6 +149,7 @@ export function doUSFleetMovementAction(controller, regions, offboardPossible) {
   }
 
   if (GlobalGameState.gameTurn === 1) {
+    console.log("DO TURN 1 MOVEMENT")
     // close range with IJN
 
     // Close range to top left of board (assume 1AF is here)
@@ -180,6 +181,7 @@ export function doUSFleetMovementAction(controller, regions, offboardPossible) {
     // TODO
     // COULD MOVE AWAY TO PREVENT STRIKE ?????????
     // IF DISTANCE BETWEEN FLEETS WAS 3-5 ON TURN 1 - MOVE AWAY
+    console.log("DO TURN 2 MOVEMENT")
 
     console.log(
       "********** US FLEET MOVEMENT distance between fleets last turn =>",
@@ -256,6 +258,8 @@ export function doUSFleetMovementAction(controller, regions, offboardPossible) {
     return fleetHex
   }
   if (GlobalGameState.gameTurn === 3) {
+        console.log("DO TURN 3 MOVEMENT")
+
     return { q: 6, r: -1 } // QUACK HARD WIRED FOR TESTING ONLY
   }
   if (GlobalGameState.gameTurn === 4) {

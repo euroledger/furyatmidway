@@ -2,9 +2,10 @@ import Modal from "react-bootstrap/Modal"
 import Button from "react-bootstrap/Button"
 import GlobalGameState from "../../model/GlobalGameState"
 import "./modal.css"
+import GlobalUIConstants from "../UIConstants"
 
 function YesNoDialog(props) {
-  const bg = GlobalGameState.gameTurn === 4 ? "black" :"#293a4b"
+  const bg = GlobalGameState.gameTurn === 4 ? "black" : GlobalUIConstants.Colors.JAPAN
   return (
     <Modal {...props} size="sm" aria-labelledby="contained-modal-title-vcenter" centered>
       <Modal.Body style={{ background: `${bg}`, color: "white" }}>{props.children}</Modal.Body>
