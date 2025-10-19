@@ -1,4 +1,4 @@
-import { React, useState } from "react"
+import { useState, createRef, useEffect } from "react"
 import "./cap.css"
 import GlobalUnitsModel from "../model/GlobalUnitsModel"
 import Button from "react-bootstrap/Button"
@@ -10,29 +10,52 @@ export function AirReplacementsHeaders({
   setShowCarrierDisplay,
   setAirReplacementsSelected,
   setSelectedAirUnit,
-  setClickedOnSomething
+  setClickedOnSomething,
 }) {
   const [reducedAirUnits, setReducedAirUnits] = useState([])
   const [elimSelected, setElimSelected] = useState(false)
 
+  const [elRefs, setElRefs] = useState([])
   let side = GlobalUnitsModel.Side.JAPAN
   if (controller.getCardPlayed(3, GlobalUnitsModel.Side.US)) {
     side = GlobalUnitsModel.Side.US
   }
-
-  let msg = "Select a one step air unit to flip to full strength or eliminated air unit to return to hangar"
-  
-  if (side === GlobalUnitsModel.Side.US && GlobalGameState.usPlayerType === GlobalUnitsModel.TYPE.AI) {
-    msg = "US Player selects a one step air unit to flip to full strength or eliminated air unit to return to hangar"
-  }
-  
   const redUnits = controller.getAllReducedUnitsForSide(side)
   if (reducedAirUnits.length === 0 && redUnits.length > 0) {
     const redAirUnits = controller.getAllReducedUnitsForSide(side)
     setReducedAirUnits(() => redAirUnits)
   }
-
   const eliminatedAirUnits = controller.getAllEliminatedUnits(side)
+  const arrLength = redUnits.length + eliminatedAirUnits.length
+
+  useEffect(() => {
+    // add or remove refs
+    setElRefs((elRefs) =>
+      Array(arrLength)
+        .fill()
+        .map((_, i) => elRefs[i] || createRef())
+    )
+  }, [])
+
+  useEffect(() => {
+    if (GlobalGameState.testStepLossSelection === -1) {
+      return
+    }
+    const myRef = elRefs[GlobalGameState.testStepLossSelection]
+    if (myRef !== undefined && myRef.current !== undefined && myRef.current !== null) {
+      myRef.current.click(myRef.current)
+    }
+  }, [GlobalGameState.testStepLossSelection])
+
+
+
+  let msg = "Select a one step air unit to flip to full strength or eliminated air unit to return to hangar"
+
+  if (side === GlobalUnitsModel.Side.US && GlobalGameState.usPlayerType === GlobalUnitsModel.TYPE.AI) {
+    msg = "US Player selects a one step air unit to flip to full strength or eliminated air unit to return to hangar"
+  }
+
+
 
   // Get all One Step (reduced) and Eliminated air units
 
@@ -49,6 +72,7 @@ export function AirReplacementsHeaders({
     return (
       <div>
         <input
+          ref={elRefs[i]}
           onClick={() => handleClick(airUnit)}
           type="image"
           src={airUnit.image}
@@ -77,7 +101,7 @@ export function AirReplacementsHeaders({
     return airCounterImage(airUnit, i)
   })
   const eliminatedCounters = eliminatedAirUnits.map((airUnit, i) => {
-    return airCounterImage(airUnit, i)
+    return airCounterImage(airUnit, i + reducedCounters.length)
   })
 
   const handleClick = (airUnit) => {
@@ -225,7 +249,7 @@ export function AirReplacementsFooters({
   selectedAirUnit,
   airReplacementsSelected,
   setAirUnitUpdate,
-  clickedOnSomething
+  clickedOnSomething,
 }) {
   const [selectedCV, setSelectedCV] = useState("")
 
@@ -276,13 +300,15 @@ export function AirReplacementsFooters({
       image = "/images/fleetcounters/enterprise.jpg"
     } else if (cv === GlobalUnitsModel.Carrier.HORNET) {
       image = "/images/fleetcounters/hornet.jpg"
+    } else if (cv === GlobalUnitsModel.Carrier.YORKTOWN) {
+      image = "/images/fleetcounters/yorktown.jpg"
     } else if (cv === GlobalUnitsModel.Carrier.AKAGI) {
       image = "/images/fleetcounters/akagi.jpg"
     } else if (cv === GlobalUnitsModel.Carrier.KAGA) {
       image = "/images/fleetcounters/kaga.jpg"
     } else if (cv === GlobalUnitsModel.Carrier.HIRYU) {
       image = "/images/fleetcounters/hiryu.jpg"
-    } else if (cv === GlobalUnitsModel.Carrier.HORNET) {
+    } else if (cv === GlobalUnitsModel.Carrier.SORYU) {
       image = "/images/fleetcounters/soryu.jpg"
     }
     let buttonDisabled

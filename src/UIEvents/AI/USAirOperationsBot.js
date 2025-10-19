@@ -274,7 +274,6 @@ export async function moveAirUnitsFromHangarEndOfNightOperation(controller, side
   // Move Attack aircraft to Flight Deck
   const units = controller.getAllUnitsInUSHangars()
 
-
   console.log("*** UNITS IN HANGAR=", units)
   // get the fighters
   const fighters = units.filter((unit) => !unit.aircraftUnit.attack)
@@ -354,7 +353,7 @@ export async function moveAirUnit(controller, unit, setTestUpdate) {
 }
 
 export async function generateUSAirOperationsMovesCarriers(controller, stateObject, test) {
-  return // QUACK TESTING US DOES NOTHING...
+  // return // QUACK TESTING US DOES NOTHING...
 
   const { setTestUpdate } = stateObject
 
@@ -869,6 +868,29 @@ export async function moveStrikeGroups(controller, stateObject, test) {
 export async function generateUSAirOperationsMovesMidway(controller, stateObject, test) {
   const { setTestUpdate } = stateObject
 
+  // Get all air units in Strike Boxes ready to return - do this first to free up strike boxes
+  let units = controller.getAirUnitsInStrikeBoxesReadyToReturn(GlobalUnitsModel.Side.US)
+
+  if (units.length > 0) {
+    for (let unit of units) {
+      if (unit.aircraftUnit.moved) {
+        continue
+      }
+      await delay(50)
+      await moveAirUnit(controller, unit, setTestUpdate)
+    }
+  }
+
+  units = controller.getAttackingReturningUnitsNotMoved(GlobalGameState.sideWithInitiative)
+  if (units.length > 0) {
+    for (let unit of units) {
+      if (unit.aircraftUnit.moved) {
+        continue
+      }
+      await delay(50)
+      await moveAirUnit(controller, unit, setTestUpdate)
+    }
+  }
   // for each air unit that we wish to move generate an array of destination boxes
 
   // Need to take into account:

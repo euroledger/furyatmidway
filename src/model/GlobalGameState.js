@@ -23,7 +23,7 @@ export default class GlobalGameState {
     JAPAN_DMCV_FLEET_MOVEMENT: "IJN DMCV Fleet Movement",
     MIDWAY_ATTACK: "Midway Attack Phase",
     US_FLEET_MOVEMENT: "US Fleet Movement",
-    RETREAT_US_FLEET: "Check Fleets in Same Hex",
+    RETREAT_US_FLEET: "Fleets in Same Hex",
     NIGHT_BATTLES_1: "Surface Sea Battle CSF",
     NIGHT_BATTLES_2: "Surface Sea Battle DMCV",
     NIGHT_AIR_OPERATIONS_JAPAN: "Night Air Operations (Japan)",
@@ -110,7 +110,8 @@ export default class GlobalGameState {
   static attackingStrikeGroup= ""
 
   static distanceBetweenCarrierFleets = undefined
-  static initial1AFLocation = undefined // location at start of movement phase
+  static initial1AFLocation = undefined // location of 1AF at start of movement phase
+  static previousPosition = undefined // last position of US fleet prior to movement
 
   static usCVsSunk = 0
   static japanCVsSunk = 0

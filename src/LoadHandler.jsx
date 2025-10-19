@@ -20,6 +20,7 @@ async function loadHandler({
   loadState,
   id,
   setLoading,
+  setPreviousPosition,
 }) {
   GlobalGameState.gamePhase = "LOADING"
   setTestClicked(true)
@@ -37,7 +38,9 @@ async function loadHandler({
     usDMCVMarkerUpdates,
     logItems,
     cvSelected,
+    previousPosition,
   } = loadGameStateForId(controller, id)
+
   setTowedCVSelected(cvSelected)
   for (const update of airUpdates) {
     await delay(1)
@@ -101,15 +104,17 @@ async function loadHandler({
     GlobalGameState.log(item)
   }
 
+   if (previousPosition !== undefined) {
+    setPreviousPosition(() => previousPosition)
+  }
+
   console.log(
     "************************ DONE LOADING ^^^^^^^^^^^^^^^^ set game phase to",
     GlobalGameState.temporaryGamePhase
   )
 
-  console.log(
-    "************************ JAPAN PLAYER TYPE=", GlobalGameState.jpPlayerType),
-
-  GlobalGameState.gamePhase = GlobalGameState.temporaryGamePhase
+  console.log("************************ JAPAN PLAYER TYPE=", GlobalGameState.jpPlayerType),
+    (GlobalGameState.gamePhase = GlobalGameState.temporaryGamePhase)
 
   loadState()
   setTestClicked(false)

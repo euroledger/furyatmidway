@@ -1,6 +1,7 @@
 import GlobalGameState from "../../../model/GlobalGameState"
 
 import GlobalInit from "../../../model/GlobalInit"
+import GlobalUnitsModel from "../../../model/GlobalUnitsModel"
 import { setNextStateFollowingCardPlay } from "../../StateUtils"
 
 class JapanHumanCardPlayState {
@@ -8,6 +9,7 @@ class JapanHumanCardPlayState {
     const { cardNumber, setCardAlertPanelShow } = stateObject
     console.log(">>>>>>> JAPAN HUMAN CARD PLAY >>>>>>>>>>")
     if (GlobalInit.controller.japanHandContainsCard(cardNumber)) {
+      GlobalGameState.currentPlayer = GlobalUnitsModel.Side.JAPAN
       setCardAlertPanelShow(true)
     }
   }

@@ -18,7 +18,7 @@ class JapanAIMidwayDeclarationState {
 
     GlobalGameState.currentPlayer = GlobalUnitsModel.Side.US
 
-    // See if we should go to US DMCV Fleet Planning first
+
     if (goToDMCVState(GlobalUnitsModel.Side.US) && !GlobalGameState.dmcvChecked) {
       console.log("********** DO US DMCV FLEET PLANNING FIRST ************ ")
       GlobalGameState.dmcvChecked = true

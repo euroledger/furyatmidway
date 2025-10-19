@@ -38,11 +38,10 @@ function sortDistances(regions, location) {
   return sortedRegions
 }
 
-export function distanceFromRowI(regions) {
+export function distanceFromColI(regions) {
   let dist = 100
   let targetHex, currentDist
   for (const hex of regions) {
-    console.log("TRY HEX", hex)
     for (const rowIHex of rowIHexes) {
       currentDist = distanceBetweenHexes(hex, rowIHex)
       if (currentDist < dist) {
@@ -54,7 +53,7 @@ export function distanceFromRowI(regions) {
   return { dist, targetHex }
 }
 
-export function doUSDMCVFleetMovementAction(controller, regions, offboardPossible) {
+export function doUSDMCVFleetMovementAction(controller, usDMCVRegions) {
   const dmcvLocation = controller.getFleetLocation("US-DMCV", GlobalUnitsModel.Side.US)
   const csfLocation = controller.getFleetLocation("CSF", GlobalUnitsModel.Side.US)
 
@@ -63,7 +62,7 @@ export function doUSDMCVFleetMovementAction(controller, regions, offboardPossibl
 
     const usRegions = allHexesWithinDistance(csfLocation.currentHex, 1, true)
 
-    const { dist, targetHex } = distanceFromRowI(usRegions)
+    const { dist, targetHex } = distanceFromColI(usRegions)
 
     // Also take account of position of 1AF
     // If within 3 hexes don't place (it could chase us)
@@ -91,13 +90,17 @@ export function doUSDMCVFleetMovementAction(controller, regions, offboardPossibl
     // turns 1-3 4 hexes or less (night turn to come, allows DMCV to move 2 hexes)
     // turns 5-7 2 hexes or less
     return undefined
-    // return targetHex
   }
-  return { q: 3, r: 1 } // QUACK HARD WIRED FOR TESTING ONLY
+
+  // TODO ------ if offboardPossible - move OFF THE BOARD
+
+  // Move closer to row I
+  const { targetHex } = distanceFromColI(usDMCVRegions)
+  return targetHex
 }
 
 export function doUSFleetMovementAction(controller, regions, offboardPossible) {
-  console.log(">>>>>>> MOVE US FLEET: PLANNING <<<<<<<<")
+  console.log(">>>>>>> MOVE US FLEET: PLANNING <<<<<<<< regions=", regions)
 
   const dmcvLocation = controller.getFleetLocation("US-DMCV", GlobalUnitsModel.Side.US)
   let hexesBetweenDMCVAndCSF = -1
@@ -154,7 +157,6 @@ export function doUSFleetMovementAction(controller, regions, offboardPossible) {
 
     // Close range to top left of board (assume 1AF is here)
 
-    const hexesCloserToTopLeft = new Array()
     const csfLocation = GlobalInit.controller.getFleetLocation("CSF", GlobalUnitsModel.Side.US)
     const distanceFromCSFToTopLeft = distanceBetweenHexes(csfLocation.currentHex, { q: 1, r: 1 })
 
@@ -181,6 +183,7 @@ export function doUSFleetMovementAction(controller, regions, offboardPossible) {
     // TODO
     // COULD MOVE AWAY TO PREVENT STRIKE ?????????
     // IF DISTANCE BETWEEN FLEETS WAS 3-5 ON TURN 1 - MOVE AWAY
+    // IF DMCV ELIGIBLE AND >4 HEXES FROM ROW I - move toward row I
     console.log("DO TURN 2 MOVEMENT")
 
     console.log(
@@ -203,10 +206,24 @@ export function doUSFleetMovementAction(controller, regions, offboardPossible) {
     // TODO
     // If a carrier has 2 hits and no DMCV yet placed
     // AND CSF is > 4 hexes from Row I -> head for row I
-    const { dist, targetHex } = distanceFromRowI(regions)
+
+        // get current distance of fleet from Col I
+    const { dist } = distanceFromColI([currentCSFLocation.currentHex])
+
+    // get closest hex to Col I - move here if current range > 4
+    const { targetHex } = distanceFromColI(regions)
+    // const { dist, targetHex } = distanceFromColI(regions)
+
+    console.log("$$$$$$$$$ POOOOOOOOOOOOOOO goToDMCVState(GlobalUnitsModel.Side.US)=", goToDMCVState(GlobalUnitsModel.Side.US))
+
+    console.log("$$$$$$$$$ POOOOOOOOOOOOOOO GlobalGameState.usDMCVFleetPlaced=,",GlobalGameState.usDMCVFleetPlaced)
+   
+       console.log("$$$$$$$$$ POOOOOOOOOOOOOOO dist=,",dist)
 
     if (goToDMCVState(GlobalUnitsModel.Side.US) && !GlobalGameState.usDMCVFleetPlaced && dist > 4) {
       // go to closest hex to row I
+
+      console.log("***************** MOVE TOWARD ROW I- target hex=", targetHex)
       return targetHex
     }
     // either use currrent 1AF location or hex closest to Midway that it can get to
@@ -254,11 +271,11 @@ export function doUSFleetMovementAction(controller, regions, offboardPossible) {
     }
     let fleetHex = getRandomElementFrom(targetHexes)
 
-    // return { q: 1, r: 1 }
+    // return { q: 3, r: 1 }
     return fleetHex
   }
   if (GlobalGameState.gameTurn === 3) {
-        console.log("DO TURN 3 MOVEMENT")
+    console.log("DO TURN 3 MOVEMENT")
 
     return { q: 6, r: -1 } // QUACK HARD WIRED FOR TESTING ONLY
   }

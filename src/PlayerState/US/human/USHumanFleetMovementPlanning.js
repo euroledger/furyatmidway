@@ -12,11 +12,12 @@ class USHumanFleetMovementPlanningState {
   async nextState(stateObject) {
     const { setUSMapRegions} = stateObject
     setUSMapRegions([])
-    if (goToDMCVState(GlobalUnitsModel.Side.JAPAN)) {
-        GlobalGameState.gamePhase = GlobalGameState.PHASE.JAPAN_DMCV_FLEET_MOVEMENT
-    } else {
+    // if (goToDMCVState(GlobalUnitsModel.Side.JAPAN)) {
+    //     GlobalGameState.gamePhase = GlobalGameState.PHASE.JAPAN_DMCV_FLEET_MOVEMENT
+    // } else {
+        GlobalGameState.initial1AFLocation = GlobalInit.controller.getFleetLocation("1AF", GlobalUnitsModel.Side.JAPAN)
         GlobalGameState.gamePhase = GlobalGameState.PHASE.JAPAN_FLEET_MOVEMENT
-    }
+    // }
   }
 
   getState() {

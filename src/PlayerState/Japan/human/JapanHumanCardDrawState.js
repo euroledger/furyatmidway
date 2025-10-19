@@ -3,7 +3,8 @@ import GlobalInit from "../../../model/GlobalInit"
 import GlobalUnitsModel from "../../../model/GlobalUnitsModel"
 
 class JapanHumanCardDrawState {
-  async doAction(stateObject) {}
+  async doAction(stateObject) {
+  }
 
   async nextState(stateObject) {
 

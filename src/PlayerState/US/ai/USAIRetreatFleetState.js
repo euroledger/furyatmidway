@@ -6,7 +6,6 @@ import { checkFleetsInSameHex, moveOnFromSeaBattles } from "../../StateUtils"
 class USAIRetreatFleetState {
   async doAction(stateObject) {
     const { setFleetUnitUpdate, setPreviousPosition, previousPosition, setUSMapRegions } = stateObject
-
     await checkFleetsInSameHex(
       GlobalInit.controller,
       setFleetUnitUpdate,
@@ -14,7 +13,6 @@ class USAIRetreatFleetState {
       previousPosition,
       setUSMapRegions
     )
-    // this.nextState(stateObject)
   }
 
   async nextState(stateObject) {

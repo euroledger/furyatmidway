@@ -69,7 +69,6 @@ export function getValidUSDestinationsCAP(controller, parentCarrier, side, name)
     const boxName = controller.getAirBoxForNamedShip(side, carrier.name, "FLIGHT_DECK")
 
     const destAvailable = controller.isFlightDeckAvailable(carrier.name, side)
-    console.log("carrier:", carrier.name, "destAvailable=",destAvailable)
     if (!controller.isSunk(carrier.name) && destAvailable) {
       // this unit can go to its parent carrier flight deck
       destinationsArray.push(boxName)

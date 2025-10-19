@@ -11,13 +11,16 @@ class USAIDrawOneCardState {
   async nextState(stateObject) {
     GlobalGameState.phaseCompleted = true
     GlobalGameState.usCardsDrawn = true
-    GlobalInit.controller.drawUSCards(1, false)
+    // GlobalInit.controller.drawUSCards(1, false)
+
+    GlobalInit.controller.drawUSCards(1, true, [3]) // QUACK TESTING
+
 
     if (GlobalGameState.gameTurn !== 4 && isMidwayAttackPossible()) {
       GlobalGameState.gamePhase = GlobalGameState.PHASE.JAPAN_MIDWAY
       return
     } else {
-      GlobalGameState.gamePhase = GlobalGameState.PHASE.US_FLEET_MOVEMENT_PLANNING
+      GlobalGameState.gamePhase = GlobalGameState.PHASE.US_DMCV_FLEET_MOVEMENT_PLANNING
       GlobalGameState.usFleetMoved = false
       GlobalGameState.phaseCompleted = true
     }

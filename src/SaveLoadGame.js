@@ -47,6 +47,13 @@ export function saveGameState(controller, gameId) {
   const usCardsPlayedText = JSON.stringify(GlobalUnitsModel.usCardsPlayed)
   const cardText = JSON.stringify(GlobalUnitsModel.cards)
 
+  const location1AFText = JSON.stringify(GlobalGameState.initial1AFLocation)
+
+  let previousPositionText
+  if (GlobalGameState.previousPosition !== undefined) {
+    previousPositionText = JSON.stringify(Array.from(GlobalGameState.previousPosition.entries()))
+  }
+
   // console.log(jpCardText)
   // console.log(usCardText)
 
@@ -81,6 +88,8 @@ export function saveGameState(controller, gameId) {
     jpMap: jpMapText,
     usMap: usMapText,
     jpcards: jpCardText,
+    ijnFleetLocation: location1AFText,
+    previousPosition: previousPositionText,
     uscards: usCardText,
     cards: cardText,
     jpcardsplayed: jpCardsPlayedText,
@@ -89,7 +98,6 @@ export function saveGameState(controller, gameId) {
     jpFleetMap: jpFleetText,
     log: logItems,
   }
-
   localStorage.setItem(gameId, JSON.stringify(savedGameDetails))
 }
 function createFleetUpdates(fleetMap) {
@@ -520,6 +528,18 @@ export function loadGameStateForId(controller, gameId) {
   const airOperationText = gameDetails.airoperations
   GlobalGameState.airOperationPoints = JSON.parse(airOperationText)
 
+  const ijnLocationText = gameDetails.ijnFleetLocation
+  if (ijnLocationText !== undefined) {
+    GlobalGameState.initial1AFLocation = JSON.parse(ijnLocationText)
+  }
+
+  const previousPositionText = gameDetails.previousPosition
+
+  let previousPosition
+  if (previousPositionText !== undefined) {
+    previousPosition = new Map(JSON.parse(previousPositionText))
+  }
+
   const airText = gameDetails.air
   const airMap = new Map(JSON.parse(airText))
 
@@ -640,6 +660,7 @@ export function loadGameStateForId(controller, gameId) {
     usDMCVMarkerUpdates,
     cvSelected,
     logItems,
+    previousPosition,
   }
 }
 

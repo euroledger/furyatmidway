@@ -7,7 +7,8 @@ class JapanHumanFleetMovementState {
   async doAction(stateObject) {
     const { setUSMapRegions, setJapanMapRegions, setJapanMIFMapRegions, setJpAlertShow, setEnabledJapanFleetBoxes } =
       stateObject
-    console.log("DO IJN FLEET MOVEMENT")
+    console.log("DO IJN FLEET MOVEMENT -> IJN 1AF LOCATION =",GlobalGameState.initial1AFLocation)
+   
 
     goToIJNFleetMovement({
       setUSMapRegions,
@@ -41,7 +42,8 @@ class JapanHumanFleetMovementState {
   }
 
   getState() {
-    return GlobalGameState.PHASE.JAPAN_FLEET_MOVEMENT
+    return 
+    
   }
 }
 

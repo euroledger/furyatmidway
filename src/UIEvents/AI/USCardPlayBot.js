@@ -1,6 +1,17 @@
 import GlobalGameState from "../../model/GlobalGameState"
 import GlobalUnitsModel from "../../model/GlobalUnitsModel"
 
+function allCarriersDamagedOrAtCapacity(controller) {
+  if (
+    (controller.getCarrierHits(GlobalUnitsModel.Carrier.ENTERPRISE) >= 2 ||
+      !controller.isHangarAvailable(GlobalUnitsModel.Carrier.ENTERPRISE)) &&
+    (controller.getCarrierHits(GlobalUnitsModel.Carrier.HORNET) >= 2 ||
+      !controller.isHangarAvailable(GlobalUnitsModel.Carrier.HORNET)) &&
+    (controller.getCarrierHits(GlobalUnitsModel.Carrier.YORKTOWN) >= 2 ||
+      !controller.isHangarAvailable(GlobalUnitsModel.Carrier.YORKTOWN))
+  )
+    return true
+}
 export function playCardAction(controller, cardNumber, setAttackResolved, side) {
   switch (cardNumber) {
     case 1:
@@ -12,7 +23,16 @@ export function playCardAction(controller, cardNumber, setAttackResolved, side) 
       const reducedUnits = controller.getAllReducedUnitsForSide(side)
       const eliminatedAirUnits = controller.getAllEliminatedUnits(side)
 
-      console.log("reducedUnits=", reducedUnits,"eliminatedAirUnits=", eliminatedAirUnits)
+      console.log("reducedUnits=", reducedUnits, "eliminatedAirUnits=", eliminatedAirUnits)
+
+      if (reducedUnits.length === 0) {
+        if (eliminatedAirUnits.length > 0) {
+          // make sure there is somewhere for restored unit to go
+          if (allCarriersDamagedOrAtCapacity(controller))  {
+            return false
+          }
+        }
+      }
       return reducedUnits.length > 0 || eliminatedAirUnits.length > 0
 
     case 7:

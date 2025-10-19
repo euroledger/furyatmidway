@@ -1,5 +1,5 @@
 import GlobalGameState from "../../../model/GlobalGameState"
-import { japanDMCVPlanningHandler } from "../../StateUtils"
+import GlobalInit from "../../../model/GlobalInit"
 
 class JapanHumanDMCVFleetMovementState {
   async doAction(stateObject) {
@@ -16,6 +16,7 @@ class JapanHumanDMCVFleetMovementState {
 
   async nextState(stateObject) {
     console.log("NEXT STATE AFTER JAPAN DMCV FLEET MOVEMENT....")
+    GlobalGameState.initial1AFLocation = GlobalInit.controller.getFleetLocation("1AF", GlobalUnitsModel.Side.JAPAN)
     GlobalGameState.gamePhase = GlobalGameState.PHASE.JAPAN_FLEET_MOVEMENT
   }
 

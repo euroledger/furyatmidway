@@ -29,7 +29,7 @@ class USAICardDrawState {
           GlobalGameState.updateGlobalState()
         } else {
           GlobalGameState.currentPlayer = GlobalUnitsModel.Side.US
-          GlobalGameState.gamePhase = GlobalGameState.PHASE.US_FLEET_MOVEMENT_PLANNING
+          GlobalGameState.gamePhase = GlobalGameState.PHASE.US_DMCV_FLEET_MOVEMENT_PLANNING
           GlobalGameState.usFleetMoved = false
           GlobalGameState.phaseCompleted = true
         }

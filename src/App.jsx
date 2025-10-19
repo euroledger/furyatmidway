@@ -776,9 +776,7 @@ export function App() {
           StateManager.gameStateManager.setJapanState(stateObject)
           StateManager.gameStateManager.doAction(GlobalUnitsModel.Side.JAPAN, stateObject)
         }      
-      } else {
-        // nextAction()
-      }
+      } 
     }
   }, [GlobalGameState.gamePhase, cardNumber])
 
@@ -862,6 +860,10 @@ export function App() {
       doStateChange()
     }
   }, [GlobalGameState.gamePhase])
+
+  useEffect(() => {
+      GlobalGameState.previousPosition = previousPosition // used for save/load game
+  }, [previousPosition])
 
   useEffect(() => {
     if (GlobalGameState.gamePhase === GlobalGameState.PHASE.MIDWAY_ATTACK) {
@@ -1778,6 +1780,7 @@ export function App() {
                     GlobalGameState.jpCardsDrawn = true
                     if (GlobalGameState.gamePhase === GlobalGameState.PHASE.JAPAN_DRAWS_ONE_CARD) {
                       GlobalInit.controller.drawJapanCards(1, false)
+                      
                       // setMidwayDialogShow(true)
                       midwayPossible(GlobalInit.controller, setMidwayWarningShow, setMidwayDialogShow)
 
@@ -1959,8 +1962,6 @@ export function App() {
     setMidwayDialogShow(false)
     nextAction()
   }
-
-
   function loadMyGame(id) {
     setLoading(() => true)
     loadHandler({
@@ -1976,6 +1977,7 @@ export function App() {
       loadState,
       id,
       setLoading,
+      setPreviousPosition
     })
     setInitComplete(true)
     StateManager.gameStateManager.setPlayerStates(GlobalGameState.jpPlayerType, GlobalGameState.usPlayerType)
@@ -2303,6 +2305,10 @@ export function App() {
       ? "/images/japanflag.jpg"
       : "/images/usaflag.jpg"
   
+   const jpCard =
+          GlobalInit.controller.japanHandContainsCard(3) || GlobalInit.controller.getCardPlayed(3, GlobalUnitsModel.Side.JAPAN)
+     
+    let card3bg = jpCard ? GlobalUIConstants.Colors.JAPAN : GlobalUIConstants.Colors.US
     const endOfTurnSummaryHeaders = (
     <>
       <EndOfTurnSummaryHeaders
@@ -3334,9 +3340,11 @@ export function App() {
         setAttackResolved={setAttackResolved}
         setSubmarineAlertPanelShow={setSubmarineAlertPanelShow}
         setSubmarineDamagePanelShow={setSubmarineDamagePanelShow}
+        sidebg={sideboog}
+        image={imageboog}
         onHide={(e) => {
           setCardAlertPanelShow(false)
-          nextAction(e)
+          // nextAction(e)
         }}
         nextAction={nextAction}
         width={30}
@@ -3531,6 +3539,7 @@ export function App() {
         headers={airReplacementsHeaders}
         footers={airReplacementsFooters}
         width={74}
+        sidebg={card3bg}
         showDice={false}
         margin={0}
         onHide={(e) => {

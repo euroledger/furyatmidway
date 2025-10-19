@@ -51,6 +51,7 @@ function CardAlertPanel(props) {
     // setButtonPressed(() => false)
     setShowCardFooter(false)
     onHide(e)
+    nextAction(e)
   }
 
   const yesHandler = (e) => {
@@ -58,6 +59,7 @@ function CardAlertPanel(props) {
       setTowedToFriendlyPortPanelShow(true)
       controller.setCardPlayed(1, GlobalUnitsModel.Side.US)
       onHide(e)
+      nextAction(e)
     } else if (cardNumber === 2) {
       setDamageControlPanelShow(true)
       if (controller.usHandContainsCard(2)) {
@@ -66,6 +68,7 @@ function CardAlertPanel(props) {
         controller.setCardPlayed(2, GlobalUnitsModel.Side.JAPAN)
       }
       onHide(e)
+      nextAction(e)
     } else if (cardNumber === 3) {
       setAirReplacementsPanelShow(true)
       if (controller.usHandContainsCard(3)) {
@@ -99,6 +102,7 @@ function CardAlertPanel(props) {
       setCardDicePanelShow5(true)
       controller.setCardPlayed(5, GlobalUnitsModel.Side.JAPAN)
       onHide(e)
+      nextAction(e)
     } else if (cardNumber === 6) {
       setHeaderText("CARD #6 PLAYED")
       controller.setCardPlayed(6, GlobalUnitsModel.Side.JAPAN)
@@ -107,10 +111,12 @@ function CardAlertPanel(props) {
       setCardDicePanelShow7(true)
       controller.setCardPlayed(7, GlobalUnitsModel.Side.US)
       onHide(e)
+      nextAction(e)
     } else if (cardNumber === 8) {
       controller.setCardPlayed(8, GlobalUnitsModel.Side.US)
       setShowCardFooter(() => true)
       onHide(e)
+      nextAction(e)
     } else if (cardNumber === 9) {
       setHeaderText("CARD #9 PLAYED")
       controller.setCardPlayed(9, GlobalUnitsModel.Side.JAPAN)
@@ -131,6 +137,7 @@ function CardAlertPanel(props) {
       setStrikeLostPanelShow(true)
       controller.setCardPlayed(11, GlobalUnitsModel.Side.JAPAN)
       onHide(e)
+      nextAction(e)
     } else if (cardNumber === 12) {
       controller.setCardPlayed(12, GlobalUnitsModel.Side.JAPAN)
       setShowCardFooter(() => true)
@@ -141,7 +148,6 @@ function CardAlertPanel(props) {
       setShowCardFooter(() => true)
     } else {
       setShowCardFooter(() => true)
-      // nextAction()
     }
     setThisCard(cardNumber)
     setButtonPressed(() => true)
@@ -196,6 +202,8 @@ function CardAlertPanel(props) {
   const jpCard =
     controller.japanHandContainsCard(cardNumber) || controller.getCardPlayed(cardNumber, GlobalUnitsModel.Side.JAPAN)
   let image = jpCard ? "/images/japanflag.jpg" : "/images/usaflag.jpg"
+
+  bg = jpCard ? GlobalUIConstants.Colors.JAPAN : GlobalUIConstants.Colors.US
 
   return (
     <Modal

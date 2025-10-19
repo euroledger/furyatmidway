@@ -402,8 +402,7 @@ function goToIJNFleetMovement({
   setJapanMIFMapRegions,
   setJpAlertShow,
   setEnabledJapanFleetBoxes,
-}) {
-  GlobalGameState.gamePhase = GlobalGameState.PHASE.JAPAN_FLEET_MOVEMENT
+}) {  
   testForOffMapBoxesJapan(setEnabledJapanFleetBoxes)
   setUSMapRegions([])
   // if this is not turn 1 derive japan regions from position of fleet(s)

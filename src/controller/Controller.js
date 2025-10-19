@@ -312,14 +312,10 @@ export default class Controller {
     let allowedUnits = new Array()
     for (const unit of reducedUnits) {
       const location = this.getAirUnitLocation(unit.name)
-      console.log("UNIT: ", unit.name, "********* QUACK ********* AIR UNIT LOCATION=", location)
       if (location.boxName.includes("ELIMINATED")) {
         continue
       }
       const carrierName = this.getCarrierForAirBox(location.boxName)
-
-      console.log("\t => CARRIER=", carrierName)
-
       if (this.isSunk(carrierName, true) || this.getCarrierHits(carrierName) == 2) {
         continue
       }
