@@ -11,9 +11,9 @@ class USAIDrawOneCardState {
   async nextState(stateObject) {
     GlobalGameState.phaseCompleted = true
     GlobalGameState.usCardsDrawn = true
-    // GlobalInit.controller.drawUSCards(1, false)
+    GlobalInit.controller.drawUSCards(1, false)
 
-    GlobalInit.controller.drawUSCards(1, true, [3]) // QUACK TESTING
+    // GlobalInit.controller.drawUSCards(1, true, [3]) // QUACK TESTING
 
 
     if (GlobalGameState.gameTurn !== 4 && isMidwayAttackPossible()) {

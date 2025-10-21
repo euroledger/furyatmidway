@@ -72,11 +72,12 @@ function CardAlertPanel(props) {
     } else if (cardNumber === 3) {
       setAirReplacementsPanelShow(true)
       if (controller.usHandContainsCard(3)) {
-        controller.setCardPlayed(3, GlobalUnitsModel.Side.US)
+        GlobalGameState.currentPlayer = GlobalUnitsModel.Side.US
+        GlobalGameState.gamePhase = GlobalGameState.PHASE.CARD_RESPONSE
       } else {
         controller.setCardPlayed(3, GlobalUnitsModel.Side.JAPAN)
+        onHide(e)
       }
-      onHide(e)
     } else if (cardNumber === 4) {
       let side
       setDamagedCV("")

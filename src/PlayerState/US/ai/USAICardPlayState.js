@@ -39,12 +39,14 @@ class USAICardPlayState {
         GlobalGameState.testCapSelection = cv
         GlobalGameState.updateGlobalState()
       } else if (cardNumber === 3) {
+        console.log("CARD 3 CARD RESPONSE POOP")
         GlobalGameState.testCapSelection = -1
         GlobalGameState.updateGlobalState()
         setAirReplacementsPanelShow(true)
         await delay(1500)
-
-        // TODO select air replacement
+        GlobalGameState.currentPlayer = GlobalUnitsModel.Side.US
+        GlobalGameState.gamePhase = GlobalGameState.PHASE.CARD_RESPONSE
+        GlobalGameState.updateGlobalState()
       } else {
         if (displayScreen) {
           this.displayCardPlayedPanel(stateObject)

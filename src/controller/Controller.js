@@ -315,9 +315,11 @@ export default class Controller {
       if (location.boxName.includes("ELIMINATED")) {
         continue
       }
-      const carrierName = this.getCarrierForAirBox(location.boxName)
-      if (this.isSunk(carrierName, true) || this.getCarrierHits(carrierName) == 2) {
-        continue
+      if (!location.boxName.includes("RETURN")) {
+        const carrierName = this.getCarrierForAirBox(location.boxName)
+        if (this.isSunk(carrierName, true) || this.getCarrierHits(carrierName) == 2) {
+          continue
+        }
       }
       allowedUnits.push(unit)
     }

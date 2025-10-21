@@ -35,6 +35,10 @@ export function playCardAction(controller, cardNumber, setAttackResolved, side) 
       }
       return reducedUnits.length > 0 || eliminatedAirUnits.length > 0
 
+    case 4:
+      // TODO
+      
+      // Submarine 
     case 7:
       // factor would be position of CSF fleet, e.g., if too far away this card be useless
 

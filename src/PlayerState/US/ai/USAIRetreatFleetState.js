@@ -1,7 +1,8 @@
 import GlobalGameState from "../../../model/GlobalGameState"
 import GlobalInit from "../../../model/GlobalInit"
 import GlobalUnitsModel from "../../../model/GlobalUnitsModel"
-import { checkFleetsInSameHex, moveOnFromSeaBattles } from "../../StateUtils"
+import { checkFleetsInSameHex } from "../../StateUtils"
+import { moveOnFromSeaBattles } from "../../StateTransition"
 
 class USAIRetreatFleetState {
   async doAction(stateObject) {

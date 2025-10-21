@@ -6,7 +6,7 @@ import { removeDMCVFleetForCarrier } from "../../StateUtils"
 
 class JapanHumanAttackDamageResolutionState {
   async doAction(stateObject) {
-    console.log("++++++++++++++ JAPAN Attack Damage Resolution")
+    console.log("++++++++++++++ JAPAN Attack Damage Resolution... do nothing")
   }
 
   async nextState(stateObject) {
@@ -22,11 +22,8 @@ class JapanHumanAttackDamageResolutionState {
     if (carrier.dmcv && GlobalInit.controller.isSunk(carrierName)) {
       await removeDMCVFleetForCarrier(GlobalUnitsModel.Side.US, setFleetUnitUpdate)
       carrier.dmcv = false
-      if (sideBeingAttacked === GlobalUnitsModel.Side.US) {
-        GlobalGameState.usDMCVCarrier = undefined
-      } else {
-        GlobalGameState.jpDMCVCarrier = undefined
-      }
+      GlobalGameState.usDMCVCarrier = undefined
+
       setFleetUnitUpdate({
         name: "",
         position: {},

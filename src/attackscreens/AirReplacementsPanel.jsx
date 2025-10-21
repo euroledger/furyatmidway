@@ -16,6 +16,7 @@ export function AirReplacementsHeaders({
   const [elimSelected, setElimSelected] = useState(false)
 
   const [elRefs, setElRefs] = useState([])
+
   let side = GlobalUnitsModel.Side.JAPAN
   if (controller.getCardPlayed(3, GlobalUnitsModel.Side.US)) {
     side = GlobalUnitsModel.Side.US
@@ -47,15 +48,11 @@ export function AirReplacementsHeaders({
     }
   }, [GlobalGameState.testStepLossSelection])
 
-
-
   let msg = "Select a one step air unit to flip to full strength or eliminated air unit to return to hangar"
 
   if (side === GlobalUnitsModel.Side.US && GlobalGameState.usPlayerType === GlobalUnitsModel.TYPE.AI) {
     msg = "US Player selects a one step air unit to flip to full strength or eliminated air unit to return to hangar"
   }
-
-
 
   // Get all One Step (reduced) and Eliminated air units
 
@@ -111,6 +108,7 @@ export function AirReplacementsHeaders({
       airUnit.aircraftUnit.steps = 2
       const newImage = airUnit.image.replace("back", "front")
       airUnit.image = newImage
+      setSelectedAirUnit(airUnit)
       setAirReplacementsSelected(true)
       return
     }
@@ -126,7 +124,16 @@ export function AirReplacementsHeaders({
       setElimSelected(true)
     }
   }
-
+  let clickMsg = "(click on air unit to flip or restore)"
+  if (side === GlobalUnitsModel.Side.US) {
+    if (GlobalGameState.usPlayerType === GlobalUnitsModel.TYPE.AI) {
+      clickMsg = ""
+    }
+  } else {
+    if (GlobalGameState.jpPlayerType === GlobalUnitsModel.TYPE.AI) {
+      clickMsg = ""
+    }
+  }
   return (
     <>
       <div>
@@ -235,7 +242,7 @@ export function AirReplacementsHeaders({
             marginLeft: "10px",
           }}
         >
-          (click on air unit to flip or restore)
+          {clickMsg}
         </p>
       </div>
     </>
@@ -253,12 +260,14 @@ export function AirReplacementsFooters({
 }) {
   const [selectedCV, setSelectedCV] = useState("")
 
+  const [elRefsCV, setElRefsCV] = useState([])
+
   let side = GlobalUnitsModel.Side.JAPAN
   if (controller.getCardPlayed(3, GlobalUnitsModel.Side.US)) {
     side = GlobalUnitsModel.Side.US
   }
 
-  const handleClick = (cv) => {
+  const handleCVClick = (cv) => {
     setSelectedCV(cv)
     // move the air unit from eliminated box to the hangar of the given cv
   }
@@ -266,6 +275,7 @@ export function AirReplacementsFooters({
   let availableCVImages = []
   let msg = ""
 
+  let arrLength = 0
   if (side === GlobalUnitsModel.Side.US) {
     const usCVs = [
       GlobalUnitsModel.Carrier.ENTERPRISE,
@@ -275,6 +285,23 @@ export function AirReplacementsFooters({
     availableUSCVs = usCVs.filter((carrier) => {
       return !controller.isSunk(carrier, true) && controller.isHangarAvailable(carrier)
     })
+
+    // IF AI only display undamaged carriers
+    if (GlobalGameState.usPlayerType === GlobalUnitsModel.TYPE.AI) {
+      let allCarriersDamaged = true
+      for (const cv of availableUSCVs) {
+        if (controller.getCarrierHits(cv) === 0) {
+          allCarriersDamaged = false
+          break
+        }
+      }
+
+      if (!allCarriersDamaged) {
+        availableUSCVs = availableUSCVs.filter((cv) => controller.getCarrierHits(cv) === 0)
+      }
+    }
+
+    arrLength = availableUSCVs.length
     if (clickedOnSomething && availableUSCVs.length === 0) {
       msg = "No carriers available to receive replacements"
       setAirReplacementsSelected(true)
@@ -289,12 +316,48 @@ export function AirReplacementsFooters({
     availableJapanCVs = japanCVs.filter(
       (carrier) => !controller.isSunk(carrier) && controller.isHangarAvailable(carrier)
     )
+    if (GlobalGameState.jpPlayerType === GlobalUnitsModel.TYPE.AI) {
+      let allCarriersDamaged = true
+      for (const cv of availableJapanCVs) {
+        if (controller.getCarrierHits(cv) === 0) {
+          allCarriersDamaged = false
+          break
+        }
+      }
+
+      if (!allCarriersDamaged) {
+        availableJapanCVs = availableJapanCVs.filter((cv) => controller.getCarrierHits(cv) === 0)
+      }
+    }
+
+    arrLength = availableJapanCVs.length
+
     if (clickedOnSomething && availableJapanCVs.length === 0) {
       msg = "No carriers available to receive replacements"
       setAirReplacementsSelected(true)
     }
   }
-  const createImage = (cv) => {
+
+  useEffect(() => {
+    // add or remove refs
+    setElRefsCV((elRefsCV) =>
+      Array(arrLength)
+        .fill()
+        .map((_, i) => elRefsCV[i] || createRef())
+    )
+  }, [])
+
+  useEffect(() => {
+    if (GlobalGameState.testCarrierSelection === -1) {
+      return
+    }
+    const myRef = elRefsCV[GlobalGameState.testCarrierSelection]
+    if (myRef !== undefined && myRef.current !== undefined && myRef.current !== null) {
+      myRef.current.click(myRef.current)
+    }
+  }, [GlobalGameState.testCarrierSelection])
+
+  const createImage = (cv, i) => {
     let image = "/images/fleetcounters/yorktown.jpg"
     if (cv === GlobalUnitsModel.Carrier.ENTERPRISE) {
       image = "/images/fleetcounters/enterprise.jpg"
@@ -332,11 +395,11 @@ export function AirReplacementsFooters({
         </div>
         <div
           style={{
-            marginLeft: "43px",
+            marginLeft: "40px",
             marginTop: "20px",
           }}
         >
-          <Button disabled={buttonDisabled} onClick={() => handleClick(cv)}>
+          <Button style={{width:"100px"}} ref={elRefsCV[i]} disabled={buttonDisabled} onClick={() => handleCVClick(cv)}>
             {cv}
           </Button>
         </div>
@@ -346,10 +409,10 @@ export function AirReplacementsFooters({
 
   if (!airReplacementsSelected) {
     if (side === GlobalUnitsModel.Side.US) {
-      availableCVImages = availableUSCVs.map((cv, idx) => {
+      availableCVImages = availableUSCVs.map((cv, i) => {
         return (
           <>
-            <div>{createImage(cv)}</div>
+            <div>{createImage(cv, i)}</div>
           </>
         )
       })
@@ -357,7 +420,7 @@ export function AirReplacementsFooters({
       availableCVImages = availableJapanCVs.map((cv, idx) => {
         return (
           <>
-            <div>{createImage(cv)}</div>
+            <div>{createImage(cv, i)}</div>
           </>
         )
       })
@@ -366,7 +429,9 @@ export function AirReplacementsFooters({
       }
     }
   }
+  let rep = true
   if (selectedCV && showCarrierDisplay && !airReplacementsSelected) {
+    // rep = false
     setAirReplacementsSelected(true)
     moveAirUnitFromEliminatedBox(controller, side, selectedCV, selectedAirUnit, setAirUnitUpdate)
   }
@@ -405,6 +470,20 @@ export function AirReplacementsFooters({
             </p>
           )}
         </>
+      )}
+      {selectedAirUnit && (
+        <div>
+          <p
+            style={{
+              display: "flex",
+              justifyContent: "center",
+              alignItems: "center",
+              color: "white",
+            }}
+          >
+            Selected Air Unit =&nbsp;<strong>{selectedAirUnit.name}</strong>&nbsp;
+          </p>
+        </div>
       )}
     </>
   )

@@ -52,6 +52,11 @@ export function setUpAirAttack(controller, location, strikeGroup, setCardNumber,
   } else {
     GlobalGameState.taskForceTarget = fleetTarget
     if (fleetTarget.includes("DMCV") || fleetTarget.includes("MIF")) {
+      if (fleetTarget.includes("US-DMCV")) {
+        GlobalGameState.currentPlayer = GlobalUnitsModel.Side.US
+      } else {
+        GlobalGameState.currentPlayer = GlobalUnitsModel.Side.JAPAN
+      }
       GlobalGameState.gamePhase = GlobalGameState.PHASE.ANTI_AIRCRAFT_FIRE
       if (fleetTarget.includes("IJN-DMCV")) {
         GlobalGameState.taskForceTarget = GlobalUnitsModel.TaskForce.JAPAN_DMCV

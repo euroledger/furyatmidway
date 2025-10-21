@@ -110,9 +110,9 @@ export function EndOfTurnSummaryHeaders({ controller, sidebg }) {
           </div>
           {!gameTurn3Winner && (
             <div
-              style={{
-                marginLeft: "20px",
-              }}
+              // style={{
+              //   marginLeft: "0px",
+              // }}
             >
               <p
                 style={{
@@ -269,7 +269,7 @@ export function EndOfTurnSummaryHeaders({ controller, sidebg }) {
           {!gameTurn3Winner && (
             <div
               style={{
-                marginLeft: "40px",
+                marginLeft: "30px",
               }}
             >
               <p

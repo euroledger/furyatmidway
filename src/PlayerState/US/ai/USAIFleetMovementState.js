@@ -1,5 +1,6 @@
 import GlobalGameState from "../../../model/GlobalGameState"
 import GlobalUnitsModel from "../../../model/GlobalUnitsModel"
+import GlobalInit from "../../../model/GlobalInit"
 import { usFleetMovementNextStateHandler, usFleetMovementHandler } from "../../StateUtils"
 import { displayScreen } from "../../StateUtils"
 import USAIAirSearchState from "./USAIAirSearchState"
@@ -12,7 +13,15 @@ class USAIFleetMovementState {
     await usFleetMovementHandler({
       setFleetUnitUpdate,
     })
-    // this.nextState(stateObject)
+    GlobalGameState.distanceBetweenCarrierFleets = GlobalInit.controller.numHexesBetweenFleets(
+      { name: "1AF", side: GlobalUnitsModel.Side.JAPAN },
+      { name: "CSF", side: GlobalUnitsModel.Side.US }
+    )
+
+    console.log(
+      "********** US FLEET MOVEMENT distance between fleets last turn =>",
+      GlobalGameState.distanceBetweenCarrierFleets
+    )
   }
 
   async nextState(stateObject) {

@@ -1,6 +1,7 @@
 import GlobalGameState from "../model/GlobalGameState"
 import GlobalInit from "../model/GlobalInit"
-import { displayAttackTargetPanel, endOfAirOperation, midwayOrAirOps } from "./StateUtils"
+import GlobalUnitsModel from "../model/GlobalUnitsModel"
+import { displayAttackTargetPanel, doFleetUpdates, endOfAirOperation, midwayOrAirOps } from "./StateUtils"
 
 export async function moveOnFromAAAFire(currentPlayer, stateObject) {
   const { capAirUnits, setAirUnitUpdate, setEliminatedUnitsPanelShow } = stateObject
@@ -26,4 +27,11 @@ export async function moveOnFromAAAFire(currentPlayer, stateObject) {
     await endOfAirOperation(capAirUnits, setAirUnitUpdate, setEliminatedUnitsPanelShow)
     midwayOrAirOps()
   }
+}export async function moveOnFromSeaBattles({ setUSMapRegions, setFleetUnitUpdate, setCardNumber }) {
+  setUSMapRegions([])
+  await doFleetUpdates(setFleetUnitUpdate)
+
+  GlobalGameState.currentPlayer = GlobalUnitsModel.Side.JAPAN
+  GlobalGameState.gamePhase = GlobalGameState.PHASE.NIGHT_AIR_OPERATIONS_JAPAN
 }
+

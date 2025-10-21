@@ -466,6 +466,7 @@ export function App() {
 
   useEffect(() => {
     if (GlobalGameState.gamePhase === GlobalGameState.PHASE.CARD_RESPONSE) {
+      console.log("EFFECT HOOK FOR CARD_RESPONSE...")
       doStateChange()
     }
   }, [GlobalGameState.gamePhase])
@@ -3199,7 +3200,7 @@ export function App() {
             sendNightLandingEvent()
           }
           doNightRollsDamage()
-          nextAction(e)
+          // nextAction(e)
         }}
         doRoll={doNightLandingRolls}
         disabled={true}

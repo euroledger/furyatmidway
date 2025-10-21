@@ -1,6 +1,7 @@
 import GlobalGameState from "../../../model/GlobalGameState"
 import GlobalInit from "../../../model/GlobalInit"
-import { getFleetsForDMCVSeaBattle, moveOnFromSeaBattles } from "../../StateUtils"
+import { getFleetsForDMCVSeaBattle } from "../../StateUtils"
+import { moveOnFromSeaBattles } from "../../StateTransition"
 
 class JapanHumanNightBattleState {
   async doAction(stateObject) {

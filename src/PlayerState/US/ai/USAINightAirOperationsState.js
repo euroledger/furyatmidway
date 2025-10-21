@@ -32,15 +32,9 @@ class USAINightAirOperationsState {
       const steps = GlobalInit.controller.getTotalSteps(unitsReturn2)
       setNightSteps(steps)
       setNightAirUnits(unitsReturn2)
+      GlobalGameState.closePanel = false
+      GlobalGameState.updateGlobalState()
       setNightLandingPanelShow(true)
-
-      // TODO
-      // 1. Add state to state factory - state transition in Japan Night Ops DONE
-      // 2. Fix card play for 3 and 4
-      // 3. auto roll dice on this panel DONE
-      // 4. Do US Returns - CAP -> Hangar, Return2 -> Return1, Return1 -> Hangar DONE
-      // 5. Check for possible reorganization DONE
-      // 5. US air movement at end of night operations (Hangar -> CAP/Flight Deck)
 
       GlobalGameState.rollDice = false
       GlobalGameState.updateGlobalState()
@@ -48,7 +42,13 @@ class USAINightAirOperationsState {
       GlobalGameState.rollDice = true
       await delay(10)
       GlobalGameState.updateGlobalState()
+
+      await delay(1000)
+
+      GlobalGameState.closePanel = true
+      GlobalGameState.updateGlobalState()
     }
+    this.nextState(stateObject)
   }
 
   async nextState(stateObject) {

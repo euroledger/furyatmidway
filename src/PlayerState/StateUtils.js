@@ -1199,14 +1199,6 @@ export async function getFleetsForDMCVSeaBattle(controller, setJpFleet, setUsFle
   return { fleetsInSameHexAsUSDMCV }
 }
 
-export async function moveOnFromSeaBattles({ setUSMapRegions, setFleetUnitUpdate, setCardNumber }) {
-  setUSMapRegions([])
-  await doFleetUpdates(setFleetUnitUpdate)
-
-  GlobalGameState.currentPlayer = GlobalUnitsModel.Side.JAPAN
-  GlobalGameState.gamePhase = GlobalGameState.PHASE.NIGHT_AIR_OPERATIONS_JAPAN
-}
-
 function setRetreatRegions(location, setUSMapRegions, fleet) {
   // For the given location, get list of all surrounding hexes
   let hexes = allHexesWithinDistance(location.currentHex, 1, true)

@@ -59,11 +59,9 @@ class USAIAttackDamageResolutionState {
         await removeDMCVFleetForCarrier(GlobalUnitsModel.Side.JAPAN, setFleetUnitUpdate)
         await delay(1)
         carrier.dmcv = false
-        if (sideBeingAttacked === GlobalUnitsModel.Side.US) {
-          GlobalGameState.usDMCVCarrier = undefined
-        } else {
-          GlobalGameState.jpDMCVCarrier = undefined
-        }
+
+        GlobalGameState.jpDMCVCarrier = undefined
+
         setFleetUnitUpdate({
           name: "",
           position: {},

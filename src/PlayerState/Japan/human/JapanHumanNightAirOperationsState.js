@@ -18,9 +18,7 @@ class JapanHumanNightAirOperationsState {
       setNightLandingPanelShow(true)
     }
 
-    // GlobalGameState.phaseCompleted = false
-    // GlobalGameState.nextActionButtonDisabled = true
-    // GlobalGameState.updateGlobalState()
+    GlobalGameState.phaseCompleted = false
   }
 
   async nextState(stateObject) {

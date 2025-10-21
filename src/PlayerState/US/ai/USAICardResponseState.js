@@ -11,7 +11,65 @@ class USAICardResponseState {
   async doAction(stateObject) {
     const { cardNumber, setCarrierPlanesDitchPanelShow, setCardAlertPanelShow } = stateObject
     console.log("**************** DO CARD RESPONSE cardNumber=", cardNumber)
+    // GlobalGameState.closePanel = false
+    // GlobalGameState.updateGlobalState()
+    if (cardNumber === 3) {
+      GlobalGameState.testStepLossSelection = -1
+      GlobalGameState.updateGlobalState()
 
+      GlobalInit.controller.setCardPlayed(3, GlobalUnitsModel.Side.US)
+      const unitsInGroup = GlobalInit.controller.getAllUSCarrierPlanesInReturnBoxes()
+
+      const reducedUnits = GlobalInit.controller.getAllReducedUnitsForSide(GlobalUnitsModel.Side.US)
+      const eliminatedAirUnits = GlobalInit.controller.getAllEliminatedUnits(GlobalUnitsModel.Side.US)
+
+      const allUnits = reducedUnits.concat(eliminatedAirUnits)
+      const selection = Math.floor(Math.random() * allUnits.length)
+      await delay(1000)
+      console.log("SETTING GlobalGameState.testStepLossSelection to", selection)
+      GlobalGameState.testStepLossSelection = selection
+      GlobalGameState.updateGlobalState()
+
+      if (selection < reducedUnits.length) {
+        return // selected reduced air unit, no need to select CV
+      }
+      await delay(100)
+
+      GlobalGameState.testCarrierSelection = -1
+      GlobalGameState.updateGlobalState()
+      await delay(1800)
+
+      const usCVs = [
+        GlobalUnitsModel.Carrier.ENTERPRISE,
+        GlobalUnitsModel.Carrier.YORKTOWN,
+        GlobalUnitsModel.Carrier.HORNET,
+      ]
+      let availableUSCVs = usCVs.filter((carrier) => {
+        return !GlobalInit.controller.isSunk(carrier, true) && GlobalInit.controller.isHangarAvailable(carrier)
+      })
+
+      // Always send air replacement to undamaged carrier if possible
+      let allCarriersDamaged = true
+      for (const cv of availableUSCVs) {
+        if (GlobalInit.controller.getCarrierHits(cv) === 0) {
+          allCarriersDamaged = false
+          break
+        }
+      }
+
+      if (!allCarriersDamaged) {
+        availableUSCVs = availableUSCVs.filter((cv) => GlobalInit.controller.getCarrierHits(cv) === 0)
+      }
+      const selectionCV = Math.floor(Math.random() * availableUSCVs.length)
+      
+      GlobalGameState.testCarrierSelection = selectionCV
+      GlobalGameState.updateGlobalState()
+      await delay(800)
+
+      // Human player should always close the AI Panels
+      // GlobalGameState.closePanel = true
+      // GlobalGameState.updateGlobalState()
+    }
     if (cardNumber === 10) {
       setCardAlertPanelShow(false)
       GlobalGameState.testStepLossSelection = -1
