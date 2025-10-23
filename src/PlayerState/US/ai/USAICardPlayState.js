@@ -16,7 +16,13 @@ class USAICardPlayState {
   }
 
   async doAction(stateObject) {
-    const { cardNumber, setAttackResolved, setTowedToFriendlyPortPanelShow, setAirReplacementsPanelShow } = stateObject
+    const {
+      cardNumber,
+      setAttackResolved,
+      setTowedToFriendlyPortPanelShow,
+      setAirReplacementsPanelShow,
+      setSubmarineDamagePanelShow,
+    } = stateObject
     this.cardNumber = cardNumber
 
     console.log("US AI Card Play: DETERMINE WHETHER OR NOT TO PLAY CARD NUMBER", cardNumber)
@@ -43,6 +49,13 @@ class USAICardPlayState {
         GlobalGameState.testCapSelection = -1
         GlobalGameState.updateGlobalState()
         setAirReplacementsPanelShow(true)
+        await delay(1500)
+        GlobalGameState.currentPlayer = GlobalUnitsModel.Side.US
+        GlobalGameState.gamePhase = GlobalGameState.PHASE.CARD_RESPONSE
+        GlobalGameState.updateGlobalState()
+      } else if (cardNumber === 4) {
+        console.log("CARD 4 CARD RESPONSE POOP")
+        setSubmarineDamagePanelShow(true)
         await delay(1500)
         GlobalGameState.currentPlayer = GlobalUnitsModel.Side.US
         GlobalGameState.gamePhase = GlobalGameState.PHASE.CARD_RESPONSE

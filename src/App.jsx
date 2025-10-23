@@ -1145,6 +1145,7 @@ export function App() {
     setTowedToFriendlyPortPanelShow,
     setCarrierPlanesDitchPanelShow,
     setAirReplacementsPanelShow,
+    setSubmarineDamagePanelShow,
     setMidwayInvasionPanelShow,
     setCardDicePanelShow5,
     setNightLandingDone,
@@ -1362,7 +1363,7 @@ export function App() {
     setEnabledUSBoxes(() => enabledUSBoxes)
   }
 
-
+  console.log("GlobalGameState.cardsChecked=", GlobalGameState.cardsChecked)
 
   const testUi = async (e, headless) => {
     if (headless) {
@@ -2303,10 +2304,14 @@ export function App() {
     let sideboog= GlobalGameState.jpPlayerType === GlobalUnitsModel.TYPE.HUMAN ? GlobalUIConstants.Colors.JAPAN : 
     GlobalUIConstants.Colors.US
     let imageboog = GlobalGameState.jpPlayerType === GlobalUnitsModel.TYPE.HUMAN 
-      ? "/images/japanflag.jpg"
-      : "/images/usaflag.jpg"
+      ? GlobalUIConstants.Flags.JAPAN
+      : GlobalUIConstants.Flags.US
   
-   const jpCard =
+    let card4side = GlobalInit.controller.getCardPlayed(4, GlobalUnitsModel.Side.US) ? GlobalUIConstants.Colors.US : GlobalUIConstants.Colors.JAPAN
+    let card4image = GlobalInit.controller.getCardPlayed(4, GlobalUnitsModel.Side.US)  ? GlobalUIConstants.Flags.US
+      : GlobalUIConstants.Flags.JAPAN
+
+    const jpCard =
           GlobalInit.controller.japanHandContainsCard(3) || GlobalInit.controller.getCardPlayed(3, GlobalUnitsModel.Side.JAPAN)
      
     let card3bg = jpCard ? GlobalUIConstants.Colors.JAPAN : GlobalUIConstants.Colors.US
@@ -2543,11 +2548,11 @@ export function App() {
   function doInitiativeRoll(roll0, roll1) {
     // for testing QUACK
     // doIntiativeRoll(GlobalInit.controller, 6, 1, true) // JAPAN initiative
-    doIntiativeRoll(GlobalInit.controller, 1, 6, true) // US initiative
+    // doIntiativeRoll(GlobalInit.controller, 1, 6, true) // US initiative
 
     // doIntiativeRoll(GlobalInit.controller, 3, 3, true) // tie
 
-    // doIntiativeRoll(GlobalInit.controller, roll0, roll1)
+    doIntiativeRoll(GlobalInit.controller, roll0, roll1)
     GlobalGameState.updateGlobalState()
   }
 
@@ -3200,7 +3205,10 @@ export function App() {
             sendNightLandingEvent()
           }
           doNightRollsDamage()
-          // nextAction(e)
+          if (nSide === GlobalUnitsModel.Side.US && GlobalGameState.usPlayerType === GlobalUnitsModel.TYPE.AI) {
+            nextAction(e)
+          } 
+            
         }}
         doRoll={doNightLandingRolls}
         disabled={true}
@@ -3444,8 +3452,8 @@ export function App() {
         headerText="Submarine"
         headers={submarineHeaders}
         footers={submarineFooters}
-        sidebg={sideboog}
-        image={imageboog}
+        sidebg={card4side}
+        image={card4image}
         width={30}
         showDice={true}
         margin={350}
@@ -3566,8 +3574,8 @@ export function App() {
           nextAction(e)
         }}
         closeButtonDisabled={summaryButtonDisabled}
-        sidebg={sideboog}
-        image={imageboog}
+        sidebg={GlobalUIConstants.Colors.BOTH}
+        image={GlobalUIConstants.Flags.BOTH}
       ></LargeDicePanel>
       <GameStatusPanel show={gameStateShow} gameState={gameState} onHide={() => setGameStateShow(false)} />
       <CardPanel show={jpHandShow} side={GlobalUnitsModel.Side.JAPAN} onHide={() => setjpHandShow(false)}></CardPanel>

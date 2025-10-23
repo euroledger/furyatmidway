@@ -458,8 +458,6 @@ export default class Controller {
     const defenders = units.filter(
       (unit) => unit.constructor.name === "AirUnit" && unit.side === side && unit.aircraftUnit.intercepting
     )
-    console.log("ALL CAP DEFENDERS=", defenders)
-
     return defenders
   }
 
@@ -1341,7 +1339,6 @@ export default class Controller {
 
   autoAssignTargets() {
     let carrierAttackTarget = this.getTargetForAttack()
-    console.log("CARRIER ATTACK TARGET=", carrierAttackTarget)
     if (carrierAttackTarget === null) {
       return null
     }

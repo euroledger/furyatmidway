@@ -42,13 +42,7 @@ class USAINightAirOperationsState {
       GlobalGameState.rollDice = true
       await delay(10)
       GlobalGameState.updateGlobalState()
-
-      await delay(1000)
-
-      GlobalGameState.closePanel = true
-      GlobalGameState.updateGlobalState()
     }
-    this.nextState(stateObject)
   }
 
   async nextState(stateObject) {
@@ -60,33 +54,33 @@ class USAINightAirOperationsState {
     if (GlobalGameState.orphanedAirUnits.length > 0) {
       setEliminatedUnitsPanelShow(true)
     } else {
-      if (
-        GlobalInit.controller.usHandContainsCard(1) &&
-        GlobalInit.controller.getSunkCarriers(GlobalUnitsModel.Side.US).length > 0
-      ) {
-        setCardNumber(() => 1)
-        GlobalGameState.gamePhase = GlobalGameState.PHASE.CARD_PLAY
-        return
-      }
-      if (GlobalInit.controller.usHandContainsCard(2) || GlobalInit.controller.japanHandContainsCard(2)) {
-        setCardNumber(() => 2)
-        GlobalGameState.gamePhase = GlobalGameState.PHASE.CARD_PLAY
-        return
-      }
-      if (GlobalInit.controller.usHandContainsCard(3) || GlobalInit.controller.japanHandContainsCard(3)) {
-        setCardNumber(() => 3)
-        GlobalGameState.gamePhase = GlobalGameState.PHASE.CARD_PLAY
-        return
-      }
-      if (GlobalInit.controller.usHandContainsCard(4) || GlobalInit.controller.japanHandContainsCard(4)) {
-        setCardNumber(() => 4)
-        GlobalGameState.gamePhase = GlobalGameState.PHASE.CARD_PLAY
-        return
-      }
-      console.log("END OF TURN current state=", GlobalGameState.gamePhase)
+      // if (
+      //   GlobalInit.controller.usHandContainsCard(1) &&
+      //   GlobalInit.controller.getSunkCarriers(GlobalUnitsModel.Side.US).length > 0
+      // ) {
+      //   setCardNumber(() => 1)
+      //   GlobalGameState.gamePhase = GlobalGameState.PHASE.CARD_PLAY
+      //   return
+      // }
+      // if (GlobalInit.controller.usHandContainsCard(2) || GlobalInit.controller.japanHandContainsCard(2)) {
+      //   setCardNumber(() => 2)
+      //   GlobalGameState.gamePhase = GlobalGameState.PHASE.CARD_PLAY
+      //   return
+      // }
+      // if (GlobalInit.controller.usHandContainsCard(3) || GlobalInit.controller.japanHandContainsCard(3)) {
+      //   setCardNumber(() => 3)
+      //   GlobalGameState.gamePhase = GlobalGameState.PHASE.CARD_PLAY
+      //   return
+      // }
+      // if (GlobalInit.controller.usHandContainsCard(4) || GlobalInit.controller.japanHandContainsCard(4)) {
+      //   setCardNumber(() => 4)
+      //   GlobalGameState.gamePhase = GlobalGameState.PHASE.CARD_PLAY
+      //   return
+      // }
       GlobalGameState.currentPlayer = GlobalUnitsModel.Side.JAPAN
       GlobalGameState.cardsChecked = new Array()
       GlobalGameState.gamePhase = GlobalGameState.PHASE.END_OF_TURN
+      GlobalGameState.updateGlobalState()
     }
   }
 

@@ -54,7 +54,7 @@ export function CAPHeaders({ controller, setCapAirUnits, capSteps, setCapSteps }
     GlobalGameState.updateGlobalState()
   }
   const attackers = controller.getAttackingStrikeUnits(false)
-  
+
   const strikeCounters = attackers.map((airUnit) => {
     return (
       <div>
@@ -157,17 +157,32 @@ export function CAPHeaders({ controller, setCapAirUnits, capSteps, setCapSteps }
         </div>
       </div>
       <div>
-        <p
-          style={{
-            display: "flex",
-            marginTop: "20px",
-            justifyContent: "center",
-            alignItems: "center",
-            color: "white",
-          }}
-        >
-          Select Air Units to Intercept or&nbsp;<strong>Next</strong>&nbsp; if no interception
-        </p>
+        {arrLength > 0 && (
+          <p
+            style={{
+              display: "flex",
+              marginTop: "20px",
+              justifyContent: "center",
+              alignItems: "center",
+              color: "white",
+            }}
+          >
+            Select Air Units to Intercept or&nbsp;<strong>Next</strong>&nbsp; if no interception
+          </p>
+        )}
+         {arrLength === 0 && (
+          <p
+            style={{
+              display: "flex",
+              marginTop: "20px",
+              justifyContent: "center",
+              alignItems: "center",
+              color: "white",
+            }}
+          >
+            No CAP Units - Click &nbsp;<strong>Next</strong>&nbsp; to continue
+          </p>
+        )}
       </div>
       <div>
         <p

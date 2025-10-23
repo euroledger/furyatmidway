@@ -18,15 +18,12 @@ class USAICardResponseState {
       GlobalGameState.updateGlobalState()
 
       GlobalInit.controller.setCardPlayed(3, GlobalUnitsModel.Side.US)
-      const unitsInGroup = GlobalInit.controller.getAllUSCarrierPlanesInReturnBoxes()
-
       const reducedUnits = GlobalInit.controller.getAllReducedUnitsForSide(GlobalUnitsModel.Side.US)
       const eliminatedAirUnits = GlobalInit.controller.getAllEliminatedUnits(GlobalUnitsModel.Side.US)
 
       const allUnits = reducedUnits.concat(eliminatedAirUnits)
       const selection = Math.floor(Math.random() * allUnits.length)
       await delay(1000)
-      console.log("SETTING GlobalGameState.testStepLossSelection to", selection)
       GlobalGameState.testStepLossSelection = selection
       GlobalGameState.updateGlobalState()
 
@@ -61,14 +58,35 @@ class USAICardResponseState {
         availableUSCVs = availableUSCVs.filter((cv) => GlobalInit.controller.getCarrierHits(cv) === 0)
       }
       const selectionCV = Math.floor(Math.random() * availableUSCVs.length)
-      
+
       GlobalGameState.testCarrierSelection = selectionCV
       GlobalGameState.updateGlobalState()
       await delay(800)
+    }
+    if (cardNumber === 4) {
+      GlobalGameState.rollDice = false
+      GlobalGameState.testCarrierSelection = -1
+      GlobalGameState.updateGlobalState()
+      await delay(10)
 
-      // Human player should always close the AI Panels
-      // GlobalGameState.closePanel = true
-      // GlobalGameState.updateGlobalState()
+      let allCarriers = GlobalInit.controller.getAllCarriersForSide(GlobalUnitsModel.Side.JAPAN, true)
+
+      // Choose CV with 2 damage as target, otherwise 1 damage, otherwise random
+      let selection = allCarriers.findIndex((cv) => GlobalInit.controller.getCarrierHits(cv.name) === 2)
+      if (selection === -1) {
+        selection = allCarriers.findIndex((cv) => GlobalInit.controller.getCarrierHits(cv.name) === 1)
+      }
+      if (selection === -1) {
+        selection = Math.floor(Math.random() * allCarriers.length)
+      }
+      // let selection = Math.floor(Math.random() * allCarriers.length) // quack testing
+
+      await delay(500)
+      GlobalGameState.testCarrierSelection = selection
+      GlobalGameState.updateGlobalState()
+      await delay(1000)
+      GlobalGameState.rollDice = true
+      GlobalGameState.updateGlobalState()
     }
     if (cardNumber === 10) {
       setCardAlertPanelShow(false)

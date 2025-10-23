@@ -57,6 +57,7 @@ class USAIDMCVFleetMovementPlanningState {
   async nextState(stateObject) {
     console.log("MOVING ON FROM US DMCV FLEET MOVEMENT PLANNING")
     GlobalGameState.gamePhase = GlobalGameState.PHASE.US_FLEET_MOVEMENT_PLANNING
+    GlobalGameState.dmcvChecked = false // ready for the IJN check
     GlobalGameState.updateGlobalState()
   }
 

@@ -251,8 +251,8 @@ export function doUSFleetMovementAction(controller, regions, offboardPossible) {
     }
 
     const fleetHex = getRandomElementFrom(targetHexes)
-    return fleetHex
-    // return { q: 2, r: 1 } // QUACK HARD WIRED FOR TESTING ONLY
+    // return fleetHex
+    return { q: 5, r: -1 } // QUACK HARD WIRED FOR TESTING ONLY
   }
   if (GlobalGameState.gameTurn === 2) {
     // CLOSE RANGE EITHER TO 1AF or WHERE WE EXPECT 1AF TO GO (ie CLOSER TO MIDWAY)
@@ -263,11 +263,11 @@ export function doUSFleetMovementAction(controller, regions, offboardPossible) {
     // IF DMCV ELIGIBLE AND >4 HEXES FROM ROW I - move toward row I
     console.log("DO TURN 2 MOVEMENT")
     return doTurns2And3FleetMovement(regions, dmcvLocation)
+    // return { q: 2, r: 2}
   }
   if (GlobalGameState.gameTurn === 3) {
     console.log("DO TURN 3 MOVEMENT")
 
-      let hexesBetweenDMCVAndCSF = -1
     console.log(
       "********** US FLEET MOVEMENT distance between fleets last turn =>",
       GlobalGameState.distanceBetweenCarrierFleets

@@ -30,10 +30,8 @@ export function processPlayedCard(stateObject) {
     let side
     setDamagedCV("")
     if (GlobalInit.controller.usHandContainsCard(4)) {
-      side = GlobalUnitsModel.Side.US
       GlobalInit.controller.setCardPlayed(4, GlobalUnitsModel.Side.US)
     } else {
-      side = GlobalUnitsModel.Side.JAPAN
       GlobalInit.controller.setCardPlayed(4, GlobalUnitsModel.Side.JAPAN)
     }
 

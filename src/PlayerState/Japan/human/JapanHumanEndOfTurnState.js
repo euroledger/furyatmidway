@@ -40,6 +40,10 @@ class JapanHumanEndOfTurnState {
       GlobalGameState.currentPlayer = GlobalUnitsModel.Side.US
       GlobalGameState.gamePhase = GlobalGameState.PHASE.CARD_PLAY
       return
+    } else {
+      if (!this.cardChecked(1)) {
+        this.markCard(1)
+      }
     }
 
     if (
@@ -55,8 +59,9 @@ class JapanHumanEndOfTurnState {
       }
       GlobalGameState.gamePhase = GlobalGameState.PHASE.CARD_PLAY
       return
+    } else if (!this.cardChecked(2)) {
+      this.markCard(2)
     }
-
     if (
       !this.cardChecked(3) &&
       (GlobalInit.controller.usHandContainsCard(3) || GlobalInit.controller.japanHandContainsCard(3))
@@ -70,6 +75,8 @@ class JapanHumanEndOfTurnState {
       }
       GlobalGameState.gamePhase = GlobalGameState.PHASE.CARD_PLAY
       return
+    } else if (!this.cardChecked(3)) {
+      this.markCard(3)
     }
     if (
       !this.cardChecked(4) &&
@@ -77,13 +84,17 @@ class JapanHumanEndOfTurnState {
     ) {
       setCardNumber(() => 4)
       this.markCard(4)
-      if (GlobalInit.controller.usHandContainsCard(2)) {
+      if (GlobalInit.controller.usHandContainsCard(4)) {
+        GlobalInit.controller.setCardPlayed(4, GlobalUnitsModel.Side.US)
         GlobalGameState.currentPlayer = GlobalUnitsModel.Side.US
       } else {
+        GlobalInit.controller.setCardPlayed(4, GlobalUnitsModel.Side.US)
         GlobalGameState.currentPlayer = GlobalUnitsModel.Side.JAPAN
       }
       GlobalGameState.gamePhase = GlobalGameState.PHASE.CARD_PLAY
       return
+    } else if (!this.cardChecked(4)) {
+      this.markCard(4)
     }
     console.log("END OF TURM SUMMARY.........")
     setEndOfTurnSummaryShow(true) // TODO check for other cards
@@ -107,7 +118,6 @@ class JapanHumanEndOfTurnState {
       GlobalGameState.gameTurn++
 
       if (GlobalGameState.gameTurn === 4 || GlobalGameState.gameTurn === 7) {
-        console.log(">>>>>>>>>>>>> START OF TURN - PLAY CARD 5!!!!!!!!!")
         if (GlobalInit.controller.japanHandContainsCard(5)) {
           GlobalGameState.dieRolls = []
           setCardNumber(() => 5)

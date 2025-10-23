@@ -28,7 +28,7 @@ export function playCardAction(controller, cardNumber, setAttackResolved, side) 
       if (reducedUnits.length === 0) {
         if (eliminatedAirUnits.length > 0) {
           // make sure there is somewhere for restored unit to go
-          if (allCarriersDamagedOrAtCapacity(controller))  {
+          if (allCarriersDamagedOrAtCapacity(controller)) {
             return false
           }
         }
@@ -36,9 +36,15 @@ export function playCardAction(controller, cardNumber, setAttackResolved, side) 
       return reducedUnits.length > 0 || eliminatedAirUnits.length > 0
 
     case 4:
+      console.log("PLAY CARD 4???????")
+
       // TODO
-      
-      // Submarine 
+      // If any IJN CVs still afloat -> true
+      return controller.anyTargets(GlobalUnitsModel.Side.JAPAN)
+
+    // Q: Can this card be played against a DMCV ?
+
+    // Submarine
     case 7:
       // factor would be position of CSF fleet, e.g., if too far away this card be useless
 

@@ -433,12 +433,7 @@ export function goToIJNFleetMovement({
       let jpRegion = allHexesWithinDistance(locationOfCarrier.currentHex, GlobalGameState.fleetSpeed, true)
       let jpDMCVLocation = GlobalInit.controller.getFleetLocation("IJN-DMCV", GlobalUnitsModel.Side.JAPAN)
 
-      // WHAT THE FUCK IS THIS FOR?
-      // if (GlobalGameState.initial1AFLocation !== undefined) {
-      //   jpDMCVLocation = GlobalGameState.initial1AFLocation
-      // }
       if (jpDMCVLocation !== undefined && jpDMCVLocation.currentHex !== undefined) {
-        console.log("HUH ^^^^^^^^^^^^^^^^^ jpDMCVLocation=", jpDMCVLocation)
         jpRegion = removeHexFromRegion(jpRegion, jpDMCVLocation.currentHex)
       }
       if (GlobalGameState.midwayAttackDeclaration === true) {
@@ -510,6 +505,15 @@ export function midwayDeclarationHandler({ nextAction }) {
   nextAction()
 }
 
+function goToCardPlay(cardNumber) {
+  if (GlobalInit.controller.usHandContainsCard(cardNumber)) {
+    GlobalGameState.currentPlayer = GlobalUnitsModel.Side.US
+  } else {
+    GlobalGameState.currentPlayer = GlobalUnitsModel.Side.JAPAN
+  }
+  GlobalGameState.gamePhase = GlobalGameState.PHASE.CARD_PLAY
+}
+
 export async function setNextStateFollowingCardPlay(stateObject) {
   const {
     cardNumber,
@@ -529,16 +533,40 @@ export async function setNextStateFollowingCardPlay(stateObject) {
     setEndOfTurnSummaryShow,
   } = stateObject
   GlobalGameState.dieRolls = []
+
+  console.log(">>>>>>>>>>>>>>>>>> MOVING ON FROM CARD", cardNumber)
+  GlobalGameState.cardsChecked.push(cardNumber)
+
   switch (cardNumber) {
     case -1:
       break
     case 1:
       if (GlobalInit.controller.usHandContainsCard(2) || GlobalInit.controller.japanHandContainsCard(2)) {
         setCardNumber(() => 2)
+        goToCardPlay(2)
       } else if (GlobalInit.controller.usHandContainsCard(3) || GlobalInit.controller.japanHandContainsCard(3)) {
         setCardNumber(() => 3)
+        goToCardPlay(3)
       } else if (GlobalInit.controller.usHandContainsCard(4) || GlobalInit.controller.japanHandContainsCard(4)) {
         setCardNumber(() => 4)
+        goToCardPlay(4)
+      } else {
+        if (GlobalGameState.gameTurn === 7) {
+          determineMidwayInvasion(setCardNumber, setEndOfTurnSummaryShow, 1)
+        } else {
+          GlobalGameState.currentPlayer = GlobalUnitsModel.Side.JAPAN
+          GlobalGameState.gamePhase = GlobalGameState.PHASE.END_OF_TURN
+        }
+      }
+
+      break
+    case 2:
+      if (GlobalInit.controller.usHandContainsCard(3) || GlobalInit.controller.japanHandContainsCard(3)) {
+        setCardNumber(() => 3)
+        goToCardPlay(3)
+      } else if (GlobalInit.controller.usHandContainsCard(4) || GlobalInit.controller.japanHandContainsCard(4)) {
+        setCardNumber(() => 4)
+        goToCardPlay(4)
       } else {
         if (GlobalGameState.gameTurn === 7) {
           determineMidwayInvasion(setCardNumber, setEndOfTurnSummaryShow, 1)
@@ -548,10 +576,10 @@ export async function setNextStateFollowingCardPlay(stateObject) {
         }
       }
       break
-
     case 3:
       if (GlobalInit.controller.usHandContainsCard(4) || GlobalInit.controller.japanHandContainsCard(4)) {
         setCardNumber(() => 4)
+        goToCardPlay(4)
       } else {
         if (GlobalGameState.gameTurn === 7) {
           determineMidwayInvasion(setCardNumber, setEndOfTurnSummaryShow, 3)
@@ -1317,6 +1345,7 @@ export async function checkFleetsInSameHex(
     // TODO IF AI SELECT A RETREAT HEX AT RANDOM
     // ----------------------------------------------------
     if (distanceMoved === 2) {
+      console.log("CFS MOVED 2 HEXES")
       let hexes = interveningHexes(usStartLocation.currentHex, csfLocation.currentHex)
       if (hexes.length === 1) {
         // one intervening hex
@@ -1353,19 +1382,28 @@ export async function checkFleetsInSameHex(
             r: hexes[1].r,
           },
         }
+        console.log(">>>>>>>>> hex1=", hex1, "hex2=", hex2)
         const fleetsHex1 = GlobalInit.controller.getAllFleetsInLocation(hex1, GlobalUnitsModel.Side.US, false)
         const fleetsHex2 = GlobalInit.controller.getAllFleetsInLocation(hex2, GlobalUnitsModel.Side.US, false)
         // 1. hex1 occupied, hex2 unoccupied -> move to hex2
-        if (fleetsHex1.length === 1 && fleetsHex2.length === 0) {
+
+        if (
+          fleetsHex1.length === 0 &&
+          fleetsHex2.length === 0 &&
+          GlobalGameState.usPlayerType === GlobalUnitsModel.TYPE.AI
+        ) {
+          let oneOrZero = Math.random() >= 0.5 ? 1 : 0
+          if (oneOrZero === 0) {
+            await retreatOneHexTo(hex1.currentHex, "CSF", setFleetUnitUpdate)
+          } else {
+            await retreatOneHexTo(hex2.currentHex, "CSF", setFleetUnitUpdate)
+          }
+        } else if (fleetsHex1.length === 1 && fleetsHex2.length === 0) {
           await retreatOneHexTo(hex2.currentHex, "CSF", setFleetUnitUpdate)
-        }
-        // 2. hex1 unoccupied, hex2 occupied -> move to hex1
-        if (fleetsHex1.length === 0 && fleetsHex2.length === 1) {
+        } else if (fleetsHex1.length === 0 && fleetsHex2.length === 1) {
+          // 2. hex1 unoccupied, hex2 occupied -> move to hex1
           await retreatOneHexTo(hex1.currentHex, "CSF", setFleetUnitUpdate)
-        }
-        // 3. hex2 occupied, hex1 occupied -> region selection
-        // 4. hex1 unoccupied, hex2 unoccupied -> region selection
-        if (fleetsHex1.length == fleetsHex2.length) {
+        } else if (fleetsHex1.length == fleetsHex2.length) {
           // setRetreatRegions(csfLocation, setUSMapRegions, "CSF")
           // go to region selection for human or random for AI
           if (GlobalGameState.usPlayerType === GlobalUnitsModel.TYPE.HUMAN) {
@@ -1376,6 +1414,9 @@ export async function checkFleetsInSameHex(
             await retreatOneHexTo(retreatHex, "CSF", setFleetUnitUpdate)
           }
         }
+
+        // 3. hex2 occupied, hex1 occupied -> region selection
+        // 4. hex1 unoccupied, hex2 unoccupied -> region selection
       } else {
         // rare case where there has been a sea battle at night and the CSF has moved > 3 hexes
         // setRetreatRegions(csfLocation, setUSMapRegions, "CSF")

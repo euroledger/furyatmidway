@@ -34,16 +34,16 @@ class USAIFleetMovementPlanningState {
     // GlobalGameState.updateGlobalState()
 
     // See if we should go to US DMCV Fleet Planning first
-    // if (goToDMCVState(GlobalUnitsModel.Side.US) && !GlobalGameState.dmcvChecked) {
-    //   console.log("********** DO US DMCV FLEET PLANNING FIRST ************ ")
-    //   GlobalGameState.dmcvChecked = true
-    //   GlobalGameState.gamePhase = GlobalGameState.PHASE.US_DMCV_FLEET_MOVEMENT_PLANNING
-    // } else {
-      console.log(">>>>>>>>> SET PHASE TO US_FLEET_MOVEMENT_PLANNING")
+    if (goToDMCVState(GlobalUnitsModel.Side.JAPAN) && !GlobalGameState.dmcvChecked) {
+      console.log("********** DO JAPAN DMCV FLEET PLANNING FIRST ************ ")
+      GlobalGameState.dmcvChecked = true
+      GlobalGameState.gamePhase = GlobalGameState.PHASE.JAPAN_DMCV_FLEET_MOVEMENT
+    } else {
+      console.log(">>>>>>>>> SET PHASE TO JAPAN FLEET MOVEMENT PLANNING")
       GlobalGameState.currentPlayer = GlobalUnitsModel.Side.JAPAN
       GlobalGameState.initial1AFLocation = GlobalInit.controller.getFleetLocation("1AF", GlobalUnitsModel.Side.JAPAN)
       GlobalGameState.gamePhase = GlobalGameState.PHASE.JAPAN_FLEET_MOVEMENT
-    // }
+    }
   }
 
   getState() {

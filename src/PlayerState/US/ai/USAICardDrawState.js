@@ -5,7 +5,11 @@ import GlobalUnitsModel from "../../../model/GlobalUnitsModel"
 class USAICardDrawState {
   async doAction(stateObject) {
     console.log("DO CARD ACTION")
-    this.nextState(stateObject)
+    if (GlobalInit.controller.japanHandContainsCard(6) && GlobalGameState.gameTurn !== 4) {
+      GlobalGameState.phaseCompleted = true // ensure next action button enabled
+    } else {
+      this.nextState(stateObject)
+    }
   }
 
   async nextState(stateObject) {

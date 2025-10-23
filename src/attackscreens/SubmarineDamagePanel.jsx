@@ -1,4 +1,4 @@
-import { React } from "react"
+import { useState, createRef, useEffect } from "react"
 import Button from "react-bootstrap/Button"
 import GlobalUnitsModel from "../model/GlobalUnitsModel"
 import GlobalGameState from "../model/GlobalGameState"
@@ -6,7 +6,9 @@ import Controller from "../controller/Controller"
 import { sendDamageUpdates, doCarrierDamageRolls, autoAllocateDamage, sendDMCVUpdate } from "../DiceHandler"
 
 export function SubmarineDamagePanelHeaders({ controller, setDamagedCV, damagedCV, side, damageDone }) {
-   let usEnterprise = {
+  const [elRefsCV, setElRefsCV] = useState([])
+
+  let usEnterprise = {
     image: "/images/fleetcounters/enterprise.jpg",
     name: GlobalUnitsModel.Carrier.ENTERPRISE,
     buttonStr: "Enterprise",
@@ -54,7 +56,7 @@ export function SubmarineDamagePanelHeaders({ controller, setDamagedCV, damagedC
     marginLeft: "3px",
   }
 
-  const createImage = (carrierName, damageBow, damageStern, sunk) => {
+  const createImage = (carrierName, damageBow, damageStern, sunk, i) => {
     let carrier
     let damageMarker = sunk ? "/images/markers/sunk.png" : "/images/markers/damage.png"
     let airImages
@@ -205,7 +207,7 @@ export function SubmarineDamagePanelHeaders({ controller, setDamagedCV, damagedC
               color: "white",
             }}
           >
-            <Button disabled={damagedCV !== "" || sunk} onClick={() => handleClick(carrierName)}>
+            <Button ref={elRefsCV[i]} disabled={damagedCV !== "" || sunk} onClick={() => handleClick(carrierName)}>
               {carrierName}
             </Button>
           </div>
@@ -224,12 +226,30 @@ export function SubmarineDamagePanelHeaders({ controller, setDamagedCV, damagedC
   const excludeSunk = !damageDone
 
   let allCarriers = controller.getAllCarriersForSide(sideBeingAttacked, excludeSunk)
+  const arrLength = allCarriers.length
+  useEffect(() => {
+    // add or remove refs
+    setElRefsCV((elRefsCV) =>
+      Array(arrLength)
+        .fill()
+        .map((_, i) => elRefsCV[i] || createRef())
+    )
+  }, [])
 
+  useEffect(() => {
+    if (GlobalGameState.testCarrierSelection === -1) {
+      return
+    }
+    const myRef = elRefsCV[GlobalGameState.testCarrierSelection]
+    if (myRef !== undefined && myRef.current !== undefined && myRef.current !== null) {
+      myRef.current.click(myRef.current)
+    }
+  }, [GlobalGameState.testCarrierSelection])
   const handleClick = (carrierName) => {
     setDamagedCV(carrierName)
   }
 
-  const cvImages = allCarriers.map((cv, idx) => {
+  const cvImages = allCarriers.map((cv, i) => {
     if (cv.name === GlobalUnitsModel.Carrier.MIDWAY) {
       return <></>
     }
@@ -239,7 +259,7 @@ export function SubmarineDamagePanelHeaders({ controller, setDamagedCV, damagedC
     const sunk = controller.isSunk(cv.name, true)
     return (
       <>
-        <div>{createImage(cv.name, carrierBowDamaged, carrierSternDamaged, sunk)}</div>
+        <div>{createImage(cv.name, carrierBowDamaged, carrierSternDamaged, sunk, i)}</div>
       </>
     )
   })
@@ -248,8 +268,13 @@ export function SubmarineDamagePanelHeaders({ controller, setDamagedCV, damagedC
     targetMsg = "Target Selected:"
   }
   let msg = "Choose CV - Score a hit on roll of 1"
+
   if (side === GlobalUnitsModel.Side.JAPAN) {
     msg = "Choose CV - Score a hit on roll of 1-4"
+  } else {
+    if (GlobalGameState.usPlayerType === GlobalUnitsModel.TYPE.AI) {
+      msg = "US Chooses CV - Scores a hit on roll of 1"
+    }
   }
 
   return (
@@ -362,6 +387,13 @@ export function SubmarineDamagePanelFooters({
   }
 
   const allocateDamage = (box) => {
+    let oneOrZero = Math.random() >= 0.5 ? 1 : 0
+    if (oneOrZero === 0) {
+      box = "BOW"
+    } else {
+      box = "STERN"
+    }
+
     GlobalGameState.currentCarrierAttackTarget = damagedCV
     let damage
     GlobalGameState.sideWithInitiative = side
@@ -387,7 +419,7 @@ export function SubmarineDamagePanelFooters({
   // GlobalGameState.dieRolls = [1]
 
   let success = side === GlobalUnitsModel.Side.US ? GlobalGameState.dieRolls[0] <= 1 : GlobalGameState.dieRolls[0] <= 4
-  const message1 = success ? side + " Die Roll Successful!" : side + " Die Roll Unsuccessful!"
+  const message1 = success ? side + " Die Roll Successful! One hit assigned to " + damagedCV : side + " Die Roll Unsuccessful!"
 
   const carrier = controller.getCarrier(damagedCV)
 
@@ -407,7 +439,8 @@ export function SubmarineDamagePanelFooters({
   undamagedCarrier = carrier.hits === 0 && success
 
   if (success && undamagedCarrier) {
-    str = "Select Box to Assign Hit"
+    // str = "Select Box to Assign Hit"
+    allocateDamage()
   }
 
   return (
@@ -446,7 +479,7 @@ export function SubmarineDamagePanelFooters({
           {str}
         </p>
       </div>
-      {undamagedCarrier && (
+      {/* {undamagedCarrier && (
         <div
           style={{
             display: "flex",
@@ -472,7 +505,7 @@ export function SubmarineDamagePanelFooters({
             STERN BOX
           </Button>
         </div>
-      )}
+      )} */}
     </>
   )
 }

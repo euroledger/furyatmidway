@@ -1,5 +1,6 @@
 import GlobalGameState from "../../../model/GlobalGameState"
 import GlobalInit from "../../../model/GlobalInit"
+import GlobalUnitsModel from "../../../model/GlobalUnitsModel"
 
 class JapanHumanDMCVFleetMovementState {
   async doAction(stateObject) {
