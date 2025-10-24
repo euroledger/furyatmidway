@@ -76,6 +76,7 @@ function AttackDicePanel(props) {
     headerText,
     headers,
     footers,
+    hidden,
     diceButtonDisabled,
     nextState,
     closeButtonDisabled,
@@ -310,7 +311,7 @@ function AttackDicePanel(props) {
       </Modal.Body>
 
       <Modal.Footer style={{ background: `${bg}`, color: "black" }}>
-        <Button ref={button1Ref} disabled={diceButtonDisabled} onClick={() => doRoll()}>
+        <Button ref={button1Ref} hidden={hidden} disabled={diceButtonDisabled} onClick={() => doRoll()}>
           {diceButtonStr}
         </Button>
 

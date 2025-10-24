@@ -13,7 +13,6 @@ class JapanHumanEscortDamageAllocationState {
       // if elite pilots and midway attack we did escort counterattack first
       // so transition to CAP_INTERCEPTION
       if (GlobalGameState.taskForceTarget === GlobalUnitsModel.TaskForce.MIDWAY && GlobalGameState.elitePilots) {
-        GlobalGameState.doneCapSelection = false
         GlobalGameState.testCapSelection = -1
         GlobalGameState.gamePhase = GlobalGameState.PHASE.CAP_INTERCEPTION
       } else {

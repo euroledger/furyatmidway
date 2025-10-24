@@ -1,10 +1,16 @@
 import { React } from "react"
 import "./cap.css"
 import GlobalGameState from "../model/GlobalGameState"
+import GlobalUnitsModel from "../model/GlobalUnitsModel"
 
 export function TroubledReconnaissanceHeader() {
   const cardImage = `/images/cards/MID_Card07.gif`
 
+  let msg = "Roll the die. Result is the Japanese Search Value for the turn."
+
+  if (GlobalGameState.usPlayerType === GlobalUnitsModel.TYPE.AI) {
+    msg = "US Player rolls the die. Result is the Japanese Search Value for the turn."
+  }
   return (
     <div   style={{
         display: "flex",
@@ -32,7 +38,7 @@ export function TroubledReconnaissanceHeader() {
           color: "white",
         }}
       >
-        Roll the die. Result is the Japanese Search Value for the turn.
+        {msg}
         <br></br>
         (Negates Card #6 "High Speed Reconnaissance")
       </p>

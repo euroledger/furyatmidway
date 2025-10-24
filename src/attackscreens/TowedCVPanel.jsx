@@ -27,7 +27,7 @@ export function TowedCVHeaders({ controller, setTowedCVSelected, towedCVSelected
     marginLeft: "3px",
   }
 
-  const usCVsSunk = controller.getSunkCarriers(GlobalUnitsModel.Side.US)
+  const usCVsSunk = controller.getSunkCarriers(GlobalUnitsModel.Side.US, true)
   const arrLength = usCVsSunk.length
   useEffect(() => {
     // add or remove refs
@@ -94,7 +94,6 @@ export function TowedCVHeaders({ controller, setTowedCVSelected, towedCVSelected
     setTowedCVSelected(cv)
   }
   const sunkCVImages = usCVsSunk.map((cv, i) => {
-    console.log("CREATE IMAGE FOR CARRIER",cv, "i=", i)
     return (
       <>
         <div>{createImage(cv, i)}</div>

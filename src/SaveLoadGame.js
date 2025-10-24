@@ -616,8 +616,6 @@ export function loadGameStateForId(controller, gameId) {
   GlobalUnitsModel.usCards = JSON.parse(usCardText)
   // GlobalInit.controller.drawUSCards(1, true, [4]) // QUACK TESTING
 
-
-
   if (jpCardsPlayedText !== undefined) {
     GlobalUnitsModel.jpCardsPlayed = JSON.parse(jpCardsPlayedText)
   }

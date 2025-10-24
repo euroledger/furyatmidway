@@ -57,6 +57,7 @@ function CarrierDamageDicePanel(props) {
     closeButtonDisabled,
     onHide,
     width,
+    hidden,
     margin,
     showDice,
     doRoll,
@@ -359,6 +360,7 @@ function CarrierDamageDicePanel(props) {
         {numDice > 0 && (
           <Button
             ref={button1Ref}
+            hidden={hidden}
             disabled={diceButtonDisabled}
             onClick={() => {
               setDamageDone()

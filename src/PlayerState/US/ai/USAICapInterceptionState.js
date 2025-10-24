@@ -12,6 +12,7 @@ class USAICapInterceptionState {
     console.log(">>>>>>>> US AI CAP INTERCEPTION GlobalGameState.doneCapSelection=", GlobalGameState.doneCapSelection)
 
     if (!GlobalGameState.doneCapSelection) {
+      GlobalGameState.dieRolls = []
       await doCapSelection(GlobalInit.controller)
       this.capDiceRolled = false
     } else {
@@ -21,8 +22,8 @@ class USAICapInterceptionState {
         GlobalGameState.rollDice
       )
       GlobalGameState.rollDice = false
-      GlobalGameState.updateGlobalState()
       GlobalGameState.testCapSelection = -1
+      GlobalGameState.updateGlobalState()
       await delay(1000)
       GlobalGameState.rollDice = true
       GlobalGameState.updateGlobalState()
@@ -36,7 +37,11 @@ class USAICapInterceptionState {
     console.log("MOVE ON FROM US AI CAP INTERCEPTION! capSteps=", capSteps, "CAP AIR UNITS=", capAirUnits)
 
     console.log("STATE CHANGE CAP -> AAA FIRE OR ESCORT COUNTERATTACK OR CAP DAMAGE")
-    if (!this.capDiceRolled && GlobalGameState.taskForceTarget === GlobalUnitsModel.TaskForce.MIDWAY && GlobalGameState.elitePilots) {
+    if (
+      !this.capDiceRolled &&
+      GlobalGameState.taskForceTarget === GlobalUnitsModel.TaskForce.MIDWAY &&
+      GlobalGameState.elitePilots
+    ) {
       GlobalGameState.currentPlayer = GlobalUnitsModel.Side.JAPAN
       GlobalGameState.gamePhase = GlobalGameState.PHASE.ESCORT_COUNTERATTACK
       return

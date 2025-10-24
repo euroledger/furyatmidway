@@ -20,7 +20,6 @@ import "./style.css"
 import { sideBeingAttacked } from "./Utils"
 import StateManager from "./model/StateManager"
 import { allCards } from "./CardLoader"
-import { processPlayedCard } from "./PlayerState/CardUtils"
 import { midwayPossible } from "./PlayerState/StateUtils"
 import { allMidwayBoxesDamaged } from "./DiceHandler"
 import {
@@ -612,7 +611,6 @@ export function App() {
       GlobalGameState.rollDice = false
       GlobalGameState.dieRolls = []
       setCapInterceptionPanelShow(true)
-      console.log("CAP INTERCEPTION current player=", GlobalGameState.currentPlayer)      
       doStateChange()
     }
   }, [GlobalGameState.gamePhase])
@@ -1148,6 +1146,7 @@ export function App() {
     setSubmarineDamagePanelShow,
     setMidwayInvasionPanelShow,
     setCardDicePanelShow5,
+    setCardDicePanelShow7,
     setNightLandingDone,
     setAttackResolutionPanelShow,
     setDamageDone,
@@ -1362,8 +1361,6 @@ export function App() {
     const enabledUSBoxes = getUSEnabledAirBoxes()
     setEnabledUSBoxes(() => enabledUSBoxes)
   }
-
-  console.log("GlobalGameState.cardsChecked=", GlobalGameState.cardsChecked)
 
   const testUi = async (e, headless) => {
     if (headless) {
@@ -2301,6 +2298,13 @@ export function App() {
   const endOfTurnHeader =
     GlobalGameState.gameTurn !== 7 ? `End of Turn ${GlobalGameState.gameTurn} - Summary` : "End of Game Summary"
   
+    // determine whether to hide (AI) buttons
+    let hiddenBoog = GlobalGameState.sideWithInitiative === GlobalUnitsModel.Side.US 
+    && GlobalGameState.usPlayerType === GlobalUnitsModel.TYPE.AI
+
+    let hiddenDefenseBoog = GlobalGameState.sideWithInitiative === GlobalUnitsModel.Side.JAPAN 
+    && GlobalGameState.usPlayerType === GlobalUnitsModel.TYPE.AI
+
     let sideboog= GlobalGameState.jpPlayerType === GlobalUnitsModel.TYPE.HUMAN ? GlobalUIConstants.Colors.JAPAN : 
     GlobalUIConstants.Colors.US
     let imageboog = GlobalGameState.jpPlayerType === GlobalUnitsModel.TYPE.HUMAN 
@@ -2315,6 +2319,10 @@ export function App() {
           GlobalInit.controller.japanHandContainsCard(3) || GlobalInit.controller.getCardPlayed(3, GlobalUnitsModel.Side.JAPAN)
      
     let card3bg = jpCard ? GlobalUIConstants.Colors.JAPAN : GlobalUIConstants.Colors.US
+
+    let hiddenCard4Boog = GlobalInit.controller.getCardPlayed(4, GlobalUnitsModel.Side.US) 
+      && GlobalGameState.usPlayerType === GlobalUnitsModel.TYPE.AI ? true : false
+    
     const endOfTurnSummaryHeaders = (
     <>
       <EndOfTurnSummaryHeaders
@@ -2763,6 +2771,12 @@ export function App() {
       capInterceptionDiceButtonDisabled = true
       showCAPDice = false
     }
+
+       if (GlobalGameState.usPlayerType === GlobalUnitsModel.TYPE.AI 
+        && GlobalGameState.doneCapSelection 
+        && GlobalGameState.dieRolls.length > 0) {
+      capInterceptionDiceButtonDisabled = true
+    }
   }
 
   let nightLandingDiceButtonDisabled = nightLandingDone
@@ -3012,6 +3026,7 @@ export function App() {
         show={!testClicked && targetPanelShow}
         headerText="Target Determination"
         headers={targetHeaders}
+        hidden={hiddenBoog}
         closeButtonStr="Next..."
         footers={targetFooters}
         width={30}
@@ -3056,7 +3071,8 @@ export function App() {
         showDice={showCAPDice}
         margin={0}
         onHide={(e) => {
-          GlobalGameState.doneCapSelection = true
+          GlobalGameState.doneCapSelection = !GlobalGameState.doneCapSelection
+
           setCapInterceptionPanelShow(false)
           if (capAirUnits.length > 0) {
             sendCapEvent()
@@ -3104,6 +3120,7 @@ export function App() {
         closeButtonStr="Next..."
         showDice={true}
         margin={0}
+        hidden={hiddenBoog}
         onHide={(e) => {
           setEscortPanelShow(false)
           sendEscortEvent()
@@ -3124,6 +3141,7 @@ export function App() {
         footers={aaaFooters}
         showDice={true}
         margin={0}
+        hidden={hiddenDefenseBoog}
         onHide={(e) => {
           setAaaPanelShow(false)
           sendAAAEvent()
@@ -3151,6 +3169,7 @@ export function App() {
         footers={attackResolutionFooters}
         showDice={true}
         margin={0}
+        hidden={hiddenBoog}
         onHide={(e) => {
           setAttackResolutionPanelShow(false)
           sendAttackResolutionEvent()
@@ -3242,6 +3261,7 @@ export function App() {
         headerText="Carrier Damage"
         showDice={GlobalGameState.currentCarrierAttackTarget !== GlobalUnitsModel.Carrier.MIDWAY}
         margin={0}
+        hidden={hiddenBoog}
         onHide={(e) => {
           setCarrierDamagePanelShow(false)
           nextAction(e)
@@ -3386,7 +3406,6 @@ export function App() {
           if (cardNumber === 13) {
             nextAction()
           }
-          // processPlayedCard(stateObject) 
         }}
         width={30}
       ></PoopCardAlertPanel>
@@ -3418,6 +3437,8 @@ export function App() {
         width={30}
         showDice={true}
         margin={315}
+        sidebg={GlobalUIConstants.Colors.US}
+        image={GlobalUIConstants.Flags.US}
         diceButtonDisabled={GlobalGameState.dieRolls.length !== 0}
         closeButtonDisabled={GlobalGameState.dieRolls.length === 0}
         onHide={(e) => {
@@ -3457,6 +3478,7 @@ export function App() {
         width={30}
         showDice={true}
         margin={350}
+        hidden={hiddenCard4Boog}
         diceButtonDisabled={submarineDiceButtonDisabled}
         closeButtonDisabled={!submarineDiceButtonDisabled}
         onHide={(e) => {

@@ -19,6 +19,7 @@ class JapanHumanEscortCounterattackState {
     } else {
       if (GlobalInit.controller.getAttackingStepsRemaining() > 0) {
         if (GlobalGameState.taskForceTarget === GlobalUnitsModel.TaskForce.MIDWAY && GlobalGameState.elitePilots) {
+          GlobalGameState.currentPlayer = GlobalUnitsModel.Side.US
           GlobalGameState.gamePhase = GlobalGameState.PHASE.CAP_INTERCEPTION
         } else {
           console.log("GOING TO ANTI AIRCRAFT FIRE....))))))))))))))))))))))")

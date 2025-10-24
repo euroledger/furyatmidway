@@ -22,6 +22,7 @@ function LargeDicePanel(props) {
     onHide,
     width,
     margin,
+    hidden,
     showDice,
     doRoll,
     closeButtonStr,
@@ -36,6 +37,7 @@ function LargeDicePanel(props) {
   const button2Ref = useRef(null)
 
   useEffect(() => {
+    console.log("DICE ROLL HOOK -> GlobalGameState.rollDice=", GlobalGameState.rollDice)
     if (button1Ref.current) {
       if (GlobalGameState.rollDice === true) {
         button1Ref.current.click()
@@ -199,7 +201,7 @@ function LargeDicePanel(props) {
 
       <Modal.Footer style={{ background: `${bg}`, color: "black" }}>
         {numDice > 0 && (
-          <Button ref={button1Ref} disabled={diceButtonDisabled} onClick={() => doRoll()}>
+          <Button ref={button1Ref} hidden={hidden} disabled={diceButtonDisabled} onClick={() => doRoll()}>
             {diceButtonStr}
           </Button>
         )}

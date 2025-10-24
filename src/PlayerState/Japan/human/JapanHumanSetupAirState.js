@@ -18,7 +18,7 @@ class JapanHumanSetupAirState {
     } else {
       GlobalGameState.gamePhase = GlobalGameState.PHASE.JAPAN_CARD_DRAW
 
-      GlobalInit.controller.drawJapanCards(3, true, [6, 10, 12]) // QUACK TESTING ONLY
+      GlobalInit.controller.drawJapanCards(4, true, [6, 2, 3, 4]) // QUACK TESTING ONLY
 
       // GlobalInit.controller.drawJapanCards(3, true)
       GlobalGameState.jpCardsDrawn = true

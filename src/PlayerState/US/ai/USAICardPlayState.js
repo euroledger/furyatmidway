@@ -22,6 +22,7 @@ class USAICardPlayState {
       setTowedToFriendlyPortPanelShow,
       setAirReplacementsPanelShow,
       setSubmarineDamagePanelShow,
+      setCardDicePanelShow7,
     } = stateObject
     this.cardNumber = cardNumber
 
@@ -54,11 +55,18 @@ class USAICardPlayState {
         GlobalGameState.gamePhase = GlobalGameState.PHASE.CARD_RESPONSE
         GlobalGameState.updateGlobalState()
       } else if (cardNumber === 4) {
-        console.log("CARD 4 CARD RESPONSE POOP")
         setSubmarineDamagePanelShow(true)
         await delay(1500)
         GlobalGameState.currentPlayer = GlobalUnitsModel.Side.US
         GlobalGameState.gamePhase = GlobalGameState.PHASE.CARD_RESPONSE
+        GlobalGameState.updateGlobalState()
+      } else if (cardNumber === 7) {
+        GlobalGameState.JP_AF = 6
+        GlobalGameState.rollDice = false
+        GlobalGameState.updateGlobalState()
+        setCardDicePanelShow7(true)
+        await delay(1000)
+        GlobalGameState.rollDice = true
         GlobalGameState.updateGlobalState()
       } else {
         if (displayScreen) {

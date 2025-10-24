@@ -252,7 +252,7 @@ export function doUSFleetMovementAction(controller, regions, offboardPossible) {
 
     const fleetHex = getRandomElementFrom(targetHexes)
     // return fleetHex
-    return { q: 5, r: -1 } // QUACK HARD WIRED FOR TESTING ONLY
+    return { q: 3, r: 0 } // QUACK HARD WIRED FOR TESTING ONLY
   }
   if (GlobalGameState.gameTurn === 2) {
     // CLOSE RANGE EITHER TO 1AF or WHERE WE EXPECT 1AF TO GO (ie CLOSER TO MIDWAY)
