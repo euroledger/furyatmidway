@@ -1,12 +1,14 @@
-import { React, useState } from "react"
+import { useState, createRef, useEffect } from "react"
 import Button from "react-bootstrap/Button"
 import GlobalUnitsModel from "../model/GlobalUnitsModel"
 import GlobalGameState from "../model/GlobalGameState"
 import { sendRemoveDamageMarkerUpdate } from "../DiceHandler"
+import Parser from "html-react-parser"
 
-export function DamageControlPanelHeaders({ controller, setDamagedCV, damagedCV, side, setDamageMarkerUpdate }) {
+export function DamageControlPanelHeaders({ controller, setDamagedCV, damagedCV, side, setDamageMarkerUpdate, hidden }) {
   const [japanDamageDone, setJapanDamageDone] = useState(false)
-  const [myDamagedCarriers, setMyDamagedCarriers] = useState([])
+
+  const [elRefsCV, setElRefsCV] = useState([])
 
   let usEnterprise = {
     image: "/images/fleetcounters/enterprise.jpg",
@@ -56,7 +58,7 @@ export function DamageControlPanelHeaders({ controller, setDamagedCV, damagedCV,
     marginLeft: "3px",
   }
 
-  const createImage = (cv, damageBow, damageStern) => {
+  const createImage = (cv, damageBow, damageStern, i) => {
     let carrier = usYorktown
     const damageMarker = "/images/markers/damage.png"
 
@@ -94,7 +96,7 @@ export function DamageControlPanelHeaders({ controller, setDamagedCV, damagedCV,
               style={{
                 position: "absolute",
                 top: "28px",
-                left: "40px",
+                left: "37px",
               }}
             >
               <img
@@ -111,7 +113,7 @@ export function DamageControlPanelHeaders({ controller, setDamagedCV, damagedCV,
               style={{
                 position: "absolute",
                 top: "90px",
-                left: "40px",
+                left: "37px",
               }}
             >
               <img
@@ -134,7 +136,12 @@ export function DamageControlPanelHeaders({ controller, setDamagedCV, damagedCV,
               color: "white",
             }}
           >
-            <Button disabled={damagedCV !== ""} onClick={() => handleClick(cv)}>
+            <Button
+              ref={elRefsCV[i]}
+              hidden={hidden}
+              disabled={damagedCV !== ""}
+              onClick={() => handleClick(cv)}
+            >
               {cv}
             </Button>
           </div>
@@ -142,6 +149,31 @@ export function DamageControlPanelHeaders({ controller, setDamagedCV, damagedCV,
       </>
     )
   }
+
+  let damagedCarriers = controller.getDamagedCarriersOneOrTwoHits(side)
+  damagedCarriers = damagedCarriers.filter((cv) => !controller.getCarrier(cv).dmcv)
+
+  let arrLength = damagedCarriers.length
+  useEffect(() => {
+    // add or remove refs
+    setElRefsCV((elRefsCV) =>
+      Array(arrLength)
+        .fill()
+        .map((_, i) => elRefsCV[i] || createRef())
+    )
+  }, [arrLength, GlobalGameState.testCarrierSelection])
+
+  useEffect(() => {
+    if (GlobalGameState.testCarrierSelection === -1) {
+      return
+    }
+    const myRef = elRefsCV[GlobalGameState.testCarrierSelection]
+    console.log("<<<<<<<<<< POOOOOOOOOOOOOOOOOOOOOO myRef=", myRef)
+    if (myRef !== undefined && myRef.current !== undefined && myRef.current !== null) {
+      myRef.current.click(myRef.current)
+    }
+  }, [GlobalGameState.testCarrierSelection])
+
   function removeDamageFromCV(cv) {
     setDamagedCV(cv)
 
@@ -165,37 +197,41 @@ export function DamageControlPanelHeaders({ controller, setDamagedCV, damagedCV,
 
   if (side === GlobalUnitsModel.Side.JAPAN) {
     if (damagedCV !== "" && damagedCV !== undefined && GlobalGameState.dieRolls[0] !== undefined) {
-      msg = "Remove 1 hit from Carrier " + damagedCV
+      msg = `Remove 1 hit from Carrier<strong>${damagedCV}</strong>`
     }
   } else {
     if (damagedCV !== "" && damagedCV !== undefined) {
-      msg = "Remove 1 hit from Carrier " + damagedCV
+      msg = `Remove 1 hit from Carrier <strong>${damagedCV}</strong>`
     }
   }
 
-  let damagedCarriers = controller.getDamagedCarriersOneOrTwoHits(side)
-  damagedCarriers = damagedCarriers.filter((cv) => !controller.getCarrier(cv).dmcv)
   if (damagedCarriers.length === 0 && !japanDamageDone) {
     msg = "No Eligible Carriers"
     setDamagedCV("x")
   }
   if (side === GlobalUnitsModel.Side.US && damagedCarriers.length === 1) {
     removeDamageFromCV(damagedCarriers[0])
-    msg = "Remove 1 hit from Carrier " + damagedCarriers[0]
+    msg = `Remove 1 hit from Carrier <strong>${damagedCarriers[0]}</strong>`
+
     setJapanDamageDone(true)
   }
 
-  console.log(
-    "side=",
-    side,
-    "damagedCV=",
-    damagedCV,
-    "GlobalGameState.dieRolls[0]=",
-    GlobalGameState.dieRolls[0],
-    "japanDamageDone=",
-    japanDamageDone
-  )
-  if (damagedCV !== "" && side === GlobalUnitsModel.Side.JAPAN && GlobalGameState.dieRolls[0] <= 3 && !japanDamageDone) {
+  // console.log(
+  //   "side=",
+  //   side,
+  //   "damagedCV=",
+  //   damagedCV,
+  //   "GlobalGameState.dieRolls[0]=",
+  //   GlobalGameState.dieRolls[0],
+  //   "japanDamageDone=",
+  //   japanDamageDone
+  // )
+  if (
+    damagedCV !== "" &&
+    side === GlobalUnitsModel.Side.JAPAN &&
+    GlobalGameState.dieRolls[0] <= 3 &&
+    !japanDamageDone
+  ) {
     removeDamageFromCV(damagedCV)
     setJapanDamageDone(true)
   }
@@ -209,17 +245,26 @@ export function DamageControlPanelHeaders({ controller, setDamagedCV, damagedCV,
   }
 
   const disabled = damagedCarriers.length <= 1
-  const damagedCVImages = damagedCarriers.map((cv, idx) => {
+
+  const damagedCVImages = damagedCarriers.map((cv, i) => {
     const carrierSternDamaged = controller.getCarrierSternDamaged(cv)
     const carrierBowDamaged = controller.getCarrierBowDamaged(cv)
 
     return (
       <>
-        <div>{createImage(cv, carrierBowDamaged, carrierSternDamaged, disabled)}</div>
+        <div>{createImage(cv, carrierBowDamaged, carrierSternDamaged, i)}</div>
       </>
     )
   })
 
+  let chooseMsg = "Choose damaged CV from which to remove one hit:"
+
+  if (
+    controller.getCardPlayed(2, GlobalUnitsModel.Side.US) &&
+    GlobalGameState.usPlayerType === GlobalUnitsModel.TYPE.AI
+  ) {
+    chooseMsg = "US Chooses damaged CV from which to remove one hit:"
+  }
   return (
     <div
       style={{
@@ -234,7 +279,7 @@ export function DamageControlPanelHeaders({ controller, setDamagedCV, damagedCV,
           color: "white",
         }}
       >
-        <p>Choose damaged CV from which to remove one hit:</p>
+        <p>{chooseMsg}</p>
       </div>
       <div
         style={{
@@ -244,7 +289,7 @@ export function DamageControlPanelHeaders({ controller, setDamagedCV, damagedCV,
           color: "white",
         }}
       >
-        <p>{msg}</p>
+        <p>{Parser(msg)}</p>
       </div>
       <div
         style={{

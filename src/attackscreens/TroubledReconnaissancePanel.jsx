@@ -12,10 +12,11 @@ export function TroubledReconnaissanceHeader() {
     msg = "US Player rolls the die. Result is the Japanese Search Value for the turn."
   }
   return (
-    <div   style={{
+    <div
+      style={{
         display: "flex",
-      
-      }}>
+      }}
+    >
       <div>
         <img
           src={cardImage}

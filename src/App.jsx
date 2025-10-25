@@ -1144,6 +1144,7 @@ export function App() {
     setCarrierPlanesDitchPanelShow,
     setAirReplacementsPanelShow,
     setSubmarineDamagePanelShow,
+    setDamageControlPanelShow,
     setMidwayInvasionPanelShow,
     setCardDicePanelShow5,
     setCardDicePanelShow7,
@@ -2200,6 +2201,11 @@ export function App() {
 
   const jpPlayedCard4 = GlobalInit.controller.getCardPlayed(4, GlobalUnitsModel.Side.JAPAN)
   const submarineControlSide = jpPlayedCard4 ? GlobalUnitsModel.Side.JAPAN : GlobalUnitsModel.Side.US
+  
+  let card4side = GlobalInit.controller.getCardPlayed(4, GlobalUnitsModel.Side.US) ? GlobalUIConstants.Colors.US : GlobalUIConstants.Colors.JAPAN
+  let hiddenCard4Boog = GlobalInit.controller.getCardPlayed(4, GlobalUnitsModel.Side.US) 
+      && GlobalGameState.usPlayerType === GlobalUnitsModel.TYPE.AI ? true : false
+      
   const submarineHeaders = (
     <>
       <SubmarineDamagePanelHeaders
@@ -2210,6 +2216,7 @@ export function App() {
         side={submarineControlSide}
         damageDone={damageDone}
         setDamageDone={setDamageDone}
+        hidden={hiddenCard4Boog}
       ></SubmarineDamagePanelHeaders>
     </>
   )
@@ -2226,6 +2233,12 @@ export function App() {
       ></SubmarineDamagePanelFooters>
     </>
   )
+
+  let hiddenCard2Boog = GlobalInit.controller.getCardPlayed(2, GlobalUnitsModel.Side.US) 
+      && GlobalGameState.usPlayerType === GlobalUnitsModel.TYPE.AI ? true : false
+
+  let hiddenCard3Boog = GlobalInit.controller.getCardPlayed(3, GlobalUnitsModel.Side.US) 
+      && GlobalGameState.usPlayerType === GlobalUnitsModel.TYPE.AI ? true : false
   const damageControlHeaders = (
     <>
       <DamageControlPanelHeaders
@@ -2234,6 +2247,7 @@ export function App() {
         setDamageMarkerUpdate={setDamageMarkerUpdate}
         damagedCV={damagedCV}
         side={damageControlSide}
+        hidden={hiddenCard2Boog}
       ></DamageControlPanelHeaders>
     </>
   )
@@ -2311,18 +2325,16 @@ export function App() {
       ? GlobalUIConstants.Flags.JAPAN
       : GlobalUIConstants.Flags.US
   
-    let card4side = GlobalInit.controller.getCardPlayed(4, GlobalUnitsModel.Side.US) ? GlobalUIConstants.Colors.US : GlobalUIConstants.Colors.JAPAN
+    
+
     let card4image = GlobalInit.controller.getCardPlayed(4, GlobalUnitsModel.Side.US)  ? GlobalUIConstants.Flags.US
       : GlobalUIConstants.Flags.JAPAN
 
-    const jpCard =
+    const jpCard3 =
           GlobalInit.controller.japanHandContainsCard(3) || GlobalInit.controller.getCardPlayed(3, GlobalUnitsModel.Side.JAPAN)
      
-    let card3bg = jpCard ? GlobalUIConstants.Colors.JAPAN : GlobalUIConstants.Colors.US
-
-    let hiddenCard4Boog = GlobalInit.controller.getCardPlayed(4, GlobalUnitsModel.Side.US) 
-      && GlobalGameState.usPlayerType === GlobalUnitsModel.TYPE.AI ? true : false
-    
+    let card3bg = jpCard3 ? GlobalUIConstants.Colors.JAPAN : GlobalUIConstants.Colors.US    
+  
     const endOfTurnSummaryHeaders = (
     <>
       <EndOfTurnSummaryHeaders
@@ -2375,6 +2387,7 @@ export function App() {
         selectedAirUnit={selectedAirUnit}
         airReplacementsSelected={airReplacementsSelected}
         setAirUnitUpdate={setAirUnitUpdate}
+        hidden={hiddenCard3Boog}
       ></AirReplacementsFooters>
     </>
   )
@@ -3437,6 +3450,7 @@ export function App() {
         width={30}
         showDice={true}
         margin={315}
+        hidden={GlobalGameState.usPlayerType === GlobalUnitsModel.TYPE.AI}
         sidebg={GlobalUIConstants.Colors.US}
         image={GlobalUIConstants.Flags.US}
         diceButtonDisabled={GlobalGameState.dieRolls.length !== 0}
@@ -3532,6 +3546,7 @@ export function App() {
         width={74}
         showDice={false}
         margin={0}
+        hidden={GlobalGameState.usPlayerType === GlobalUnitsModel.TYPE.AI}
         onHide={(e) => {
           setTowedToFriendlyPortPanelShow(false)
           // sendDamageEvent(eliminatedSteps)
@@ -3570,6 +3585,7 @@ export function App() {
         headers={airReplacementsHeaders}
         footers={airReplacementsFooters}
         width={74}
+        hidden={hiddenCard3Boog}
         sidebg={card3bg}
         showDice={false}
         margin={0}

@@ -37,7 +37,6 @@ function LargeDicePanel(props) {
   const button2Ref = useRef(null)
 
   useEffect(() => {
-    console.log("DICE ROLL HOOK -> GlobalGameState.rollDice=", GlobalGameState.rollDice)
     if (button1Ref.current) {
       if (GlobalGameState.rollDice === true) {
         button1Ref.current.click()

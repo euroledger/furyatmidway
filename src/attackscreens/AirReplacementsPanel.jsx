@@ -11,6 +11,7 @@ export function AirReplacementsHeaders({
   setAirReplacementsSelected,
   setSelectedAirUnit,
   setClickedOnSomething,
+  hidden
 }) {
   const [reducedAirUnits, setReducedAirUnits] = useState([])
   const [elimSelected, setElimSelected] = useState(false)
@@ -257,6 +258,7 @@ export function AirReplacementsFooters({
   airReplacementsSelected,
   setAirUnitUpdate,
   clickedOnSomething,
+  hidden
 }) {
   const [selectedCV, setSelectedCV] = useState("")
 
@@ -351,7 +353,11 @@ export function AirReplacementsFooters({
     if (GlobalGameState.testCarrierSelection === -1) {
       return
     }
+        console.log(">>>>>>>>>>> SNOOOOTY elRefsCV=", elRefsCV)
+
     const myRef = elRefsCV[GlobalGameState.testCarrierSelection]
+        console.log("*********** SNOOT 2 myRef=", myRef)
+
     if (myRef !== undefined && myRef.current !== undefined && myRef.current !== null) {
       myRef.current.click(myRef.current)
     }
@@ -399,7 +405,7 @@ export function AirReplacementsFooters({
             marginTop: "20px",
           }}
         >
-          <Button style={{width:"100px"}} ref={elRefsCV[i]} disabled={buttonDisabled} onClick={() => handleCVClick(cv)}>
+          <Button style={{width:"100px"}} ref={elRefsCV[i]} hidden={hidden} disabled={buttonDisabled} onClick={() => handleCVClick(cv)}>
             {cv}
           </Button>
         </div>
@@ -417,7 +423,7 @@ export function AirReplacementsFooters({
         )
       })
     } else {
-      availableCVImages = availableJapanCVs.map((cv, idx) => {
+      availableCVImages = availableJapanCVs.map((cv, i) => {
         return (
           <>
             <div>{createImage(cv, i)}</div>

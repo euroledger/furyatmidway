@@ -23,6 +23,7 @@ class USAICardPlayState {
       setAirReplacementsPanelShow,
       setSubmarineDamagePanelShow,
       setCardDicePanelShow7,
+      setDamageControlPanelShow,
     } = stateObject
     this.cardNumber = cardNumber
 
@@ -45,6 +46,22 @@ class USAICardPlayState {
 
         GlobalGameState.testCapSelection = cv
         GlobalGameState.updateGlobalState()
+      } else if (cardNumber === 2) {
+        // Damage Control
+        // If more than one eligible CV, select CV with 2 damage, then 1
+        let damagedCarriers = GlobalInit.controller.getDamagedCarriersOneOrTwoHits(GlobalUnitsModel.Side.US)
+        damagedCarriers = damagedCarriers.filter((cv) => !GlobalInit.controller.getCarrier(cv).dmcv)
+
+        if (damagedCarriers.length >= 2) {
+          console.log("CARD 2 CARD RESPONSE POOP")
+          GlobalGameState.testCarrierSelection = -1
+          GlobalGameState.updateGlobalState()
+          setDamageControlPanelShow(true)
+          await delay(1000)
+          GlobalGameState.currentPlayer = GlobalUnitsModel.Side.US
+          GlobalGameState.gamePhase = GlobalGameState.PHASE.CARD_RESPONSE
+          GlobalGameState.updateGlobalState()
+        }
       } else if (cardNumber === 3) {
         console.log("CARD 3 CARD RESPONSE POOP")
         GlobalGameState.testCapSelection = -1

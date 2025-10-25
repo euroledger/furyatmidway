@@ -11,8 +11,24 @@ class USAICardResponseState {
   async doAction(stateObject) {
     const { cardNumber, setCarrierPlanesDitchPanelShow, setCardAlertPanelShow } = stateObject
     console.log("**************** DO CARD RESPONSE cardNumber=", cardNumber)
-    // GlobalGameState.closePanel = false
-    // GlobalGameState.updateGlobalState()
+    if (cardNumber === 2) {
+      GlobalGameState.testCarrierSelection = -1
+      GlobalGameState.updateGlobalState()
+      let damagedCarriers = GlobalInit.controller.getDamagedCarriersOneOrTwoHits(GlobalUnitsModel.Side.US)
+
+      damagedCarriers = damagedCarriers.filter((cv) => !GlobalInit.controller.getCarrier(cv).dmcv)
+
+      // TODO should choose the carrier with most planes in the hangar
+      let selection = damagedCarriers.findIndex((cv) => GlobalInit.controller.getCarrierHits(cv) === 2)
+
+      if (selection === -1) {
+        selection = damagedCarriers.findIndex((cv) => GlobalInit.controller.getCarrierHits(cv) === 1)
+      }
+      await delay(500)
+      GlobalGameState.testCarrierSelection = selection
+      GlobalGameState.updateGlobalState()
+      await delay(100)
+    }
     if (cardNumber === 3) {
       GlobalGameState.testStepLossSelection = -1
       GlobalGameState.updateGlobalState()
@@ -62,6 +78,7 @@ class USAICardResponseState {
       GlobalGameState.testCarrierSelection = selectionCV
       GlobalGameState.updateGlobalState()
       await delay(800)
+      return
     }
     if (cardNumber === 4) {
       GlobalGameState.rollDice = false
@@ -71,13 +88,26 @@ class USAICardResponseState {
 
       let allCarriers = GlobalInit.controller.getAllCarriersForSide(GlobalUnitsModel.Side.JAPAN, true)
 
-      // Choose CV with 2 damage as target, otherwise 1 damage, otherwise random
+      // Choose CV with 2 damage as target, otherwise 1 damage, otherwise check for planes on deck
       let selection = allCarriers.findIndex((cv) => GlobalInit.controller.getCarrierHits(cv.name) === 2)
       if (selection === -1) {
         selection = allCarriers.findIndex((cv) => GlobalInit.controller.getCarrierHits(cv.name) === 1)
       }
       if (selection === -1) {
-        selection = Math.floor(Math.random() * allCarriers.length)
+        // If no damage select carrier which has planes on deck otherwise random
+        selection = allCarriers.findIndex((cv) => {
+          return GlobalInit.controller.getNumAircraftOnDeckForNamedCarrier(GlobalUnitsModel.Side.JAPAN, cv.name) === 2
+        })
+
+        if (selection === -1) {
+          selection = allCarriers.findIndex(
+            (cv) =>
+              GlobalInit.controller.getNumAircraftOnDeckForNamedCarrier(GlobalUnitsModel.Side.JAPAN, cv.name) === 1
+          )
+        }
+        if (selection === -1) {
+          selection = Math.floor(Math.random() * allCarriers.length)
+        }
       }
       // let selection = Math.floor(Math.random() * allCarriers.length) // quack testing
 

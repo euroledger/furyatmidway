@@ -40,7 +40,6 @@ export default class AirOperationsModel {
   // eg JAPAN, Akagi, HANGAR
   getAirBoxForNamedShip(side, carrier, boxKey) {
     let sideKey = side === GlobalUnitsModel.Side.JAPAN ? "JP" : "US"
-
     const filteredEntries = Object.keys(GlobalUnitsModel.AirBox)
       .filter((key) => key.includes(carrier.toUpperCase()) && key.includes(boxKey) && key.includes(sideKey))
       .reduce((obj, key) => {

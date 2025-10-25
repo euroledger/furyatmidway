@@ -3,9 +3,9 @@ import Button from "react-bootstrap/Button"
 import GlobalUnitsModel from "../model/GlobalUnitsModel"
 import GlobalGameState from "../model/GlobalGameState"
 import Controller from "../controller/Controller"
-import { sendDamageUpdates, doCarrierDamageRolls, autoAllocateDamage, sendDMCVUpdate } from "../DiceHandler"
+import { sendDamageUpdates, doCarrierDamageRolls, autoAllocateDamage } from "../DiceHandler"
 
-export function SubmarineDamagePanelHeaders({ controller, setDamagedCV, damagedCV, side, damageDone }) {
+export function SubmarineDamagePanelHeaders({ controller, setDamagedCV, damagedCV, side, damageDone, hidden }) {
   const [elRefsCV, setElRefsCV] = useState([])
 
   let usEnterprise = {
@@ -207,7 +207,12 @@ export function SubmarineDamagePanelHeaders({ controller, setDamagedCV, damagedC
               color: "white",
             }}
           >
-            <Button ref={elRefsCV[i]} disabled={damagedCV !== "" || sunk} onClick={() => handleClick(carrierName)}>
+            <Button
+              ref={elRefsCV[i]}
+              hidden={hidden}
+              disabled={damagedCV !== "" || sunk}
+              onClick={() => handleClick(carrierName)}
+            >
               {carrierName}
             </Button>
           </div>
@@ -419,7 +424,9 @@ export function SubmarineDamagePanelFooters({
   // GlobalGameState.dieRolls = [1]
 
   let success = side === GlobalUnitsModel.Side.US ? GlobalGameState.dieRolls[0] <= 1 : GlobalGameState.dieRolls[0] <= 4
-  const message1 = success ? side + " Die Roll Successful! One hit assigned to " + damagedCV : side + " Die Roll Unsuccessful!"
+  const message1 = success
+    ? side + " Die Roll Successful! One hit assigned to " + damagedCV
+    : side + " Die Roll Unsuccessful!"
 
   const carrier = controller.getCarrier(damagedCV)
 

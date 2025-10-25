@@ -72,6 +72,7 @@ export function TowedCVHeaders({ controller, setTowedCVSelected, towedCVSelected
         >
           <Button
             disabled={towedCVSelected}
+            hidden={GlobalGameState.usPlayerType === GlobalUnitsModel.TYPE.AI}
             style={{
               minWidth: "100px",
             }}

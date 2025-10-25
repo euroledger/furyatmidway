@@ -952,6 +952,12 @@ export default class Controller {
     return Array.from(x.keys())
   }
 
+  getNumAircraftOnDeckForNamedCarrier(side, carrier) {
+    const flightDeckBox = this.airOperationsModel.getAirBoxForNamedShip(side, carrier, "FLIGHT")
+    let boxName = Object.values(flightDeckBox)[0]
+    const unitsOnFlightDeck = this.getAllAirUnitsInBox(boxName)
+    return unitsOnFlightDeck.length
+  }
   attackAircraftOnDeckForNamedCarrier(side, carrier) {
     const flightDeckBox = this.airOperationsModel.getAirBoxForNamedShip(side, carrier, "FLIGHT")
     let boxName = Object.values(flightDeckBox)[0]
