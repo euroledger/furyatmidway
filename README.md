@@ -20,12 +20,7 @@ NodeJS comes with a tool called npm, and it is this we use to install the game.
 
 2. If you have git installed, clone the source code from the repository:
 
-git clone https://github.com/euroledger/furyatmidway.git
-
-For the two player demo version of the game (recommended as of Jan '25)
-change to the testy branch
-
-git checkout testy
+`git clone https://github.com/euroledger/furyatmidway.git`
 
 3. Otherwise download the zip file
 
@@ -35,15 +30,15 @@ cd furyatmidway
 
 5. Install the game:
 
-npm install
+`npm install`
 
 6. Run the game with the command:
 
-npm start
+`npm start`
 
 In a web browser, go to the following URL to see the game:
 
-localhost:3000
+`localhost:3000`
 
 
 
