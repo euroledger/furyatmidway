@@ -61,9 +61,9 @@ class USAISetupAirState {
       GlobalGameState.gamePhase = GlobalGameState.PHASE.US_CARD_DRAW
       GlobalGameState.updateGlobalState()
       GlobalGameState.usSetUpComplete = true
-      // GlobalInit.controller.drawUSCards(2, true) 
+      GlobalInit.controller.drawUSCards(2, true) 
 
-      GlobalInit.controller.drawUSCards(2, true, [1, 7]) // QUACK TESTING ONLY
+      // GlobalInit.controller.drawUSCards(2, true, [1, 7]) // QUACK TESTING ONLY
 
       GlobalGameState.usCardsDrawn = true
       GlobalGameState.phaseCompleted = true

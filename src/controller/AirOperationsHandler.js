@@ -516,6 +516,7 @@ export function doStrikeBoxUS(controller, name, side) {
   const strikeGroup = controller.getStrikeGroupForBox(side, location.boxName)
 
   const unit = controller.getAirUnitForName(name)
+
   const tf = controller.getTaskForceForCarrier(unit.carrier)
 
   let destArray = new Array()
@@ -649,7 +650,9 @@ export function doHangarNight(controller, name, side) {
   const carrierName = controller.getCarrierForAirBox(location.boxName)
 
   // At night fighters can be moved to CAP box
-
+  if (controller.getCarrier(carrierName).dmcv) {
+    return 0
+  }
   // TODO all units can be moved to flight deck
   const unit = controller.getAirUnitForName(name)
   if (!unit.aircraftUnit.attack) {
@@ -771,8 +774,6 @@ export async function resetStrikeGroups(controller, side, setStrikeGroupUpdate) 
     strikeGroup.moved = false
     strikeGroup.attacked = false
 
-    console.log("SG ", strikeGroup.name, "SET TO OFFBOARD!!!")
-    // strikeGroup.setAttacked(false)
     strikeGroup.position = strikeGroup.initialPosition
     strikeGroup.location = GlobalUnitsModel.AirBox.OFFBOARD
 
@@ -1430,7 +1431,7 @@ export function setValidDestinationBoxesNightOperations(controller, airUnitName,
   let numFree = 0
   if (location.boxName.includes("HANGAR")) {
     numFree = doHangarNight(controller, airUnitName, side)
-  }
+    }
   if (location.boxName.includes("FLIGHT")) {
     doFlightDeck(controller, airUnitName, side)
   }
@@ -1450,6 +1451,7 @@ export function setValidDestinationBoxes(controller, airUnitName, side) {
   controller.setValidAirUnitDestinations(airUnitName, new Array()) // just to be sure last entries are gone
 
   const location = controller.getAirUnitLocation(airUnitName)
+
   if (location.boxName.includes("RETURNING (1)")) {
     // see if US CSF within two hexes of Midway
     let hexesBetweenMidwayAndCSF = controller.numHexesBetweenFleets(

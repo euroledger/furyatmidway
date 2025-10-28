@@ -42,7 +42,11 @@ export function goToDMCVState(side) {
       return false
     }
     const usDMCVLocation = GlobalInit.controller.getFleetLocation("US-DMCV", GlobalUnitsModel.Side.US)
+    console.log("DEBUG goToDMCVState -> usDMCVLocation=", usDMCVLocation)
     if (usDMCVLocation !== undefined && usDMCVLocation.boxName === HexCommand.FLEET_BOX) {
+      return false
+    }
+    if (usDMCVLocation !== undefined && usDMCVLocation === HexCommand.OFFBOARD) {
       return false
     }
     return (

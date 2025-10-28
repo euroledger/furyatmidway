@@ -53,7 +53,6 @@ class USAICardPlayState {
         damagedCarriers = damagedCarriers.filter((cv) => !GlobalInit.controller.getCarrier(cv).dmcv)
 
         if (damagedCarriers.length >= 2) {
-          console.log("CARD 2 CARD RESPONSE POOP")
           GlobalGameState.testCarrierSelection = -1
           GlobalGameState.updateGlobalState()
           setDamageControlPanelShow(true)
@@ -63,7 +62,6 @@ class USAICardPlayState {
           GlobalGameState.updateGlobalState()
         }
       } else if (cardNumber === 3) {
-        console.log("CARD 3 CARD RESPONSE POOP")
         GlobalGameState.testCapSelection = -1
         GlobalGameState.updateGlobalState()
         setAirReplacementsPanelShow(true)

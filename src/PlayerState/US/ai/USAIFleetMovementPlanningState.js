@@ -17,6 +17,7 @@ class USAIFleetMovementPlanningState {
 
     await delay(GlobalGameState.DELAY)
     let destination = doUSFleetMovementAction(GlobalInit.controller, usCSFRegions, canCSFMoveFleetOffBoard)
+    console.log("US FLEET DESTINATION:", destination)
 
     const c = convertHexCoords(destination)
     console.log("US FLEET DESTINATION:", c)

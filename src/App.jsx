@@ -2094,6 +2094,9 @@ export function App() {
       ? GlobalUnitsModel.Side.JAPAN
       : GlobalUnitsModel.Side.US
   let nightSide = "Night Landing: " + nSide
+
+  let hiddenNightBoog = nSide === GlobalUnitsModel.Side.US
+    && GlobalGameState.usPlayerType === GlobalUnitsModel.TYPE.AI
   const nightHeaders = (
     <>
       <NightHeaders controller={GlobalInit.controller} side={nSide} night={setNightLandingDone}></NightHeaders>
@@ -2199,6 +2202,7 @@ export function App() {
   const jpPlayedCard2 = GlobalInit.controller.getCardPlayed(2, GlobalUnitsModel.Side.JAPAN)
   const damageControlSide = jpPlayedCard2 ? GlobalUnitsModel.Side.JAPAN : GlobalUnitsModel.Side.US
 
+  const card2bg = jpPlayedCard2 ? GlobalUIConstants.Colors.JAPAN : GlobalUIConstants.Colors.US
   const jpPlayedCard4 = GlobalInit.controller.getCardPlayed(4, GlobalUnitsModel.Side.JAPAN)
   const submarineControlSide = jpPlayedCard4 ? GlobalUnitsModel.Side.JAPAN : GlobalUnitsModel.Side.US
   
@@ -2334,7 +2338,6 @@ export function App() {
           GlobalInit.controller.japanHandContainsCard(3) || GlobalInit.controller.getCardPlayed(3, GlobalUnitsModel.Side.JAPAN)
      
     let card3bg = jpCard3 ? GlobalUIConstants.Colors.JAPAN : GlobalUIConstants.Colors.US    
-  
     const endOfTurnSummaryHeaders = (
     <>
       <EndOfTurnSummaryHeaders
@@ -3082,6 +3085,7 @@ export function App() {
         footers={capFooters}
         closeButtonStr="Next..."
         showDice={showCAPDice}
+        hidden={hiddenDefenseBoog}
         margin={0}
         onHide={(e) => {
           GlobalGameState.doneCapSelection = !GlobalGameState.doneCapSelection
@@ -3224,6 +3228,7 @@ export function App() {
         closeButtonDisabled={!nightLandingDiceButtonDisabled}
         show={!testClicked && nightLandingPanelShow}
         headerText={nightSide}
+        hidden={hiddenNightBoog}
         headers={nightHeaders}
         setNightLandingDone={setNightLandingDone}
         footers={nightFooters}
@@ -3469,6 +3474,7 @@ export function App() {
         headerText="Damage Control"
         headers={damageControlHeaders}
         footers={damageControlFooters}
+        sidebg={card2bg}
         width={30}
         showDice={damagedCV !== "x" && damageControlSide === GlobalUnitsModel.Side.JAPAN}
         margin={350}

@@ -6,12 +6,18 @@ import { doUSDMCVFleetMovementAction } from "../../../UIEvents/AI/USFleetMovemen
 import { convertHexCoords } from "../../../components/HexUtils"
 import { createFleetUpdate, createRemoveDMCVFleetUpdate } from "../../../AirUnitData"
 import { getRandomElementFrom } from "../../../Utils"
+import HexCommand from "../../../commands/HexCommand"
 
 class USAIDMCVFleetMovementPlanningState {
   async doAction(stateObject) {
     const { setFleetUnitUpdate, doAIDMCVShipMarkerUpdate } = stateObject
     console.log("DOING US DMCV FLEET MOVEMENT PLANNING")
 
+    const usDMCVLocation = GlobalInit.controller.getFleetLocation("US-DMCV", GlobalUnitsModel.Side.US)
+
+    if (usDMCVLocation !== undefined && usDMCVLocation === HexCommand.OFFBOARD) {
+      this.nextState(stateObject)
+    }
     const { canUSDMCVMoveFleetOffBoard, usDMCVRegions } = getUSFleetRegions()
 
     // If DMCV fleet can move offboard it always does so
@@ -24,7 +30,6 @@ class USAIDMCVFleetMovementPlanningState {
 
       if (destination !== undefined) {
         const c = convertHexCoords(destination)
-        console.log("US DMCV FLEET DESTINATION:", c)
 
         const usFleetMove = createFleetUpdate("US-DMCV", destination.q, destination.r)
         GlobalGameState.usDMCVFleetPlaced = true

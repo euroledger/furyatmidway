@@ -19,6 +19,7 @@ class JapanHumanNightAirOperationsState {
     }
 
     GlobalGameState.phaseCompleted = false
+    GlobalGameState.updateGlobalState()
   }
 
   async nextState(stateObject) {

@@ -39,7 +39,7 @@ class USAICardResponseState {
 
       const allUnits = reducedUnits.concat(eliminatedAirUnits)
       const selection = Math.floor(Math.random() * allUnits.length)
-      await delay(1000)
+      await delay(200)
       GlobalGameState.testStepLossSelection = selection
       GlobalGameState.updateGlobalState()
 

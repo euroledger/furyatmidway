@@ -487,7 +487,7 @@ export default class CanvasHex extends React.Component {
       return
     }
     const { q, r } = this.state.currentHex
-    this.drawNeighbours({ q, r })
+    // this.drawNeighbours({ q, r })
   }
   render() {
     return (

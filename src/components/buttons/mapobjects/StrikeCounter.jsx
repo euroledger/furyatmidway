@@ -546,10 +546,8 @@ function StrikeCounter({ setStrikeGroupPopup, currentUSHex, currentJapanHex, cou
     ) {
       setIsMoveable(true)
       const sg = controller.getStrikeGroupForBox(side, counterData.box)
-            console.log("SG:", sg)
 
       if (GlobalGameState.gamePhase === GlobalGameState.PHASE.MIDWAY_ATTACK) {
-        console.log("SG NAME=", sg.name, "MIDWAY ATTACK GROUP=",GlobalGameState.midwayAttackGroup)
         if (sg.moved && sg.name !== GlobalGameState.midwayAttackGroup) {
           // another sg is on the map from last turn
           setJapanRegions([])

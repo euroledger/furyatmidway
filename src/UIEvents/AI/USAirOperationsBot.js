@@ -285,8 +285,17 @@ export async function moveAirUnitsFromHangarEndOfNightOperation(controller, side
   for (const unit of fighters) {
     const numFreeFlightDeckSlots = setValidDestinationBoxesNightOperations(controller, unit.name, side, true)
     const destBoxes = controller.getValidAirUnitDestinations(unit.name)
-    console.log("PUCKA!!!!!!! unit:", unit.name, "DESTINATIONS=", destBoxes)
-    await moveAirUnitNight(controller, unit, setTestUpdate, destBoxes)
+    // console.log(
+    //   "PUCKA!!!!!!! unit:",
+    //   unit.name,
+    //   "DESTINATIONS=",
+    //   destBoxes,
+    //   "NUM FREE FLIGHT DECK SLOGS=",
+    //   numFreeFlightDeckSlots
+    // )
+    if (numFreeFlightDeckSlots > 0) {
+      await moveAirUnitNight(controller, unit, setTestUpdate, destBoxes)
+    }
   }
 
   for (const unit of attackAircraft) {
@@ -315,12 +324,15 @@ export async function moveAirUnitNight(controller, unit, setTestUpdate, destBoxe
   update.log = true
   await delay(50)
 
-  console.log("************* NIGHT MOVE: update=", update)
   setTestUpdate(update)
   await delay(50)
 }
-export async function moveAirUnit(controller, unit, setTestUpdate) {
-  setValidDestinationBoxes(controller, unit.name, GlobalUnitsModel.Side.US)
+export async function moveAirUnit(controller, unit, setTestUpdate, night) {
+  if (night) {
+    setValidDestinationBoxesNightOperations(controller, unit.name, GlobalUnitsModel.Side.US)
+  } else {
+    setValidDestinationBoxes(controller, unit.name, GlobalUnitsModel.Side.US)
+  }
 
   const destBoxes = controller.getValidAirUnitDestinations(unit.name)
 

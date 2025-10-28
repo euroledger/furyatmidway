@@ -837,7 +837,6 @@ export default class Controller {
           for (const unit of unitsInGroup) {
             units.push(unit)
           }
-          units.push(unit)
         }
         continue
       }
@@ -2355,6 +2354,13 @@ export default class Controller {
     return strength
   }
 
+  getCarrierAttackAirStrength(side) {
+    let units = this.getAllAirUnits(side)
+    units = units.filter((unit) => unit.aircraftUnit.attack === true && unit.carrier !== GlobalUnitsModel.Carrier.MIDWAY)
+
+    let strength = units.reduce((sum, unit) => sum + unit.aircraftUnit.steps, 0)
+    return strength
+  }
   getAirStrength(side) {
     let units = this.getAllAirUnits(side)
     let strength = units.reduce((sum, unit) => sum + unit.aircraftUnit.steps, 0)

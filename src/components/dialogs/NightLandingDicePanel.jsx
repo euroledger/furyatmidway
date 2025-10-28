@@ -76,6 +76,7 @@ function NightLandingDicePanel(props) {
     nextState,
     closeButtonDisabled,
     onHide,
+    hidden,
     width,
     margin,
     showDice,
@@ -185,7 +186,7 @@ function NightLandingDicePanel(props) {
       </Modal.Body>
 
       <Modal.Footer style={{ background: `${bg}`, color: "black" }}>
-        <Button ref={button1Ref} disabled={diceButtonDisabled} onClick={() => doRoll()}>
+        <Button ref={button1Ref} hidden={hidden} disabled={diceButtonDisabled} onClick={() => doRoll()}>
           {diceButtonStr}
         </Button>
 

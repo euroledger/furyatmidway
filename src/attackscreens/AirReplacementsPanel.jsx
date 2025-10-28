@@ -462,6 +462,12 @@ export function AirReplacementsFooters({
               {availableCVImages}
               {msg}
             </p>
+            <p style={{
+                display: "flex",
+                justifyContent: "center",
+                alignItems: "center",
+                color: "white",
+              }}>Select carrier hangar to receive air unit</p>
           </div>
           {selectedCV && (
             <p

@@ -15,6 +15,10 @@ export function AttackResolutionFooters({ totalHits, attackResolved, setAttackRe
 
   let isMIFtheTarget = GlobalGameState.currentCarrierAttackTarget === GlobalUnitsModel.TaskForce.MIF
 
+  let midwayMsg = ""
+  if (GlobalGameState.currentCarrierAttackTarget.toUpperCase() === GlobalUnitsModel.TaskForce.MIDWAY) {
+    midwayMsg = "(Max. 2 hits per air attack)"
+  }
   let mifMsg = ""
   let milStr = ""
   if (isMIFtheTarget && !attackResolved && GlobalGameState.dieRolls.length > 0) {
@@ -70,6 +74,16 @@ export function AttackResolutionFooters({ totalHits, attackResolved, setAttackRe
                 }}
               >
                 {msg} &nbsp;<strong>{hits}</strong>&nbsp;
+              </p>
+                 <p
+                style={{
+                  color: "white",
+                  display: "flex",
+                  justifyContent: "center",
+                  alignItems: "center",
+                }}
+              >
+                {midwayMsg}
               </p>
             </div>
 

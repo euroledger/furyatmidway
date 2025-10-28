@@ -5,6 +5,7 @@ import GlobalGameState from "../../model/GlobalGameState"
 import { SingleCarrier } from "../../attackscreens/SingleCarrier"
 import GlobalUnitsModel from "../../model/GlobalUnitsModel"
 import { allMidwayBoxesDamaged } from "../../DiceHandler"
+import GlobalUIConstants from "../UIConstants"
 
 import Die from "./Die"
 import "./modal.css"
@@ -85,7 +86,10 @@ function MidwayDamageDicePanel(props) {
     }
   }, [GlobalGameState.closePanel])
 
-  const bg = "#293a4b"
+  // const bg = "#293a4b"
+
+  const bg = GlobalUIConstants.Colors.JAPAN
+
   const bg2 = "rgba(92, 131, 228, 0.8)"
 
   const closey = closeButtonStr ?? "Close"
@@ -219,6 +223,7 @@ function MidwayDamageDicePanel(props) {
   if (diceButtonDisabled) {
     diceMsg = ""
   }
+  const img = "/images/japanflag.jpg"
   return (
     <Modal
       {...rest}
@@ -227,7 +232,7 @@ function MidwayDamageDicePanel(props) {
       dialogClassName={myBigBollocks}
       centered
     >
-      <Modal.Header
+      {/* <Modal.Header
         className="text-center"
         style={{
           display: "flex",
@@ -240,6 +245,45 @@ function MidwayDamageDicePanel(props) {
         <p className="text-center">
           <h4>{headerText}</h4>
         </p>
+      </Modal.Header> */}
+
+      <Modal.Header
+        className="text-center"
+        style={{
+          background: `${bg}`,
+          color: "white",
+        }}
+      >
+        <div
+          style={{
+            float: "left",
+            width: "20%",
+          }}
+        >
+          <img
+            style={{
+              width: "60px",
+              height: "40px",
+            }}
+            src={img}
+          ></img>
+        </div>
+        <div
+          style={{
+            float: "left",
+            width: "60%",
+            textAlign: "center",
+          }}
+        >
+          <h4>{headerText}</h4>
+        </div>
+        <div
+          style={{
+            float: "left",
+            width: "20%",
+            textAlign: "right",
+          }}
+        ></div>
       </Modal.Header>
       <Modal.Body style={{ background: `${bg}`, color: "black" }}>
         <>

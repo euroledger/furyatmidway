@@ -15,6 +15,7 @@ class JapanHumanCardPlayState {
   }
 
   async nextState(stateObject) {
+    console.trace()
     const { cardNumber, setCardAlertPanelShow } = stateObject
 
     setCardAlertPanelShow(false)

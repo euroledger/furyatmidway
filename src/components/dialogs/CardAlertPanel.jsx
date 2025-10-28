@@ -64,11 +64,12 @@ function CardAlertPanel(props) {
       setDamageControlPanelShow(true)
       if (controller.usHandContainsCard(2)) {
         controller.setCardPlayed(2, GlobalUnitsModel.Side.US)
+        nextAction(e)
       } else {
         controller.setCardPlayed(2, GlobalUnitsModel.Side.JAPAN)
       }
       onHide(e)
-      nextAction(e)
+
     } else if (cardNumber === 3) {
       setAirReplacementsPanelShow(true)
       if (controller.usHandContainsCard(3)) {

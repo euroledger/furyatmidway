@@ -168,7 +168,6 @@ export function DamageControlPanelHeaders({ controller, setDamagedCV, damagedCV,
       return
     }
     const myRef = elRefsCV[GlobalGameState.testCarrierSelection]
-    console.log("<<<<<<<<<< POOOOOOOOOOOOOOOOOOOOOO myRef=", myRef)
     if (myRef !== undefined && myRef.current !== undefined && myRef.current !== null) {
       myRef.current.click(myRef.current)
     }

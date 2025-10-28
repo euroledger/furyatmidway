@@ -13,8 +13,7 @@ class JapanHumanMidwayAirAttackState {
   }
 
   async nextState(stateObject) {
-    const { setJapanStrikePanelEnabled, setUSMapRegions, setStrikeGroupUpdate, setJapanMapRegions } =
-      stateObject
+    const { setJapanStrikePanelEnabled, setUSMapRegions, setStrikeGroupUpdate, setJapanMapRegions } = stateObject
     if (GlobalInit.controller.getDistanceBetween1AFAndMidway() <= 2) {
       await midwayTidyUp(setJapanStrikePanelEnabled, setUSMapRegions, setStrikeGroupUpdate)
       return
@@ -24,6 +23,7 @@ class JapanHumanMidwayAirAttackState {
       GlobalGameState.midwayAirOp = 2
       GlobalGameState.airOpJapan = 2
       GlobalGameState.airOperationPoints.japan = 1
+      await GlobalInit.controller.setAllUnitsToNotMoved()
     } else {
       await midwayTidyUp(setJapanStrikePanelEnabled, setUSMapRegions, setStrikeGroupUpdate)
     }
