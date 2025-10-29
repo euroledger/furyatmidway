@@ -48,6 +48,7 @@ export function saveGameState(controller, gameId) {
   const cardText = JSON.stringify(GlobalUnitsModel.cards)
 
   const location1AFText = JSON.stringify(GlobalGameState.initial1AFLocation)
+  const locationMIFText = JSON.stringify(GlobalGameState.initialMIFLocation)
 
   let previousPositionText
   if (GlobalGameState.previousPosition !== undefined) {
@@ -89,6 +90,7 @@ export function saveGameState(controller, gameId) {
     usMap: usMapText,
     jpcards: jpCardText,
     ijnFleetLocation: location1AFText,
+    mifFleetLocation: locationMIFText,
     previousPosition: previousPositionText,
     uscards: usCardText,
     cards: cardText,
@@ -440,6 +442,8 @@ function loadAirUnits(airUnitMap) {
     // GlobalGameState.jpDMCVCarrier = GlobalUnitsModel.Carrier.SORYU
     // GlobalGameState.usDMCVCarrier = undefined
     // GlobalGameState.temporaryGamePhase = GlobalGameState.PHASE.US_FLEET_MOVEMENT_PLANNING
+
+    GlobalGameState.hideCounters = false // QUACK TESTING
   }
 }
 
@@ -533,6 +537,10 @@ export function loadGameStateForId(controller, gameId) {
     GlobalGameState.initial1AFLocation = JSON.parse(ijnLocationText)
   }
 
+  const mifLocationText = gameDetails.mifFleetLocation
+  if (mifLocationText !== undefined) {
+    GlobalGameState.initialMIFLocation = JSON.parse(mifLocationText)
+  }
   const previousPositionText = gameDetails.previousPosition
 
   let previousPosition

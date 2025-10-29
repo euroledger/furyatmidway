@@ -1,10 +1,9 @@
-import GlobalUnitsModel from './GlobalUnitsModel';
+import GlobalUnitsModel from "./GlobalUnitsModel"
 
 export default class GlobalGameState {
-
   static DELAY = 10
   static replay = false
-  
+
   static PHASE = {
     JAPAN_SETUP: "Japan Setup",
     JAPAN_CARD_DRAW: "Japan Card Draw",
@@ -31,13 +30,13 @@ export default class GlobalGameState {
     AIR_SEARCH: "Search Phase",
     INITIATIVE_DETERMINATION: "Initiative Determination",
     AIR_OPERATIONS: "Air Operations Phase",
-    CAP_RETURN:"CAP Air Units Return",
+    CAP_RETURN: "CAP Air Units Return",
     END_OF_AIR_OPERATION: "Air Operations Tidy Up",
     END_OF_TURN: "End of Turn",
     END_OF_GAME: "End of Game",
     MIDWAY_INVASION: "Midway Invasion",
     TARGET_DETERMINATION: "Target Determination Phase",
-    CAP_INTERCEPTION:"CAP Interception Phase",
+    CAP_INTERCEPTION: "CAP Interception Phase",
     AIR_ATTACK_1: "Attack Resolution Phase (1)",
     AIR_ATTACK_2: "Attack Resolution Phase (2)",
     ATTACK_DAMAGE_RESOLUTION: "Damage on Aircraft Carriers",
@@ -48,31 +47,31 @@ export default class GlobalGameState {
     AAA_DAMAGE_ALLOCATION: "AAA Fire Damage Allocation Phase",
     ANTI_AIRCRAFT_FIRE: "Anti-Aircraft (AAA) Fire Phase",
     ATTACK_TARGET_SELECTION: "Carrier Target Selection",
-    FLEET_TARGET_SELECTION:"Fleet Target Selection"
+    FLEET_TARGET_SELECTION: "Fleet Target Selection",
   }
 
-  static nextActionButtonDisabled=false
+  static nextActionButtonDisabled = false
   static usSetUpComplete = false
 
   static SETUP_MESSAGES = [
-    'Place Akagi Air Units',
-    'Place Kaga Air Units',
-    'Place Hiryu Air Units',
-    'Place Soryu Air Units',
-    'Draw 3 x Japan Cards',
-    'Place US CSF Fleet Unit',
-    'Place Enterprise Air Units',
-    'Place Hornet Air Units',
-    'Place Yorktown Air Units',
-    'Place Midway Air Units',
-    'Draw 2 x US Cards'
+    "Place Akagi Air Units",
+    "Place Kaga Air Units",
+    "Place Hiryu Air Units",
+    "Place Soryu Air Units",
+    "Draw 3 x Japan Cards",
+    "Place US CSF Fleet Unit",
+    "Place Enterprise Air Units",
+    "Place Hornet Air Units",
+    "Place Yorktown Air Units",
+    "Place Midway Air Units",
+    "Draw 2 x US Cards",
   ]
 
   static JAPAN_CARRIERS = [
     GlobalUnitsModel.Carrier.AKAGI,
     GlobalUnitsModel.Carrier.KAGA,
     GlobalUnitsModel.Carrier.HIRYU,
-    GlobalUnitsModel.Carrier.SORYU
+    GlobalUnitsModel.Carrier.SORYU,
   ]
 
   static US_CARRIERS = [
@@ -82,6 +81,12 @@ export default class GlobalGameState {
     GlobalUnitsModel.Carrier.MIDWAY,
   ]
 
+  static hideCounters = true
+
+  static hide = (counterData) => {
+    return GlobalGameState.hideCounters && counterData.side === GlobalUnitsModel.Side.US
+  }
+  
   static gameTurn = 1
   static winner = ""
 
@@ -89,7 +94,7 @@ export default class GlobalGameState {
   static currentCarrierDivision = 1
 
   static currentTaskForce = 1
-  
+
   static eliminatedAirUnits = new Array()
   static orphanedAirUnits = new Array()
 
@@ -101,16 +106,17 @@ export default class GlobalGameState {
   }
 
   static taskForceTarget = ""
-  static currentCarrierAttackTarget=""
+  static currentCarrierAttackTarget = ""
   static fleetTarget = ""
 
   static jpDMCVCarrier = ""
   static usDMCVCarrier = ""
 
-  static attackingStrikeGroup= ""
+  static attackingStrikeGroup = ""
 
   static distanceBetweenCarrierFleets = undefined
   static initial1AFLocation = undefined // location of 1AF at start of movement phase
+  static initialMIFLocation = undefined // location of 1AF at start of movement phase
   static previousPosition = undefined // last position of US fleet prior to movement
 
   static usCVsSunk = 0
@@ -119,20 +125,20 @@ export default class GlobalGameState {
 
   static usVPs = 0
   static japanVPs = 0
-  
-  // Can attack both carriers in a task force
-  static carrierTarget1=""
-  static carrierTarget2=""
 
-  static stateHandler = () => {};
+  // Can attack both carriers in a task force
+  static carrierTarget1 = ""
+  static carrierTarget2 = ""
+
+  static stateHandler = () => {}
 
   static doneCapSelection = false
   static dieRolls = new Array()
 
   static carrierHitsDetermined = false
-  
-  static midwayInvasionLevel = 5;
-  static midwayGarrisonLevel = 6;
+
+  static midwayInvasionLevel = 5
+  static midwayGarrisonLevel = 6
   static nextMidwayInvasionRoll = GlobalUnitsModel.Side.JAPAN
   static midwayAttackDeclaration = false
 
@@ -156,7 +162,7 @@ export default class GlobalGameState {
     "June 5, 1942 Morning",
     "June 5, 1942 Afternoon",
     "June 5, 1942 Evening",
-  ];
+  ]
 
   static jpCardsDrawn = false
   static usCardsDrawn = false
@@ -187,34 +193,34 @@ export default class GlobalGameState {
 
   static elitePilots = false
   static semperFi = false
-  
+
   static updateGlobalState = () => {
-    this.stateHandler();
+    this.stateHandler()
   }
 
   static retreatFleet = ""
   static loading = false
 
   static log = (message) => {
-    this.logItems.push(message);
-    this.stateHandler();
-  };
+    this.logItems.push(message)
+    this.stateHandler()
+  }
 
-  static logItems = ["Logging begin..."];
+  static logItems = ["Logging begin..."]
 
   static gamePhase = ""
   static temporaryGamePhase = ""
   static onlycap = false
 
   // static setupPhase = 6; // tmp put back to 0
-  static setupPhase = 0; // tmp put back to 0
+  static setupPhase = 0 // tmp put back to 0
 
   static isFirstAirOp = true
 
   static airOpJapan = 0 // count which air op this is
   static airOpUS = 0
-  
-  static airAttacksComplete = false; // set to true after all air attacks - triggers CAP return etc
+
+  static airAttacksComplete = false // set to true after all air attacks - triggers CAP return etc
 
   static capHits = undefined
   static fighterHits = undefined
@@ -232,17 +238,16 @@ export default class GlobalGameState {
 
   static nextAvailableDamageMarker = 0
   static nextAvailableSunkMarker = 0
-  
 
   static allUSCarriersSunk = false
   static allJapanCarriersSunk = false
-  
+
   static fleetSpeed = 2
   static dmcvFleetSpeed = 1
 
   static JP_AF = 6
-  static US_CSF= 7
-  static  US_MIDWAY = 8
+  static US_CSF = 7
+  static US_MIDWAY = 8
 
   static getJapanCarrier = () => {
     return this.JAPAN_CARRIERS[this.setupPhase]

@@ -605,10 +605,12 @@ function StrikeCounter({ setStrikeGroupPopup, currentUSHex, currentJapanHex, cou
   ) {
     disp = "none"
   }
+   const hide = counterData.side === GlobalUnitsModel.Side.US && GlobalGameState.hideCounters
   return (
     <>
       <div>
         <input
+          hidden={hide}
           type="image"
           src={counterData.image}
           style={{

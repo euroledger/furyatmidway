@@ -52,10 +52,11 @@ class USAICardPlayState {
         let damagedCarriers = GlobalInit.controller.getDamagedCarriersOneOrTwoHits(GlobalUnitsModel.Side.US)
         damagedCarriers = damagedCarriers.filter((cv) => !GlobalInit.controller.getCarrier(cv).dmcv)
 
+        setDamageControlPanelShow(true)
+
         if (damagedCarriers.length >= 2) {
           GlobalGameState.testCarrierSelection = -1
           GlobalGameState.updateGlobalState()
-          setDamageControlPanelShow(true)
           await delay(1000)
           GlobalGameState.currentPlayer = GlobalUnitsModel.Side.US
           GlobalGameState.gamePhase = GlobalGameState.PHASE.CARD_RESPONSE

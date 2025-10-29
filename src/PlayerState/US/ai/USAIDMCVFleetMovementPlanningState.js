@@ -20,6 +20,7 @@ class USAIDMCVFleetMovementPlanningState {
     }
     const { canUSDMCVMoveFleetOffBoard, usDMCVRegions } = getUSFleetRegions()
 
+    console.log(">>>>>>>>> POOOOOOOOOOOOO usDMCVRegions=", usDMCVRegions)
     // If DMCV fleet can move offboard it always does so
     // Otherwise it heads for the board edge
     if (canUSDMCVMoveFleetOffBoard) {

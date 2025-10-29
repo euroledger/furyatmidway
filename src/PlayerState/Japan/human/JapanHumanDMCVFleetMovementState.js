@@ -18,6 +18,8 @@ class JapanHumanDMCVFleetMovementState {
   async nextState(stateObject) {
     console.log("NEXT STATE AFTER JAPAN DMCV FLEET MOVEMENT....")
     GlobalGameState.initial1AFLocation = GlobalInit.controller.getFleetLocation("1AF", GlobalUnitsModel.Side.JAPAN)
+    GlobalGameState.initialMIFLocation = GlobalInit.controller.getFleetLocation("MIF", GlobalUnitsModel.Side.JAPAN)
+
     GlobalGameState.gamePhase = GlobalGameState.PHASE.JAPAN_FLEET_MOVEMENT
   }
 

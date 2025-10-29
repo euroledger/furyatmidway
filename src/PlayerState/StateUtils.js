@@ -457,7 +457,9 @@ export function goToIJNFleetMovement({
       setJapanMapRegions(jpRegion)
 
       const jpMIFLocation = GlobalInit.controller.getFleetLocation("MIF", GlobalUnitsModel.Side.JAPAN)
-
+      if (GlobalGameState.initialMIFLocation !== undefined) {
+        jpMIFLocation = GlobalGameState.initialMIFLocation
+      }
       // MIF Regions set separately
       if (jpMIFLocation !== undefined && jpMIFLocation.currentHex !== undefined) {
         jpRegion = allHexesWithinDistance(jpMIFLocation.currentHex, GlobalGameState.dmcvFleetSpeed, true)
@@ -863,6 +865,8 @@ export async function endOfNightAirOperation(controller, setTestUpdate, side) {
   // 1. Move CAP Units to Return 2 Bpx
   const capAirUnits = controller.getAllAirUnitsInCAPBoxes(side)
 
+  await delay(10)
+
   if (capAirUnits.length > 0) {
     for (const unit of capAirUnits) {
       setValidDestinationBoxesNightOperations(controller, unit.name, side, true)
@@ -900,10 +904,11 @@ export async function endOfNightAirOperation(controller, setTestUpdate, side) {
 }
 
 export async function endOfAirOperation(capAirUnits, setAirUnitUpdate) {
-  console.log("In endOfAirOperation().....")
+  console.log("In endOfAirOperation().....GlobalGameState.taskForceTarget=", GlobalGameState.taskForceTarget)
   if (
     GlobalGameState.taskForceTarget !== GlobalUnitsModel.TaskForce.JAPAN_DMCV &&
-    GlobalGameState.taskForceTarget !== GlobalUnitsModel.TaskForce.US_DMCV
+    GlobalGameState.taskForceTarget !== GlobalUnitsModel.TaskForce.US_DMCV &&
+    GlobalGameState.taskForceTarget !== GlobalUnitsModel.TaskForce.MIF
   ) {
     if (capAirUnits) {
       await moveCAPtoReturnBox(GlobalInit.controller, capAirUnits, setAirUnitUpdate)

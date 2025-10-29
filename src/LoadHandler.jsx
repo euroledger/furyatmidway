@@ -104,7 +104,7 @@ async function loadHandler({
     GlobalGameState.log(item)
   }
 
-   if (previousPosition !== undefined) {
+  if (previousPosition !== undefined) {
     setPreviousPosition(() => previousPosition)
   }
 

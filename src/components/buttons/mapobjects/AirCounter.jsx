@@ -145,7 +145,6 @@ function AirCounter({ getAirBox, setAirBox, counterData, side }) {
       }
     }
 
-
     if (location.boxName.includes("ELIMINATED")) {
       return
     }
@@ -189,10 +188,10 @@ function AirCounter({ getAirBox, setAirBox, counterData, side }) {
     // of all airstrikes to return to carrier)
 
     if (
-      GlobalGameState.gamePhase === GlobalGameState.PHASE.JAPAN_SETUP || 
-     (GlobalGameState.sideWithInitiative !== undefined &&
-      GlobalGameState.sideWithInitiative !== counterData.side &&
-      !location.boxName.includes("CAP RETURNING"))
+      GlobalGameState.gamePhase === GlobalGameState.PHASE.JAPAN_SETUP ||
+      (GlobalGameState.sideWithInitiative !== undefined &&
+        GlobalGameState.sideWithInitiative !== counterData.side &&
+        !location.boxName.includes("CAP RETURNING"))
     ) {
       return
     }
@@ -211,9 +210,8 @@ function AirCounter({ getAirBox, setAirBox, counterData, side }) {
     }
     if (
       GlobalGameState.gamePhase === GlobalGameState.PHASE.AIR_OPERATIONS ||
-      GlobalGameState.gamePhase === GlobalGameState.PHASE.MIDWAY_ATTACK || 
-      GlobalGameState.gamePhase === GlobalGameState.PHASE.CAP_RETURN 
-
+      GlobalGameState.gamePhase === GlobalGameState.PHASE.MIDWAY_ATTACK ||
+      GlobalGameState.gamePhase === GlobalGameState.PHASE.CAP_RETURN
     ) {
       setValidDestinationBoxes(controller, counterData.name, counterData.side)
     }
@@ -530,6 +528,7 @@ function AirCounter({ getAirBox, setAirBox, counterData, side }) {
   return (
     <div>
       <input
+        hidden={GlobalGameState.hide(counterData)}
         type="image"
         src={counterData.image}
         name="saveForm2"

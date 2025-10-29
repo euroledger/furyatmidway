@@ -597,11 +597,18 @@ function FleetCounter({
   // if (counterData.name.includes("CSF")) {
   //   console.log("FLEET:", counterData.name, "enabled=", enabled)
   // }
+  const cdata = {
+    side: counterData.name.includes("USMAP") ? GlobalUnitsModel.Side.US : GlobalUnitsModel.Side.JAPAN,
+  }
+  if (counterData.name === "CSF") {
+    cdata.side = GlobalUnitsModel.Side.US
+  }
   return (
     <div>
       {enabled && (
         <input
           type="image"
+          hidden={GlobalGameState.hide(cdata)}
           src={counterData.image}
           style={{
             position: "absolute",

@@ -472,7 +472,6 @@ export function autoAllocateDamage(controller, theHits) {
     return damage
   }
 
-  console.log("ALLOCATING CRITICAL HIT to carrier", carrier)
   if (hits == 1) {
     if (!controller.getCarrierBowDamaged(carrier)) {
       controller.setCarrierBowDamaged(carrier)

@@ -2,6 +2,7 @@ import React, { useEffect, useContext, useState } from "react"
 import "./button.css"
 import GlobalUnitsModel from "../../model/GlobalUnitsModel"
 import { BoardContext } from "../../App"
+import GlobalGameState from "../../model/GlobalGameState"
 
 function TowedBox() {
   const { towedCVSelected } = useContext(BoardContext)
@@ -30,11 +31,9 @@ function TowedBox() {
   }, [towedCVSelected])
   return (
     <>
-      <div
+      {!GlobalGameState.hideCounters &&(<div
         style={{
           background: "#cc0000",
-          // background: "red",
-
           color: "white",
           borderRadius: "40px",
           borderStyle: "solid",
@@ -53,7 +52,7 @@ function TowedBox() {
         }}
       >
         <p style={{ fontSize: "12px" }}>towed</p>
-      </div>
+      </div>)}
     </>
   )
 }

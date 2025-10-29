@@ -1721,6 +1721,11 @@ export function App() {
       }
     }
     const font="12px"
+
+    let hideMsg = "Hide"
+    if (GlobalGameState.hideCounters) {
+      hideMsg = "Show"
+    }
     return (
       <Navbar  style={{fontSize:font}} bg="black" data-bs-theme="dark" fixed="top" className="justify-content-between navbar-fixed-top">
         <Container  style={{fontSize:font}} >
@@ -1841,6 +1846,18 @@ export function App() {
                 }}
               >
                 Reorg
+              </Button>
+              <Button
+                style={{fontSize:font}} 
+                  className="me-1"
+                  size="sm"
+                  variant="outline-light"
+                  onClick={() => {
+                    GlobalGameState.hideCounters = !GlobalGameState.hideCounters
+                    GlobalGameState.updateGlobalState()
+                  }}
+                >
+                  {hideMsg}
               </Button>
             </Nav>
 
@@ -3644,10 +3661,9 @@ export function App() {
         <Controls />
 
         <div className="d-flex p-2">
-          {/* <GameStatePanel show={gameStateShow} gameState={gameState} /> */}
           <div
             style={{
-              // marginTop: "70px",
+              marginTop: "-10px",
               minHeight: "670px",
               minWidth: "1280px",
               maxHeight: "670px",

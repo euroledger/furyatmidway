@@ -5,19 +5,20 @@ import USAirBoxOffsets from "../../draganddrop/USAirBoxOffsets"
 import "../../board.css"
 import "./counter.css"
 import HexCommand from "../../../commands/HexCommand"
+import GlobalGameState from "../../../model/GlobalGameState"
 
 function DamageSunkCounter({ counterData, markerUpdate }) {
   const [position, setPosition] = useState({
     left: -10000,
     top: -10000,
+    side: ""
   })
 
   if (markerUpdate.box === "") {
     return
   }
-
   if (counterData.name === markerUpdate.name) {
-    if (markerUpdate.box === HexCommand.OFFBOARD)  {
+    if (markerUpdate.box === HexCommand.OFFBOARD) {
       return
     }
     const airZones =
@@ -28,21 +29,25 @@ function DamageSunkCounter({ counterData, markerUpdate }) {
     if (!airZones) {
       return
     }
+
     const offsets = airZones.offsets[markerUpdate.index]
 
     if (position.left !== offsets.left + "%") {
-      // console.log("I am ", counterData.name, " -> MARKER UPDATE = ", markerUpdate, "offsets=", offsets)
+      console.log("I am ", counterData.name, " -> position.left=", position.left, "offsets.left=", offsets.left)
 
       setPosition(() => ({
         left: offsets.left + "%",
         top: offsets.top - 0.2 + "%",
+        side: markerUpdate.side
       }))
     }
   }
-
+  const hide = position.side === GlobalUnitsModel.Side.US && GlobalGameState.hideCounters
+  
   return (
     <div>
       <input
+        hidden={hide}
         type="image"
         src={counterData.image}
         name="marker"

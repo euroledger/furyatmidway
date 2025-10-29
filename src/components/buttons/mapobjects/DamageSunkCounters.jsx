@@ -1,4 +1,4 @@
-import React, { useContext } from "react"
+import { useContext } from "react"
 import "../../board.css"
 import { BoardContext } from "../../../App"
 import DamageSunkCounter from "./DamageSunkCounter"
@@ -11,7 +11,6 @@ function DamageSunkCounters({ counterData }) {
   let markers = GlobalUnitsModel.damageMarkers
 
   markers = markers.concat(GlobalUnitsModel.sunkMarkers)
-
 
   const damageSunkCounters = markers.map((marker) => {
     return <DamageSunkCounter counterData={marker} markerUpdate={damageMarkerUpdate}></DamageSunkCounter>

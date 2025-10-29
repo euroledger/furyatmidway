@@ -14,6 +14,7 @@ function DMCVShipMarker({ counterData }) {
   const [position, setPosition] = useState({
     left: -100,
     top: -100,
+    side: ""
   })
 
   if (dmcvShipMarkerUpdate.box === "") {
@@ -36,15 +37,20 @@ function DMCVShipMarker({ counterData }) {
     setPosition(() => ({
       left: offsets.left + "%",
       top: offsets.top - 0.2 + "%",
+      side: dmcvShipMarkerUpdate.side
     }))
   }
   let disp="block"
   if (dmcvShipMarkerUpdate.carrier !== undefined && GlobalInit.controller.isSunk(dmcvShipMarkerUpdate.carrier)) {
     disp="none"
   }
+
+  const hide = position.side === GlobalUnitsModel.Side.US && GlobalGameState.hideCounters
+  
   return (
     <div>
       <input
+        hidden={hide}
         type="image"
         src={counterData.image}
         name="marker"

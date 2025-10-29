@@ -575,10 +575,17 @@ function DMCVFleetCounter({
       }
     }
   }
+  const cdata = {
+    side: counterData.name.includes("USMAP") ? GlobalUnitsModel.Side.US : GlobalUnitsModel.Side.JAPAN,
+  }
+  if (counterData.name === "US-DMCV") {
+    cdata.side = GlobalUnitsModel.Side.US
+  }
   return (
     <div>
       {enabled && (
         <input
+          hidden={GlobalGameState.hide(cdata)}
           type="image"
           src={counterData.image}
           style={{
