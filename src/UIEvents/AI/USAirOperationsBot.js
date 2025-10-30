@@ -294,6 +294,7 @@ export async function moveAirUnitsFromHangarEndOfNightOperation(controller, side
     //   numFreeFlightDeckSlots
     // )
     if (numFreeFlightDeckSlots > 0) {
+      await delay(10)
       await moveAirUnitNight(controller, unit, setTestUpdate, destBoxes)
     }
   }
@@ -339,7 +340,11 @@ export async function moveAirUnit(controller, unit, setTestUpdate, night) {
   if (destBoxes.length === 0) {
     // this can only happen if all carriers sunk, leave for now
 
+    // Or if carrier(s) at capacity
+
     // TODO MOVE TO ELIMINATED UNITS (ORPHAN!)
+
+    console.log("DEBUG destBoxes length 0 -> MOVE ORPHAN TO ELIMINATED BOX!")
     return
   }
   // TODO Decide on best destination!! not just first one

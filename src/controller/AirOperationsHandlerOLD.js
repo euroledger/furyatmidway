@@ -660,6 +660,7 @@ export function doHangarNight(controller, name, side) {
     destinationsArray.push(capBox)
   }
 
+  console.log("GET FLIGHT DECK BOX FOR ", carrierName)
   const destBox = controller.getAirBoxForNamedShip(side, carrierName, "FLIGHT_DECK")
 
   // check there is room on this carrier's flight deck
@@ -1026,10 +1027,6 @@ export function doCapNight(controller, name, side) {
     destinationsArray = getValidJapanDestinationsCAPNight(controller, parentCarrier, side)
   }
   controller.setValidAirUnitDestinations(name, destinationsArray)
-
-  if (destinationsArray.length === 0) {
-    console.log("DEBUG>>>>>>>>>>>>>>>>>>>> no destination for CAP unit", name)
-  }
   return destinationsArray
 }
 
@@ -1147,7 +1144,6 @@ export function checkForReorganization(controller, fromBox, toBox, auto) {
   }
   const airUnits = controller.getAllAirUnitsInBox(fromBox)
 
-  // console.log("CHECKING UNITS IN FROM BOX(", fromBox, ") =>", airUnits)
   // 2. Check to see if there are any 1 step units of the same type
   let step1Fighters = getStep1Fighters(airUnits)
   let step1DiveBombers = getStep1DiveBombers(airUnits)
@@ -1168,7 +1164,6 @@ export function checkForReorganization(controller, fromBox, toBox, auto) {
   }
 
   const airUnitsToBox = controller.getAllAirUnitsInBox(toBox)
-  // console.log("CHECKING UNITS IN TO BOX(", toBox, ") =>", airUnitsToBox)
 
   let step1FightersToBox = getStep1Fighters(airUnitsToBox)
 
@@ -1345,33 +1340,6 @@ export function checkAllBoxesForReorganization(controller, unit, fromBox, side, 
     controller.setReorganizationUnits(unit.name, reorgUnits)
     return reorgUnits
   }
-  let flightBox = controller.getAirBoxForNamedShip(side, carrierName, "FLIGHT")
-  let fromFlightBox = controller.getAirBoxForNamedShip(side, carrierName, "FLIGHT")
-
-  // check reorg within box
-  // console.log("FLIGHT BOLLOCKS 1 fromBox=", fromBox, "toBox=", toBox)
-  reorgUnits = checkForReorganization(controller, fromFlightBox, flightBox, auto)
-
-  // console.log("+++++++++++++ REORG FLIGHT 1 DECK UNITS=", reorgUnits)
-  if (reorgUnits) {
-    controller.setReorganizationUnits(unit.name, reorgUnits)
-    return reorgUnits
-  } else {
-    let carrier = controller.getOtherCarrierInTF(carrierName, side)
-    if (carrier) {
-      flightBox = controller.getAirBoxForNamedShip(side, carrier.name, "FLIGHT")
-      fromFlightBox = controller.getAirBoxForNamedShip(side, carrier.name, "FLIGHT")
-
-      // check reorg within box
-      // console.log("FLIGHT BOLLOCKS 2 fromBox=", fromBox, "toBox=", toBox)
-      reorgUnits = checkForReorganization(controller, fromFlightBox, flightBox, auto)
-      // console.log("+++++++++++++ REORG FLIGHT 2 DECK UNITS=", reorgUnits)
-      if (reorgUnits) {
-        controller.setReorganizationUnits(unit.name, reorgUnits)
-        return reorgUnits
-      }
-    }
-  }
   // check reorg across boxes
   // 1. Same Carrier
   reorgUnits = checkForReorganization(controller, fromBox, toBox, auto)
@@ -1420,23 +1388,6 @@ export function checkAllBoxesForReorganization(controller, unit, fromBox, side, 
   return reorgUnits1
 }
 
-function reorganizeUnits(controller, reorgUnits, unit) {
-  if (reorgUnits.length === 0 || reorgUnits.length === 1) {
-    // orphan
-    moveAirUnitToEliminatedBox(controller, unit)
-    return
-  }
-  const airUnitElim = reorgUnits[0]
-  const airUnit2Step = reorgUnits[1]
-
-  console.log("DEBUG doing reorg, eliminate", airUnitElim.name, "; increase to 2 steps:", airUnit2Step.name)
-  moveAirUnitToEliminatedBox(controller, airUnitElim)
-
-  airUnit2Step.aircraftUnit.steps = 2
-  const newImage = airUnit2Step.image.replace("back", "front")
-  airUnit2Step.image = newImage
-}
-
 export function setValidDestinationBoxesNightOperations(controller, airUnitName, side, moved) {
   controller.setValidAirUnitDestinations(airUnitName, new Array()) // just to be sure last entries are gone
 
@@ -1468,48 +1419,19 @@ export function setValidDestinationBoxesNightOperations(controller, airUnitName,
     if (destinations.length === 0) {
       // check for possible reorganisation
       const unit = GlobalInit.counters.get(airUnitName)
-      const reorgUnits = checkAllBoxesForReorganization(controller, unit, location.boxName, side, false)
-
-      // auto reorganize units if AI
-      if (side === GlobalUnitsModel.Side.US && GlobalGameState.usPlayerType === GlobalUnitsModel.TYPE.AI) {
-        reorganizeUnits(controller, reorgUnits, unit)
-
-        const destinations = doReturn1(controller, airUnitName, side, useMidway)
-        if (destinations.length === 0) {
-          moveAirUnitToEliminatedBox(controller, unit)
-        }
-      }
+      checkAllBoxesForReorganization(controller, unit, location.boxName, side, false)
     }
   }
   if (location.boxName.includes("RETURNING (2)")) {
     doReturn2(controller, airUnitName, side)
   }
   if (location.boxName.includes("CAP") && !location.boxName.includes("RETURNING")) {
-    const destinations = doCapNight(controller, airUnitName, side)
-    if (destinations.length === 0) {
-      // check for possible reorganisation
-      const unit = GlobalInit.counters.get(airUnitName)
-      const reorgUnits = checkAllBoxesForReorganization(controller, unit, location.boxName, side, false)
-
-      // TODO if any reorgUnits, remove first unit and flip second unit to full strength
-      // Then retry doCapNight...
-
-      // if no reorg possible -> Orphans, eliminate the CAP units
-
-      // auto reorganize units if AI
-      if (side === GlobalUnitsModel.Side.US && GlobalGameState.usPlayerType === GlobalUnitsModel.TYPE.AI) {
-        reorganizeUnits(controller, reorgUnits, unit)
-        const destinations = doCapNight(controller, airUnitName, side)
-        if (destinations.length === 0) {
-          moveAirUnitToEliminatedBox(controller, unit)
-        }
-      }
-    }
+    doCapNight(controller, airUnitName, side)
   }
   let numFree = 0
   if (location.boxName.includes("HANGAR")) {
     numFree = doHangarNight(controller, airUnitName, side)
-  }
+    }
   if (location.boxName.includes("FLIGHT")) {
     doFlightDeck(controller, airUnitName, side)
   }

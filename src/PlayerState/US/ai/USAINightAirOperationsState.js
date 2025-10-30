@@ -44,6 +44,7 @@ class USAINightAirOperationsState {
       await delay(10)
       GlobalGameState.updateGlobalState()
     }
+    this.nextState(stateObject)
   }
 
   async nextState(stateObject) {

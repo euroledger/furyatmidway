@@ -1144,6 +1144,7 @@ export function doCAP(controller, capAirUnits, fightersPresent, testRolls) {
 }
 
 export function moveAirUnitToEliminatedBox(controller, airUnit) {
+  console.log("DEBUG ELIMINATE", airUnit.name)
   airUnit.aircraftUnit.steps = 0
   const toBox =
     airUnit.side === GlobalUnitsModel.Side.JAPAN

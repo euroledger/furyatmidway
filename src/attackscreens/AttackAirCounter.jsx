@@ -142,7 +142,7 @@ function AirAttackCounter({
     myIdx !== attackAirCounterUpdate && 
     uuid !== attackAirCounterUpdate.uuid
   ) {
-    console.log("I am ", airUnit.name, " -> ATTACK AIR COUNTER UPDATE = ", attackAirCounterUpdate)
+    // console.log("I am ", airUnit.name, " -> ATTACK AIR COUNTER UPDATE = ", attackAirCounterUpdate)
 
     if (attackAirCounterUpdate.side === GlobalUnitsModel.Side.US) {
       setUSAttackAirUnit(attackAirCounterUpdate.unit, attackAirCounterUpdate.carrier, attackAirCounterUpdate.id)

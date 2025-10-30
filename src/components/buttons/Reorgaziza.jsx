@@ -27,6 +27,7 @@ function Reorgaziza({
 
     setElim(true)
     // get first air unit other than this one and flip it to full strength
+    
     for (let i = 0; i < reorgUnits.length; i++) {
       const airUnit = reorgUnits[i]
       if (i !== index) {

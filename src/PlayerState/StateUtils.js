@@ -507,8 +507,19 @@ export function dmcvState(side) {
     (jpDMCVLocation !== undefined && GlobalGameState.jpDMCVFleetPlaced === true)
   )
 }
-export function midwayDeclarationHandler({ nextAction }) {
-  nextAction()
+function midwayDeclarationHandler() {
+  console.log("FINISHED MIDWAY DECLARATION...")
+  if (dmcvState(GlobalUnitsModel.Side.US)) {
+    GlobalGameState.currentPlayer = GlobalUnitsModel.Side.US
+    GlobalGameState.gamePhase = GlobalGameState.PHASE.US_DMCV_FLEET_MOVEMENT_PLANNING
+    GlobalGameState.usFleetMoved = false
+    GlobalGameState.phaseCompleted = true
+  } else {
+    GlobalGameState.currentPlayer = GlobalUnitsModel.Side.US
+    GlobalGameState.gamePhase = GlobalGameState.PHASE.US_DMCV_FLEET_MOVEMENT_PLANNING
+    GlobalGameState.usFleetMoved = false
+    GlobalGameState.phaseCompleted = true
+  }
 }
 
 function goToCardPlay(cardNumber) {
@@ -613,12 +624,15 @@ export async function setNextStateFollowingCardPlay(stateObject) {
     case 5:
       // Naval Bombardment
       if (GlobalGameState.gameTurn !== 4) {
+        GlobalGameState.currentPlayer = GlobalUnitsModel.Side.US
         GlobalGameState.gamePhase = GlobalGameState.PHASE.JAPAN_DRAWS_ONE_CARD
         // midwayPossible(GlobalInit.controller, setMidwayWarningShow, setMidwayDialogShow)
       } else {
-        // midwayDeclarationHandler({ nextAction })
-        nextAction()
+        // midwayDeclarationHandler()
+        GlobalGameState.currentPlayer = GlobalUnitsModel.Side.US
+        GlobalGameState.gamePhase = GlobalGameState.PHASE.US_DRAWS_ONE_CARD
       }
+      GlobalGameState.updateGlobalState()
 
       break
     case 6:
@@ -862,7 +876,7 @@ export function midwayOrAirOps() {
 
 // (ensure no flight deck is empty)
 export async function endOfNightAirOperation(controller, setTestUpdate, side) {
-  // 1. Move CAP Units to Return 2 Bpx
+  // 1. Move CAP Units to Return 2 Box
   const capAirUnits = controller.getAllAirUnitsInCAPBoxes(side)
 
   await delay(10)
@@ -873,6 +887,9 @@ export async function endOfNightAirOperation(controller, setTestUpdate, side) {
       const destBoxes = controller.getValidAirUnitDestinations(unit.name)
 
       await moveAirUnitNight(controller, unit, setTestUpdate, destBoxes)
+
+      console.log("DEBUG MOVE CAP UNIT:", unit.name, "DEST=", destBoxes)
+      unit.border = false
     }
   }
 

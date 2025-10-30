@@ -104,7 +104,7 @@ function CardAlertPanel(props) {
       setCardDicePanelShow5(true)
       controller.setCardPlayed(5, GlobalUnitsModel.Side.JAPAN)
       onHide(e)
-      nextAction(e)
+      // nextAction(e)
     } else if (cardNumber === 6) {
       setHeaderText("CARD #6 PLAYED")
       controller.setCardPlayed(6, GlobalUnitsModel.Side.JAPAN)

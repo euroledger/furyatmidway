@@ -359,7 +359,22 @@ function createAirUnitUpdates(controller, airUnitMap) {
     let update = {
       name: unit,
     }
+
+    //     Air Update: name = Enterprise-F4F4-1, box = TF16 CAP, index =0 position = [object Object]
+    // SaveLoadGame.js:386 Air Update: name = Enterprise-F4F4-2, box = TF16 CAP, index =2 position = [object Object]
+    // SaveLoadGame.js:386 Air Update: name = Hornet-F4F4-1, box = TF16 CAP, index =1 position = [object Object]
+
     let airUnit = airUnitMap.get(unit)
+
+    // QUACK TESTING BEGIN
+    // TEST US RETURN1 NIGHT OPERATIONS WHEN NO ROOM ON CARRIER BUT REORG POSSIBLE
+
+    // if (airUnit.counterData._name === "Enterprise-F4F4-1") {
+    //   airUnit.boxName = GlobalUnitsModel.AirBox.US_HORNET_HANGAR
+    //   airUnit.boxIndex = 2
+    // }
+    // QUACK TESTING END
+
     update.boxName = airUnit.boxName
     update.index = airUnit.boxIndex
 
@@ -411,6 +426,22 @@ function loadAirUnits(airUnitMap) {
       globalAirUnit.aircraftUnit._turnmoved = airUnit.counterData._turnmoved
     }
 
+    // QUACK TESTING BEGIN
+    // if (airUnit.counterData._name === "Enterprise-F4F4-1") {
+    //   globalAirUnit.aircraftUnit.steps = 1
+    //   const newImage = globalAirUnit.image.replace("front", "back")
+    //   globalAirUnit.image = newImage
+    // }
+
+    // if (airUnit.counterData._name === "Enterprise-F4F4-2") {
+    //   globalAirUnit.aircraftUnit.steps = 1
+    //   const newImage = globalAirUnit.image.replace("front", "back")
+    //   globalAirUnit.image = newImage
+    //   globalAirUnit.location.boxName = GlobalUnitsModel.AirBox.US_HORNET_HANGAR
+    //   console.log("ENTERPRISE AIR UNIT F4F-2 =", globalAirUnit)
+    // }
+    // QUACK TESTING END
+
     // possibly check airUnit parent carrier here
     if (globalAirUnit.carrier !== airUnit.counterData._carrier) {
       globalAirUnit.carrier = airUnit.counterData._carrier
@@ -443,7 +474,7 @@ function loadAirUnits(airUnitMap) {
     // GlobalGameState.usDMCVCarrier = undefined
     // GlobalGameState.temporaryGamePhase = GlobalGameState.PHASE.US_FLEET_MOVEMENT_PLANNING
 
-    GlobalGameState.hideCounters = false // QUACK TESTING
+    // GlobalGameState.hideCounters = false // QUACK TESTING
   }
 }
 
