@@ -87,6 +87,8 @@ export default class GlobalGameState {
     return GlobalGameState.hideCounters && counterData.side === GlobalUnitsModel.Side.US
   }
   
+  static alertSent = false 
+  
   static gameTurn = 1
   static winner = ""
 

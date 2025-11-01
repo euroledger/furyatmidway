@@ -459,6 +459,7 @@ function loadAirUnits(airUnitMap) {
     // GlobalGameState.usDMCVCarrier = GlobalUnitsModel.Carrier.HORNET
     // GlobalGameState.midwayGarrisonLevel = 4
     // GlobalGameState.carrierHitsDetermined = false
+    GlobalGameState.alertSent = false // always set to false 
 
     // GlobalGameState.CSFLeftMap = false
     // GlobalGameState.AF1LeftMap = false
@@ -474,7 +475,7 @@ function loadAirUnits(airUnitMap) {
     // GlobalGameState.usDMCVCarrier = undefined
     // GlobalGameState.temporaryGamePhase = GlobalGameState.PHASE.US_FLEET_MOVEMENT_PLANNING
 
-    // GlobalGameState.hideCounters = false // QUACK TESTING
+    GlobalGameState.hideCounters = false // QUACK TESTING
   }
 }
 

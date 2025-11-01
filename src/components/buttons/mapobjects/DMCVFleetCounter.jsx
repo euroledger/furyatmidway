@@ -308,6 +308,18 @@ function DMCVFleetCounter({
   }
 
   const dropIntoOffMapFleetBox = (fleetBox, side) => {
+    console.log("OFF YOU GO POOPY")
+    if (side === GlobalUnitsModel.Side.JAPAN) {
+      if (!GlobalGameState.jpDMCVFleetPlaced) {
+        setDmcvCarrierSelectionPanelShow(true)
+        GlobalGameState.jpDMCVFleetPlaced = true
+      }
+    } else {
+      if (!GlobalGameState.usDMCVFleetPlaced) {
+        setDmcvCarrierSelectionPanelShow(true)
+        GlobalGameState.usDMCVFleetPlaced = true
+      }
+    }
     const newMap = new Map(previousPosition).set(counterData.name, position)
     setPreviousPosition(() => newMap)
 
@@ -350,6 +362,18 @@ function DMCVFleetCounter({
   const handleDrop = (event) => {
     const fleetBox = getFleetBox()
     if (fleetBox !== -1) {
+      if (
+        counterData.side === GlobalUnitsModel.Side.US &&
+        GlobalGameState.gamePhase !== GlobalGameState.PHASE.US_DMCV_FLEET_MOVEMENT_PLANNING
+      ) {
+        return
+      }
+      if (
+        counterData.side === GlobalUnitsModel.Side.JAPAN &&
+        GlobalGameState.gamePhase !== GlobalGameState.PHASE.JAPAN_DMCV_FLEET_MOVEMENT
+      ) {
+        return
+      }
       dropIntoOffMapFleetBox(fleetBox, side)
       return
     }
@@ -581,6 +605,7 @@ function DMCVFleetCounter({
   if (counterData.name === "US-DMCV") {
     cdata.side = GlobalUnitsModel.Side.US
   }
+
   return (
     <div>
       {enabled && (

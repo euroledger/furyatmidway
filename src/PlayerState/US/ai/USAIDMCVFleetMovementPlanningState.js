@@ -11,16 +11,16 @@ import HexCommand from "../../../commands/HexCommand"
 class USAIDMCVFleetMovementPlanningState {
   async doAction(stateObject) {
     const { setFleetUnitUpdate, doAIDMCVShipMarkerUpdate } = stateObject
-    console.log("DOING US DMCV FLEET MOVEMENT PLANNING")
 
     const usDMCVLocation = GlobalInit.controller.getFleetLocation("US-DMCV", GlobalUnitsModel.Side.US)
 
-    if (usDMCVLocation !== undefined && usDMCVLocation === HexCommand.OFFBOARD) {
+     const damagedCarriers = GlobalInit.controller.getDamagedCarriers(GlobalUnitsModel.Side.US)
+
+    if (damagedCarriers.length === 0 || (usDMCVLocation !== undefined && usDMCVLocation === HexCommand.OFFBOARD)) {
       this.nextState(stateObject)
     }
     const { canUSDMCVMoveFleetOffBoard, usDMCVRegions } = getUSFleetRegions()
 
-    console.log(">>>>>>>>> POOOOOOOOOOOOO usDMCVRegions=", usDMCVRegions)
     // If DMCV fleet can move offboard it always does so
     // Otherwise it heads for the board edge
     if (canUSDMCVMoveFleetOffBoard) {
@@ -38,13 +38,19 @@ class USAIDMCVFleetMovementPlanningState {
 
         // Set the damaged carrier
         // 1. get the list of damaged carriers
-        const damagedCarriers = GlobalInit.controller.getDamagedCarriers(GlobalUnitsModel.Side.US)
+       
 
+        console.log(">>>> DEBUG damagedCarriers=", damagedCarriers)
         // 2. select a carrier
         const cv = getRandomElementFrom(damagedCarriers)
 
+        console.log(">>>> DEBUG cv=", cv)
+
         // 3. do the DMCV marker update
         let carrierUnit = GlobalInit.controller.getCarrier(cv)
+
+        console.log(">>>> DEBUG carrierUnit=", carrierUnit)
+
         GlobalGameState.usDMCVCarrier = carrierUnit.name
         GlobalGameState.updateGlobalState()
 
@@ -68,7 +74,7 @@ class USAIDMCVFleetMovementPlanningState {
   }
 
   getState() {
-    return GlobalGameState.PHASE.US_FLEET_MOVEMENT_PLANNING
+    return GlobalGameState.PHASE.US_DMCV_FLEET_MOVEMENT_PLANNING
   }
 }
 

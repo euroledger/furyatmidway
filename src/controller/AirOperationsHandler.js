@@ -924,6 +924,10 @@ export async function moveOrphanedCAPUnitsToEliminatedBox(side, box, unit) {
   }
 
   const capUnitsReturning = GlobalInit.controller.getAllCAPDefendersInCAPReturnBoxes(side)
+
+
+    console.log("QUACK 1 GET CAP UNITS.....capUnitsReturning=", capUnitsReturning)
+
   for (const unit of capUnitsReturning) {
     await delay(1)
     const parentCarrier = GlobalInit.controller.getCarrierForAirUnit(unit.name)
@@ -934,6 +938,7 @@ export async function moveOrphanedCAPUnitsToEliminatedBox(side, box, unit) {
     } else {
       destinationsArray = getValidUSDestinationsCAP(GlobalInit.controller, parentCarrier, side, unit.name)
     }
+    console.log("QUACK 2 destinationsArray.length=", destinationsArray.length)
     if (destinationsArray.length === 0) {
       GlobalGameState.orphanedAirUnits.push(unit)
       moveAirUnitToEliminatedBox(GlobalInit.controller, unit)
@@ -963,6 +968,16 @@ export async function moveCAPtoReturnBox(controller, capAirUnits, setAirUnitUpda
       ? GlobalUnitsModel.Side.JAPAN
       : GlobalUnitsModel.Side.US
 
+  if (
+    GlobalInit.controller.allCarriersSunk(GlobalUnitsModel.Side.US) &&
+    sideBeingAttacked === GlobalUnitsModel.Side.US &&
+    GlobalGameState.usPlayerType === GlobalUnitsModel.TYPE.AI
+  ) {
+    // move all CAP units to ORPHAN
+    console.log(".....MOVE CAP UNITS TO ELIMINATED BOX")
+    await moveOrphanedCAPUnitsToEliminatedBox(sideBeingAttacked)
+    return
+  }
   for (const capUnit of capAirUnits) {
     await delay(10)
 
@@ -1026,10 +1041,6 @@ export function doCapNight(controller, name, side) {
     destinationsArray = getValidJapanDestinationsCAPNight(controller, parentCarrier, side)
   }
   controller.setValidAirUnitDestinations(name, destinationsArray)
-
-  if (destinationsArray.length === 0) {
-    console.log("DEBUG>>>>>>>>>>>>>>>>>>>> no destination for CAP unit", name)
-  }
   return destinationsArray
 }
 
@@ -1168,7 +1179,6 @@ export function checkForReorganization(controller, fromBox, toBox, auto) {
   }
 
   const airUnitsToBox = controller.getAllAirUnitsInBox(toBox)
-  // console.log("CHECKING UNITS IN TO BOX(", toBox, ") =>", airUnitsToBox)
 
   let step1FightersToBox = getStep1Fighters(airUnitsToBox)
 
@@ -1183,10 +1193,13 @@ export function checkForReorganization(controller, fromBox, toBox, auto) {
   // 5. If there are 2 or more units across the from and to boxes - reorganise across
   // the boxes, note always eliminate the unit in the to Box so that creates space
   // for incoming unit
-  step1Fighters = step1FightersToBox.concat(step1Fighters)
 
-  step1DiveBombers = step1DiveBombersToBox.concat(step1DiveBombers)
-  step1TorpedoPlanes = step1TorpedoPlanesToBox.concat(step1TorpedoPlanes)
+  if (fromBox !== toBox) {
+    step1Fighters = step1FightersToBox.concat(step1Fighters)
+    step1DiveBombers = step1DiveBombersToBox.concat(step1DiveBombers)
+    step1TorpedoPlanes = step1TorpedoPlanesToBox.concat(step1TorpedoPlanes)
+  }
+
   if (step1Fighters.length >= 2 || step1DiveBombers.length >= 2 || step1TorpedoPlanes.length >= 2) {
     const ret = checkPlanesInBox(step1Fighters, step1DiveBombers, step1TorpedoPlanes, auto)
     return ret
@@ -1429,7 +1442,7 @@ function reorganizeUnits(controller, reorgUnits, unit) {
   const airUnitElim = reorgUnits[0]
   const airUnit2Step = reorgUnits[1]
 
-  console.log("DEBUG doing reorg, eliminate", airUnitElim.name, "; increase to 2 steps:", airUnit2Step.name)
+  // console.log("DEBUG doing reorg, eliminate", airUnitElim.name, "; increase to 2 steps:", airUnit2Step.name)
   moveAirUnitToEliminatedBox(controller, airUnitElim)
 
   airUnit2Step.aircraftUnit.steps = 2

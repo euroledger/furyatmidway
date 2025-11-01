@@ -511,11 +511,14 @@ function midwayDeclarationHandler() {
   console.log("FINISHED MIDWAY DECLARATION...")
   if (dmcvState(GlobalUnitsModel.Side.US)) {
     GlobalGameState.currentPlayer = GlobalUnitsModel.Side.US
+    console.log("++++++++++++++++++++++++++++ GO TO DMCV QUACK 1")
     GlobalGameState.gamePhase = GlobalGameState.PHASE.US_DMCV_FLEET_MOVEMENT_PLANNING
     GlobalGameState.usFleetMoved = false
     GlobalGameState.phaseCompleted = true
   } else {
     GlobalGameState.currentPlayer = GlobalUnitsModel.Side.US
+        console.log("++++++++++++++++++++++++++++ GO TO DMCV QUACK 2")
+
     GlobalGameState.gamePhase = GlobalGameState.PHASE.US_DMCV_FLEET_MOVEMENT_PLANNING
     GlobalGameState.usFleetMoved = false
     GlobalGameState.phaseCompleted = true
@@ -645,6 +648,8 @@ export async function setNextStateFollowingCardPlay(stateObject) {
           return
         } else {
           GlobalGameState.currentPlayer = GlobalUnitsModel.Side.US
+              console.log("++++++++++++++++++++++++++++ GO TO DMCV QUACK 3")
+
           GlobalGameState.gamePhase = GlobalGameState.PHASE.US_DMCV_FLEET_MOVEMENT_PLANNING
           GlobalGameState.usFleetMoved = false
           GlobalGameState.phaseCompleted = true

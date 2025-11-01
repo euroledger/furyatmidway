@@ -15,6 +15,7 @@ import { usAirBoxArray } from "../../AirUnitData"
 import USAirBoxOffsets from "../../components/draganddrop/USAirBoxOffsets"
 import { delay } from "../../DiceHandler"
 import { DELAY_MS } from "../../PlayerState/StateUtils"
+import Command from "../../commands/Command"
 
 export function selectUSDefendingCAPUnits(controller, stateObject) {
   const { setCapAirUnits, setFightersPresent, setCapSteps } = stateObject
@@ -98,15 +99,29 @@ function getFleetDistances(controller) {
   let distanceBetweenMidwayandIJNDMCV = 100
   let distanceBetweenMidwayandMIF = 100
 
-  const distanceBetweenCSFand1AF = distanceBetweenHexes(locationCSF.currentHex, location1AF.currentHex)
-  const distanceBetweenMidwayand1AF = distanceBetweenHexes(Controller.MIDWAY_HEX.currentHex, location1AF.currentHex)
+  console.log("DEBUG locationCSF=", locationCSF)
+  let distanceBetweenCSFand1AF
+  let distanceBetweenMidwayand1AF = distanceBetweenHexes(Controller.MIDWAY_HEX.currentHex, location1AF.currentHex)
 
+  if (locationCSF.boxName === Command.FLEET_BOX) {
+    // CSF carriers sunk
+    console.log("CSF IS OFF THE BOARD")
+    distanceBetweenCSFand1AF = -100
+    distanceBetweenCSFandMIF = -100
+    distanceBetweenCSFandIJNDMCV = -100
+  } else {
+    distanceBetweenCSFand1AF = distanceBetweenHexes(locationCSF.currentHex, location1AF.currentHex)
+    if (locationIJNDMCV !== undefined && locationIJNDMCV.currentHex !== undefined) {
+      distanceBetweenCSFandIJNDMCV = distanceBetweenHexes(locationCSF.currentHex, locationIJNDMCV.currentHex)
+    }
+    if (locationMIF !== undefined && locationMIF.currentHex !== undefined) {
+      distanceBetweenCSFandMIF = distanceBetweenHexes(locationCSF.currentHex, locationMIF.currentHex)
+    }
+  }
   if (locationIJNDMCV !== undefined && locationIJNDMCV.currentHex !== undefined) {
-    distanceBetweenCSFandIJNDMCV = distanceBetweenHexes(locationCSF.currentHex, locationIJNDMCV.currentHex)
     distanceBetweenMidwayandIJNDMCV = distanceBetweenHexes(Controller.MIDWAY_HEX.currentHex, locationIJNDMCV.currentHex)
   }
   if (locationMIF !== undefined && locationMIF.currentHex !== undefined) {
-    distanceBetweenCSFandMIF = distanceBetweenHexes(locationCSF.currentHex, locationMIF.currentHex)
     distanceBetweenMidwayandMIF = distanceBetweenHexes(Controller.MIDWAY_HEX.currentHex, locationMIF.currentHex)
   }
   return {
@@ -218,6 +233,7 @@ async function moveStrikeGroup(controller, unit, fromHex, toHex, setStrikeGroupU
   await delay(DELAY_MS)
 }
 async function hangarToFlightDeck({ controller, unit, setTestUpdate, test }) {
+  console.log("DEBUG move unit to flight deck:", unit.name)
   await delay(10)
   // 7b. Get valid destinations for units in Hangar
   // 7c. Move Units from Hangar to Flight Deck
@@ -234,6 +250,7 @@ async function hangarToFlightDeck({ controller, unit, setTestUpdate, test }) {
     return
   }
   const index = controller.getFlightDeckSlot(unit.carrier, GlobalUnitsModel.Side.US, true, box)
+  console.log("DEBUG got index for carrier", unit.carrier, "index=", index)
   if (index !== -1) {
     await moveAirUnitToHangar({ controller, unit, setTestUpdate, test, box, index })
   }
@@ -440,7 +457,7 @@ export async function generateUSAirOperationsMovesCarriers(controller, stateObje
     distanceBetweenCSFandIJNDMCV
   )
   // do not prepare any strike groups if no enemy fleets <=5 hexes away
-  if (minDistanceToEnemyFleet > 5) {
+  if (minDistanceToEnemyFleet > 5 || minDistanceToEnemyFleet === -100) {
     return
   }
 
@@ -550,6 +567,7 @@ export async function generateUSAirOperationsMovesCarriers(controller, stateObje
       continue
     }
     await hangarToFlightDeck({ controller, unit, setTestUpdate, test })
+    await delay(10)
   }
 
   // ii) SBDs
@@ -559,6 +577,7 @@ export async function generateUSAirOperationsMovesCarriers(controller, stateObje
       continue
     }
     await hangarToFlightDeck({ controller, unit, setTestUpdate, test })
+    await delay(10)
   }
 
   // ii) TBDs
@@ -570,6 +589,7 @@ export async function generateUSAirOperationsMovesCarriers(controller, stateObje
       continue
     }
     await hangarToFlightDeck({ controller, unit, setTestUpdate, test })
+    await delay(10)
   }
 
   // 8b. Get valid destinations for units in Return Boxes
@@ -769,20 +789,21 @@ export async function moveStrikeGroups(controller, stateObject, test) {
       continue // done for this SG
     }
     const unitsInGroup = controller.getAirUnitsInStrikeGroups(strikeGroup.box)
-    // console.log("unitsInGroup =",unitsInGroup)
 
     // if ((strikeGroup.units === undefined || strikeGroup.units.length === 0) && !strikeGroup.attacked) {
 
     if (unitsInGroup.length === 0 && !strikeGroup.attacked) {
-      // console.log("NO JOY: SG units=", strikeGroup)
       continue
     }
 
     if (isFirstAirOpForStrike(controller, strikeGroup, GlobalUnitsModel.Side.US)) {
+      // console.log(
+      //   strikeGroup.name,
+      //   strikeGroup.targetsFirstAirOp
+      // )
       const usRegion = firstAirOpUSStrikeRegion(controller, strikeGroup)
 
       if (strikeGroup.targetsFirstAirOp.length >= 1) {
-        // console.log("1. strikeGroup.targetsFirstAirOp=", strikeGroup.targetsFirstAirOp)
         if (GlobalGameState.gameTurn === 6 || GlobalGameState.gameTurn === 7) {
           // prioritise MIF
           if (strikeGroup.targetsFirstAirOp.includes("MIF")) {
@@ -806,7 +827,6 @@ export async function moveStrikeGroups(controller, stateObject, test) {
 
         // Only send one SG to attack IJNDMCV -
         // Need to check if 1AF is also in range
-        // console.log("2. strikeGroup.targetsFirstAirOp=", strikeGroup.targetsFirstAirOp)
 
         if (!ijndmcvTargeted && numTargetsInRange > 1 && strikeGroup.targetsFirstAirOp.includes("IJN-DMCV")) {
           const locationIJNDMCV = controller.getFleetLocation("IJN-DMCV", GlobalUnitsModel.Side.JAPAN)
@@ -852,6 +872,10 @@ export async function moveStrikeGroups(controller, stateObject, test) {
           const toHex = getClosestHexToTarget(locationMIF, usRegion)
           await moveStrikeGroup(controller, strikeGroup, HexCommand.OFFBOARD, toHex, setStrikeGroupUpdate, test)
           // return false
+        }
+        if (strikeGroup.targetsSecondAirOp.length === 0) {
+          // must be out of range
+          // move to return 2 box
         }
       }
     } else {
@@ -969,6 +993,7 @@ export async function generateUSAirOperationsMovesMidway(controller, stateObject
     // => 3.
     //  if enemy fleet 5 away only Move SBD Units from Flight Deck to Strike Boxes,
     //  otherwise do not do strike move (out of range for TBDs)
+
 
     if (unit.aircraftUnit.attack && minDistanceToEnemyFleet > unit.aircraftUnit.movement + 2) {
       // OUT OF RANGE

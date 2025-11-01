@@ -502,10 +502,4 @@ export function doUSFleetMovementAction(controller, regions, offboardPossible) {
   if (GlobalGameState.gameTurn >= 5) {
     return doTurns5To7FleetMovement(regions, dmcvLocation)
   }
-  // if (GlobalGameState.gameTurn === 6) {
-  //   return { q: 3, r: 2 } // QUACK HARD WIRED FOR TESTING ONLY
-  // }
-  // if (GlobalGameState.gameTurn === 7) {
-  //   return { q: 3, r: 3 } // QUACK HARD WIRED FOR TESTING ONLY
-  // }
 }

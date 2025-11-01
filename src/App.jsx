@@ -1050,6 +1050,14 @@ export function App() {
           setEnabledJapanFleetBoxes(true)
         }
       }
+
+      // Edge Case: DMCV has not been placed and 1AF is in col A or Col B=> DMCV can go straight to OFFBOARD box
+        if (ijnDMCVLocation === undefined && (af1Location.currentHex.q === 1 || af1Location.currentHex.q === 2)) {
+        // can move offboard
+        if (GlobalGameState.gamePhase === GlobalGameState.PHASE.JAPAN_DMCV_FLEET_MOVEMENT) {
+          setEnabledJapanFleetBoxes(true)
+        }
+      }
     } else {
       GlobalGameState.fleetSpeed = 2
       GlobalGameState.dmcvFleetSpeed = 1
@@ -1070,6 +1078,14 @@ export function App() {
         ijnDMCVLocation.currentHex !== undefined &&
         ijnDMCVLocation.currentHex.q <= 1
       ) {
+        // can move offboard
+        if (GlobalGameState.gamePhase === GlobalGameState.PHASE.JAPAN_DMCV_FLEET_MOVEMENT) {
+          setEnabledJapanFleetBoxes(true)
+        }
+      }
+      
+      // Edge Case: DMCV has not been placed and 1AF is in col A => DMCV can go straight to OFFBOARD box
+      if (ijnDMCVLocation === undefined && af1Location.currentHex.q === 1) {
         // can move offboard
         if (GlobalGameState.gamePhase === GlobalGameState.PHASE.JAPAN_DMCV_FLEET_MOVEMENT) {
           setEnabledJapanFleetBoxes(true)

@@ -122,6 +122,7 @@ function AirCounter({ getAirBox, setAirBox, counterData, side }) {
   }
 
   const onDrag = () => {
+    console.log("AIR UNIT DRAG ->", counterData)
     const location = controller.getAirUnitLocation(counterData.name)
 
     if (!location.boxName.includes("CAP RETURNING") && GlobalGameState.gamePhase === GlobalGameState.PHASE.CAP_RETURN) {
@@ -223,8 +224,14 @@ function AirCounter({ getAirBox, setAirBox, counterData, side }) {
 
   const doUpdate = (update) => {
     const unit = controller.getAirUnitInBox(update.boxName, update.index)
-    if (unit) {
+
+    // Ensure we only send this alert once so we can debug it
+    if (unit && !GlobalGameState.alertSent) {
+      console.log("DEBUG trying to move unit", counterData.name, "update=", update)
+      console.log("DEBUG airboxmodel=", controller.getBoxMap())
+
       alert(`ERROR unit already there -> ${update.boxName}, index ${update.index}`)
+      GlobalGameState.alertSent = true
       return
     }
 
@@ -515,16 +522,16 @@ function AirCounter({ getAirBox, setAirBox, counterData, side }) {
     !loading &&
     (GlobalGameState.gamePhase === GlobalGameState.PHASE.AIR_OPERATIONS ||
       GlobalGameState.gamePhase === GlobalGameState.PHASE.TARGET_DETERMINATION ||
+      GlobalGameState.gamePhase === GlobalGameState.PHASE.INITIATIVE_DETERMINATION ||
       GlobalGameState.gamePhase === GlobalGameState.PHASE.MIDWAY_ATTACK ||
-      GlobalGameState.gamePhase === GlobalGameState.PHASE.US_FLEET_MOVEMENT)
+      GlobalGameState.gamePhase === GlobalGameState.PHASE.US_FLEET_MOVEMENT ||
+      GlobalGameState.gamePhase === GlobalGameState.PHASE.END_OF_AIR_OPERATION)
   ) {
-    // if (side !== GlobalGameState.sideWithInitiative) {
-    //   disp = "none"
-    // }
-    if (location.boxName.includes("OFFBOARD") && GlobalGameState.gamePhase === GlobalGameState.PHASE.AIR_OPERATIONS) {
+    if (location.boxName.includes("OFFBOARD")) {
       disp = "none"
     }
   }
+
   return (
     <div>
       <input

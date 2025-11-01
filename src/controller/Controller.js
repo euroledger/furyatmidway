@@ -1461,6 +1461,10 @@ export default class Controller {
     return this.boxModel.getNumberOfZonesInBox(boxName)
   }
 
+  getBoxMap = () => {
+    return this.boxModel
+  }
+  
   // returns array of free slots
   getAllFreeZonesInBox = (boxName) => {
     const numZones = this.getNumberZonesInBox(boxName)
@@ -2356,7 +2360,9 @@ export default class Controller {
 
   getCarrierAttackAirStrength(side) {
     let units = this.getAllAirUnits(side)
-    units = units.filter((unit) => unit.aircraftUnit.attack === true && unit.carrier !== GlobalUnitsModel.Carrier.MIDWAY)
+    units = units.filter(
+      (unit) => unit.aircraftUnit.attack === true && unit.carrier !== GlobalUnitsModel.Carrier.MIDWAY
+    )
 
     let strength = units.reduce((sum, unit) => sum + unit.aircraftUnit.steps, 0)
     return strength

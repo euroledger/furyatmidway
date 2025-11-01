@@ -33,6 +33,8 @@ class USAICardDrawState {
           GlobalGameState.updateGlobalState()
         } else {
           GlobalGameState.currentPlayer = GlobalUnitsModel.Side.US
+              console.log("++++++++++++++++++++++++++++ GO TO DMCV QUACK 6")
+
           GlobalGameState.gamePhase = GlobalGameState.PHASE.US_DMCV_FLEET_MOVEMENT_PLANNING
           GlobalGameState.usFleetMoved = false
           GlobalGameState.phaseCompleted = true
