@@ -760,7 +760,6 @@ export function App() {
 
   useEffect(() => {
     if (GlobalGameState.gamePhase === GlobalGameState.PHASE.CARD_PLAY) {
-      console.log("****************** POSSIBLE CARD PLAY-> cardNumber =", cardNumber)
       setEliminatedSteps(0)
       setHeaderText("Possible Card Play: Card #" + cardNumber)
       GlobalGameState.dieRolls = []
@@ -2240,6 +2239,7 @@ export function App() {
   const submarineControlSide = jpPlayedCard4 ? GlobalUnitsModel.Side.JAPAN : GlobalUnitsModel.Side.US
   
   let card4side = GlobalInit.controller.getCardPlayed(4, GlobalUnitsModel.Side.US) ? GlobalUIConstants.Colors.US : GlobalUIConstants.Colors.JAPAN
+
   let hiddenCard4Boog = GlobalInit.controller.getCardPlayed(4, GlobalUnitsModel.Side.US) 
       && GlobalGameState.usPlayerType === GlobalUnitsModel.TYPE.AI ? true : false
       
@@ -3650,7 +3650,9 @@ export function App() {
           setEndOfTurnSummaryShow(false)
           nextAction(e)
         }}
+        // closeButtonDisabled={false} // QUACK TESTING ONLYY
         closeButtonDisabled={summaryButtonDisabled}
+
         sidebg={GlobalUIConstants.Colors.BOTH}
         image={GlobalUIConstants.Flags.BOTH}
       ></LargeDicePanel>

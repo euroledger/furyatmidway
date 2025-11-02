@@ -87,7 +87,6 @@ function DMCVFleetCounter({
     setPosition(() => newPos)
   }
   let hex = {}
-
   if (fleetUnitUpdate && counterData.name === fleetUnitUpdate.name && fleetUnitUpdate.position.currentHex) {
     const test1 = position.currentHex && position.currentHex.boxName !== HexCommand.FLEET_BOX
     const test2 = fleetUnitUpdate.position.currentHex.boxName === HexCommand.FLEET_BOX
@@ -163,16 +162,16 @@ function DMCVFleetCounter({
     counterData.name === fleetUnitUpdate.name &&
     fleetUnitUpdate.position.currentHex === HexCommand.OFFBOARD
   ) {
-    // console.log(
-    //   "I am",
-    //   fleetUnitUpdate.name,
-    //   "side:",
-    //   side,
-    //   "-> FLEET UNIT CURRENT POSITION=",
-    //   position.currentHex,
-    //   "-> move to",
-    //   fleetUnitUpdate.position.currentHex
-    // )
+    console.log(
+      "I am",
+      fleetUnitUpdate.name,
+      "side:",
+      side,
+      "-> FLEET UNIT CURRENT POSITION=",
+      position.currentHex,
+      "-> move to",
+      fleetUnitUpdate.position.currentHex
+    )
     if (
       position.currentHex !== HexCommand.OFFBOARD &&
       fleetUnitUpdate.position.currentHex.boxName !== HexCommand.FLEET_BOX

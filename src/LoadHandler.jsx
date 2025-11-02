@@ -124,6 +124,10 @@ async function loadHandler({
     boxName: "",
     index: -1,
   })
+   setFleetUnitUpdate({
+    name: "",
+    position: {},
+  }) // reset to avoid updates causing problems for other markers
   setLoading(false)
 
   // QUACK TEMPORARY UNTIL NEW GAMES WITH THESE ARE SAVED- REMOVE

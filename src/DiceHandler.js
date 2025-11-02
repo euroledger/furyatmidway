@@ -6,7 +6,7 @@ import GlobalInit from "./model/GlobalInit"
 import USAirBoxOffsets from "./components/draganddrop/USAirBoxOffsets"
 import JapanAirBoxOffsets from "./components/draganddrop/JapanAirBoxOffsets"
 import HexCommand from "./commands/HexCommand"
-import { createRemoveDMCVFleetUpdate, createMapUpdateForFleet} from "./AirUnitData"
+import { createRemoveDMCVFleetUpdate, createMapUpdateForFleet } from "./AirUnitData"
 
 export function doSubmarineDamageRoll(roll) {
   let theRoll = roll ?? randomDice(1)
@@ -432,14 +432,11 @@ export async function doDMCVDamage(
     // remove the fleet counters
     // 1. Create Fleet Update to remove the fleet marker for that side
     const update1 = createRemoveDMCVFleetUpdate(side)
-        console.log("UPDATE1=", update1)
-
     setFleetUnitUpdate(update1)
 
     await delay(1)
     // 2. Create Fleet Update to remove the fleet marker from the other side's map
     const update2 = createMapUpdateForFleet(GlobalInit.controller, update1.name, side)
-    console.log("UPDATE2=", update2)
     setFleetUnitUpdate(update2)
   }
   await delay(1)
@@ -829,8 +826,13 @@ export function doAttackFireRolls(controller, testRolls) {
     GlobalGameState.carrierAttackHitsThisAttack = hits
 
     // QUACK REMOVE TEESTING ONLY
-    // GlobalGameState.carrierAttackHits = 1
-    // GlobalGameState.carrierAttackHitsThisAttack = 1
+    // if (GlobalGameState.currentCarrierAttackTarget === GlobalUnitsModel.Carrier.SORYU) {
+    //   GlobalGameState.carrierAttackHits = 0
+    //   GlobalGameState.carrierAttackHitsThisAttack = 0
+    // } else {
+    //   GlobalGameState.carrierAttackHits = 3
+    //   GlobalGameState.carrierAttackHitsThisAttack = 3
+    // }
   }
   return hits
 }

@@ -29,7 +29,7 @@ class USAIDrawOneCardState {
 
         GlobalGameState.gamePhase = GlobalGameState.PHASE.US_DMCV_FLEET_MOVEMENT_PLANNING
       } else {
-        console.log(">>>>>>>>> SET PHASE TO US_FLEET_MOVEMENT_PLANNING")
+        console.log("QUACK 1 >>>>>>>>> SET PHASE TO US_FLEET_MOVEMENT_PLANNING")
         GlobalGameState.gamePhase = GlobalGameState.PHASE.US_FLEET_MOVEMENT_PLANNING
       }
     }

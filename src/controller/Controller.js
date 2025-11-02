@@ -1091,6 +1091,66 @@ export default class Controller {
     return false
   }
 
+  allCarriersSunkorDMCV(side, countTowedAsSunk) {
+    let sunkCarriers = new Array()
+    if (side === GlobalUnitsModel.Side.JAPAN) {
+      if (
+        this.isSunk(GlobalUnitsModel.Carrier.AKAGI, countTowedAsSunk) ||
+        GlobalGameState.jpDMCVCarrier === GlobalUnitsModel.Carrier.AKAGI
+      ) {
+        sunkCarriers.push(GlobalUnitsModel.Carrier.AKAGI)
+      }
+      if (
+        this.isSunk(GlobalUnitsModel.Carrier.KAGA, countTowedAsSunk) ||
+        GlobalGameState.jpDMCVCarrier === GlobalUnitsModel.Carrier.KAGA
+      ) {
+        sunkCarriers.push(GlobalUnitsModel.Carrier.KAGA)
+      }
+      if (
+        this.isSunk(GlobalUnitsModel.Carrier.HIRYU, countTowedAsSunk) ||
+        GlobalGameState.jpDMCVCarrier === GlobalUnitsModel.Carrier.HIRYU
+      ) {
+        sunkCarriers.push(GlobalUnitsModel.Carrier.HIRYU)
+      }
+      if (
+        this.isSunk(GlobalUnitsModel.Carrier.SORYU, countTowedAsSunk) ||
+        GlobalGameState.jpDMCVCarrier === GlobalUnitsModel.Carrier.SORYU
+      ) {
+        sunkCarriers.push(GlobalUnitsModel.Carrier.SORYU)
+      }
+    } else {
+      if (
+        this.isSunk(GlobalUnitsModel.Carrier.ENTERPRISE, countTowedAsSunk) ||
+        GlobalGameState.usDMCVCarrier === GlobalUnitsModel.Carrier.ENTERPRISE
+      ) {
+        sunkCarriers.push(GlobalUnitsModel.Carrier.ENTERPRISE)
+      }
+      if (
+        this.isSunk(GlobalUnitsModel.Carrier.HORNET, countTowedAsSunk) ||
+        GlobalGameState.usDMCVCarrier === GlobalUnitsModel.Carrier.HORNET
+      ) {
+        sunkCarriers.push(GlobalUnitsModel.Carrier.HORNET)
+      }
+      if (
+        this.isSunk(GlobalUnitsModel.Carrier.YORKTOWN, countTowedAsSunk) ||
+        GlobalGameState.usDMCVCarrier === GlobalUnitsModel.Carrier.YORKTOWN
+      ) {
+        sunkCarriers.push(GlobalUnitsModel.Carrier.YORKTOWN)
+      }
+    }
+     if (side === GlobalUnitsModel.Side.JAPAN) {
+      if (sunkCarriers.length === 4) {
+        return true
+      }
+    } else {
+      if (sunkCarriers.length === 3) {
+        return true
+      }
+    }
+    return false
+
+  }
+  
   getSunkCarriers(side, countTowedAsSunk) {
     let sunkCarriers = new Array()
     if (side === GlobalUnitsModel.Side.JAPAN) {
@@ -1464,7 +1524,7 @@ export default class Controller {
   getBoxMap = () => {
     return this.boxModel
   }
-  
+
   // returns array of free slots
   getAllFreeZonesInBox = (boxName) => {
     const numZones = this.getNumberZonesInBox(boxName)

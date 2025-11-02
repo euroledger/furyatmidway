@@ -55,13 +55,20 @@ export function goToDMCVState(side) {
     )
   }
   if (GlobalGameState.jpDMCVCarrier === "SUNK") {
+    console.log("QUACK 1")
     return false
   }
   const jpDMCVLocation = GlobalInit.controller.getFleetLocation("IJN-DMCV", GlobalUnitsModel.Side.JAPAN)
 
   if (jpDMCVLocation !== undefined && jpDMCVLocation.boxName === HexCommand.FLEET_BOX) {
+        console.log("QUACK 2")
+
     return false
   }
+  console.log("GlobalInit.controller.getDamagedCarriers(side).length=",GlobalInit.controller.getDamagedCarriers(side).length)
+  console.log("GlobalGameState.jpDMCVFleetPlaced =", GlobalGameState.jpDMCVFleetPlaced)
+  console.log("jpDMCVLocation=",jpDMCVLocation)
+  console.log("GlobalGameState.jpDMCVFleetPlaced=",GlobalGameState.jpDMCVFleetPlaced)
   return (
     (GlobalInit.controller.getDamagedCarriers(side).length > 0 && GlobalGameState.jpDMCVFleetPlaced === false) ||
     (jpDMCVLocation !== undefined && GlobalGameState.jpDMCVFleetPlaced === true)
@@ -257,9 +264,9 @@ export async function goToMidwayAttackOrUSFleetMovement({
   if (update1 !== null) {
     setFleetUnitUpdate(update1)
   }
-  await delay(1)
+  await delay(50)
   if (update2 !== null) {
-    setFleetUnitUpdate(update2)
+   setFleetUnitUpdate(update2)
   }
   await delay(1)
   if (update3 !== null) {
@@ -517,7 +524,7 @@ function midwayDeclarationHandler() {
     GlobalGameState.phaseCompleted = true
   } else {
     GlobalGameState.currentPlayer = GlobalUnitsModel.Side.US
-        console.log("++++++++++++++++++++++++++++ GO TO DMCV QUACK 2")
+    console.log("++++++++++++++++++++++++++++ GO TO DMCV QUACK 2")
 
     GlobalGameState.gamePhase = GlobalGameState.PHASE.US_DMCV_FLEET_MOVEMENT_PLANNING
     GlobalGameState.usFleetMoved = false
@@ -648,7 +655,7 @@ export async function setNextStateFollowingCardPlay(stateObject) {
           return
         } else {
           GlobalGameState.currentPlayer = GlobalUnitsModel.Side.US
-              console.log("++++++++++++++++++++++++++++ GO TO DMCV QUACK 3")
+          console.log("++++++++++++++++++++++++++++ GO TO DMCV QUACK 3")
 
           GlobalGameState.gamePhase = GlobalGameState.PHASE.US_DMCV_FLEET_MOVEMENT_PLANNING
           GlobalGameState.usFleetMoved = false

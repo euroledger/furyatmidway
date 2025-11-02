@@ -10,6 +10,7 @@ import { delay } from "../../../Utils"
 
 class USAIFleetMovementPlanningState {
   async doAction(stateObject) {
+    console.trace()
     console.log("DOING US FLEET MOVEMENT PLANNING")
 
     const { setFleetUnitUpdate } = stateObject
@@ -29,15 +30,11 @@ class USAIFleetMovementPlanningState {
   }
 
   async nextState(stateObject) {
-    // console.log("GOOD POINT")
-    // GlobalGameState.currentPlayer = GlobalUnitsModel.Side.JAPAN
-    // GlobalGameState.gamePhase = GlobalGameState.PHASE.JAPAN_FLEET_MOVEMENT
-    // GlobalGameState.updateGlobalState()
-
     // See if we should go to US DMCV Fleet Planning first
+    console.log("POOOOOOOOOOOOOOOOO CHECK IJN DMCV ??????????????????????????")
     if (goToDMCVState(GlobalUnitsModel.Side.JAPAN) && !GlobalGameState.dmcvChecked) {
       console.log("********** DO JAPAN DMCV FLEET PLANNING FIRST ************ ")
-      GlobalGameState.dmcvChecked = true
+      GlobalGameState.currentPlayer = GlobalUnitsModel.Side.JAPAN
       GlobalGameState.gamePhase = GlobalGameState.PHASE.JAPAN_DMCV_FLEET_MOVEMENT
     } else {
       console.log(">>>>>>>>> SET PHASE TO JAPAN FLEET MOVEMENT PLANNING")

@@ -16,6 +16,7 @@ import USAirBoxOffsets from "../../components/draganddrop/USAirBoxOffsets"
 import { delay } from "../../DiceHandler"
 import { DELAY_MS } from "../../PlayerState/StateUtils"
 import Command from "../../commands/Command"
+import { faL } from "@fortawesome/free-solid-svg-icons"
 
 export function selectUSDefendingCAPUnits(controller, stateObject) {
   const { setCapAirUnits, setFightersPresent, setCapSteps } = stateObject
@@ -96,12 +97,14 @@ function getFleetDistances(controller) {
 
   let distanceBetweenCSFandIJNDMCV = 100
   let distanceBetweenCSFandMIF = 100
+  let distanceBetweenCSFand1AF = 100
   let distanceBetweenMidwayandIJNDMCV = 100
   let distanceBetweenMidwayandMIF = 100
+  let distanceBetweenMidwayand1AF = 100
 
-  console.log("DEBUG locationCSF=", locationCSF)
-  let distanceBetweenCSFand1AF
-  let distanceBetweenMidwayand1AF = distanceBetweenHexes(Controller.MIDWAY_HEX.currentHex, location1AF.currentHex)
+  if (!controller.allCarriersSunkorDMCV(GlobalUnitsModel.Side.JAPAN)) {
+    distanceBetweenMidwayand1AF = distanceBetweenHexes(Controller.MIDWAY_HEX.currentHex, location1AF.currentHex)
+  }
 
   if (locationCSF.boxName === Command.FLEET_BOX) {
     // CSF carriers sunk
@@ -110,7 +113,9 @@ function getFleetDistances(controller) {
     distanceBetweenCSFandMIF = -100
     distanceBetweenCSFandIJNDMCV = -100
   } else {
-    distanceBetweenCSFand1AF = distanceBetweenHexes(locationCSF.currentHex, location1AF.currentHex)
+    if (!controller.allCarriersSunkorDMCV(GlobalUnitsModel.Side.JAPAN)) {
+      distanceBetweenCSFand1AF = distanceBetweenHexes(locationCSF.currentHex, location1AF.currentHex)
+    }
     if (locationIJNDMCV !== undefined && locationIJNDMCV.currentHex !== undefined) {
       distanceBetweenCSFandIJNDMCV = distanceBetweenHexes(locationCSF.currentHex, locationIJNDMCV.currentHex)
     }
@@ -394,6 +399,7 @@ export async function generateUSAirOperationsMovesCarriers(controller, stateObje
   // Get all air units in Return Boxes - do this first to free up strike boxes
   let units = controller.getAirUnitsInStrikeBoxesReadyToReturn(GlobalGameState.sideWithInitiative)
 
+  console.log("DEBUG STRIKE UNITS READY TO RETURN=", units)
   if (units.length > 0) {
     for (let unit of units) {
       if (unit.aircraftUnit.moved) {
@@ -880,6 +886,7 @@ export async function moveStrikeGroups(controller, stateObject, test) {
       }
     } else {
       console.log(">>>>>>>>>>>>>>>>>>>> SECOND AIR OP:", strikeGroup)
+
       // For SGs with target, prioritise target
       // else move as RETURN 2 box (no target possible)
       const strikeGroupLocation = controller.getStrikeGroupLocation(strikeGroup.name, GlobalUnitsModel.Side.US)
@@ -888,20 +895,34 @@ export async function moveStrikeGroups(controller, stateObject, test) {
         const locationIJNDMCV = controller.getFleetLocation("IJN-DMCV", GlobalUnitsModel.Side.JAPAN)
         await moveStrikeGroup(controller, strikeGroup, strikeGroupLocation, locationIJNDMCV, setStrikeGroupUpdate, test)
         ijndmcvTargeted = true
+        console.log("QUACK 1 ----------------------------------")
         return true
       }
       if (strikeGroup.targetsSecondAirOp.includes("1AF")) {
+        // CHECK TO SEE IF THE ALLOCATED TARGET (1AF) is STILL THERE...
+
         const location1AF = controller.getFleetLocation("1AF", GlobalUnitsModel.Side.JAPAN)
+        if (controller.allCarriersSunkorDMCV(GlobalUnitsModel.Side.JAPAN) || location1AF.currentHex === Command.OFFBOARD) {
+          console.log("QUACK ALL IJN CARRIERS SUNK ----------------------------------")
+          strikeGroup.attacked = true
+          return false
+        }
         await moveStrikeGroup(controller, strikeGroup, strikeGroupLocation, location1AF, setStrikeGroupUpdate, test)
+        console.log("QUACK 2 ----------------------------------")
+
         return true
       }
       if (strikeGroup.targetsSecondAirOp.includes("MIF")) {
         const locationMIF = controller.getFleetLocation("MIF", GlobalUnitsModel.Side.JAPAN)
         await moveStrikeGroup(controller, strikeGroup, strikeGroupLocation, locationMIF, setStrikeGroupUpdate, test)
+        console.log("QUACK 3 ----------------------------------")
+
         return true
       }
 
       // TODO no targets -> I think we just set attacked to true
+      console.log("SPAZ!!!!!!!!!!!!! NO TARGETS -> we are done!")
+      return false
     }
   }
 }
@@ -993,7 +1014,6 @@ export async function generateUSAirOperationsMovesMidway(controller, stateObject
     // => 3.
     //  if enemy fleet 5 away only Move SBD Units from Flight Deck to Strike Boxes,
     //  otherwise do not do strike move (out of range for TBDs)
-
 
     if (unit.aircraftUnit.attack && minDistanceToEnemyFleet > unit.aircraftUnit.movement + 2) {
       // OUT OF RANGE

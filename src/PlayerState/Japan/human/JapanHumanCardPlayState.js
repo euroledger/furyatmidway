@@ -7,7 +7,10 @@ import { setNextStateFollowingCardPlay } from "../../StateUtils"
 class JapanHumanCardPlayState {
   async doAction(stateObject) {
     const { cardNumber, setCardAlertPanelShow } = stateObject
-    console.log(">>>>>>> JAPAN HUMAN CARD PLAY >>>>>>>>>>")
+    console.log(">>>>>>> JAPAN HUMAN CARD PLAY >>>>>>>>>> cardNumber=", cardNumber)
+
+        console.log("\t=>GlobalInit.controller.japanHandContainsCard(cardNumber)=", GlobalInit.controller.japanHandContainsCard(cardNumber))
+
     if (GlobalInit.controller.japanHandContainsCard(cardNumber)) {
       GlobalGameState.currentPlayer = GlobalUnitsModel.Side.JAPAN
       setCardAlertPanelShow(true)

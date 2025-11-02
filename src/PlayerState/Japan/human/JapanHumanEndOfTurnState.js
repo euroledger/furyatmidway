@@ -88,7 +88,6 @@ class JapanHumanEndOfTurnState {
         GlobalInit.controller.setCardPlayed(4, GlobalUnitsModel.Side.US)
         GlobalGameState.currentPlayer = GlobalUnitsModel.Side.US
       } else {
-        GlobalInit.controller.setCardPlayed(4, GlobalUnitsModel.Side.US)
         GlobalGameState.currentPlayer = GlobalUnitsModel.Side.JAPAN
       }
       GlobalGameState.gamePhase = GlobalGameState.PHASE.CARD_PLAY
