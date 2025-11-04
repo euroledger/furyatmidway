@@ -320,19 +320,28 @@ function doTurns5To7FleetMovement(regions, dmcvLocation) {
   // IJN region hex closes to Midway
   const current1AFLocation = GlobalInit.controller.getFleetLocation("1AF", GlobalUnitsModel.Side.JAPAN)
   const currentCSFLocation = GlobalInit.controller.getFleetLocation("CSF", GlobalUnitsModel.Side.US)
+  const currentMIFLocation = GlobalInit.controller.getFleetLocation("MIF", GlobalUnitsModel.Side.JAPAN)
 
   // IF 1AF is off the board close range to 1) DMCV, 2) MIF
   if (current1AFLocation.boxName === Command.FLEET_BOX) {
     const currentDMCVLocation = GlobalInit.controller.getFleetLocation("IJN-DMCV", GlobalUnitsModel.Side.JAPAN)
-    const currentMIFLocation = GlobalInit.controller.getFleetLocation("MIF", GlobalUnitsModel.Side.JAPAN)
 
+    console.log(">>>>>>>>>>>> DMCV LOCATION=", currentDMCVLocation)
     if (currentDMCVLocation !== undefined && currentDMCVLocation.boxName !== Command.FLEET_BOX) {
       // IF distance to DMCV is > 5 do not and DMCV is in row 1 - do not go for DMCV
       const distanceFromCSFToDMCV = distanceBetweenHexes(currentCSFLocation.currentHex, currentDMCVLocation.currentHex)
       console.log(">>>>>>> GO AFTER DMCV, distance =", distanceFromCSFToDMCV)
 
-      // get closest hex to Col I - move here if current range > 4
+      // get closest hex to DMCV
       const { target } = closestHexTo(regions, currentDMCVLocation.currentHex)
+      return target
+    } else if (currentMIFLocation !== undefined && currentMIFLocation.boxName !== Command.FLEET_BOX) {
+      // IF distance to DMCV is > 5 do not and DMCV is in row 1 - do not go for DMCV
+      const distanceFromCSFToMIF = distanceBetweenHexes(currentCSFLocation.currentHex, currentMIFLocation.currentHex)
+      console.log(">>>>>>> GO AFTER MIF, distance =", distanceFromCSFToMIF)
+
+      // get closest hex to MIF
+      const { target } = closestHexTo(regions, currentMIFLocation.currentHex)
       return target
     }
     return currentCSFLocation.currentHex
@@ -378,11 +387,9 @@ function doTurns5To7FleetMovement(regions, dmcvLocation) {
   let { target } = closestHexTo(regions, Controller.MIDWAY_HEX.currentHex)
   let midwayTarget = target
 
-  const currentMIFLocation = GlobalInit.controller.getFleetLocation("MIF", GlobalUnitsModel.Side.JAPAN)
-
   const hex1AF = closestHexTo(regions, current1AFLocation.currentHex)
 
-  const usStrikeAirStrength = GlobalInit.controller.getCarrierAttackAirStrength(GlobalUnitsModel.Side.US) // num air steps left
+  // const usStrikeAirStrength = GlobalInit.controller.getCarrierAttackAirStrength(GlobalUnitsModel.Side.US) // num air steps left
 
   // make sure the two fleets (US CSF AND DMCV DON'T END UP IN THE SAME HEX)
   if (

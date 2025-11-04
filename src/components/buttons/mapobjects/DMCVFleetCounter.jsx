@@ -9,6 +9,7 @@ import GlobalUnitsModel from "../../../model/GlobalUnitsModel"
 import { distanceBetweenHexes } from "../../HexUtils"
 import USOffMapFleetBoxOffsets from "../../draganddrop/USOffMapFleetBoxOffsets"
 import JapanOffMapFleetBoxOffsets from "../../draganddrop/JapanOffMapFleetBoxOffsets"
+import { testForOffMapBoxesJapan } from "../../../PlayerState/StateUtils"
 
 function DMCVFleetCounter({
   id,
@@ -373,7 +374,16 @@ function DMCVFleetCounter({
       ) {
         return
       }
-      dropIntoOffMapFleetBox(fleetBox, side)
+      // Ensure fleet is eligible to go into fleet box
+      if (counterData.side === GlobalUnitsModel.Side.JAPAN) {
+        if (testForOffMapBoxesJapan()) {
+          dropIntoOffMapFleetBox(fleetBox, side)
+        }
+      } else {
+        // TODO test for offfmap boxes US
+        dropIntoOffMapFleetBox(fleetBox, side)
+      }
+
       return
     }
     const hex = { q: currentHex.q, r: currentHex.r }

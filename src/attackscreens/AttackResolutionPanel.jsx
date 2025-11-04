@@ -2,11 +2,18 @@ import { React } from "react"
 import "./cap.css"
 import GlobalGameState from "../model/GlobalGameState"
 import GlobalUnitsModel from "../model/GlobalUnitsModel"
-import { removeMIFFleet } from "../GameStateHandler"
+import { allFleetsSunk, removeMIFFleet } from "../PlayerState/StateUtils"
+import { sideBeingAttacked } from "../Utils"
 
 export function AttackResolutionHeaders() {}
 
-export function AttackResolutionFooters({ totalHits, attackResolved, setAttackResolved, setFleetUnitUpdate }) {
+export function AttackResolutionFooters({
+  totalHits,
+  attackResolved,
+  setAttackResolved,
+  setFleetUnitUpdate,
+  setGameOverAlertShow,
+}) {
   // const show = GlobalGameState.dieRolls.length > 0
 
   const show = true
@@ -33,7 +40,6 @@ export function AttackResolutionFooters({ totalHits, attackResolved, setAttackRe
       console.log("DEBUG SUNK REMOVE MIF FLEET")
       removeMIFFleet(setFleetUnitUpdate)
     }
-
   }
   if (isMIFtheTarget && GlobalGameState.dieRolls.length > 0) {
     milStr = "" + GlobalGameState.midwayInvasionLevel
@@ -75,7 +81,7 @@ export function AttackResolutionFooters({ totalHits, attackResolved, setAttackRe
               >
                 {msg} &nbsp;<strong>{hits}</strong>&nbsp;
               </p>
-                 <p
+              <p
                 style={{
                   color: "white",
                   display: "flex",

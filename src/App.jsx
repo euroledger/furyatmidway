@@ -23,6 +23,7 @@ import { allCards } from "./CardLoader"
 import { midwayPossible } from "./PlayerState/StateUtils"
 import { allMidwayBoxesDamaged } from "./DiceHandler"
 import Command from "./commands/Command"
+import { allFleetsSunk } from "./PlayerState/StateUtils"
 import {
   doIntiativeRoll,
   doNavalBattleRoll,
@@ -142,6 +143,7 @@ export function App() {
   const [enabledJapanReorgBoxes, setEnabledJapanReorgBoxes] = useState(false)
   const [enabledUSReorgBoxes, setEnabledUSReorgBoxes] = useState(false)
 
+  const [gameOverAlertShow,setGameOverAlertShow] = useState(false)
   useEffect(() => {
     setEnabledJapanBoxes(getJapanEnabledAirBoxes())
   }, [])
@@ -2539,6 +2541,7 @@ export function App() {
         attackResolved={attackResolved}
         setAttackResolved={setAttackResolved}
         setFleetUnitUpdate={setFleetUnitUpdate}
+        setGameOverAlertShow={setGameOverAlertShow}
       ></AttackResolutionFooters>
     </>
   )
@@ -2906,6 +2909,33 @@ export function App() {
         onHide={() => setSaveGameShow(false)}
         handler={setGameSaveID}
       ></SaveGamePanel>
+
+      <AlertPanel show={gameOverAlertShow}>
+        <h4 style={{
+            display: "flex",
+            justifyContent: "center",
+            alignItems: "center",
+          }}>GAME OVER</h4>
+        <div
+          style={{
+            display: "flex",
+            justifyContent: "center",
+            alignItems: "center",
+          }}
+        >
+          <p>All {sideBeingAttacked()} Fleets Sunk</p>
+          <br></br>
+        </div>
+         <div
+          style={{
+            display: "flex",
+            justifyContent: "center",
+            alignItems: "center",
+          }}
+        >
+          <p>Winner: {GlobalGameState.sideWithInitiative}!</p>
+        </div>
+      </AlertPanel>
       <AlertPanel show={alertShow} onHide={() => setAlertShow(false)}>
         <h4>ALERT</h4>
         <p>This air unit is not a fighter unit so cannot be used for CAP.</p>
@@ -3236,7 +3266,6 @@ export function App() {
         onHide={(e) => {
           setAttackResolutionPanelShow(false)
           sendAttackResolutionEvent()
-          nextAction(e)
         }}
         doRoll={doAttackResolutionRolls}
         width={90}
@@ -3254,7 +3283,11 @@ export function App() {
             : (e) => {
                 setAttackResolutionPanelShow(false)
                 setAttackResolved(true)
-                nextAction(e)
+                if (allFleetsSunk(sideBeingAttacked())) {
+                  setGameOverAlertShow(true)
+                } else {
+                  nextAction(e)
+                }
               }
         }
         diceButtonDisabled={GlobalGameState.dieRolls.length !== 0}

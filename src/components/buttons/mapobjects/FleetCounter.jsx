@@ -303,6 +303,10 @@ function FleetCounter({
 
     const fleetBox = getFleetBox()
     if (fleetBox !== -1) {
+      if (counterData.name.includes("CSF") && counterData.side === GlobalUnitsModel.Side.US) {
+        // prevents dropping US fleet into IJN Fleet Box
+        return
+      }
       if (counterData.name === "MIF") {
         const mifLocation = controller.getFleetLocation("MIF", GlobalUnitsModel.Side.JAPAN)
         // possible boxes are enabled due to 1AF being close to edge of map

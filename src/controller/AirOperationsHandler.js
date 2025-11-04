@@ -925,9 +925,6 @@ export async function moveOrphanedCAPUnitsToEliminatedBox(side, box, unit) {
 
   const capUnitsReturning = GlobalInit.controller.getAllCAPDefendersInCAPReturnBoxes(side)
 
-
-    console.log("QUACK 1 GET CAP UNITS.....capUnitsReturning=", capUnitsReturning)
-
   for (const unit of capUnitsReturning) {
     await delay(1)
     const parentCarrier = GlobalInit.controller.getCarrierForAirUnit(unit.name)

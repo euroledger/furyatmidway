@@ -673,46 +673,6 @@ export function displayAttackTargetPanel(controller) {
   return true
 }
 
-export async function removeMIFFleet(setFleetUnitUpdate) {
-  const index1 = GlobalInit.controller.getNextAvailableFleetBox(GlobalUnitsModel.Side.JAPAN)
-  const index2 = GlobalInit.controller.getNextAvailableFleetBox(GlobalUnitsModel.Side.US)
-
-  let update1 = {
-    name: "MIF",
-    position: {
-      currentHex: {
-        boxName: HexCommand.FLEET_BOX,
-        boxIndex: index1,
-      },
-    },
-    initial: false,
-    loading: false,
-    side: GlobalUnitsModel.Side.JAPAN,
-  }
-
-  let update2 = {
-    name: "MIF-USMAP",
-    position: {
-      currentHex: {
-        boxName: HexCommand.FLEET_BOX,
-        boxIndex: index2,
-      },
-    },
-    initial: false,
-    loading: false,
-    side: GlobalUnitsModel.Side.US,
-  }
-
-  setFleetUnitUpdate(update1)
-  await delay(1)
-  setFleetUnitUpdate(update2)
-  await delay(1)
-  setFleetUnitUpdate({
-    name: "",
-    position: {},
-  }) // reset to avoid updates causing problems for other markers
-}
-
 async function removeDMCVFleetForCarrier(side, setFleetUnitUpdate) {
   let update1 = {
     position: {},
