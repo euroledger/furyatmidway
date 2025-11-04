@@ -49,6 +49,7 @@ export function saveGameState(controller, gameId) {
 
   const location1AFText = JSON.stringify(GlobalGameState.initial1AFLocation)
   const locationMIFText = JSON.stringify(GlobalGameState.initialMIFLocation)
+  const locationDMCVText = JSON.stringify(GlobalGameState.initialDMCVLocation)
 
   let previousPositionText
   if (GlobalGameState.previousPosition !== undefined) {
@@ -91,6 +92,7 @@ export function saveGameState(controller, gameId) {
     jpcards: jpCardText,
     ijnFleetLocation: location1AFText,
     mifFleetLocation: locationMIFText,
+    dmcvFleetLocation: locationDMCVText,
     previousPosition: previousPositionText,
     uscards: usCardText,
     cards: cardText,
@@ -459,7 +461,7 @@ function loadAirUnits(airUnitMap) {
     // GlobalGameState.usDMCVCarrier = GlobalUnitsModel.Carrier.HORNET
     // GlobalGameState.midwayGarrisonLevel = 4
     // GlobalGameState.carrierHitsDetermined = false
-    GlobalGameState.alertSent = false // always set to false 
+    GlobalGameState.alertSent = false // always set to false
 
     // GlobalGameState.CSFLeftMap = false
     // GlobalGameState.AF1LeftMap = false
@@ -572,6 +574,11 @@ export function loadGameStateForId(controller, gameId) {
   const mifLocationText = gameDetails.mifFleetLocation
   if (mifLocationText !== undefined) {
     GlobalGameState.initialMIFLocation = JSON.parse(mifLocationText)
+  }
+
+  const dmcvLocationText = gameDetails.dmcvFleetLocation
+  if (dmcvLocationText !== undefined) {
+    GlobalGameState.initialDMCVLocation = JSON.parse(dmcvLocationText)
   }
   const previousPositionText = gameDetails.previousPosition
 

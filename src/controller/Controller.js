@@ -1804,6 +1804,7 @@ export default class Controller {
     // ]
   }
   victoryCheck() {
+    // return "" // quack testing only
     const numJapanCVsSunk = this.getSunkCarriers(GlobalUnitsModel.Side.JAPAN).length
     const numUSCVsSunk = this.getSunkCarriers(GlobalUnitsModel.Side.US).length
 

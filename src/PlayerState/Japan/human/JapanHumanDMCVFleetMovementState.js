@@ -1,6 +1,7 @@
 import GlobalGameState from "../../../model/GlobalGameState"
 import GlobalInit from "../../../model/GlobalInit"
 import GlobalUnitsModel from "../../../model/GlobalUnitsModel"
+import { checkRemoveFleet } from "../../StateUtils"
 
 class JapanHumanDMCVFleetMovementState {
   async doAction(stateObject) {
@@ -16,7 +17,11 @@ class JapanHumanDMCVFleetMovementState {
   }
 
   async nextState(stateObject) {
+    const { setFleetUnitUpdate } = stateObject
     console.log("NEXT STATE AFTER JAPAN DMCV FLEET MOVEMENT....")
+    // Check to see if placing DMCV means there are no (non-sunk) carriers left in 1AF
+    checkRemoveFleet(GlobalUnitsModel.Side.JAPAN, setFleetUnitUpdate)
+
     GlobalGameState.initial1AFLocation = GlobalInit.controller.getFleetLocation("1AF", GlobalUnitsModel.Side.JAPAN)
     GlobalGameState.initialMIFLocation = GlobalInit.controller.getFleetLocation("MIF", GlobalUnitsModel.Side.JAPAN)
 

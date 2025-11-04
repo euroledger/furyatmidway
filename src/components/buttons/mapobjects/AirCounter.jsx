@@ -142,6 +142,7 @@ function AirCounter({ getAirBox, setAirBox, counterData, side }) {
         return
       }
       if (side === GlobalUnitsModel.Side.JAPAN && location1AF && location1AF.boxName === HexCommand.FLEET_BOX) {
+        moveOrphanedCAPUnitsToEliminatedBoxNight(counterData.side)
         return
       }
     }
@@ -449,6 +450,7 @@ function AirCounter({ getAirBox, setAirBox, counterData, side }) {
   }
 
   const setBoxes = async (counterData, box) => {
+    console.log(">>>> setBoxes box=", box)
     if (
       GlobalGameState.gamePhase === GlobalGameState.PHASE.NIGHT_AIR_OPERATIONS_JAPAN ||
       GlobalGameState.gamePhase === GlobalGameState.PHASE.NIGHT_AIR_OPERATIONS_US

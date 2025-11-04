@@ -58,7 +58,6 @@ function getAirCounters(airUnits, nightStepsLost) {
           }}
         >
           STEPS LOST:&nbsp;<strong>{nightStepsLost[i]}</strong>&nbsp;
-
         </p>
       </div>
     )

@@ -39,12 +39,12 @@ class USAINightAirOperationsState {
 
       GlobalGameState.rollDice = false
       GlobalGameState.updateGlobalState()
-      await delay(800)
+      await delay(1800)
       GlobalGameState.rollDice = true
-      await delay(10)
       GlobalGameState.updateGlobalState()
+      await delay(1800)
     }
-    this.nextState(stateObject)
+    // this.nextState(stateObject)
   }
 
   async nextState(stateObject) {
@@ -53,14 +53,11 @@ class USAINightAirOperationsState {
     // Return units to carriers and move to hangar then flight deck or CAP
     await endOfNightAirOperation(GlobalInit.controller, setTestUpdate, GlobalUnitsModel.Side.US)
     console.log(">>>>> MOVING ON FROM US NIGHT AIR OPERATIONS<<<<<<<<<")
-    if (GlobalGameState.orphanedAirUnits.length > 0) {
-      setEliminatedUnitsPanelShow(true)
-    } else {
-      GlobalGameState.currentPlayer = GlobalUnitsModel.Side.JAPAN
-      GlobalGameState.cardsChecked = new Array()
-      GlobalGameState.gamePhase = GlobalGameState.PHASE.END_OF_TURN
-      GlobalGameState.updateGlobalState()
-    }
+
+    GlobalGameState.currentPlayer = GlobalUnitsModel.Side.JAPAN
+    GlobalGameState.cardsChecked = new Array()
+    GlobalGameState.gamePhase = GlobalGameState.PHASE.END_OF_TURN
+    GlobalGameState.updateGlobalState()
   }
 
   getState() {

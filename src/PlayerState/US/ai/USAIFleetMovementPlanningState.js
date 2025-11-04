@@ -31,15 +31,20 @@ class USAIFleetMovementPlanningState {
 
   async nextState(stateObject) {
     // See if we should go to US DMCV Fleet Planning first
-    console.log("POOOOOOOOOOOOOOOOO CHECK IJN DMCV ??????????????????????????")
     if (goToDMCVState(GlobalUnitsModel.Side.JAPAN) && !GlobalGameState.dmcvChecked) {
       console.log("********** DO JAPAN DMCV FLEET PLANNING FIRST ************ ")
       GlobalGameState.currentPlayer = GlobalUnitsModel.Side.JAPAN
+      GlobalGameState.initialDMCVLocation = GlobalInit.controller.getFleetLocation(
+        "IJN-DMCV",
+        GlobalUnitsModel.Side.JAPAN
+      )
+
       GlobalGameState.gamePhase = GlobalGameState.PHASE.JAPAN_DMCV_FLEET_MOVEMENT
     } else {
       console.log(">>>>>>>>> SET PHASE TO JAPAN FLEET MOVEMENT PLANNING")
       GlobalGameState.currentPlayer = GlobalUnitsModel.Side.JAPAN
       GlobalGameState.initial1AFLocation = GlobalInit.controller.getFleetLocation("1AF", GlobalUnitsModel.Side.JAPAN)
+      GlobalGameState.initialMIFLocation = GlobalInit.controller.getFleetLocation("MIF", GlobalUnitsModel.Side.JAPAN)
       GlobalGameState.gamePhase = GlobalGameState.PHASE.JAPAN_FLEET_MOVEMENT
     }
   }

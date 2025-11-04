@@ -22,6 +22,7 @@ import StateManager from "./model/StateManager"
 import { allCards } from "./CardLoader"
 import { midwayPossible } from "./PlayerState/StateUtils"
 import { allMidwayBoxesDamaged } from "./DiceHandler"
+import Command from "./commands/Command"
 import {
   doIntiativeRoll,
   doNavalBattleRoll,
@@ -1023,10 +1024,15 @@ export function App() {
     })
   }
     const setJapanFleetRegions = () => {
-    console.log("SETTING JAPAN FLEET REGIONS")
+    console.log("SETTING JAPAN FLEET REGIONS GlobalGameState.initialDMCVLocation=", GlobalGameState.initialDMCVLocation)
     const af1Location = GlobalInit.controller.getFleetLocation("1AF", GlobalUnitsModel.Side.JAPAN)
     const mifLocation = GlobalInit.controller.getFleetLocation("MIF", GlobalUnitsModel.Side.JAPAN)
-    const ijnDMCVLocation = GlobalInit.controller.getFleetLocation("IJN-DMCV", GlobalUnitsModel.Side.JAPAN)
+    let ijnDMCVLocation = GlobalInit.controller.getFleetLocation("IJN-DMCV", GlobalUnitsModel.Side.JAPAN)
+
+    if (GlobalGameState.initialDMCVLocation !== undefined && GlobalGameState.initialDMCVLocation !== Command.FLEET_BOX) {
+      ijnDMCVLocation = GlobalGameState.initialDMCVLocation
+    }
+        console.log("SETTING JAPAN FLEET REGIONS ijnDMCVLocation=", ijnDMCVLocation)
 
     if (GlobalGameState.gameTurn === 4) {
       GlobalGameState.fleetSpeed = 4
@@ -1072,24 +1078,25 @@ export function App() {
           setEnabledJapanFleetBoxes(true)
         }
       }
-      if (
-        ijnDMCVLocation !== undefined &&
-        ijnDMCVLocation.currentHex !== undefined &&
-        ijnDMCVLocation.currentHex.q <= 1
-      ) {
-        // can move offboard
-        if (GlobalGameState.gamePhase === GlobalGameState.PHASE.JAPAN_DMCV_FLEET_MOVEMENT) {
+
+      if (GlobalGameState.gamePhase === GlobalGameState.PHASE.JAPAN_DMCV_FLEET_MOVEMENT) {
+        setEnabledJapanFleetBoxes(false)
+        if (
+          ijnDMCVLocation !== undefined &&
+          ijnDMCVLocation.currentHex !== undefined &&
+          ijnDMCVLocation.currentHex.q <= 1
+        ) {
+          console.log("WE'RE GETTIN' OUTTA HERE!!!!!!!!!!!!!!!!!!!!!!!!!!!")
+          // can move offboard
+          setEnabledJapanFleetBoxes(true)
+        } 
+        // Edge Case: DMCV has not been placed and 1AF is in col A => DMCV can go straight to OFFBOARD box
+      if (ijnDMCVLocation === undefined && af1Location.currentHex.q === 1) {
+          // can move offboard
           setEnabledJapanFleetBoxes(true)
         }
       }
       
-      // Edge Case: DMCV has not been placed and 1AF is in col A => DMCV can go straight to OFFBOARD box
-      if (ijnDMCVLocation === undefined && af1Location.currentHex.q === 1) {
-        // can move offboard
-        if (GlobalGameState.gamePhase === GlobalGameState.PHASE.JAPAN_DMCV_FLEET_MOVEMENT) {
-          setEnabledJapanFleetBoxes(true)
-        }
-      }
     }
     if (GlobalGameState.gamePhase === GlobalGameState.PHASE.JAPAN_DMCV_FLEET_MOVEMENT) {
       let jpRegion
@@ -1103,13 +1110,14 @@ export function App() {
       }
       // DMCV fleet cannot move to same hex as IJN 1AF or MIF Fleets
       // if both fleets have left map do not do this
-      if (jpRegion !== undefined) {
+      if (jpRegion !== undefined && af1Location.boxName !== Command.FLEET_BOX) {
         jpRegion = removeHexFromRegion(jpRegion, af1Location.currentHex)
-        if (mifLocation !== undefined) {
-          jpRegion = removeHexFromRegion(jpRegion, mifLocation.currentHex)
-        }
-        setJapanMapRegions(jpRegion)
+        
       }
+      if (mifLocation !== undefined && mifLocation.boxName !== Command.FLEET_BOX) {
+        jpRegion = removeHexFromRegion(jpRegion, mifLocation.currentHex)
+      }
+      setJapanMapRegions(jpRegion)
 
       return
     }
@@ -1341,9 +1349,14 @@ export function App() {
         jpRegion = allHexesWithinDistance(af1Location.currentHex, GlobalGameState.dmcvFleetSpeed, true)
       }
       // DMCV fleet cannot move to same hex as IJN 1AF Fleet
-      jpRegion = removeHexFromRegion(jpRegion, af1Location.currentHex)
-      if (GlobalGameState.mifFleetPlaced) {
-        jpRegion = removeHexFromRegion(jpRegion, mifLocation.currentHex)
+      
+      if (jpRegion !== undefined && af1Location.boxName !== Command.FLEET_BOX) {
+        jpRegion = removeHexFromRegion(jpRegion, af1Location.currentHex)
+      }
+      if (jpRegion !== undefined && mifLocation.boxName !== Command.FLEET_BOX) {
+        if (GlobalGameState.mifFleetPlaced) {
+          jpRegion = removeHexFromRegion(jpRegion, mifLocation.currentHex)
+        }
       }
       if (GlobalGameState.gameTurn === 4) {
         if (dmcvLocation !== undefined && dmcvLocation.currentHex.q <= 2) {

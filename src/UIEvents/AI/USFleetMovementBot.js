@@ -9,6 +9,7 @@ import Controller from "../../controller/Controller"
 import { rowIHexes } from "../../components/MapRegions"
 import { goToDMCVState } from "../../PlayerState/StateUtils"
 import HexCommand from "../../commands/HexCommand"
+import Command from "../../commands/Command"
 
 // Create array of all hexes
 
@@ -320,6 +321,23 @@ function doTurns5To7FleetMovement(regions, dmcvLocation) {
   const current1AFLocation = GlobalInit.controller.getFleetLocation("1AF", GlobalUnitsModel.Side.JAPAN)
   const currentCSFLocation = GlobalInit.controller.getFleetLocation("CSF", GlobalUnitsModel.Side.US)
 
+  // IF 1AF is off the board close range to 1) DMCV, 2) MIF
+  if (current1AFLocation.boxName === Command.FLEET_BOX) {
+    const currentDMCVLocation = GlobalInit.controller.getFleetLocation("IJN-DMCV", GlobalUnitsModel.Side.JAPAN)
+    const currentMIFLocation = GlobalInit.controller.getFleetLocation("MIF", GlobalUnitsModel.Side.JAPAN)
+
+    if (currentDMCVLocation !== undefined && currentDMCVLocation.boxName !== Command.FLEET_BOX) {
+      // IF distance to DMCV is > 5 do not and DMCV is in row 1 - do not go for DMCV
+      const distanceFromCSFToDMCV = distanceBetweenHexes(currentCSFLocation.currentHex, currentDMCVLocation.currentHex)
+      console.log(">>>>>>> GO AFTER DMCV, distance =", distanceFromCSFToDMCV)
+
+      // get closest hex to Col I - move here if current range > 4
+      const { target } = closestHexTo(regions, currentDMCVLocation.currentHex)
+      return target
+    }
+    return currentCSFLocation.currentHex
+  }
+
   const ijnRegions = allHexesWithinDistance(current1AFLocation.currentHex, 2, true)
   const sortedHexes = sortDistances(ijnRegions, Controller.MIDWAY_HEX.currentHex)
 
@@ -364,7 +382,7 @@ function doTurns5To7FleetMovement(regions, dmcvLocation) {
 
   const hex1AF = closestHexTo(regions, current1AFLocation.currentHex)
 
-    const usStrikeAirStrength = GlobalInit.controller.getCarrierAttackAirStrength(GlobalUnitsModel.Side.US) // num air steps left
+  const usStrikeAirStrength = GlobalInit.controller.getCarrierAttackAirStrength(GlobalUnitsModel.Side.US) // num air steps left
 
   // make sure the two fleets (US CSF AND DMCV DON'T END UP IN THE SAME HEX)
   if (

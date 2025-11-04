@@ -118,7 +118,9 @@ export default class GlobalGameState {
 
   static distanceBetweenCarrierFleets = undefined
   static initial1AFLocation = undefined // location of 1AF at start of movement phase
-  static initialMIFLocation = undefined // location of 1AF at start of movement phase
+  static initialMIFLocation = undefined // location of IJN MIF at start of movement phase
+  static initialDMCVLocation = undefined // location of IJN DMCV at start of movement phase
+
   static previousPosition = undefined // last position of US fleet prior to movement
 
   static usCVsSunk = 0
