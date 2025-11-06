@@ -710,6 +710,7 @@ export function App() {
         GlobalGameState.gamePhase === GlobalGameState.PHASE.JAPAN_FLEET_MOVEMENT ||
         GlobalGameState.gamePhase === GlobalGameState.PHASE.JAPAN_DMCV_FLEET_MOVEMENT
         ) {
+          console.log(">>>> doing Japan Fleet Movement stuff ...")
       GlobalGameState.currentPlayer = GlobalUnitsModel.Side.JAPAN
       setDMCVCarrierSelected(() => "")
       StateManager.gameStateManager.setJapanState(stateObject)
@@ -1976,6 +1977,8 @@ export function App() {
   }
 
   GlobalGameState.stateHandler = gameStateHandler
+  
+  document.body.style.zoom = "100%";
 
   // disable browser zoom (ctrl+ ctrl-)
   window.addEventListener(

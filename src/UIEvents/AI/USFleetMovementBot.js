@@ -214,7 +214,7 @@ function doTurn4FleetMovement(regions, dmcvLocation) {
 
   oneOrZero = Math.random() >= 0.5 ? 1 : 0
 
-  // 50-50 to move away if fleets are 3-5 hexes (to put any IJN airstrikes out of range
+  // 50-50 to move away if fleets are 4-5 hexes (to put any IJN airstrikes out of range
   if (
     oneOrZero === 1 &&
     GlobalGameState.distanceBetweenCarrierFleets >= 3 &&
@@ -226,6 +226,8 @@ function doTurn4FleetMovement(regions, dmcvLocation) {
   return fleetHex
 }
 function doTurns2And3FleetMovement(regions, dmcvLocation) {
+  // If IJN and CSF are 4 or 5 hexes apart -> move away (sometimes)
+
   // IJN region hex closes to Midway
   const current1AFLocation = GlobalInit.controller.getFleetLocation("1AF", GlobalUnitsModel.Side.JAPAN)
   const currentCSFLocation = GlobalInit.controller.getFleetLocation("CSF", GlobalUnitsModel.Side.US)
@@ -238,6 +240,15 @@ function doTurns2And3FleetMovement(regions, dmcvLocation) {
 
   let oneOrZero = Math.random() >= 0.5 ? 1 : 0
 
+  // 50-50 to move away if fleets are 4-5 hexes (to put any IJN airstrikes out of range
+  if (
+    oneOrZero === 1 &&
+    GlobalGameState.distanceBetweenCarrierFleets >= 3 &&
+    GlobalGameState.distanceBetweenCarrierFleets <= 5
+  ) {
+    const fleetHex = furthestHexFrom(regions, current1AFLocation.currentHex)
+    return fleetHex
+  }
   // TODO
   // If a carrier has 2 hits and no DMCV yet placed
   // AND CSF is > 4 hexes from Row I -> head for row I
@@ -259,6 +270,8 @@ function doTurns2And3FleetMovement(regions, dmcvLocation) {
   // console.log("DEBUG US FLEET HEADING TOWARD", ijnFleetLocation)
   const distanceFrom1AFToCSF = distanceBetweenHexes(currentCSFLocation.currentHex, ijnFleetLocation)
 
+  if (distanceFrom1AFToCSF === 4 || distanceFrom1AFToCSF === 5) {
+  }
   let targetHexes = new Array()
   for (const region of regions) {
     const distanceFromRegionTo1AF = distanceBetweenHexes(region, ijnFleetLocation)
@@ -304,10 +317,10 @@ function doTurns2And3FleetMovement(regions, dmcvLocation) {
 
   oneOrZero = Math.random() >= 0.5 ? 1 : 0
 
-  // 50-50 to move away if fleets are 3-5 hexes (to put any IJN airstrikes out of range
+  // 50-50 to move away if fleets are 4-5 hexes (to put any IJN airstrikes out of range
   if (
     oneOrZero === 1 &&
-    GlobalGameState.distanceBetweenCarrierFleets >= 3 &&
+    GlobalGameState.distanceBetweenCarrierFleets >= 4 &&
     GlobalGameState.distanceBetweenCarrierFleets <= 5
   ) {
     fleetHex = furthestHexFrom(regions, current1AFLocation.currentHex)
@@ -425,6 +438,12 @@ function doTurns5To7FleetMovement(regions, dmcvLocation) {
 export function doUSFleetMovementAction(controller, regions, offboardPossible) {
   console.log(">>>>>>> MOVE US FLEET: PLANNING <<<<<<<<")
 
+  const csfLocation = controller.getFleetLocation("CSF", GlobalUnitsModel.Side.US)
+  if (csfLocation.boxName === Command.FLEET_BOX) {
+    // CSF is off the board -> no move required 
+    return
+  }
+
   const dmcvLocation = controller.getFleetLocation("US-DMCV", GlobalUnitsModel.Side.US)
   let hexesBetweenDMCVAndCSF = -1
 
@@ -435,14 +454,9 @@ export function doUSFleetMovementAction(controller, regions, offboardPossible) {
     )
   }
   const turn = GlobalGameState.gameTurn
-  const remainingJapanAirOps = GlobalGameState.airOperationPoints.japan
-  const remainingUSAirOps = GlobalGameState.airOperationPoints.us
   const usNavalStrength = controller.getFleetStrength(GlobalUnitsModel.Side.US)
-  const japanNavalStrength = controller.getFleetStrength(GlobalUnitsModel.Side.JAPAN)
   const usAirStrength = controller.getAirStrength(GlobalUnitsModel.Side.US) // num air steps left
 
-  // TODO function for attack air strength only
-  const japanAirStrength = controller.getAirStrength(GlobalUnitsModel.Side.JAPAN)
   // regions is all valid hexes this fleet can move to
 
   // Move the US Fleet taking into account:

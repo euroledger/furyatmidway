@@ -114,13 +114,17 @@ function getFleetDistances(controller) {
   //   distanceBetweenCSFandIJNDMCV = -100
   // } else {
 
-  if (!controller.allCarriersSunkorDMCV(GlobalUnitsModel.Side.JAPAN)) {
+  if (
+    !controller.allCarriersSunkorDMCV(
+      GlobalUnitsModel.Side.JAPAN && !controller.allCarriersSunkorDMCV(GlobalUnitsModel.Side.US)
+    )
+  ) {
     distanceBetweenCSFand1AF = distanceBetweenHexes(locationCSF.currentHex, location1AF.currentHex)
   }
   if (locationIJNDMCV !== undefined && locationIJNDMCV.currentHex !== undefined) {
     distanceBetweenCSFandIJNDMCV = distanceBetweenHexes(locationCSF.currentHex, locationIJNDMCV.currentHex)
   }
-  if (locationMIF !== undefined && locationMIF.currentHex !== undefined) {
+  if (locationMIF !== undefined && locationMIF.currentHex !== undefined && locationCSF.boxName !== Command.FLEET_BOX) {
     distanceBetweenCSFandMIF = distanceBetweenHexes(locationCSF.currentHex, locationMIF.currentHex)
   }
   // }
@@ -504,10 +508,8 @@ export async function generateUSAirOperationsMovesCarriers(controller, stateObje
       continue
     }
 
-    // If two step attack and last air op 
-    if (
-      unit.aircraftUnit.diveBomber
-    ) {
+    // If two step attack and last air op
+    if (unit.aircraftUnit.diveBomber) {
       // console.log("\t=> ADD TO STRIKE")
       const strikeBox = destinations.find((box) => box.includes("STRIKE"))
       await moveAirUnitToStrikeGroup({
@@ -521,11 +523,7 @@ export async function generateUSAirOperationsMovesCarriers(controller, stateObje
 
     // 4. Repeat to get TBDs into strike box
 
-    if (
-      !unit.aircraftUnit.diveBomber &&
-      unit.aircraftUnit.attack &&
-      minDistanceToEnemyFleet <= 4
-    ) {
+    if (!unit.aircraftUnit.diveBomber && unit.aircraftUnit.attack && minDistanceToEnemyFleet <= 4) {
       const strikeBox = destinations.find((box) => box.includes("STRIKE"))
 
       await moveAirUnitToStrikeGroup({
@@ -675,7 +673,6 @@ export function getFirstAirOpTargetsInRange(controller, strikeGroup, speed, airO
     getAirDistances(controller, strikeGroupLocation.currentHex)
 
   let targets = new Array()
-
 
   if (distanceBetweenCurrentHexand1AF <= speed) {
     targets.push("1AF")
@@ -860,7 +857,7 @@ export async function moveStrikeGroups(controller, stateObject, test) {
           )
           ijndmcvTargeted = true
           return true
-        } 
+        }
         if (strikeGroup.targetsFirstAirOp.includes("1AF")) {
           const location1AF = controller.getFleetLocation("1AF", GlobalUnitsModel.Side.JAPAN)
           await moveStrikeGroup(controller, strikeGroup, HexCommand.OFFBOARD, location1AF, setStrikeGroupUpdate, test)

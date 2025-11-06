@@ -155,7 +155,7 @@ function createFleetUpdates(fleetMap) {
       r: cHex.r,
     }
     const newhex = flatHexToPixel(h)
-    if (cHex === HexCommand.OFFBOARD) {
+    if (cHex === HexCommand.OFFBOARD || cHex === HexCommand.FLEET_BOX) {
       continue
     }
     cHex.x = newhex.x

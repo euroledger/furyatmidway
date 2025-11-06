@@ -489,35 +489,35 @@ const JapanAirBoxOffsets = [
     name: GlobalUnitsModel.AirBox.JP_STRIKE_BOX_0,
     offsets: [
       {
-        left: 45.8,
+        left: 48.8,
         top: 64.0,
       },
       {
-        left: 47.8,
+        left: 50.8,
         top: 64.0,
       },
       {
-        left: 49.8,
+        left: 52.8,
         top: 64.0,
       },
       {
-        left: 51.8,
+        left: 54.8,
         top: 64.0,
       },
       {
-        left: 53.8,
+        left: 56.8,
         top: 64.0,
       },
       {
-        left: 55.8,
+        left: 58.8,
         top: 64.0,
       },
       {
-        left: 57.8,
+        left: 60.8,
         top: 64.0,
       },
       {
-        left: 59.8,
+        left: 62.8,
         top: 64.0,
       },
     ],
@@ -526,35 +526,35 @@ const JapanAirBoxOffsets = [
     name: GlobalUnitsModel.AirBox.JP_STRIKE_BOX_1,
     offsets: [
       {
-        left: 45.8,
+        left: 48.8,
         top: 68.5,
       },
       {
-        left: 47.8,
+        left: 50.8,
         top: 68.5,
       },
       {
-        left: 49.8,
+        left: 52.8,
         top: 68.5,
       },
       {
-        left: 51.8,
+        left: 54.8,
         top: 68.5,
       },
       {
-        left: 53.8,
+        left: 56.8,
         top: 68.5,
       },
       {
-        left: 55.8,
+        left: 58.8,
         top: 68.5,
       },
       {
-        left: 57.8,
+        left: 60.8,
         top: 68.5,
       },
       {
-        left: 59.8,
+        left: 62.8,
         top: 68.5,
       },
     ],
@@ -563,35 +563,35 @@ const JapanAirBoxOffsets = [
     name: GlobalUnitsModel.AirBox.JP_STRIKE_BOX_2,
     offsets: [
       {
-        left: 45.8,
+        left: 48.8,
         top: 72.8,
       },
       {
-        left: 47.8,
+        left: 50.8,
         top: 72.8,
       },
       {
-        left: 49.8,
+        left: 52.8,
         top: 72.8,
       },
       {
-        left: 51.8,
+        left: 54.8,
         top: 72.8,
       },
       {
-        left: 53.8,
+        left: 56.8,
         top: 72.8,
       },
       {
-        left: 55.8,
+        left: 58.8,
         top: 72.8,
       },
       {
-        left: 57.8,
+        left: 60.8,
         top: 72.8,
       },
       {
-        left: 59.8,
+        left: 62.8,
         top: 72.8,
       },
     ],
@@ -600,35 +600,35 @@ const JapanAirBoxOffsets = [
     name: GlobalUnitsModel.AirBox.JP_STRIKE_BOX_3,
     offsets: [
       {
-        left: 45.8,
+        left: 48.8,
         top: 77.1,
       },
       {
-        left: 47.8,
+        left: 50.8,
         top: 77.1,
       },
       {
-        left: 49.8,
+        left: 52.8,
         top: 77.1,
       },
       {
-        left: 51.8,
+        left: 54.8,
         top: 77.1,
       },
       {
-        left: 53.8,
+        left: 56.8,
         top: 77.1,
       },
       {
-        left: 55.8,
+        left: 58.8,
         top: 77.1,
       },
       {
-        left: 57.8,
+        left: 60.8,
         top: 77.1,
       },
       {
-        left: 59.8,
+        left: 62.8,
         top: 77.1,
       },
     ],
@@ -637,35 +637,35 @@ const JapanAirBoxOffsets = [
     name: GlobalUnitsModel.AirBox.JP_STRIKE_BOX_4,
     offsets: [
       {
-        left: 45.8,
+        left: 48.8,
         top: 81.4,
       },
       {
-        left: 47.8,
+        left: 50.8,
         top: 81.4,
       },
       {
-        left: 49.8,
+        left: 52.8,
         top: 81.4,
       },
       {
-        left: 51.8,
+        left: 54.8,
         top: 81.4,
       },
       {
-        left: 53.8,
+        left: 56.8,
         top: 81.4,
       },
       {
-        left: 55.8,
+        left: 58.8,
         top: 81.4,
       },
       {
-        left: 57.8,
+        left: 60.8,
         top: 81.4,
       },
       {
-        left: 59.8,
+        left: 62.8,
         top: 81.4,
       },
     ],
@@ -674,35 +674,35 @@ const JapanAirBoxOffsets = [
     name: GlobalUnitsModel.AirBox.JP_STRIKE_BOX_5,
     offsets: [
       {
-        left: 45.8,
+        left: 48.8,
         top: 85.8,
       },
       {
-        left: 47.8,
+        left: 50.8,
         top: 85.8,
       },
       {
-        left: 49.8,
+        left: 52.8,
         top: 85.8,
       },
       {
-        left: 51.8,
+        left: 54.8,
         top: 85.8,
       },
       {
-        left: 53.8,
+        left: 56.8,
         top: 85.8,
       },
       {
-        left: 55.8,
+        left: 58.8,
         top: 85.8,
       },
       {
-        left: 57.8,
+        left: 60.8,
         top: 85.8,
       },
       {
-        left: 59.8,
+        left: 62.8,
         top: 85.8,
       },
     ],
@@ -711,35 +711,35 @@ const JapanAirBoxOffsets = [
     name: GlobalUnitsModel.AirBox.JP_STRIKE_BOX_6,
     offsets: [
       {
-        left: 45.8,
+        left: 48.8,
         top: 90.1,
       },
       {
-        left: 47.8,
+        left: 50.8,
         top: 90.1,
       },
       {
-        left: 49.8,
+        left: 52.8,
         top: 90.1,
       },
       {
-        left: 51.8,
+        left: 54.8,
         top: 90.1,
       },
       {
-        left: 53.8,
+        left: 56.8,
         top: 90.1,
       },
       {
-        left: 55.8,
+        left: 58.8,
         top: 90.1,
       },
       {
-        left: 57.8,
+        left: 60.8,
         top: 90.1,
       },
       {
-        left: 59.8,
+        left: 62.8,
         top: 90.1,
       },
     ],

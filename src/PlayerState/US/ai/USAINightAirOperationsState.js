@@ -45,6 +45,7 @@ class USAINightAirOperationsState {
       await delay(1800)
     }
     // this.nextState(stateObject)
+    GlobalGameState.phaseCompleted = true
   }
 
   async nextState(stateObject) {

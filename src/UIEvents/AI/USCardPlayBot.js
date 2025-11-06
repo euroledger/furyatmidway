@@ -17,8 +17,9 @@ export function playCardAction(controller, cardNumber, setAttackResolved, side) 
   switch (cardNumber) {
     case 1:
       // Towed to a Friendly Port
-      // If this card is eligible to be played always play it
-      return true
+      // If it is turn 3 or later and this card is eligible to be played always play it
+      //  Hold back if turns 1 or 2 to prevent IJN player knowing the CV is towed
+      return GlobalGameState.gameTurn >= 3
     case 2:
       // Damage Control
       // If any damaged carriers - true

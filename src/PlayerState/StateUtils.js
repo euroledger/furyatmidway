@@ -2,7 +2,7 @@ import GlobalGameState from "../model/GlobalGameState"
 import GlobalInit from "../model/GlobalInit"
 import GlobalUnitsModel from "../model/GlobalUnitsModel"
 import { allHexesWithinDistance, removeHexFromRegion } from "../components/HexUtils"
-import { createMapUpdateForFleet } from "../AirUnitData"
+import { createMapUpdateForFleet, createRemoveDMCVFleetUpdate } from "../AirUnitData"
 import { calculateSearchResults, calculateSearchValues } from "../model/SearchValues"
 import { delay } from "../Utils"
 import { japanAF1StartHexesMidway, japanAF1StartHexesNoMidway } from "../components/MapRegions"
@@ -44,6 +44,7 @@ export function goToDMCVState(side) {
     }
     const usDMCVLocation = GlobalInit.controller.getFleetLocation("US-DMCV", GlobalUnitsModel.Side.US)
     console.log("DEBUG goToDMCVState -> usDMCVLocation=", usDMCVLocation)
+    console.trace()
     if (usDMCVLocation !== undefined && usDMCVLocation.boxName === HexCommand.FLEET_BOX) {
       return false
     }
@@ -404,9 +405,10 @@ export const getUSFleetRegions = () => {
 
     if (
       csfLocation.currentHex === undefined &&
-      (usDMCVLocation.currentHex === undefined || usDMCVLocation.boxName !== HexCommand.FLEET_BOX)
+      (usDMCVLocation.currentHex === undefined || usDMCVLocation.boxName === HexCommand.FLEET_BOX)
     ) {
       // both fleets have been removed from the map
+      console.log("QUACK 1 ********** usDMCVLocation=", usDMCVLocation)
       return {}
     }
     if (GlobalGameState.usDMCVFleetPlaced && usDMCVLocation !== undefined) {
@@ -418,6 +420,8 @@ export const getUSFleetRegions = () => {
       usDMCVRegions = removeHexFromRegion(usDMCVRegions, csfLocation.currentHex)
     }
   }
+  console.log("QUACK 2 **********")
+
   return { canCSFMoveFleetOffBoard, canUSDMCVMoveFleetOffBoard, usCSFRegions, usDMCVRegions }
 }
 
@@ -532,20 +536,6 @@ export function dmcvState(side) {
     (GlobalInit.controller.getDamagedCarriers(side).length > 0 && GlobalGameState.jpDMCVFleetPlaced === false) ||
     (jpDMCVLocation !== undefined && GlobalGameState.jpDMCVFleetPlaced === true)
   )
-}
-function midwayDeclarationHandler() {
-  console.log("FINISHED MIDWAY DECLARATION...")
-  if (dmcvState(GlobalUnitsModel.Side.US)) {
-    GlobalGameState.currentPlayer = GlobalUnitsModel.Side.US
-    GlobalGameState.gamePhase = GlobalGameState.PHASE.US_DMCV_FLEET_MOVEMENT_PLANNING
-    GlobalGameState.usFleetMoved = false
-    GlobalGameState.phaseCompleted = true
-  } else {
-    GlobalGameState.currentPlayer = GlobalUnitsModel.Side.US
-    GlobalGameState.gamePhase = GlobalGameState.PHASE.US_DMCV_FLEET_MOVEMENT_PLANNING
-    GlobalGameState.usFleetMoved = false
-    GlobalGameState.phaseCompleted = true
-  }
 }
 
 function goToCardPlay(cardNumber) {
@@ -904,13 +894,35 @@ export async function removeMIFFleet(setFleetUnitUpdate) {
   }) // reset to avoid updates causing problems for other markers
 }
 
-export async function checkRemoveFleet(side, setFleetUnitUpdate) {
-  if (GlobalInit.controller.allCarriersSunkorDMCV(side)) {
+export async function checkRemoveDMCVFleet(side, setFleetUnitUpdate) {
+  if (GlobalInit.controller.allCarriersSunk(side, true)) {
     if (side === GlobalUnitsModel.Side.US) {
       GlobalGameState.allUSCarriersSunk = true
     } else {
       GlobalGameState.allJapanCarriersSunk = true
     }
+    console.log("ALL CARRIERS SUNK-> GET THE DMCV FLEET OFF THE FUCKING MAP")
+    // 1. Create Fleet Update to remove the fleet marker for that side
+    const update1 = createRemoveDMCVFleetUpdate(side)
+    setFleetUnitUpdate(update1)
+
+    await delay(1)
+    // 2. Create Fleet Update to remove the fleet marker from the other side's map
+    const update2 = createMapUpdateForFleet(GlobalInit.controller, update1.name, side)
+    setFleetUnitUpdate(update2)
+
+    // 3. Fire state update to display Fleet Removed alert
+  }
+}
+
+export async function checkRemoveFleet(side, setFleetUnitUpdate) {
+  if (GlobalInit.controller.allCarriersSunkorDMCV(side, true)) {
+    if (side === GlobalUnitsModel.Side.US) {
+      GlobalGameState.allUSCarriersSunk = true
+    } else {
+      GlobalGameState.allJapanCarriersSunk = true
+    }
+    console.log("ALL CARRIERS SUNK-> GET THE FLEET OFF THE FUCKING MAP")
     // 1. Create Fleet Update to remove the fleet marker for that side
     const update1 = createRemoveFleetUpdate(side)
     setFleetUnitUpdate(update1)
@@ -924,6 +936,7 @@ export async function checkRemoveFleet(side, setFleetUnitUpdate) {
   }
 }
 export async function tidyUp(setAirUnitUpdate, setStrikeGroupUpdate, setFleetUnitUpdate) {
+  console.log("QUACK ??????????????????????????????????????????? tidyUp &&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&")
   // if all carriers sunk remove fleet marker from map
   const otherSide =
     GlobalGameState.sideWithInitiative === GlobalUnitsModel.Side.US
@@ -931,6 +944,7 @@ export async function tidyUp(setAirUnitUpdate, setStrikeGroupUpdate, setFleetUni
       : GlobalUnitsModel.Side.US
 
   await checkRemoveFleet(otherSide, setFleetUnitUpdate)
+  await checkRemoveDMCVFleet(otherSide, setFleetUnitUpdate)
 
   await setStrikeGroupAirUnitsToNotMoved(GlobalGameState.sideWithInitiative, setAirUnitUpdate)
 
@@ -1115,8 +1129,10 @@ export async function removeDMCVFleetForCarrier(side, setFleetUnitUpdate) {
     position: {},
   }
 
-  update1.position.currentHex = HexCommand.OFFBOARD
-  update2.position.currentHex = HexCommand.OFFBOARD
+  // update1.position.currentHex = HexCommand.OFFBOARD
+  // update2.position.currentHex = HexCommand.OFFBOARD
+  update1.position.currentHex = HexCommand.FLEET_BOX
+  update2.position.currentHex = HexCommand.FLEET_BOX
 
   if (side === GlobalUnitsModel.Side.US) {
     update1.name = "US-DMCV-JPMAP"

@@ -428,7 +428,6 @@ export async function doDMCVDamage(
   sendDamageUpdates(controller, damage, setDamageMarkerUpdate)
   if (damage.sunk) {
     sendDMCVUpdate(controller, GlobalGameState.currentCarrierAttackTarget, setDmcvShipMarkerUpdate, side)
-
     // remove the fleet counters
     // 1. Create Fleet Update to remove the fleet marker for that side
     const update1 = createRemoveDMCVFleetUpdate(side)
@@ -641,8 +640,6 @@ export async function sendRemoveDamageMarkerUpdate(
 export async function sendDMCVUpdate(controller, carrier, setDmcvShipMarkerUpdate, side) {
   // place a DMCV marker on the carrier display of any carrier assigned to
   // a DMCV fleet
-  const carrierUnit = controller.getCarrier(carrier)
-
   const boxName = controller.getAirBoxForNamedShip(side, carrier, "DMCV")
   const sideStr = side === GlobalUnitsModel.Side.JAPAN ? "JP" : "US"
   const markerName = `${sideStr}-DMCV-MARKER`
@@ -830,8 +827,8 @@ export function doAttackFireRolls(controller, testRolls) {
     //   GlobalGameState.carrierAttackHits = 0
     //   GlobalGameState.carrierAttackHitsThisAttack = 0
     // } else {
-    //   GlobalGameState.carrierAttackHits = 3
-    //   GlobalGameState.carrierAttackHitsThisAttack = 3
+      // GlobalGameState.carrierAttackHits = 2
+      // GlobalGameState.carrierAttackHitsThisAttack = 2
     // }
   }
   return hits

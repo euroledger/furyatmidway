@@ -17,13 +17,9 @@ class JapanAIMidwayDeclarationState {
     console.log("NEXT STATE AFTER MIDWAY....")
 
     GlobalGameState.currentPlayer = GlobalUnitsModel.Side.US
-
-
     if (goToDMCVState(GlobalUnitsModel.Side.US) && !GlobalGameState.dmcvChecked) {
       console.log("********** DO US DMCV FLEET PLANNING FIRST ************ ")
       GlobalGameState.dmcvChecked = true
-
-          console.log("++++++++++++++++++++++++++++ GO TO DMCV QUACK 4")
 
       GlobalGameState.gamePhase = GlobalGameState.PHASE.US_DMCV_FLEET_MOVEMENT_PLANNING
     } else {

@@ -24,11 +24,11 @@ class ViewEventFleetUnitSetupHandler {
 
       this.controller.setFleetUnitLocation(id, to, side)
       if (side === GlobalUnitsModel.Side.US && id.includes("CSF")) {
-        if (!this.controller.allCarriersSunk(side)) {
+        if (!this.controller.allCarriersSunkorDMCV(side)) {
           GlobalGameState.CSFLeftMap = true
         }
       } else {
-        if (!this.controller.allCarriersSunk(side) && id.includes("1AF")) {
+        if (!this.controller.allCarriersSunkorDMCV(side) && id.includes("1AF")) {
           GlobalGameState.AF1LeftMap = true
         }
       }

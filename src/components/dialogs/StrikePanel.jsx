@@ -35,7 +35,7 @@ function StrikePanel({ side, enabled, zIndex }) {
     return <StrikeBox num={index + 1} bg={bg}></StrikeBox>
   })
 
-  const left = side === GlobalUnitsModel.Side.US ? "82.8%" : "46%"
+  const left = side === GlobalUnitsModel.Side.US ? "82.8%" : "49%"
   return (
     <>
       {enabled && (

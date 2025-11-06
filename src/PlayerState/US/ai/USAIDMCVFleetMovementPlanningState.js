@@ -7,6 +7,9 @@ import { convertHexCoords } from "../../../components/HexUtils"
 import { createFleetUpdate, createRemoveDMCVFleetUpdate } from "../../../AirUnitData"
 import { getRandomElementFrom } from "../../../Utils"
 import HexCommand from "../../../commands/HexCommand"
+import { checkRemoveFleet } from "../../StateUtils"
+import { delay } from "../../../Utils"
+
 
 class USAIDMCVFleetMovementPlanningState {
   async doAction(stateObject) {
@@ -14,7 +17,7 @@ class USAIDMCVFleetMovementPlanningState {
 
     const usDMCVLocation = GlobalInit.controller.getFleetLocation("US-DMCV", GlobalUnitsModel.Side.US)
 
-     const damagedCarriers = GlobalInit.controller.getDamagedCarriers(GlobalUnitsModel.Side.US)
+    const damagedCarriers = GlobalInit.controller.getDamagedCarriers(GlobalUnitsModel.Side.US)
 
     if (damagedCarriers.length === 0 || (usDMCVLocation !== undefined && usDMCVLocation === HexCommand.OFFBOARD)) {
       this.nextState(stateObject)
@@ -27,6 +30,7 @@ class USAIDMCVFleetMovementPlanningState {
       const update = createRemoveDMCVFleetUpdate(GlobalUnitsModel.Side.US)
       setFleetUnitUpdate(update)
     } else {
+      console.log("QUACK >>>>>>>>>>>>>>>>>> US DMCV MOVE regions=", usDMCVRegions)
       const destination = doUSDMCVFleetMovementAction(GlobalInit.controller, usDMCVRegions)
 
       if (destination !== undefined) {
@@ -34,11 +38,12 @@ class USAIDMCVFleetMovementPlanningState {
 
         const usFleetMove = createFleetUpdate("US-DMCV", destination.q, destination.r)
         GlobalGameState.usDMCVFleetPlaced = true
-        setFleetUnitUpdate(usFleetMove)
 
+        console.log("IMPORTANT! DMCV FLEET MOVE:", usFleetMove)
+        setFleetUnitUpdate(usFleetMove)
+        await delay(10)
         // Set the damaged carrier
         // 1. get the list of damaged carriers
-       
 
         console.log(">>>> DEBUG damagedCarriers=", damagedCarriers)
         // 2. select a carrier
@@ -67,7 +72,12 @@ class USAIDMCVFleetMovementPlanningState {
   }
 
   async nextState(stateObject) {
+    const { setFleetUnitUpdate } = stateObject
+
     console.log("MOVING ON FROM US DMCV FLEET MOVEMENT PLANNING")
+    // Check to see if placing DMCV means there are no (non-sunk) carriers left in CSF
+    checkRemoveFleet(GlobalUnitsModel.Side.US, setFleetUnitUpdate)
+
     GlobalGameState.gamePhase = GlobalGameState.PHASE.US_FLEET_MOVEMENT_PLANNING
     GlobalGameState.dmcvChecked = false // ready for the IJN check
     GlobalGameState.updateGlobalState()

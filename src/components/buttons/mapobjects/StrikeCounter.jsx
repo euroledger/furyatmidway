@@ -105,7 +105,8 @@ function StrikeCounter({ setStrikeGroupPopup, currentUSHex, currentJapanHex, cou
     //   strikeGroupUpdate.position.left,
     //   "strikeGroupUpdate.position.top=",
     //   strikeGroupUpdate.position.top,
-    //   "strikeGroupUpdate.position.currentHex=",strikeGroupUpdate.position.currentHex
+    //   "strikeGroupUpdate.position.currentHex=",
+    //   strikeGroupUpdate.position.currentHex
     // )
 
     if (side === GlobalUnitsModel.Side.US) {
@@ -354,45 +355,6 @@ function StrikeCounter({ setStrikeGroupPopup, currentUSHex, currentJapanHex, cou
         setUSMapRegions(usRegion)
       }
     } else {
-      // const unitsInGroup = controller.getAirUnitsInStrikeGroups(counterData.box)
-      // if (unitsInGroup[0].carrier === GlobalUnitsModel.Carrier.MIDWAY) {
-      //   locationOfCarrier = Controller.MIDWAY_HEX
-      // } else {
-      //   locationOfCarrier = controller.getFleetLocation("CSF", GlobalUnitsModel.Side.US)
-      // }
-      // if (!locationOfCarrier) {
-      //   return
-      // }
-      // if (GlobalGameState.gameTurn === 3 && GlobalGameState.airOperationPoints["us"] === 1) {
-      //   const locationOfEnemyCarrier = controller.getFleetLocation("1AF", GlobalUnitsModel.Side.JAPAN)
-      //   const locationOfEnemyDMCV = controller.getFleetLocation("IJN-DMCV", GlobalUnitsModel.Side.JAPAN)
-      //   const locationOfEnemyMIF = controller.getFleetLocation("MIF", GlobalUnitsModel.Side.JAPAN)
-      //   let distanceToDMCV, distanceTo1AF, distanceToMIF
-      //   if (locationOfEnemyCarrier !== undefined) {
-      //     distanceTo1AF = distanceBetweenHexes(locationOfCarrier.currentHex, locationOfEnemyCarrier.currentHex)
-      //     if (distanceTo1AF <= 2) {
-      //       // strike group can move to attack enemy carrier fleet
-      //       usRegion.push(locationOfEnemyCarrier.currentHex)
-      //     }
-      //   }
-      //   if (locationOfEnemyDMCV !== undefined && locationOfEnemyDMCV.currentHex !== undefined) {
-      //     distanceToDMCV = distanceBetweenHexes(locationOfCarrier.currentHex, locationOfEnemyDMCV.currentHex)
-      //     if (distanceToDMCV <= 2) {
-      //       // strike group can move to attack enemy carrier fleet
-      //       usRegion.push(locationOfEnemyDMCV.currentHex)
-      //     }
-      //   }
-      //   if (locationOfEnemyMIF !== undefined && locationOfEnemyMIF.currentHex !== undefined) {
-      //     distanceToMIF = distanceBetweenHexes(locationOfCarrier.currentHex, locationOfEnemyMIF.currentHex)
-      //     if (distanceToMIF <= 2) {
-      //       // strike group can move to attack enemy carrier fleet
-      //       usRegion.push(locationOfEnemyDMCV.currentHex)
-      //     }
-      //   }
-      // } else {
-      //   setCurrentHex(locationOfCarrier)
-      //   usRegion = allHexesWithinDistance(locationOfCarrier.currentHex, 2, false)
-      // }
       usRegion = firstAirOpUSStrikeRegion(controller, counterData)
 
       if (!(GlobalGameState.gameTurn === 3 && GlobalGameState.airOperationPoints["us"] === 1)) {
@@ -605,7 +567,7 @@ function StrikeCounter({ setStrikeGroupPopup, currentUSHex, currentJapanHex, cou
   ) {
     disp = "none"
   }
-   const hide = counterData.side === GlobalUnitsModel.Side.US && GlobalGameState.hideCounters
+  const hide = counterData.side === GlobalUnitsModel.Side.US && GlobalGameState.hideCounters
   return (
     <>
       <div>

@@ -1005,14 +1005,30 @@ export default class Controller {
   }
 
   getNextAvailableFleetBox(side) {
-    const locations = side === GlobalUnitsModel.Side.JAPAN ? this.getUSFleetLocations() : this.getJapanFleetLocations()
+    const locationsUS = this.getUSFleetLocations()
+    const locationsJapan = this.getJapanFleetLocations()
 
     const takenBoxes = new Array()
-    for (let fleet of locations.keys()) {
+    for (let fleet of locationsUS.keys()) {
       if (fleet.toUpperCase().includes("MAP") || fleet.includes("SG")) {
         continue
       }
-      const location = locations.get(fleet)
+      console.log(">>>>>>> test:", fleet)
+      const location = locationsUS.get(fleet)
+      console.log(">>>>>>> test:", fleet, "location=", location)
+
+      if (location.boxName === HexCommand.FLEET_BOX) {
+        takenBoxes.push(location.boxIndex)
+      }
+    }
+     for (let fleet of locationsJapan.keys()) {
+      if (fleet.toUpperCase().includes("MAP") || fleet.includes("SG")) {
+        continue
+      }
+      console.log(">>>>>>> test:", fleet)
+      const location = locationsJapan.get(fleet)
+      console.log(">>>>>>> test:", fleet, "location=", location)
+
       if (location.boxName === HexCommand.FLEET_BOX) {
         takenBoxes.push(location.boxIndex)
       }
@@ -1138,7 +1154,7 @@ export default class Controller {
         sunkCarriers.push(GlobalUnitsModel.Carrier.YORKTOWN)
       }
     }
-     if (side === GlobalUnitsModel.Side.JAPAN) {
+    if (side === GlobalUnitsModel.Side.JAPAN) {
       if (sunkCarriers.length === 4) {
         return true
       }
@@ -1148,9 +1164,8 @@ export default class Controller {
       }
     }
     return false
-
   }
-  
+
   getSunkCarriers(side, countTowedAsSunk) {
     let sunkCarriers = new Array()
     if (side === GlobalUnitsModel.Side.JAPAN) {
@@ -1823,10 +1838,10 @@ export default class Controller {
     }
 
     // 1 VP for each unit moved off map
-    if (GlobalGameState.CSFLeftMap) {
+    if (GlobalGameState.CSFLeftMap && !GlobalGameState.allUSCarriersSunk) {
       GlobalGameState.japanVPs++
     }
-    if (GlobalGameState.AF1LeftMap) {
+    if (GlobalGameState.AF1LeftMap && GlobalGameState.allJapanCarriersSunk) {
       GlobalGameState.usVPs++
     }
 

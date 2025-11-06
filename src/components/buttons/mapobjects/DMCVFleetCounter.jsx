@@ -88,12 +88,13 @@ function DMCVFleetCounter({
     setPosition(() => newPos)
   }
   let hex = {}
+
   if (fleetUnitUpdate && counterData.name === fleetUnitUpdate.name && fleetUnitUpdate.position.currentHex) {
     const test1 = position.currentHex && position.currentHex.boxName !== HexCommand.FLEET_BOX
     const test2 = fleetUnitUpdate.position.currentHex.boxName === HexCommand.FLEET_BOX
     const fleetBox = fleetUnitUpdate.position.currentHex.boxIndex
-
     if (test1 && test2) {
+      console.log(">>>>>>>>>>>> FLEET BOLLOCKS")
       let from
       if (fleetUnitUpdate.side === GlobalUnitsModel.Side.JAPAN) {
         // set new position according to Japan Fleet Box (index boxIndex) offsets
@@ -105,6 +106,7 @@ function DMCVFleetCounter({
 
         from = { currentHex: position.currentHex }
 
+        console.log("ENABLE FLEET BOXES!")
         setEnabledJapanFleetBoxes(() => true)
         setPosition({
           initial: false,
