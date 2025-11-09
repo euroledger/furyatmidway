@@ -9,8 +9,6 @@ class JapanHumanCardPlayState {
     const { cardNumber, setCardAlertPanelShow } = stateObject
     console.log(">>>>>>> JAPAN HUMAN CARD PLAY >>>>>>>>>> cardNumber=", cardNumber)
 
-        console.log("\t=>GlobalInit.controller.japanHandContainsCard(cardNumber)=", GlobalInit.controller.japanHandContainsCard(cardNumber))
-
     if (GlobalInit.controller.japanHandContainsCard(cardNumber)) {
       GlobalGameState.currentPlayer = GlobalUnitsModel.Side.JAPAN
       setCardAlertPanelShow(true)
@@ -18,7 +16,6 @@ class JapanHumanCardPlayState {
   }
 
   async nextState(stateObject) {
-    console.trace()
     const { cardNumber, setCardAlertPanelShow } = stateObject
 
     setCardAlertPanelShow(false)

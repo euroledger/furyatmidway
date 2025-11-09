@@ -5,7 +5,7 @@ import Button from "react-bootstrap/Button"
 import GlobalGameState from "../../model/GlobalGameState"
 import GlobalUnitsModel from "../../model/GlobalUnitsModel"
 import { SingleCarrier } from "../../attackscreens/SingleCarrier"
-import { sendDMCVUpdate } from "../../DiceHandler"
+import { sendDMCVUpdate, doDMCVDamage } from "../../DiceHandler"
 
 import Die from "./Die"
 import { autoAllocateDamage, sendDamageUpdates } from "../../DiceHandler"
@@ -68,6 +68,7 @@ function CarrierDamageDicePanel(props) {
     damageDone,
     setDamageDone,
     sidebg,
+    setFleetUnitUpdate,
     setDmcvShipMarkerUpdate,
     ...rest
   } = props
@@ -86,7 +87,7 @@ function CarrierDamageDicePanel(props) {
         : "/images/usaflag.jpg"
   }
   let bg = sidebg
- 
+
   useEffect(() => {
     if (button1Ref.current) {
       if (GlobalGameState.rollDice === true) {
@@ -152,28 +153,46 @@ function CarrierDamageDicePanel(props) {
           ? GlobalUnitsModel.Side.JAPAN
           : GlobalUnitsModel.Side.US
       if (sideBeingAttacked === GlobalUnitsModel.Side.US) {
-        // console.log(
-        //   "DEBUG DMCV SUNK attack target=",
-        //   GlobalGameState.currentCarrierAttackTarget,
-        //   "US DMCV=",
-        //   GlobalGameState.usDMCVCarrier
-        // )
+        console.log(
+          "DEBUG DMCV SUNK attack target=",
+          GlobalGameState.currentCarrierAttackTarget,
+          "US DMCV=",
+          GlobalGameState.usDMCVCarrier
+        )
 
         if (GlobalGameState.currentCarrierAttackTarget === GlobalGameState.usDMCVCarrier) {
-          sendDMCVUpdate(
+          // sendDMCVUpdate(
+          //   controller,
+          //   GlobalGameState.currentCarrierAttackTarget,
+          //   setDmcvShipMarkerUpdate,
+          //   sideBeingAttacked
+          // )
+          doDMCVDamage(
             controller,
-            GlobalGameState.currentCarrierAttackTarget,
+            sendDamageUpdates,
+            sendDMCVUpdate,
+            setDamageMarkerUpdate,
             setDmcvShipMarkerUpdate,
+            setFleetUnitUpdate,
             sideBeingAttacked
           )
         }
       }
       if (sideBeingAttacked === GlobalUnitsModel.Side.JAPAN) {
         if (GlobalGameState.currentCarrierAttackTarget === GlobalGameState.jpDMCVCarrier) {
-          sendDMCVUpdate(
+          // sendDMCVUpdate(
+          //   controller,
+          //   GlobalGameState.currentCarrierAttackTarget,
+          //   setDmcvShipMarkerUpdate,
+          //   sideBeingAttacked
+          // )
+            doDMCVDamage(
             controller,
-            GlobalGameState.currentCarrierAttackTarget,
+            sendDamageUpdates,
+            sendDMCVUpdate,
+            setDamageMarkerUpdate,
             setDmcvShipMarkerUpdate,
+            setFleetUnitUpdate,
             sideBeingAttacked
           )
         }

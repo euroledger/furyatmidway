@@ -5,6 +5,7 @@ export default class GlobalGameState {
   static replay = false
 
   static PHASE = {
+    ERROR: "ERROR",
     JAPAN_SETUP: "Japan Setup",
     JAPAN_CARD_DRAW: "Japan Card Draw",
     US_SETUP_FLEET: "US Setup (Naval)",

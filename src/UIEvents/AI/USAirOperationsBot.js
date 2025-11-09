@@ -114,10 +114,10 @@ function getFleetDistances(controller) {
   //   distanceBetweenCSFandIJNDMCV = -100
   // } else {
 
+  console.log("ALL CARRIERS SUNK=", controller.allCarriersSunkorDMCV(GlobalUnitsModel.Side.JAPAN))
   if (
-    !controller.allCarriersSunkorDMCV(
-      GlobalUnitsModel.Side.JAPAN && !controller.allCarriersSunkorDMCV(GlobalUnitsModel.Side.US)
-    )
+    !controller.allCarriersSunkorDMCV(GlobalUnitsModel.Side.JAPAN) &&
+    !controller.allCarriersSunkorDMCV(GlobalUnitsModel.Side.US)
   ) {
     distanceBetweenCSFand1AF = distanceBetweenHexes(locationCSF.currentHex, location1AF.currentHex)
   }
@@ -399,12 +399,19 @@ export async function moveAirUnit(controller, unit, setTestUpdate, night) {
 export async function generateUSAirOperationsMovesCarriers(controller, stateObject, test) {
   // return // QUACK TESTING US DOES NOTHING...
 
+  const locationMIF = controller.getFleetLocation("MIF", GlobalUnitsModel.Side.JAPAN)
+  const locationDMCV = controller.getFleetLocation("IJN-DMCV", GlobalUnitsModel.Side.JAPAN)
+  const allCarriersSunk = controller.allCarriersSunkorDMCV(GlobalUnitsModel.Side.JAPAN)
+
+  console.log("POOP locationMIF=", locationMIF)
+  console.log("POOP locationDMCV=", locationDMCV)
+  console.log("POOP allCarriersSunk=", allCarriersSunk)
+
   const { setTestUpdate } = stateObject
 
   // Get all air units in Return Boxes - do this first to free up strike boxes
   let units = controller.getAirUnitsInStrikeBoxesReadyToReturn(GlobalGameState.sideWithInitiative)
 
-  console.log("DEBUG STRIKE UNITS READY TO RETURN=", units)
   if (units.length > 0) {
     for (let unit of units) {
       if (unit.aircraftUnit.moved) {

@@ -20,7 +20,7 @@ export function EndOfTurnSummaryHeaders({ controller, sidebg }) {
   const us1AFMsg = "1AF Left Map:"
 
   const csfLeft = GlobalGameState.CSFLeftMap ? "YES" : "NO"
-  const af1Left = GlobalGameState.AF1LeftMapLeftMap ? "YES" : "NO"
+  const af1Left = GlobalGameState.AF1LeftMap ? "YES" : "NO"
 
   const csfVPs = GlobalGameState.CSFLeftMap ? 1 : 0
   const af1VPs = GlobalGameState.AF1LeftMap ? 1 : 0

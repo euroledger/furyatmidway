@@ -2,6 +2,7 @@ import GlobalGameState from "../../../model/GlobalGameState"
 import GlobalInit from "../../../model/GlobalInit"
 import { determineMidwayInvasion } from "../../StateUtils"
 import GlobalUnitsModel from "../../../model/GlobalUnitsModel"
+import { deleteAllAutoSavedGames } from "../../StateUtils"
 
 class JapanHumanEndOfTurnState {
   markCard = (cardNumber) => {
@@ -21,15 +22,6 @@ class JapanHumanEndOfTurnState {
     const { setCardNumber, setEndOfTurnSummaryShow } = stateObject
     console.log("STATE JapanHumanEndOfTurnState")
 
-    if (GlobalGameState.gameTurn === 7) {
-      determineMidwayInvasion(setCardNumber, setEndOfTurnSummaryShow)
-      if (
-        GlobalGameState.gamePhase === GlobalGameState.PHASE.MIDWAY_INVASION ||
-        GlobalGameState.gamePhase === GlobalGameState.PHASE.CARD_PLAY
-      ) {
-        return
-      }
-    }
     if (
       !this.cardChecked(1) &&
       GlobalInit.controller.usHandContainsCard(1) &&
@@ -95,22 +87,35 @@ class JapanHumanEndOfTurnState {
     } else if (!this.cardChecked(4)) {
       this.markCard(4)
     }
+    if (GlobalGameState.gameTurn === 7) {
+      determineMidwayInvasion(setCardNumber, setEndOfTurnSummaryShow, -1)
+      if (
+        GlobalGameState.gamePhase === GlobalGameState.PHASE.MIDWAY_INVASION ||
+        GlobalGameState.gamePhase === GlobalGameState.PHASE.CARD_PLAY
+      ) {
+        return
+      }
+    }
     console.log("END OF TURM SUMMARY.........")
     setEndOfTurnSummaryShow(true) // TODO check for other cards
   }
 
   async nextState(stateObject) {
-    const { setCardNumber } = stateObject
+    const { setCardNumber, setEndOfTurnSummaryShow } = stateObject
 
     // if this is the end of turn 7 - possible Midway Invasion
 
     // check if MIF fleet is one hex away from Midway
     // if so -> go to MIDWAY_INVASION
+
     if (GlobalGameState.gameTurn === 7) {
       if (GlobalInit.controller.japanHandContainsCard(6)) {
         setCardNumber(() => 6)
+        console.log("TURN 7 GO TO CARD PLAY")
         GlobalGameState.gamePhase = GlobalGameState.PHASE.CARD_PLAY
+        GlobalGameState.updateGlobalState()
       } else {
+        console.log("TURN 7 MIDWAY SHITE")
         determineMidwayInvasion(setCardNumber, setEndOfTurnSummaryShow)
       }
     } else {

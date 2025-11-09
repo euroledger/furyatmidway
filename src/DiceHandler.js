@@ -15,6 +15,7 @@ export function doSubmarineDamageRoll(roll) {
 
 export function doCVDamageControl(roll) {
   let theRoll = roll ?? randomDice(1)
+  theRoll = 1 // QUACK TESTING
   GlobalGameState.dieRolls = [theRoll]
 }
 
@@ -79,28 +80,37 @@ export function doIntiativeRoll(controller, roll0, roll1, showDice) {
   // for automated testing
   // let sideWithInitiative
   let jpRolls, usRolls
+  let initiativeDecided
   if (showDice) {
     const rolls = randomDice(2, [roll0, roll1])
-    GlobalGameState.sideWithInitiative = controller.determineInitiative(roll0, roll1)
+    initiativeDecided = GlobalGameState.sideWithInitiative = controller.determineInitiative(roll0, roll1)
   } else {
     if (roll0 && roll1) {
-      GlobalGameState.sideWithInitiative = controller.determineInitiative(roll0, roll1)
+      initiativeDecided = GlobalGameState.sideWithInitiative = controller.determineInitiative(roll0, roll1)
 
       jpRolls = [roll0]
       usRolls = [roll1]
     } else {
       const rolls = randomDice(2)
-      GlobalGameState.sideWithInitiative = controller.determineInitiative(rolls[0], rolls[1])
+      initiativeDecided = GlobalGameState.sideWithInitiative = controller.determineInitiative(rolls[0], rolls[1])
       jpRolls = [rolls[0]]
       usRolls = [rolls[1]]
     }
   }
 
-  if (GlobalGameState.sideWithInitiative === GlobalUnitsModel.Side.JAPAN) {
-    GlobalGameState.airOpJapan++
-  } else {
-    GlobalGameState.airOpUS++
+  if (initiativeDecided) {
+    // only increment air ops if it is not a tie
+    if (GlobalGameState.sideWithInitiative === GlobalUnitsModel.Side.JAPAN) {
+      GlobalGameState.airOpJapan++
+    } else {
+      GlobalGameState.airOpUS++
+      if (GlobalGameState.airOpUS > 4) {
+        GlobalGameState.gamePhase = GlobalGameState.PHASE.ERROR
+      }
+      console.log("US AIR OP INCREMENTED NOW=", GlobalGameState.airOpUS)
+    }
   }
+
   GlobalGameState.currentPlayer = GlobalGameState.sideWithInitiative
   controller.viewEventHandler({
     type: Controller.EventTypes.INITIATIVE_ROLL,
@@ -381,6 +391,7 @@ export async function doDMCVFleetDamage(
   setDamageDone,
   setFleetUnitUpdate
 ) {
+  console.log(">>>>>>>>>>>>>>>> doDMCVFleetDamage <<<<<<<<<<<<<<")
   if (show1) {
     await doDMCVDamage(
       controller,
@@ -469,6 +480,7 @@ export function autoAllocateDamage(controller, theHits) {
   }
 
   if (hits == 1) {
+    console.log("GET DAMAGE FOR CARRIER", carrier)
     if (!controller.getCarrierBowDamaged(carrier)) {
       controller.setCarrierBowDamaged(carrier)
       damage.bow = true
@@ -816,8 +828,8 @@ export function doAttackFireRolls(controller, testRolls) {
     GlobalGameState.dieRolls = rolls
     doAttackResolutionEvent(controller, hits)
 
-    // GlobalGameState.midwayHits = 2
-    // GlobalGameState.midwayHitsThisAttack = 2
+    // GlobalGameState.midwayHits = 0
+    // GlobalGameState.midwayHitsThisAttack = 0 // QUACK AGAIN!!!!!!!!!
   } else {
     GlobalGameState.carrierAttackHits = hits
     GlobalGameState.carrierAttackHitsThisAttack = hits
@@ -827,8 +839,8 @@ export function doAttackFireRolls(controller, testRolls) {
     //   GlobalGameState.carrierAttackHits = 0
     //   GlobalGameState.carrierAttackHitsThisAttack = 0
     // } else {
-      // GlobalGameState.carrierAttackHits = 2
-      // GlobalGameState.carrierAttackHitsThisAttack = 2
+    // GlobalGameState.carrierAttackHits = 2
+    // GlobalGameState.carrierAttackHitsThisAttack = 2
     // }
   }
   return hits
@@ -847,7 +859,7 @@ export function doAAAFireRolls(numDice, testRolls) {
   GlobalGameState.antiaircraftHits = hits
 
   // QUACK TESTING TAKE THIS OUT
-  // GlobalGameState.antiaircraftHits = 1
+  // GlobalGameState.antiaircraftHits = 0
 }
 
 function getFightersForStrikeGroup(controller) {

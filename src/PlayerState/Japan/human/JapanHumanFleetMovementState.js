@@ -38,7 +38,7 @@ class JapanHumanFleetMovementState {
       setFleetUnitUpdate,
     })
     GlobalGameState.midwayAirOp = 1
-    GlobalGameState.airOpJapan = 1
+    GlobalGameState.airOpJapan = 0
   }
 
   getState() {

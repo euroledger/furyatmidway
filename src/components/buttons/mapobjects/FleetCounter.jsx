@@ -299,6 +299,7 @@ function FleetCounter({
   }
 
   const handleDrop = (event) => {
+    console.log("QUACK drop fleet:", counterData.name,"GAME PHASE=",GlobalGameState.gamePhase)
     // check if drop zone is an off map fleet box...
 
     const fleetBox = getFleetBox()

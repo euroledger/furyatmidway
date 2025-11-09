@@ -5,6 +5,7 @@ import Col from "react-bootstrap/Col"
 import GlobalGameState from "../../model/GlobalGameState"
 import "./modal.css"
 import GlobalUIConstants from "../UIConstants"
+import { deleteAllAutoSavedGames } from "../../PlayerState/StateUtils"
 
 function getSavedKey(idx) {
   let keys = Object.keys(localStorage)
@@ -50,9 +51,47 @@ function ConfirmPanel({ idx, setShowConfirmPanel }) {
     </div>
   )
 }
+
+function ConfirmPanelAuto({ setShowConfirmPanelAuto }) {
+  function remove(e, key) {
+    deleteAllAutoSavedGames()
+    setShowConfirmPanelAuto(false)
+  }
+  return (
+    <div
+      style={{
+        display: "flex",
+        justifyContent: "center",
+        alignItems: "center",
+      }}
+    >
+      <p style={{ paddingBottom: "50px", paddingTop: "20px" }}></p>
+      <p>
+        Do you really want to delete all auto saved games?{" "}
+        <div
+          style={{
+            marginTop: "10px",
+            display: "flex",
+            justifyContent: "center",
+            alignItems: "center",
+          }}
+        >
+          <Button style={{ marginLeft: "10px" }} onClick={(e) => remove(setShowConfirmPanelAuto)}>
+            Yes
+          </Button>
+          <Button style={{ marginLeft: "5px" }} onClick={() => setShowConfirmPanelAuto(false)}>
+            No
+          </Button>
+        </div>
+      </p>
+    </div>
+  )
+}
 function LoadGamePanel(props) {
   const [idx, setIdx] = useState("")
   const [showConfirmPanel, setShowConfirmPanel] = useState(false)
+  const [showConfirmPanelAuto, setShowConfirmPanelAuto] = useState(false)
+
   const bg = GlobalUIConstants.Colors.BOTH
   const size = props.size ? "modal-width" + props.size : "sm"
 
@@ -62,6 +101,10 @@ function LoadGamePanel(props) {
   function showPanel(e, idx) {
     setIdx(() => idx)
     setShowConfirmPanel(true)
+  }
+
+  function showAutoPanel() {
+    setShowConfirmPanelAuto(true)
   }
   function loadGame(e, idx) {
     const key = "fam-" + savedGameArray[idx]
@@ -91,33 +134,48 @@ function LoadGamePanel(props) {
         )}
         {Array.from({ length: savedGameArray.length }).map((_, idx) => {
           return (
-            <row key={idx} style={{ display: "flex", paddingLeft: "10px", paddingTop: "5px", height: "50px" }}>
-              <Col style={{ minWidth: "600px" }} key={idx}>
-                {savedGameArray[idx]}
-              </Col>
-              <Col style={{ paddingLeft: "50px" }}>
-                <Button
-                  onClick={(e) => loadGame(e, idx)}
-                  style={{ position: "absolute", right: "20%" }}
-                  as="input"
-                  type="reset"
-                  value="Load"
-                />
-              </Col>
-              <Col>
-                <Button
-                  onClick={(e) => showPanel(e, idx)}
-                  style={{ position: "absolute", right: "3%" }}
-                  className="delete"
-                  as="input"
-                  type="reset"
-                  value="Delete"
-                />
-              </Col>
-            </row>
+            <>
+              <row key={idx} style={{ display: "flex", paddingLeft: "10px", paddingTop: "5px", height: "50px" }}>
+                <Col style={{ minWidth: "600px" }} key={idx}>
+                  {savedGameArray[idx]}
+                </Col>
+                <Col style={{ paddingLeft: "50px" }}>
+                  <Button
+                    onClick={(e) => loadGame(e, idx)}
+                    style={{ position: "absolute", right: "20%" }}
+                    as="input"
+                    type="reset"
+                    value="Load"
+                  />
+                </Col>
+                <Col>
+                  <Button
+                    onClick={(e) => showPanel(e, idx)}
+                    style={{ position: "absolute", right: "3%" }}
+                    className="delete"
+                    as="input"
+                    type="reset"
+                    value="Delete"
+                  />
+                </Col>
+              </row>
+            </>
           )
         })}
+        <div
+          style={{
+            display: "flex",
+            justifyContent: "center",
+            alignItems: "center",
+            marginTop: "2rem",
+          }}
+        >
+          <Button onClick={(e) => showAutoPanel()} as="input" type="reset" value="Delete Auto Saved Games" />
+        </div>
         {showConfirmPanel && <ConfirmPanel idx={idx} setShowConfirmPanel={setShowConfirmPanel}></ConfirmPanel>}
+        {showConfirmPanelAuto && (
+          <ConfirmPanelAuto setShowConfirmPanelAuto={setShowConfirmPanelAuto}></ConfirmPanelAuto>
+        )}
       </Modal.Body>
       <Modal.Footer style={{ background: `${bg}`, color: "black" }}>
         <Button onClick={props.onHide}>Close</Button>

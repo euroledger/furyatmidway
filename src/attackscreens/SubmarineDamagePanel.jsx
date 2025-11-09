@@ -3,7 +3,7 @@ import Button from "react-bootstrap/Button"
 import GlobalUnitsModel from "../model/GlobalUnitsModel"
 import GlobalGameState from "../model/GlobalGameState"
 import Controller from "../controller/Controller"
-import { sendDamageUpdates, doCarrierDamageRolls, autoAllocateDamage } from "../DiceHandler"
+import { doDMCVDamage, doCarrierDamageRolls, autoAllocateDamage } from "../DiceHandler"
 
 export function SubmarineDamagePanelHeaders({ controller, setDamagedCV, damagedCV, side, damageDone, hidden }) {
   const [elRefsCV, setElRefsCV] = useState([])
@@ -350,6 +350,9 @@ export function SubmarineDamagePanelFooters({
   setDamageDone,
   damageDone,
   setDmcvShipMarkerUpdate,
+  sendDamageUpdates,
+  sendDMCVUpdate,
+  setFleetUnitUpdate,
 }) {
   if (damagedCV === "" || GlobalGameState.dieRolls.length === 0) {
     if (damageDone) {
@@ -358,26 +361,32 @@ export function SubmarineDamagePanelFooters({
     return
   }
 
-  const doAutoDamage = () => {
+  const doAutoDamage = async () => {
     GlobalGameState.carrierAttackHits = 0 // this causes NON firing in the CarrierDamagePanel
     GlobalGameState.sideWithInitiative = side
 
-    const damage = autoAllocateDamage(controller, 1)
-    sendDamageUpdates(controller, damage, setDamageMarkerUpdate)
+    if (damagedCV === GlobalGameState.usDMCVCarrier || damagedCV === GlobalGameState.jpDMCVCarrier) {
+      const sideBeingAttacked =
+        side === GlobalUnitsModel.Side.US ? GlobalUnitsModel.Side.JAPAN : GlobalUnitsModel.Side.US
 
-    // should never need to update DMCV marker after sub attack
-    // if (damage.sunk) {
-    //   const sideBeingAttacked =
-    //     side === GlobalUnitsModel.Side.US ? GlobalUnitsModel.Side.JAPAN : GlobalUnitsModel.Side.US
-
-    //     if (sideBeingAttacked === GlobalUnitsModel.Side.US) {
-    //       GlobalGameState.usDMCVCarrier = undefined
-    //     } else {
-    //       GlobalGameState.jpDMCVCarrier = undefined
-    //     }
-    //   sendDMCVUpdate(controller, GlobalGameState.currentCarrierAttackTarget, setDmcvShipMarkerUpdate, sideBeingAttacked)
-    // }
-    // ---- END ---
+      await doDMCVDamage(
+        controller,
+        sendDamageUpdates,
+        sendDMCVUpdate,
+        setDamageMarkerUpdate,
+        setDmcvShipMarkerUpdate,
+        setFleetUnitUpdate,
+        sideBeingAttacked
+      )
+      if (sideBeingAttacked === GlobalUnitsModel.Side.US) {
+        GlobalGameState.usDMCVCarrier = undefined
+      } else {
+        GlobalGameState.jpDMCVCarrier = undefined
+      }
+    } else {
+      const damage = autoAllocateDamage(controller, 1)
+      sendDamageUpdates(controller, damage, setDamageMarkerUpdate)
+    }
 
     // this logs the die roll
     controller.viewEventHandler({
@@ -436,7 +445,13 @@ export function SubmarineDamagePanelFooters({
   if (success && !damageDone) {
     GlobalGameState.currentCarrierAttackTarget = damagedCV
     if (carrier.hits > 0) {
-      doAutoDamage()
+      doAutoDamage({
+        sendDamageUpdates,
+        sendDMCVUpdate,
+        setDamageMarkerUpdate,
+        setDmcvShipMarkerUpdate,
+        setFleetUnitUpdate,
+      })
       setDamageDone(true)
     }
   } else if (!damageDone) {

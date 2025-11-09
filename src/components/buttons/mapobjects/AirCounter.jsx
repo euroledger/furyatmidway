@@ -122,7 +122,7 @@ function AirCounter({ getAirBox, setAirBox, counterData, side }) {
   }
 
   const onDrag = () => {
-    console.log("AIR UNIT DRAG ->", counterData)
+    // console.log("AIR UNIT DRAG ->", counterData)
     const location = controller.getAirUnitLocation(counterData.name)
 
     if (!location.boxName.includes("CAP RETURNING") && GlobalGameState.gamePhase === GlobalGameState.PHASE.CAP_RETURN) {
@@ -450,7 +450,6 @@ function AirCounter({ getAirBox, setAirBox, counterData, side }) {
   }
 
   const setBoxes = async (counterData, box) => {
-    console.log(">>>> setBoxes box=", box)
     if (
       GlobalGameState.gamePhase === GlobalGameState.PHASE.NIGHT_AIR_OPERATIONS_JAPAN ||
       GlobalGameState.gamePhase === GlobalGameState.PHASE.NIGHT_AIR_OPERATIONS_US

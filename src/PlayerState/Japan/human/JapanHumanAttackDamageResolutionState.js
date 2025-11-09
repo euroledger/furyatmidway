@@ -20,6 +20,7 @@ class JapanHumanAttackDamageResolutionState {
     // if carrier is in DMCV fleet and sunk - remove DMCV fleets from map
 
     if (carrier.dmcv && GlobalInit.controller.isSunk(carrierName)) {
+      console.log("DEBUG carrier dmcv -> remove", carrier)
       await removeDMCVFleetForCarrier(GlobalUnitsModel.Side.US, setFleetUnitUpdate)
       carrier.dmcv = false
       GlobalGameState.usDMCVCarrier = undefined

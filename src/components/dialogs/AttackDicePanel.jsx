@@ -130,11 +130,7 @@ function AttackDicePanel(props) {
   const attackers = controller.getStrikeUnitsAttackingCarrier()
 
   let dbDRM, torpDRM
-  if (
-    GlobalGameState.taskForceTarget !== GlobalUnitsModel.TaskForce.MIF &&
-    GlobalGameState.taskForceTarget !== GlobalUnitsModel.TaskForce.JAPAN_DMCV &&
-    GlobalGameState.taskForceTarget !== GlobalUnitsModel.TaskForce.US_DMCV
-  ) {
+  if (GlobalGameState.taskForceTarget !== GlobalUnitsModel.TaskForce.MIF) {
     dbDRM = "No Attack Planes On Deck or No Dive Bombers (No DRM)"
     torpDRM = "Not a combined attack: No (Torpedo Bomber DRM)"
     if (GlobalGameState.sideWithInitiative === GlobalUnitsModel.Side.US) {
@@ -144,15 +140,20 @@ function AttackDicePanel(props) {
       dbDRM = "Midway Dive Bomber DRM: -1"
       torpDRM = "Midway Torpedo Bomber DRM: -1"
     } else if (GlobalGameState.currentCarrierAttackTarget !== undefined) {
-
       const attackAircraftOnDeck = controller.attackAircraftOnDeck() && controller.anyDiveBombersInStrikeGroup()
       if (attackAircraftOnDeck) {
         dbDRM = "Attack Planes On Deck: +1 (Dive Bomber) DRM"
       }
-      const combinedAttack = controller.combinedAttack() 
+      const combinedAttack = controller.combinedAttack()
       if (combinedAttack && GlobalGameState.sideWithInitiative === GlobalUnitsModel.Side.JAPAN) {
         torpDRM = "Combined attack: +1 (Torpedo Bomber) DRM"
       }
+    }
+    if (
+      GlobalGameState.taskForceTarget === GlobalUnitsModel.TaskForce.JAPAN_DMCV ||
+      GlobalGameState.taskForceTarget === GlobalUnitsModel.TaskForce.US_DMCV
+    ) {
+      dbDRM="" // can never be planes on deck for DMCV
     }
   } else {
     GlobalGameState.currentCarrierAttackTarget = GlobalUnitsModel.TaskForce.MIF
@@ -265,11 +266,13 @@ function AttackDicePanel(props) {
               }}
             >
               <div
-                style={{
-                  // display: "inline-block",
-                  // marginTop: "5px",
-                  // marginLeft: "385px",
-                }}
+                style={
+                  {
+                    // display: "inline-block",
+                    // marginTop: "5px",
+                    // marginLeft: "385px",
+                  }
+                }
               >
                 <div
                   style={{

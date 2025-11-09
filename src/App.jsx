@@ -549,9 +549,10 @@ export function App() {
 
   useEffect(() => {
     if (GlobalGameState.gamePhase === GlobalGameState.PHASE.AIR_ATTACK_1) {
+      GlobalGameState.carrierAttackHits = 0
+      GlobalGameState.carrierAttackHitsThisAttack = 0
       GlobalGameState.dieRolls = []
       GlobalGameState.carrierHitsDetermined = false
-      GlobalGameState.carrierAttackHitsThisAttack = 0
       GlobalGameState.currentCarrierAttackTarget = GlobalGameState.carrierTarget1
       GlobalGameState.eliminatedAirUnits = new Array()
       GlobalGameState.midwayHits = 0
@@ -762,6 +763,12 @@ export function App() {
     } 
   }, [GlobalGameState.gamePhase])
 
+   useEffect(() => {
+    if (GlobalGameState.gamePhase === GlobalGameState.PHASE.ERROR) {
+      alert("ERROR US AIR OPS HAS GONE > 4!!!!!!!!!!!!!!!!!")
+    } 
+  }, [GlobalGameState.gamePhase])
+
   useEffect(() => {
     if (GlobalGameState.gamePhase === GlobalGameState.PHASE.CARD_PLAY) {
       setEliminatedSteps(0)
@@ -793,8 +800,8 @@ export function App() {
       } else {
 
         // maybe :-) ...........??
-        doInitiativeRoll()
-        nextAction()
+        // doInitiativeRoll()
+        // nextAction()
       }
     }
   }, [GlobalGameState.gamePhase])
@@ -849,7 +856,6 @@ export function App() {
 
   useEffect(() => {
     if (GlobalGameState.gamePhase === GlobalGameState.PHASE.END_OF_TURN) {
-      console.log(">>>>>>>>>>>>> IN END OF TURN EFFECT hook")
       GlobalGameState.JP_AF = 6 // in case card 6 was played
       doStateChange()
     }
@@ -858,7 +864,6 @@ export function App() {
   useEffect(() => {
     if (GlobalGameState.gamePhase === GlobalGameState.PHASE.RETREAT_US_FLEET) {
       GlobalGameState.currentPlayer = GlobalUnitsModel.Side.US
-      console.log(">>>>>>>>>>>>> IN RETREAT_US_FLEET EFFECT hook")
       doStateChange()
     }
   }, [GlobalGameState.gamePhase])
@@ -869,7 +874,6 @@ export function App() {
 
   useEffect(() => {
     if (GlobalGameState.gamePhase === GlobalGameState.PHASE.MIDWAY_ATTACK) {
-      console.log(">>>>>>>>>> GOING TO MIDWAY_ATTACK.........")
       doStateChange()
     }
   }, [GlobalGameState.gamePhase])
@@ -2285,6 +2289,9 @@ export function App() {
         side={submarineControlSide}
         damageDone={damageDone}
         setDamageDone={setDamageDone}
+        sendDamageUpdates={sendDamageUpdates}
+        sendDMCVUpdate={sendDMCVUpdate}
+        setFleetUnitUpdate={setFleetUnitUpdate}
       ></SubmarineDamagePanelFooters>
     </>
   )
@@ -2616,10 +2623,11 @@ export function App() {
       doTroubledReconnaissanceRoll(GlobalInit.controller, roll)
     }
   }
-
+// document.body.style.zoom = "108%";
   function doSeaBattleRoll(roll0, roll1) {
     doNavalBattleRoll(GlobalInit.controller, roll0, roll1)
   }
+  
   // console.log("GlobalUnitsModel.usStrikeGroups=", GlobalUnitsModel.usStrikeGroups)
   function doInitiativeRoll(roll0, roll1) {
     // for testing QUACK
@@ -2631,7 +2639,6 @@ export function App() {
     doIntiativeRoll(GlobalInit.controller, roll0, roll1)
     GlobalGameState.updateGlobalState()
   }
-
   function doTargetSelectionRoll(roll0) {
     // roll0 = 3 // QUACK TESTING
     doSelectionRoll(GlobalInit.controller, roll0)
@@ -2732,7 +2739,9 @@ export function App() {
 
   function doAttackResolutionRolls() {
     const hits = doAttackFireRolls(GlobalInit.controller)
-    setCarrierHits(() => hits)
+    // setCarrierHits(() => hits)
+    setCarrierHits(() => 0) // QUACK TESTING!!!!!!!!!!!!!!!
+
     GlobalGameState.dieRolls = []
     GlobalGameState.midwayAttackResolved = true
     GlobalGameState.carrierHitsDetermined = true
@@ -2772,6 +2781,8 @@ export function App() {
   function sendCarrierDamageEvent() {
     doCarrierDamageEvent(GlobalInit.controller)
   }
+
+  const pooButton = GlobalGameState.dieRolls.length === 0 && !attackResolved
 
   if (GlobalGameState.capHits === undefined) {
     GlobalGameState.capHits = 0
@@ -3284,6 +3295,8 @@ export function App() {
                 nextAction(e)
               }
             : (e) => {
+                        console.log("QUACK 2")
+
                 setAttackResolutionPanelShow(false)
                 setAttackResolved(true)
                 if (allFleetsSunk(sideBeingAttacked())) {
@@ -3294,7 +3307,7 @@ export function App() {
               }
         }
         diceButtonDisabled={GlobalGameState.dieRolls.length !== 0}
-        closeButtonDisabled={GlobalGameState.dieRolls.length === 0 && !attackResolved}
+        closeButtonDisabled={pooButton}
         disabled={false}
         image={GlobalGameState.sideWithInitiative === GlobalUnitsModel.Side.JAPAN
           ? "/images/japanflag.jpg"
@@ -3377,6 +3390,7 @@ export function App() {
         closeButtonDisabled={!carrieDamageDiceButtonDisabled}
         setDamageMarkerUpdate={setDamageMarkerUpdate}
         setDmcvShipMarkerUpdate={setDmcvShipMarkerUpdate}
+        setFleetUnitUpdate={setFleetUnitUpdate}
         disabled={false}
         setDamageDone={setDamageDone}
         damageDone={damageDone}

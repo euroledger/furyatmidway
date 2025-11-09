@@ -31,8 +31,8 @@ function SubmarineAlertPanel(props) {
   }
 
   const noHandler = (e) => {
-    onHide(e)
     setSubmarineDamagePanelShow(true)
+    setSubmarineAlertPanelShow(false)
   }
 
   const yesHandler = (e) => {

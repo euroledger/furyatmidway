@@ -102,6 +102,7 @@ export function saveGameState(controller, gameId) {
     jpFleetMap: jpFleetText,
     log: logItems,
   }
+  console.log("\t=> GAME:", gameId, "SAVING TO LOCAL STORAGE:", savedGameDetails)
   localStorage.setItem(gameId, JSON.stringify(savedGameDetails))
 }
 function createFleetUpdates(fleetMap) {

@@ -377,6 +377,8 @@ function DMCVFleetCounter({
         return
       }
       // Ensure fleet is eligible to go into fleet box
+          console.log("QUACK drop DMCV fleet:", counterData.name,"GAME PHASE=",GlobalGameState.gamePhase)
+      
       if (counterData.side === GlobalUnitsModel.Side.JAPAN) {
         if (testForOffMapBoxesJapan()) {
           dropIntoOffMapFleetBox(fleetBox, side)

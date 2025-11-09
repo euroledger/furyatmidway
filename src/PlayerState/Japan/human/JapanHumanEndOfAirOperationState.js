@@ -3,6 +3,7 @@ import GlobalGameState from "../../../model/GlobalGameState"
 import GlobalUnitsModel from "../../../model/GlobalUnitsModel"
 import GlobalInit from "../../../model/GlobalInit"
 import { tidyUp } from "../../StateUtils"
+import { autoSave } from "../../../Utils"
 
 class JapanHumanEndOfAirOperationState {
   async doAction(stateObject) {
@@ -39,6 +40,7 @@ class JapanHumanEndOfAirOperationState {
     } else {
       GlobalGameState.gamePhase = GlobalGameState.PHASE.INITIATIVE_DETERMINATION
     }
+    autoSave(GlobalInit.controller, GlobalUnitsModel.Side.JAPAN)
   }
 
   getState() {

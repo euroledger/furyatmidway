@@ -6,6 +6,7 @@ import GlobalGameState from "../../model/GlobalGameState"
 import "./modal.css"
 import GlobalUnitsModel from "../../model/GlobalUnitsModel"
 import GlobalUIConstants from "../UIConstants"
+import { cardEventHandler } from "../../PlayerState/StateUtils"
 
 function CardAlertPanel(props) {
   const {
@@ -58,24 +59,28 @@ function CardAlertPanel(props) {
     if (cardNumber === 1) {
       setTowedToFriendlyPortPanelShow(true)
       controller.setCardPlayed(1, GlobalUnitsModel.Side.US)
+      cardEventHandler(1, GlobalUnitsModel.Side.US)
       onHide(e)
       nextAction(e)
     } else if (cardNumber === 2) {
       setDamageControlPanelShow(true)
       if (controller.usHandContainsCard(2)) {
         controller.setCardPlayed(2, GlobalUnitsModel.Side.US)
+        cardEventHandler(2, GlobalUnitsModel.Side.US)
         nextAction(e)
       } else {
         controller.setCardPlayed(2, GlobalUnitsModel.Side.JAPAN)
+        cardEventHandler(2, GlobalUnitsModel.Side.JAPAN)
       }
       onHide(e)
-
     } else if (cardNumber === 3) {
       setAirReplacementsPanelShow(true)
       if (controller.usHandContainsCard(3)) {
+        cardEventHandler(3, GlobalUnitsModel.Side.US)
         GlobalGameState.currentPlayer = GlobalUnitsModel.Side.US
         GlobalGameState.gamePhase = GlobalGameState.PHASE.CARD_RESPONSE
       } else {
+        cardEventHandler(3, GlobalUnitsModel.Side.JAPAN)
         controller.setCardPlayed(3, GlobalUnitsModel.Side.JAPAN)
         onHide(e)
       }
@@ -84,11 +89,14 @@ function CardAlertPanel(props) {
       setDamagedCV("")
       if (controller.usHandContainsCard(4)) {
         side = GlobalUnitsModel.Side.US
+        cardEventHandler(4, GlobalUnitsModel.Side.US)
         controller.setCardPlayed(4, GlobalUnitsModel.Side.US)
       } else {
         console.log("JAPAN PLAYING CARD #4 SUBMARINE >>>>>>>>>>>>>>>>>")
+        cardEventHandler(4, GlobalUnitsModel.Side.JAPAN)
         side = GlobalUnitsModel.Side.JAPAN
         controller.setCardPlayed(4, GlobalUnitsModel.Side.JAPAN)
+        onHide(e)
       }
 
       // if towed to friendly port has been played, go to SubmarainAlertPanel
@@ -102,38 +110,38 @@ function CardAlertPanel(props) {
       // onHide(e)
     } else if (cardNumber === 5) {
       setCardDicePanelShow5(true)
+      cardEventHandler(5, GlobalUnitsModel.Side.JAPAN)
       controller.setCardPlayed(5, GlobalUnitsModel.Side.JAPAN)
       onHide(e)
       // nextAction(e)
     } else if (cardNumber === 6) {
       setHeaderText("CARD #6 PLAYED")
+      cardEventHandler(6, GlobalUnitsModel.Side.JAPAN)
       controller.setCardPlayed(6, GlobalUnitsModel.Side.JAPAN)
       setShowCardFooter(() => true)
     } else if (cardNumber === 7) {
       setCardDicePanelShow7(true)
+      cardEventHandler(7, GlobalUnitsModel.Side.US)
       controller.setCardPlayed(7, GlobalUnitsModel.Side.US)
       onHide(e)
       nextAction(e)
     } else if (cardNumber === 8) {
+      cardEventHandler(8, GlobalUnitsModel.Side.US)
       controller.setCardPlayed(8, GlobalUnitsModel.Side.US)
       setShowCardFooter(() => true)
       onHide(e)
       nextAction(e)
     } else if (cardNumber === 9) {
       setHeaderText("CARD #9 PLAYED")
+      cardEventHandler(9, GlobalUnitsModel.Side.JAPAN)
       controller.setCardPlayed(9, GlobalUnitsModel.Side.JAPAN)
       setShowCardFooter(() => true)
     } else if (cardNumber === 10) {
+      cardEventHandler(10, GlobalUnitsModel.Side.JAPAN)
       GlobalGameState.currentPlayer = GlobalUnitsModel.Side.US
       GlobalGameState.gamePhase = GlobalGameState.PHASE.CARD_RESPONSE
-
-      // GlobalGameState.currentPlayer = GlobalUnitsModel.Side.US
-      // GlobalGameState.testStepLossSelection = -1
-      // GlobalGameState.updateGlobalState()
-      // setCarrierPlanesDitchPanelShow(true)
-      // controller.setCardPlayed(10, GlobalUnitsModel.Side.JAPAN)
-      // onHide(e)
     } else if (cardNumber === 11) {
+      cardEventHandler(11, GlobalUnitsModel.Side.JAPAN)
       GlobalGameState.currentPlayer = GlobalUnitsModel.Side.US
       GlobalGameState.gamePhase = GlobalGameState.PHASE.CARD_RESPONSE
       setStrikeLostPanelShow(true)
@@ -141,10 +149,12 @@ function CardAlertPanel(props) {
       onHide(e)
       nextAction(e)
     } else if (cardNumber === 12) {
+      cardEventHandler(12, GlobalUnitsModel.Side.JAPAN)
       controller.setCardPlayed(12, GlobalUnitsModel.Side.JAPAN)
       setShowCardFooter(() => true)
       // onHide(e)
     } else if (cardNumber === 13) {
+      cardEventHandler(13, GlobalUnitsModel.Side.US)
       setAttackResolved(() => false)
       controller.setCardPlayed(13, GlobalUnitsModel.Side.US)
       setShowCardFooter(() => true)
@@ -153,16 +163,8 @@ function CardAlertPanel(props) {
     }
     setThisCard(cardNumber)
     setButtonPressed(() => true)
-    eventHandler(cardNumber)
+    // eventHandler(cardNumber)
   }
-
-  // useEffect(() => {
-  //   if (button1Ref.current) {
-  //     if (GlobalGameState.rollDice === true) {
-  //       button1Ref.current.click()
-  //     }
-  //   }
-  // }, [GlobalGameState.rollDice])
 
   useEffect(() => {
     if (button2Ref.current) {

@@ -1021,7 +1021,7 @@ export default class Controller {
         takenBoxes.push(location.boxIndex)
       }
     }
-     for (let fleet of locationsJapan.keys()) {
+    for (let fleet of locationsJapan.keys()) {
       if (fleet.toUpperCase().includes("MAP") || fleet.includes("SG")) {
         continue
       }

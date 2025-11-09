@@ -7,7 +7,12 @@ class InitiativeStatusChange extends Command {
   }
   execute() {}
 
+
   toString() {
+    if (this.initiative === null) {
+      this.initiative = "TIE - ReRoll"
+    }
+
     return `${this.commandType} Side With Initiative: ${this.initiative}`
   }
 }

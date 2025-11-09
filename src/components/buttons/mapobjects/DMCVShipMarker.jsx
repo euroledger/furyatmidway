@@ -14,7 +14,7 @@ function DMCVShipMarker({ counterData }) {
   const [position, setPosition] = useState({
     left: -100,
     top: -100,
-    side: ""
+    side: "",
   })
 
   if (dmcvShipMarkerUpdate.box === "") {
@@ -37,16 +37,26 @@ function DMCVShipMarker({ counterData }) {
     setPosition(() => ({
       left: offsets.left + "%",
       top: offsets.top - 0.2 + "%",
-      side: dmcvShipMarkerUpdate.side
+      side: dmcvShipMarkerUpdate.side,
     }))
   }
-  let disp="block"
-  if (dmcvShipMarkerUpdate.carrier !== undefined && GlobalInit.controller.isSunk(dmcvShipMarkerUpdate.carrier)) {
-    disp="none"
+  let disp = "block"
+  if (
+    counterData.name === dmcvShipMarkerUpdate.name &&
+    dmcvShipMarkerUpdate.carrier !== undefined &&
+    GlobalInit.controller.isSunk(dmcvShipMarkerUpdate.carrier, true)
+  ) {
+    disp = "none"
   }
 
   const hide = position.side === GlobalUnitsModel.Side.US && GlobalGameState.hideCounters
-  
+
+  // if (counterData.image.includes("japan")) {
+  //   console.log(">>>>>>>>>>>>>>>>>>>>>> counterData.image->", counterData.image)
+  //   console.log(">>>>>>>>>>>>>>>>>>>>>> position->", position.left, position.top)
+  //   console.log(">>>>>>>>>>>>>>>>>>>>>> GlobalGameState.usDMCVCarrier->", GlobalGameState.jpDMCVCarrier)
+  // }
+
   return (
     <div>
       <input
@@ -60,7 +70,7 @@ function DMCVShipMarker({ counterData }) {
           left: position.left,
           top: position.top,
           zIndex: 100,
-          display: disp
+          display: disp,
         }}
         id="marker"
       />

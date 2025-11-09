@@ -43,8 +43,10 @@ class USAINightAirOperationsState {
       GlobalGameState.rollDice = true
       GlobalGameState.updateGlobalState()
       await delay(1800)
+    } else {
+      GlobalGameState.phaseCompleted = true
+      this.nextState(stateObject)
     }
-    // this.nextState(stateObject)
     GlobalGameState.phaseCompleted = true
   }
 

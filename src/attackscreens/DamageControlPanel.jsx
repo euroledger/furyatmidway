@@ -154,6 +154,7 @@ export function DamageControlPanelHeaders({ controller, setDamagedCV, damagedCV,
   damagedCarriers = damagedCarriers.filter((cv) => !controller.getCarrier(cv).dmcv)
 
   let arrLength = damagedCarriers.length
+  console.log("this.getCarrierHits(GlobalUnitsModel.Carrier.YORKTOWN)=", controller.getCarrierHits(GlobalUnitsModel.Carrier.YORKTOWN))
   useEffect(() => {
     // add or remove refs
     setElRefsCV((elRefsCV) =>

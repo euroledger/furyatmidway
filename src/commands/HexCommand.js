@@ -8,7 +8,7 @@ class HexCommand extends Command {
     if (this.to === HexCommand.FLEET_BOX) {
       return `MOVE ${this.side} ${this.unit} to OFF MAP FLEET BOX`;
     }
-    if (this.to === HexCommand.OFFBOARD) {
+    if (this.to === HexCommand.OFFBOARD || this.to.currentHex === HexCommand.OFFBOARD) {
       return `MOVE ${this.side} ${this.unit} to OFFBOARD`;
     } else {
       let from = "OFFBOARD";
