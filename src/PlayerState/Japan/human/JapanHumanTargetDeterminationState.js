@@ -7,16 +7,11 @@ import { rollZeDice } from "../../StateUtils"
 
 class JapanHumanTargetDeterminationState {
   async doAction(stateObject) {
-    // GlobalGameState.currentPlayer = GlobalUnitsModel.Side.US
     console.log("++++++++++++++ IJN TARGET DETERMINATION")
-    // await selectTFTarget(GlobalInit.controller, stateObject)
-    // rollZeDice()
   }
 
   async nextState(stateObject) {
     const { setCardNumber } = stateObject
-    console.log("JapanHumanTargetDeterminationState -> nextState() !!!!!!!!!!!!!!!")
-
     GlobalGameState.currentPlayer = GlobalUnitsModel.Side.US
     GlobalGameState.testCapSelection = -1
 

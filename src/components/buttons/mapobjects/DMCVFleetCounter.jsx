@@ -310,7 +310,6 @@ function DMCVFleetCounter({
   }
 
   const dropIntoOffMapFleetBox = (fleetBox, side) => {
-    console.log("OFF YOU GO POOPY")
     if (side === GlobalUnitsModel.Side.JAPAN) {
       if (!GlobalGameState.jpDMCVFleetPlaced) {
         setDmcvCarrierSelectionPanelShow(true)
@@ -376,13 +375,11 @@ function DMCVFleetCounter({
       ) {
         return
       }
-      // Ensure fleet is eligible to go into fleet box
-          console.log("QUACK drop DMCV fleet:", counterData.name,"GAME PHASE=",GlobalGameState.gamePhase)
-      
+      // Ensure fleet is eligible to go into fleet box      
       if (counterData.side === GlobalUnitsModel.Side.JAPAN) {
         if (testForOffMapBoxesJapan()) {
           dropIntoOffMapFleetBox(fleetBox, side)
-        }
+        } 
       } else {
         // TODO test for offfmap boxes US
         dropIntoOffMapFleetBox(fleetBox, side)

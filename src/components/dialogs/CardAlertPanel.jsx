@@ -7,6 +7,8 @@ import "./modal.css"
 import GlobalUnitsModel from "../../model/GlobalUnitsModel"
 import GlobalUIConstants from "../UIConstants"
 import { cardEventHandler } from "../../PlayerState/StateUtils"
+import MinimizeButton from "./MinimizeButton"
+import "./CustomModal.css"
 
 function CardAlertPanel(props) {
   const {
@@ -21,6 +23,7 @@ function CardAlertPanel(props) {
     width,
     eventHandler,
     margin,
+    setButtonModalShow,
     setCardDicePanelShow5,
     setCardDicePanelShow7,
     setStrikeLostPanelShow,
@@ -53,6 +56,11 @@ function CardAlertPanel(props) {
     setShowCardFooter(false)
     onHide(e)
     nextAction(e)
+  }
+
+  const minimizeWindow = (e) => {
+    setButtonModalShow(true)
+    onHide(e)
   }
 
   const yesHandler = (e) => {
@@ -209,12 +217,13 @@ function CardAlertPanel(props) {
 
   bg = jpCard ? GlobalUIConstants.Colors.JAPAN : GlobalUIConstants.Colors.US
 
+  const combinedDialogClasses = `modal-minimized-modal ${myBigBollocks}`
   return (
     <Modal
       {...rest}
       size={"lg"}
       aria-labelledby="contained-modal-title-vcenter"
-      dialogClassName={myBigBollocks}
+      dialogClassName={combinedDialogClasses}
       centered
     >
       <Modal.Header
@@ -254,6 +263,7 @@ function CardAlertPanel(props) {
             textAlign: "right",
           }}
         ></div>
+        <MinimizeButton clickHandler={minimizeWindow}></MinimizeButton>
       </Modal.Header>
       <Modal.Body style={{ background: `${bg}`, color: "black" }}>
         <div style={{ marginLeft: "28px" }}>

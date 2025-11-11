@@ -30,7 +30,6 @@ class USAIDMCVFleetMovementPlanningState {
       const update = createRemoveDMCVFleetUpdate(GlobalUnitsModel.Side.US)
       setFleetUnitUpdate(update)
     } else {
-      console.log("QUACK >>>>>>>>>>>>>>>>>> US DMCV MOVE regions=", usDMCVRegions)
       const destination = doUSDMCVFleetMovementAction(GlobalInit.controller, usDMCVRegions)
 
       if (destination !== undefined) {
@@ -39,7 +38,6 @@ class USAIDMCVFleetMovementPlanningState {
         const usFleetMove = createFleetUpdate("US-DMCV", destination.q, destination.r)
         GlobalGameState.usDMCVFleetPlaced = true
 
-        console.log("IMPORTANT! DMCV FLEET MOVE:", usFleetMove)
         setFleetUnitUpdate(usFleetMove)
         await delay(10)
         // Set the damaged carrier

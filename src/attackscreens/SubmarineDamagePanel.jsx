@@ -223,7 +223,7 @@ export function SubmarineDamagePanelHeaders({ controller, setDamagedCV, damagedC
 
   const sideBeingAttacked = side === GlobalUnitsModel.Side.US ? GlobalUnitsModel.Side.JAPAN : GlobalUnitsModel.Side.US
 
-  const anyTargets = controller.anyTargets(sideBeingAttacked)
+  const anyTargets = controller.anyTargetsForSubmarine(sideBeingAttacked)
   if (!anyTargets) {
     setDamagedCV("NO TARGETS")
   }

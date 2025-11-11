@@ -12,6 +12,7 @@ import GlobalUnitsModel from "./model/GlobalUnitsModel"
 import AlertPanel from "./components/dialogs/AlertPanel"
 import SaveGamePanel from "./components/dialogs/SaveGamePanel"
 import LoadGamePanel from "./components/dialogs/LoadGamePanel"
+import ButtonModal from "./components/dialogs/ButtonModal"
 import CardPanel from "./components/dialogs/CardPanel"
 import GameStatusPanel from "./components/dialogs/GameStatusPanel"
 import SplashScreen from "./components/dialogs/SplashScreen"
@@ -174,6 +175,9 @@ export function App() {
   const [gameLoadID, setGameLoadID] = useState("")
 
   const [loadPanelShow, setLoadPanelShow] = useState(false)
+  const [buttonModalShow, setButtonModalShow] = useState(false)
+  
+  const [modalPanel, setModalPanel] = useState(null)
   const [jpAlertShow, setJpAlertShow] = useState(false)
 
   const [endOfAirOpAlertShow, setEndOfAirOpAlertShow] = useState(false)
@@ -324,6 +328,8 @@ export function App() {
   const [japanMapRegions, setJapanMapRegions] = useState([])
 
   const [japanMIFMapRegions, setJapanMIFMapRegions] = useState([])
+
+  const [restoreFunction, setRestoreFunction] = useState(() => {})
 
   // const [sideWithInitiative, setSideWithInitiative] = useState(undefined)
 
@@ -1169,6 +1175,7 @@ export function App() {
   const stateObject = {
     // FOR AI AND TESTING
     controller: GlobalInit.controller,
+    setRestoreFunction,
     doAIDMCVShipMarkerUpdate,
     setTowedToFriendlyPortPanelShow,
     setCarrierPlanesDitchPanelShow,
@@ -2041,6 +2048,7 @@ export function App() {
   async function loady() {
     setSplash(false)
     setLoadPanelShow(true)
+    setRestoreFunction(() => setLoadPanelShow)
   }
 
   function splashy() {
@@ -2905,17 +2913,22 @@ export function App() {
     GlobalGameState.dieRolls.length > 0 ||
     damagedCV === "NO TARGETS"
 
-
   const summaryButtonDisabled = GlobalInit.controller.victoryCheck() !== ""
   return (
     <>
       <LoadGamePanel
         show={loadPanelShow}
+        setModalPanel={setModalPanel}
         loadIdHandler={setGameLoadID}
         loadMyGameHandler={loadMyGame}
-        onHide={() => setLoadPanelShow(false)}
+        setButtonModalShow={setButtonModalShow}
+        onHide={() => {
+          console.log("HIDE THE FUCKER")
+          setLoadPanelShow(false)
+          // setButtonModalShow(false)
+        }}
       ></LoadGamePanel>
-
+      <ButtonModal show={buttonModalShow} restoreFunction={restoreFunction} setButtonModalShow={setButtonModalShow}></ButtonModal>
       <SaveGamePanel
         saveGameState={saveGameState}
         setSaveAlertShow={setSaveAlertShow}
@@ -3295,8 +3308,6 @@ export function App() {
                 nextAction(e)
               }
             : (e) => {
-                        console.log("QUACK 2")
-
                 setAttackResolutionPanelShow(false)
                 setAttackResolved(true)
                 if (allFleetsSunk(sideBeingAttacked())) {
@@ -3466,6 +3477,7 @@ export function App() {
         controller={GlobalInit.controller}
         headers={cardAlertHeaders}
         headerText={headerText}
+        setButtonModalShow={setButtonModalShow}
         setHeaderText={setHeaderText}
         setShowCardFooter={setShowCardFooter}
         footers={cardAlertFooters}
@@ -3487,7 +3499,6 @@ export function App() {
         image={imageboog}
         onHide={(e) => {
           setCardAlertPanelShow(false)
-          // nextAction(e)
         }}
         nextAction={nextAction}
         width={30}

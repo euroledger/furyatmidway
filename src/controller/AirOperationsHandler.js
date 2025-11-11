@@ -935,7 +935,6 @@ export async function moveOrphanedCAPUnitsToEliminatedBox(side, box, unit) {
     } else {
       destinationsArray = getValidUSDestinationsCAP(GlobalInit.controller, parentCarrier, side, unit.name)
     }
-    console.log("QUACK 2 destinationsArray.length=", destinationsArray.length)
     if (destinationsArray.length === 0) {
       GlobalGameState.orphanedAirUnits.push(unit)
       moveAirUnitToEliminatedBox(GlobalInit.controller, unit)

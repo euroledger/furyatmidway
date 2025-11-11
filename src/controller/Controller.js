@@ -84,7 +84,7 @@ export default class Controller {
       if (
         (this.isSunk(GlobalUnitsModel.Carrier.AKAGI) ||
           GlobalGameState.jpDMCVCarrier === GlobalUnitsModel.Carrier.AKAGI) &&
-        (this.isSunk(GlobalUnitsModel.Carrier.KAGA) || GlobalGameState.usDMCVCarrier === GlobalUnitsModel.Carrier.KAGA)
+        (this.isSunk(GlobalUnitsModel.Carrier.KAGA) || GlobalGameState.jpDMCVCarrier === GlobalUnitsModel.Carrier.KAGA)
       ) {
         autoSelectTarget = GlobalUnitsModel.TaskForce.CARRIER_DIV_2
       }
@@ -1060,6 +1060,27 @@ export default class Controller {
         return false
       }
       if (numCarriersSunk === 2 && usDMCVLocation.boxName === HexCommand.FLEET_BOX) {
+        return false
+      }
+    }
+    return true
+  }
+  anyTargetsForSubmarine(side) {
+    let numCarriersSunk = this.getSunkCarriers(side, true).length
+    const jpDMCVLocation = this.getFleetLocation("IJN-DMCV", GlobalUnitsModel.Side.JAPAN)
+    const usDMCVLocation = this.getFleetLocation("US-DMCV", GlobalUnitsModel.Side.US)
+    if (side === GlobalUnitsModel.Side.JAPAN) {
+      if (numCarriersSunk === 4) {
+        return false
+      }
+      if (numCarriersSunk === 3 && (jpDMCVLocation === undefined || jpDMCVLocation.boxName === Command.FLEET_BOX)) {
+        return false
+      }
+    } else {
+      if (numCarriersSunk === 3) {
+        return false
+      }
+      if (numCarriersSunk === 2 && (usDMCVLocation !== undefined && usDMCVLocation.boxName !== Command.FLEET_BOX)) {
         return false
       }
     }

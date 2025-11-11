@@ -78,12 +78,17 @@ export function setUpAirAttack(controller, location, strikeGroup, setCardNumber,
       if (anyTargets) {
         if (sideBeingAttacked === GlobalUnitsModel.Side.JAPAN) {
           GlobalGameState.currentPlayer = GlobalUnitsModel.Side.US
+        } else {
+          GlobalGameState.currentPlayer = GlobalUnitsModel.Side.JAPAN
         }
-        GlobalGameState.gamePhase = GlobalGameState.PHASE.TARGET_DETERMINATION
       } else {
         GlobalGameState.taskForceTarget = fleetTarget
         strikeGroup.attacked = true
+        // GlobalGameState.currentPlayer = sideBeingAttacked
+        // GlobalGameState.gamePhase = GlobalGameState.PHASE.CAP_INTERCEPTION
       }
+      GlobalGameState.gamePhase = GlobalGameState.PHASE.TARGET_DETERMINATION
+
     }
     if (
       controller.japanHandContainsCard(11) &&

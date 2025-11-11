@@ -1,4 +1,4 @@
-import { React, useState } from "react"
+import { useState } from "react"
 import Modal from "react-bootstrap/Modal"
 import Button from "react-bootstrap/Button"
 import Col from "react-bootstrap/Col"
@@ -6,6 +6,8 @@ import GlobalGameState from "../../model/GlobalGameState"
 import "./modal.css"
 import GlobalUIConstants from "../UIConstants"
 import { deleteAllAutoSavedGames } from "../../PlayerState/StateUtils"
+import "./CustomModal.css"
+import MinimizeButton from "./MinimizeButton"
 
 function getSavedKey(idx) {
   let keys = Object.keys(localStorage)
@@ -63,14 +65,15 @@ function ConfirmPanelAuto({ setShowConfirmPanelAuto }) {
         display: "flex",
         justifyContent: "center",
         alignItems: "center",
+        marginTop: "20px",
       }}
     >
-      <p style={{ paddingBottom: "50px", paddingTop: "20px" }}></p>
+      <p style={{ paddingBottom: "50px" }}></p>
       <p>
         Do you really want to delete all auto saved games?{" "}
         <div
           style={{
-            marginTop: "10px",
+            marginTop: "30px",
             display: "flex",
             justifyContent: "center",
             alignItems: "center",
@@ -87,11 +90,11 @@ function ConfirmPanelAuto({ setShowConfirmPanelAuto }) {
     </div>
   )
 }
+
 function LoadGamePanel(props) {
   const [idx, setIdx] = useState("")
   const [showConfirmPanel, setShowConfirmPanel] = useState(false)
   const [showConfirmPanelAuto, setShowConfirmPanelAuto] = useState(false)
-
   const bg = GlobalUIConstants.Colors.BOTH
   const size = props.size ? "modal-width" + props.size : "sm"
 
@@ -103,6 +106,10 @@ function LoadGamePanel(props) {
     setShowConfirmPanel(true)
   }
 
+  function minimizeWindow() {
+    props.setButtonModalShow(true)
+    props.onHide()
+  }
   function showAutoPanel() {
     setShowConfirmPanelAuto(true)
   }
@@ -114,9 +121,25 @@ function LoadGamePanel(props) {
   }
 
   return (
-    <Modal {...props} aria-labelledby="contained-modal-title-vcenter" keyboard={false} backdrop="static">
+    <Modal
+      {...props}
+      dialogClassName={"modal-minimized-modal"}
+      aria-labelledby="contained-modal-title-vcenter"
+      keyboard={false}
+      backdrop="static"
+      show={props.show}
+    >
       <Modal.Header style={{ background: `${bg}`, color: "white", justifyContent: "center", alignItems: "center" }}>
         <h4>Load Game</h4>
+        <MinimizeButton clickHandler={minimizeWindow}></MinimizeButton>
+        {/* <Button
+          onClick={(e) => minimizeWindow(e)}
+          className="d-flex align-items-center"
+          variant="outline-primary"
+          style={{ color: "white", borderColor: "white", position: "absolute", top: "2%", right: "2%" }}
+        >
+          <FaWindowMinimize />
+        </Button> */}
       </Modal.Header>
       <Modal.Body style={{ paddingTop: "20px", background: `${bg}`, color: "white" }}>
         <p>Select Game to Load or Delete</p>
@@ -170,7 +193,13 @@ function LoadGamePanel(props) {
             marginTop: "2rem",
           }}
         >
-          <Button onClick={(e) => showAutoPanel()} as="input" type="reset" value="Delete Auto Saved Games" />
+          <Button
+            className="delete"
+            onClick={(e) => showAutoPanel()}
+            as="input"
+            type="reset"
+            value="Delete Auto Saved Games"
+          />
         </div>
         {showConfirmPanel && <ConfirmPanel idx={idx} setShowConfirmPanel={setShowConfirmPanel}></ConfirmPanel>}
         {showConfirmPanelAuto && (

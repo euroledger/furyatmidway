@@ -105,6 +105,7 @@ export function testForOffMapBoxesJapan() {
         return true
       }
     }
+
     if (goToDMCVState(GlobalUnitsModel.Side.JAPAN) && !GlobalGameState.dmcvChecked && ijnDMCVLocation === undefined) {
       // can move offboard
 
@@ -124,11 +125,29 @@ export function testForOffMapBoxesJapan() {
       if (GlobalGameState.gamePhase === GlobalGameState.PHASE.JAPAN_DMCV_FLEET_MOVEMENT) {
         return true
       }
+
+      // If IJN DMCV FLEET IS OFFMAP AND IN DMCV GAME PHASE CAN MOVE DIRECTLY TO FLEET BOX
+      if (
+        ijnDMCVLocation === undefined &&
+        GlobalGameState.gamePhase === GlobalGameState.PHASE.JAPAN_DMCV_FLEET_MOVEMENT
+      ) {
+        return true
+      }
     }
   } else {
     GlobalGameState.fleetSpeed = 2
     GlobalGameState.dmcvFleetSpeed = 1
 
+    if (goToDMCVState(GlobalUnitsModel.Side.JAPAN) && !GlobalGameState.dmcvChecked && ijnDMCVLocation === undefined) {
+      // can move offboard
+
+      // if Fleet is going from offboard directly to fleet box, need to allocate DMCV
+      // marker
+
+      if (GlobalGameState.gamePhase === GlobalGameState.PHASE.JAPAN_DMCV_FLEET_MOVEMENT) {
+        return true
+      }
+    }
     if (
       af1Location !== undefined &&
       af1Location.boxName !== HexCommand.FLEET_BOX &&
@@ -808,7 +827,6 @@ export function deleteAllAutoSavedGames() {
     }
   }
   GlobalGameState.updateGlobalState()
-  
 }
 export function determineMidwayInvasion(setCardNumber, setEndOfTurnSummaryShow, currentCardNumber) {
   // before midway invasion, check cards playable at end of turn

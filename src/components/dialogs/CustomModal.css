@@ -1,0 +1,26 @@
+/* CustomModal.css */
+.custom-modal-dialog {
+  max-width: 200px; /* Set your desired custom width */
+  width: 100%; /* Ensure it takes full width up to max-width */
+  height: 200px; /* Set your desired custom height */
+  /* You may need to adjust margin for centering if not using 'centered' prop */
+  margin: 0.75rem auto;
+}
+
+/* If you need to adjust the content area specifically */
+.custom-modal-dialog .modal-content {
+  height: 10%; /* Ensure content fills the custom height */
+}
+
+.my-modal {
+  width: 10vw; /* Occupy the 90% of the screen width */
+  max-width: 10vw;
+
+  position: absolute;
+  top: 80%;
+  left: 90%;
+}
+
+.modal-height {
+  height: 0px !important;
+}

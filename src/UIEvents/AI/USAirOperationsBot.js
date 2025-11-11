@@ -399,13 +399,13 @@ export async function moveAirUnit(controller, unit, setTestUpdate, night) {
 export async function generateUSAirOperationsMovesCarriers(controller, stateObject, test) {
   // return // QUACK TESTING US DOES NOTHING...
 
-  const locationMIF = controller.getFleetLocation("MIF", GlobalUnitsModel.Side.JAPAN)
-  const locationDMCV = controller.getFleetLocation("IJN-DMCV", GlobalUnitsModel.Side.JAPAN)
-  const allCarriersSunk = controller.allCarriersSunkorDMCV(GlobalUnitsModel.Side.JAPAN)
+  // const locationMIF = controller.getFleetLocation("MIF", GlobalUnitsModel.Side.JAPAN)
+  // const locationDMCV = controller.getFleetLocation("IJN-DMCV", GlobalUnitsModel.Side.JAPAN)
+  // const allCarriersSunk = controller.allCarriersSunkorDMCV(GlobalUnitsModel.Side.JAPAN)
 
-  console.log("POOP locationMIF=", locationMIF)
-  console.log("POOP locationDMCV=", locationDMCV)
-  console.log("POOP allCarriersSunk=", allCarriersSunk)
+  // console.log("DEBUG locationMIF=", locationMIF)
+  // console.log("DEBUG locationDMCV=", locationDMCV)
+  // console.log("DEBUG allCarriersSunk=", allCarriersSunk)
 
   const { setTestUpdate } = stateObject
 
