@@ -1,18 +1,20 @@
-import Modal from "react-bootstrap/Modal";
-import Button from "react-bootstrap/Button";
+import Modal from "react-bootstrap/Modal"
+import Button from "react-bootstrap/Button"
 import GameStatePanel from "../leftpanel/GameStatePanel"
-import "./modal.css";
+import "./modal.css"
 
 function GameStatusPanel(props) {
-  const bg = "#FFCCCC";
+  const bg = "#003300"
   return (
     <Modal {...props} size="lg" aria-labelledby="contained-modal-title-vcenter" centered>
-      <GameStatePanel gameState={props.gameState} />
-      <Modal.Footer style={{backgroundColor: '#293a4b', color: 'black' }}>
+      <Modal.Body style={{ backgroundColor: "#003300", color: "black" }}>
+        <GameStatePanel gameState={props.gameState} />
+      </Modal.Body>
+      <Modal.Footer style={{ backgroundColor: "#003300", color: "black" }}>
         <Button onClick={props.onHide}>Close</Button>
       </Modal.Footer>
     </Modal>
-  );
+  )
 }
 
-export default GameStatusPanel;
+export default GameStatusPanel

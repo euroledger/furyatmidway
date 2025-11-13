@@ -9,12 +9,15 @@ export function SingleCarrier({ controller }) {
     name: GlobalUnitsModel.Carrier.AKAGI,
     buttonStr: "Akagi",
     width: "100px",
+    height: "200px",
   }
   let jpKaga = {
     image: "/images/fleetcounters/kaga.jpg",
     name: GlobalUnitsModel.Carrier.KAGA,
     buttonStr: "Kaga",
     width: "100px",
+    height: "200px",
+
     // marginLeft: "45px",
   }
   let jpHiryu = {
@@ -22,12 +25,15 @@ export function SingleCarrier({ controller }) {
     name: GlobalUnitsModel.Carrier.HIRYU,
     buttonStr: "Hiryu",
     width: "100px",
+    height: "200px",
   }
   let jpSoryu = {
     image: "/images/fleetcounters/soryu.jpg",
     name: GlobalUnitsModel.Carrier.SORYU,
     buttonStr: "Soryu",
     width: "100px",
+    height: "200px",
+
     // marginLeft: "45px",
   }
   let usEnterprise = {
@@ -35,12 +41,15 @@ export function SingleCarrier({ controller }) {
     name: GlobalUnitsModel.Carrier.ENTERPRISE,
     buttonStr: "Enterprise",
     width: "100px",
+    height: "200px",
   }
   let usHornet = {
     image: "/images/fleetcounters/hornet.jpg",
     name: GlobalUnitsModel.Carrier.HORNET,
     buttonStr: "Hornet",
     width: "100px",
+    height: "200px",
+
     // marginLeft: "3px",
   }
   let usYorktown = {
@@ -48,13 +57,17 @@ export function SingleCarrier({ controller }) {
     name: GlobalUnitsModel.Carrier.YORKTOWN,
     buttonStr: "Yorktown",
     width: "100px",
+    height: "200px",
+
     // marginLeft: "3px",
   }
   let usMidway = {
     image: "/images/fleetcounters/midway.jpg",
     name: GlobalUnitsModel.Carrier.MIDWAY,
     buttonStr: "Midway",
-    width: "200px",
+    width: "130px",
+    height: "130px",
+
     // marginLeft: "-130px",
   }
   let jpMIF = {
@@ -62,6 +75,7 @@ export function SingleCarrier({ controller }) {
     name: GlobalUnitsModel.TaskForce.MIF,
     buttonStr: "MIF",
     width: "200px",
+    height: "200px",
     marginLeft: "-50px",
   }
 
@@ -164,9 +178,7 @@ export function SingleCarrier({ controller }) {
   if (carrierTarget === undefined) {
     return
   }
-  if (
-    GlobalGameState.taskForceTarget !== GlobalUnitsModel.TaskForce.MIF
-  ) {
+  if (GlobalGameState.taskForceTarget !== GlobalUnitsModel.TaskForce.MIF) {
     const carrier1SternDamaged = controller.getCarrierSternDamaged(carrierTarget.name)
     const carrier1BowDamaged = controller.getCarrierBowDamaged(carrierTarget.name)
 
@@ -204,7 +216,7 @@ export function SingleCarrier({ controller }) {
             style={{
               width: carrierTarget.width,
               marginLeft: carrierTarget.marginLeft,
-              height: "200px",
+              height: carrierTarget.height,
             }}
           />
         </div>

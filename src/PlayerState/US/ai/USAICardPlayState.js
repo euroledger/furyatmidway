@@ -72,7 +72,7 @@ class USAICardPlayState {
         GlobalGameState.updateGlobalState()
       } else if (cardNumber === 4) {
         setSubmarineDamagePanelShow(true)
-        await delay(1500)
+        await delay(500)
         GlobalGameState.currentPlayer = GlobalUnitsModel.Side.US
         GlobalGameState.gamePhase = GlobalGameState.PHASE.CARD_RESPONSE
         GlobalGameState.updateGlobalState()
@@ -81,7 +81,7 @@ class USAICardPlayState {
         GlobalGameState.rollDice = false
         GlobalGameState.updateGlobalState()
         setCardDicePanelShow7(true)
-        await delay(1000)
+        await delay(500)
         GlobalGameState.rollDice = true
         GlobalGameState.updateGlobalState()
       } else {

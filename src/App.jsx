@@ -863,6 +863,7 @@ export function App() {
   useEffect(() => {
     if (GlobalGameState.gamePhase === GlobalGameState.PHASE.END_OF_TURN) {
       GlobalGameState.JP_AF = 6 // in case card 6 was played
+      GlobalGameState.midwayHits = 0
       doStateChange()
     }
   }, [GlobalGameState.gamePhase])
@@ -1036,7 +1037,8 @@ export function App() {
       },
     })
   }
-    const setJapanFleetRegions = () => {
+
+  const setJapanFleetRegions = () => {
     console.log("SETTING JAPAN FLEET REGIONS GlobalGameState.initialDMCVLocation=", GlobalGameState.initialDMCVLocation)
     const af1Location = GlobalInit.controller.getFleetLocation("1AF", GlobalUnitsModel.Side.JAPAN)
     const mifLocation = GlobalInit.controller.getFleetLocation("MIF", GlobalUnitsModel.Side.JAPAN)
@@ -1099,7 +1101,6 @@ export function App() {
           ijnDMCVLocation.currentHex !== undefined &&
           ijnDMCVLocation.currentHex.q <= 1
         ) {
-          console.log("WE'RE GETTIN' OUTTA HERE!!!!!!!!!!!!!!!!!!!!!!!!!!!")
           // can move offboard
           setEnabledJapanFleetBoxes(true)
         } 
@@ -2747,8 +2748,7 @@ export function App() {
 
   function doAttackResolutionRolls() {
     const hits = doAttackFireRolls(GlobalInit.controller)
-    // setCarrierHits(() => hits)
-    setCarrierHits(() => 0) // QUACK TESTING!!!!!!!!!!!!!!!
+    setCarrierHits(() => hits)
 
     GlobalGameState.dieRolls = []
     GlobalGameState.midwayAttackResolved = true

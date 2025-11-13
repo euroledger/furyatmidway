@@ -136,7 +136,10 @@ export function getValidJapanDestinationsCAPNight(controller, parentCarrier, sid
   if (controller.getCarrierHits(parentCarrier) < 2 && controller.isHangarAvailable(parentCarrier)) {
     const capHangar = controller.getAirBoxForNamedShip(side, parentCarrier, "HANGAR")
     destinationsArray.push(capHangar)
-    return destinationsArray
+    if (controller.getCarrierHits(parentCarrier) === 0) {
+      // if parent has 1 hit, allow CAP units to return to other carrier,
+      return destinationsArray
+    }
   }
   destinationsArray = destinationsArray.concat(tryOtherCarrierCAPNight(controller, parentCarrier, side))
   return destinationsArray
@@ -154,7 +157,11 @@ export function getValidJapanDestinationsCAP(controller, parentCarrier, side) {
   if (controller.getCarrierHits(parentCarrier) < 2 && controller.isHangarAvailable(parentCarrier)) {
     const capHangar = controller.getAirBoxForNamedShip(side, parentCarrier, "HANGAR")
     destinationsArray.push(capHangar)
-    return destinationsArray
+    if (controller.getCarrierHits(parentCarrier) === 0) {
+            // if parent has 1 hit, allow CAP units to return to other carrier,
+
+      return destinationsArray
+    }
   }
   destinationsArray = destinationsArray.concat(tryOtherCarrierCAP(controller, parentCarrier, side))
   return destinationsArray
@@ -657,6 +664,7 @@ export function doHangarNight(controller, name, side) {
   const unit = controller.getAirUnitForName(name)
   if (!unit.aircraftUnit.attack) {
     const capBox = controller.getCapBoxForNamedCarrier(carrierName, side)
+    console.log("PUSH INTO CAP BOX->", name)
     destinationsArray.push(capBox)
   }
 
@@ -664,7 +672,9 @@ export function doHangarNight(controller, name, side) {
 
   // check there is room on this carrier's flight deck
   const destAvailable = controller.isFlightDeckAvailable(carrierName, side, true)
-
+  if( destAvailable && destBox) {
+     destinationsArray.push(destBox)
+  }
   const numFreeSlotsOnFlightDeck = controller.getNumFreeSlotsOnFlightDeck(carrierName, side)
 
   // if fighter add other carrier's flight deck if available
@@ -679,14 +689,14 @@ export function doHangarNight(controller, name, side) {
     }
   }
   // check flight deck available
-  if (!destAvailable) {
-    // controller.setValidAirUnitDestinations(name, new Array())
-    return 0
-  }
-  if (destBox) {
-    destinationsArray.push(destBox)
+  // if (!destAvailable) {
+  //   return 0
+  // }
+  // if (destBox) {
+    // destinationsArray.push(destBox)
+    console.log(">>>>>>>>>> destinations array=", destinationsArray)
     controller.setValidAirUnitDestinations(name, destinationsArray)
-  }
+  // }
   return numFreeSlotsOnFlightDeck
 }
 

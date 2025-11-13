@@ -21,11 +21,16 @@ export function sideBeingAttacked() {
 export function autoSave(controller, side) {
   const date = getDateStamp()
   let gameId
-  if (side === GlobalUnitsModel.Side.US) {
-    gameId = `fam-${date}-GT${GlobalGameState.gameTurn}-USAIROP${GlobalGameState.airOpUS}`
+  if (GlobalGameState.currentCarrierAttackTarget === GlobalUnitsModel.Carrier.MIDWAY) {
+    gameId = `fam-${date}-GT${GlobalGameState.gameTurn}-END-MIDWAY-AIROP${GlobalGameState.airOpJapan+1}`
   } else {
-    gameId = `fam-${date}-GT${GlobalGameState.gameTurn}-IJNAIROP${GlobalGameState.airOpJapan}`
+    if (side === GlobalUnitsModel.Side.US) {
+      gameId = `fam-${date}-GT${GlobalGameState.gameTurn}-END-USAIROP${GlobalGameState.airOpUS}`
+    } else {
+      gameId = `fam-${date}-GT${GlobalGameState.gameTurn}-END-IJNAIROP${GlobalGameState.airOpJapan}`
+    }
   }
+
   console.log("AUTO SAVE->", gameId)
   saveGameState(controller, gameId)
 }

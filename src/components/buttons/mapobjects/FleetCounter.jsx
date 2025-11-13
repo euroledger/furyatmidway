@@ -299,7 +299,6 @@ function FleetCounter({
   }
 
   const handleDrop = (event) => {
-    console.log("QUACK drop fleet:", counterData.name,"GAME PHASE=",GlobalGameState.gamePhase)
     // check if drop zone is an off map fleet box...
 
     const fleetBox = getFleetBox()
@@ -528,7 +527,6 @@ function FleetCounter({
 
   if (fleets.length === 1 && smallOffset.x !== 0) {
     // if -7, -7 do -x and +y
-    console.log("---------------->>>>>>>>>>>>>> SHIT! NEED TO REWORK FLEET", counterData.name)
     // WHEN UNIT MOVES AWAY FROM STACK, HAVE TO REVERT OFFSETS TO ZERO FOR
     // FLEET LEFT BEHIND
 

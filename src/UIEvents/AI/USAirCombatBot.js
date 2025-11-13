@@ -282,6 +282,7 @@ export async function doTargetSelection(
 }
 
 export async function doCapSelection(controller) {
+  console.log("DEBUG DO CAP SELECTION...")
   // Allocate CAP Fighters...
   GlobalGameState.testCapSelection = -1
 
@@ -289,8 +290,6 @@ export async function doCapSelection(controller) {
   const capUnits = controller.getAllAirUnitsInBox(capBox)
 
   const attackers = controller.getAttackingStrikeUnits(false)
-
-  let copy = JSON.parse(JSON.stringify(capUnits))
 
   GlobalGameState.rollDice = false
   await delay(10)

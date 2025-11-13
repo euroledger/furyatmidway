@@ -16,6 +16,7 @@ import { distanceBetweenHexes, interveningHexes } from "../components/HexUtils"
 import { setValidDestinationBoxesNightOperations } from "../controller/AirOperationsHandler"
 import Controller from "../controller/Controller"
 import { allCards } from "../CardLoader"
+import { autoSave } from "../Utils"
 import { moveAirUnitNight, moveAirUnitsFromHangarEndOfNightOperation } from "../UIEvents/AI/USAirOperationsBot"
 
 import {
@@ -669,7 +670,15 @@ export async function setNextStateFollowingCardPlay(stateObject) {
           await removeDMCVFleetForCarrier(carrier.side, setFleetUnitUpdate)
         }
         // NOW US CARD 1 COMES INTO PLAY...
-        if (GlobalInit.controller.isSunk(carrier.name) && GlobalInit.controller.usHandContainsCard(1)) {
+        const usPlayedCard4 = GlobalInit.controller.getCardPlayed(4, GlobalUnitsModel.Side.US)
+
+        if (
+          usPlayedCard4 &&
+          carrier !== undefined &&
+          carrier !== GlobalUnitsModel.Carrier.MIDWAY &&
+          GlobalInit.controller.isSunk(carrier.name) &&
+          GlobalInit.controller.usHandContainsCard(1)
+        ) {
           setCardNumber(() => 1)
           goToCardPlay(1)
           return
@@ -702,8 +711,6 @@ export async function setNextStateFollowingCardPlay(stateObject) {
           return
         } else {
           GlobalGameState.currentPlayer = GlobalUnitsModel.Side.US
-          console.log("++++++++++++++++++++++++++++ GO TO DMCV QUACK 3")
-
           GlobalGameState.gamePhase = GlobalGameState.PHASE.US_DMCV_FLEET_MOVEMENT_PLANNING
           GlobalGameState.usFleetMoved = false
           GlobalGameState.phaseCompleted = true
@@ -1222,18 +1229,41 @@ export async function rollZeDice() {
 export async function moveCAPUnitsFromReturnBoxToCarrier(controller, side, setTestUpdate) {
   const capUnitsReturning = controller.getAllCAPDefendersInCAPReturnBoxes(side)
 
+  console.log("DEBUG CAP UNITS RETURNING=", capUnitsReturning)
   for (const unit of capUnitsReturning) {
     const parentCarrier = controller.getCarrierForAirUnit(unit.name)
 
     let destinationsArray = getValidUSDestinationsCAP(controller, parentCarrier, side, unit.name)
 
+    console.log(unit.name, "-> DESTINATIONS=", destinationsArray)
+    await delay(10)
     // go to first available destination
     let update = {
       name: unit.name,
       boxName: destinationsArray[0],
     }
 
-    update.index = controller.getFirstAvailableZoneMidway(update.boxName)
+    if (unit.parentCarrier === GlobalUnitsModel.Carrier.MIDWAY) {
+      update.index = controller.getFirstAvailableZoneMidway(update.boxName)
+    } else {
+      update.index = controller.getFirstAvailableZone(update.boxName)
+    }
+    if (update.index === -1 && destinationsArray.length > 1) {
+      update.boxName = destinationsArray[1]
+    }
+    if (unit.parentCarrier === GlobalUnitsModel.Carrier.MIDWAY) {
+      update.index = controller.getFirstAvailableZoneMidway(update.boxName)
+    } else {
+      update.index = controller.getFirstAvailableZone(update.boxName)
+    }
+     if (update.index === -1 && destinationsArray.length > 2) {
+      update.boxName = destinationsArray[2]
+    }
+    if (unit.parentCarrier === GlobalUnitsModel.Carrier.MIDWAY) {
+      update.index = controller.getFirstAvailableZoneMidway(update.boxName)
+    } else {
+      update.index = controller.getFirstAvailableZone(update.boxName)
+    }
     let position1 = USAirBoxOffsets.find((box) => box.name === update.boxName)
 
     if (position1 === undefined) {
@@ -1242,8 +1272,9 @@ export async function moveCAPUnitsFromReturnBoxToCarrier(controller, side, setTe
     }
     update.position = position1.offsets[update.index]
 
+    console.log("DO CAP UNIT UPDATE:", update)
     setTestUpdate(update)
-    await delay(1)
+    await delay(10)
   }
 }
 
@@ -1663,6 +1694,8 @@ export async function checkFleetsInSameHex(
 }
 
 export async function midwayTidyUp(setJapanStrikePanelEnabled, setUSMapRegions, setStrikeGroupUpdate) {
+  autoSave(GlobalInit.controller, GlobalUnitsModel.Side.JAPAN)
+
   await resetStrikeGroups(GlobalInit.controller, GlobalGameState.sideWithInitiative, setStrikeGroupUpdate)
 
   await GlobalInit.controller.setAllUnitsToNotMoved()

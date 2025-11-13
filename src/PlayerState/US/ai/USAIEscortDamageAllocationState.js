@@ -7,7 +7,7 @@ import { delay } from "../../../Utils"
 
 class USAIEscortDamageAllocationState {
   async doAction(stateObject) {
-    const { setCapSteps, capSteps } = stateObject
+    const { setCapSteps, capSteps, setCapAirUnits } = stateObject
     console.log("DO ESCORT DAMAGE ALLOCATION FOR US number hits= ", GlobalGameState.fighterHits)
 
     // Only fighters so select by combat strength
@@ -30,7 +30,8 @@ class USAIEscortDamageAllocationState {
       numHitsAllocated++
       GlobalGameState.testStepLossSelection = index
       GlobalGameState.updateGlobalState()
-      GlobalInit.controller.removeUnitFromCAPDefenders(unit)
+      const newCapUnits = GlobalInit.controller.removeUnitFromCAPDefenders(unit, GlobalUnitsModel.Side.US)
+      setCapAirUnits(() => newCapUnits)
     }
 
     setCapSteps(() => capSteps - numHitsAllocated)

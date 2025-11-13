@@ -105,16 +105,6 @@ function getFleetDistances(controller) {
   if (!controller.allCarriersSunkorDMCV(GlobalUnitsModel.Side.JAPAN)) {
     distanceBetweenMidwayand1AF = distanceBetweenHexes(Controller.MIDWAY_HEX.currentHex, location1AF.currentHex)
   }
-
-  // if (locationCSF.boxName === Command.FLEET_BOX) {
-  //   // CSF carriers sunk
-  //   console.log("CSF IS OFF THE BOARD")
-  //   distanceBetweenCSFand1AF = -100
-  //   distanceBetweenCSFandMIF = -100
-  //   distanceBetweenCSFandIJNDMCV = -100
-  // } else {
-
-  console.log("ALL CARRIERS SUNK=", controller.allCarriersSunkorDMCV(GlobalUnitsModel.Side.JAPAN))
   if (
     !controller.allCarriersSunkorDMCV(GlobalUnitsModel.Side.JAPAN) &&
     !controller.allCarriersSunkorDMCV(GlobalUnitsModel.Side.US)
@@ -296,12 +286,10 @@ async function flightDecktoCAP(controller, unit, setTestUpdate, test, midway) {
 }
 
 export async function moveAirUnitsFromHangarEndOfNightOperation(controller, side, setTestUpdate) {
-  console.log("NIGHT SHIT => move units out of hangar")
   // Move Fighters First -> All go to CAP
   // Move Attack aircraft to Flight Deck
   const units = controller.getAllUnitsInUSHangars()
 
-  console.log("*** UNITS IN HANGAR=", units)
   // get the fighters
   const fighters = units.filter((unit) => !unit.aircraftUnit.attack)
   const attackAircraft = units.filter((unit) => unit.aircraftUnit.attack)
@@ -320,10 +308,8 @@ export async function moveAirUnitsFromHangarEndOfNightOperation(controller, side
     //   "NUM FREE FLIGHT DECK SLOGS=",
     //   numFreeFlightDeckSlots
     // )
-    if (numFreeFlightDeckSlots > 0) {
-      await delay(10)
-      await moveAirUnitNight(controller, unit, setTestUpdate, destBoxes)
-    }
+    await delay(10)
+    await moveAirUnitNight(controller, unit, setTestUpdate, destBoxes)
   }
 
   for (const unit of attackAircraft) {

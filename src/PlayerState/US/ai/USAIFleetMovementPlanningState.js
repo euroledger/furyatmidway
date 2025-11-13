@@ -35,7 +35,7 @@ class USAIFleetMovementPlanningState {
 
   async nextState(stateObject) {
     // See if we should go to US DMCV Fleet Planning first
-    console.log(">>>>>>>>>>>>>>>>>>>>>>>>>>>>>>> POOOOOOOOOOOOOOOOOOO NEXT STATE AFTER US FLEET PLANNING &&&&&&&&&&&&&&&&&&&&&&&& game state=", GlobalGameState.gamePhase)
+    console.log("NEXT STATE AFTER US FLEET PLANNING:", GlobalGameState.gamePhase)
     if (goToDMCVState(GlobalUnitsModel.Side.JAPAN) && !GlobalGameState.dmcvChecked) {
       console.log("DO JAPAN DMCV FLEET PLANNING FIRST ************ ")
       GlobalGameState.currentPlayer = GlobalUnitsModel.Side.JAPAN

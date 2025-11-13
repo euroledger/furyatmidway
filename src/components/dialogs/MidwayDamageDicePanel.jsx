@@ -213,8 +213,8 @@ function MidwayDamageDicePanel(props) {
       box1 = 1
       box2 = 3
     } else {
-      box1 = 2
-      box2 = 3
+      box1 = 1
+      box2 = 2
     }
     diceMsg = `SECOND HIT: Roll of 1-3 hits box ${box1}, 4-6 hits box ${box2}`
   } else if (GlobalGameState.totalMidwayHits >= 2) {
@@ -300,11 +300,12 @@ function MidwayDamageDicePanel(props) {
             </p>
           </div>
           <div
-            style={{
-              display: "inline-block",
-              marginTop: "20px",
-              marginLeft: "290px",
-            }}
+           style={{
+                display: "flex",
+                justifyContent: "center",
+                alignItems: "center",
+                color: "white",
+              }}
           >
             <div
               style={{

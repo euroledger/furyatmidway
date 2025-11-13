@@ -3,7 +3,6 @@ import GlobalUnitsModel from "./model/GlobalUnitsModel"
 import GlobalGameState from "./model/GlobalGameState"
 import GlobalInit from "./model/GlobalInit"
 import { flatHexToPixel, convertCoords } from "./components/HexUtils"
-import { faL } from "@fortawesome/free-solid-svg-icons"
 import HexCommand from "./commands/HexCommand"
 
 export const airUnitDataJapan = [
@@ -155,7 +154,7 @@ export function generateRandomUSAirSetup() {
 
   let ef2
   if (ef1 === US_ENTERPRISE_FLIGHT_DECK) {
-    ef2 = getRandomElementFrom([US_TF16_CAP, US_ENTERPRISE_HANGAR]) // avoid both fighters on flight deck at start - bonkers
+    ef2 = getRandomElementFrom([US_TF16_CAP]) // avoid both fighters on flight deck at start - bonkers
   } else {
     ef2 = getRandomElementFrom([US_TF16_CAP, US_ENTERPRISE_FLIGHT_DECK])
   }
@@ -229,7 +228,7 @@ export function generateRandomUSAirSetup() {
   // )
   let hf2
   if (hf1 === US_HORNET_FLIGHT_DECK) {
-    hf2 = getRandomElementFrom([US_TF16_CAP, US_HORNET_HANGAR]) // avoid both fighters on flight deck at start - bonkers
+    hf2 = getRandomElementFrom([US_TF16_CAP]) // avoid both fighters on flight deck at start - bonkers
   } else {
     hf2 = getRandomElementFrom([US_TF16_CAP, US_HORNET_FLIGHT_DECK])
   }
@@ -290,7 +289,7 @@ export function generateRandomUSAirSetup() {
   // )
   let yf2
   if (yf1 === US_YORKTOWN_FLIGHT_DECK) {
-    yf2 = getRandomElementFrom([US_TF17_CAP, US_YORKTOWN_HANGAR]) // avoid both fighters on flight deck at start - bonkers
+    yf2 = getRandomElementFrom([US_TF17_CAP]) // avoid both fighters on flight deck at start - bonkers
   } else {
     yf2 = getRandomElementFrom([US_TF17_CAP, US_YORKTOWN_FLIGHT_DECK])
   }

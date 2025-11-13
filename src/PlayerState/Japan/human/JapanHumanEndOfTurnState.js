@@ -108,6 +108,7 @@ class JapanHumanEndOfTurnState {
     // check if MIF fleet is one hex away from Midway
     // if so -> go to MIDWAY_INVASION
 
+    GlobalGameState.doneCapSelection = false
     if (GlobalGameState.gameTurn === 7) {
       if (GlobalInit.controller.japanHandContainsCard(6)) {
         setCardNumber(() => 6)
@@ -115,7 +116,7 @@ class JapanHumanEndOfTurnState {
         GlobalGameState.gamePhase = GlobalGameState.PHASE.CARD_PLAY
         GlobalGameState.updateGlobalState()
       } else {
-        console.log("TURN 7 MIDWAY SHITE")
+        console.log("TURN 7 MIDWAY")
         determineMidwayInvasion(setCardNumber, setEndOfTurnSummaryShow)
       }
     } else {

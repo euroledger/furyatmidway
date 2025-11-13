@@ -135,7 +135,7 @@ async function loadHandler({
   // GlobalGameState.nextAvailableDamageMarker = 0
   // GlobalGameState.nextAvailableSunkMarker = 0
   // if (GlobalGameState.totalMidwayHits === undefined) {
-  //   GlobalGameState.totalMidwayHits = 0
+    // GlobalGameState.totalMidwayHits = 1
   //   GlobalGameState.midwayBox0Damaged = false
   //   GlobalGameState.midwayBox1Damaged = false
   //   GlobalGameState.midwayBox2Damaged = false

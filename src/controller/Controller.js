@@ -315,8 +315,15 @@ export default class Controller {
       if (location.boxName.includes("ELIMINATED")) {
         continue
       }
-      if (!location.boxName.includes("RETURN")) {
+      console.log("DEBUG uhit=", unit.name, "LOCATION BOX=", location.boxName)
+      if (
+        !location.boxName.includes("STRIKE") &&
+        !location.boxName.includes("RETURN") &&
+        !location.boxName.includes("CAP")
+      ) {
         const carrierName = this.getCarrierForAirBox(location.boxName)
+        console.log("DEBUG carrier=", carrierName)
+
         if (this.isSunk(carrierName, true) || this.getCarrierHits(carrierName) == 2) {
           continue
         }
@@ -447,10 +454,18 @@ export default class Controller {
     return units
   }
 
-  removeUnitFromCAPDefenders(unitToRemove) {
+  removeUnitFromCAPDefenders(unitToRemove, side) {
+    let capUnits = this.getAllCAPDefenders(side)
+
     if (unitToRemove.aircraftUnit.steps === 1) {
       unitToRemove.aircraftUnit.intercepting = false
+      if (capUnits.length === 0) {
+        return
+      } else {
+        capUnits = capUnits.filter((unit) => unit.name !== unitToRemove.name)
+      }
     }
+    return capUnits
   }
 
   getAllCAPDefenders(side) {
@@ -1080,7 +1095,7 @@ export default class Controller {
       if (numCarriersSunk === 3) {
         return false
       }
-      if (numCarriersSunk === 2 && (usDMCVLocation !== undefined && usDMCVLocation.boxName !== Command.FLEET_BOX)) {
+      if (numCarriersSunk === 2 && usDMCVLocation !== undefined && usDMCVLocation.boxName !== Command.FLEET_BOX) {
         return false
       }
     }
@@ -2455,6 +2470,15 @@ export default class Controller {
     return strength
   }
 
+  getMidwayAttackAirStrength(side) {
+    let units = this.getAllAirUnits(side)
+    units = units.filter(
+      (unit) => unit.aircraftUnit.attack === true && unit.carrier === GlobalUnitsModel.Carrier.MIDWAY
+    )
+
+    let strength = units.reduce((sum, unit) => sum + unit.aircraftUnit.steps, 0)
+    return strength
+  }
   getCarrierAttackAirStrength(side) {
     let units = this.getAllAirUnits(side)
     units = units.filter(
