@@ -1670,7 +1670,7 @@ export function firstAirOpUSStrikeRegion(controller, counterData) {
 }
 
 export function secondAirOpUSStrikeRegion(controller, counterData) {
-  let usRegion
+  let usRegion = new Array()
   const locationOfStrikeGroup = controller.getStrikeGroupLocation(counterData.name, GlobalUnitsModel.Side.US)
 
   // second air op for this SG, use movement allowance (3) and position of SG to determine regions

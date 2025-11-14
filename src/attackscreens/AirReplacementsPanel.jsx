@@ -11,7 +11,7 @@ export function AirReplacementsHeaders({
   setAirReplacementsSelected,
   setSelectedAirUnit,
   setClickedOnSomething,
-  hidden
+  hidden,
 }) {
   const [reducedAirUnits, setReducedAirUnits] = useState([])
   const [elimSelected, setElimSelected] = useState(false)
@@ -258,7 +258,7 @@ export function AirReplacementsFooters({
   airReplacementsSelected,
   setAirUnitUpdate,
   clickedOnSomething,
-  hidden
+  hidden,
 }) {
   const [selectedCV, setSelectedCV] = useState("")
 
@@ -353,10 +353,10 @@ export function AirReplacementsFooters({
     if (GlobalGameState.testCarrierSelection === -1) {
       return
     }
-        console.log(">>>>>>>>>>> SNOOOOTY elRefsCV=", elRefsCV)
+    console.log(">>>>>>>>>>> SNOOOOTY elRefsCV=", elRefsCV)
 
     const myRef = elRefsCV[GlobalGameState.testCarrierSelection]
-        console.log("*********** SNOOT 2 myRef=", myRef)
+    console.log("*********** SNOOT 2 myRef=", myRef)
 
     if (myRef !== undefined && myRef.current !== undefined && myRef.current !== null) {
       myRef.current.click(myRef.current)
@@ -405,7 +405,13 @@ export function AirReplacementsFooters({
             marginTop: "20px",
           }}
         >
-          <Button style={{width:"100px"}} ref={elRefsCV[i]} hidden={hidden} disabled={buttonDisabled} onClick={() => handleCVClick(cv)}>
+          <Button
+            style={{ width: "100px" }}
+            ref={elRefsCV[i]}
+            hidden={hidden}
+            disabled={buttonDisabled}
+            onClick={() => handleCVClick(cv)}
+          >
             {cv}
           </Button>
         </div>
@@ -430,13 +436,18 @@ export function AirReplacementsFooters({
           </>
         )
       })
-      if (availableJapanCVs.length === 1) {
-        setSelectedCV(availableJapanCVs[0])
-      }
+      // if (availableJapanCVs.length === 1) {
+      //   setSelectedCV(availableJapanCVs[0])
+      // }
     }
   }
   let rep = true
   if (selectedCV && showCarrierDisplay && !airReplacementsSelected) {
+    // rep = false
+    setAirReplacementsSelected(true)
+    moveAirUnitFromEliminatedBox(controller, side, selectedCV, selectedAirUnit, setAirUnitUpdate)
+  }
+  if (selectedCV && availableJapanCVs.length === 1 && !airReplacementsSelected) {
     // rep = false
     setAirReplacementsSelected(true)
     moveAirUnitFromEliminatedBox(controller, side, selectedCV, selectedAirUnit, setAirUnitUpdate)
@@ -462,12 +473,16 @@ export function AirReplacementsFooters({
               {availableCVImages}
               {msg}
             </p>
-            <p style={{
+            <p
+              style={{
                 display: "flex",
                 justifyContent: "center",
                 alignItems: "center",
                 color: "white",
-              }}>Select carrier hangar to receive air unit</p>
+              }}
+            >
+              Select carrier hangar to receive air unit
+            </p>
           </div>
           {selectedCV && (
             <p

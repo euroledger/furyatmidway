@@ -471,6 +471,13 @@ export async function generateUSAirOperationsMovesCarriers(controller, stateObje
 
   // Set Up Strike Groups first
 
+  // if last air op of turn 3 and fleet out of range do not launch strikes
+  if (GlobalGameState.gameTurn === 3 && GlobalGameState.airOperationPoints["us"] === 1) {
+    if (minDistanceToEnemyFleet > 2) {
+      return
+    }
+  }
+
   for (let unit of usAirUnitsOnFlightDecks) {
     if (unit.carrier.includes("Midway") || unit.aircraftUnit.moved) {
       continue
@@ -715,6 +722,7 @@ export function getClosestHexToTarget(target, usRegion) {
   // Find hex in usRegion that is closest to target
   let distance = 100
   let toHex
+  console.log("QUACK 1 ---------------> usRegion=", usRegion)
   for (const hex of usRegion) {
     const distanceBH = distanceBetweenHexes(hex, target.currentHex)
     if (distanceBH < distance) {
@@ -722,6 +730,7 @@ export function getClosestHexToTarget(target, usRegion) {
       toHex = hex
     }
   }
+
   return {
     currentHex: {
       q: toHex.q,
@@ -805,8 +814,18 @@ export async function moveStrikeGroups(controller, stateObject, test) {
     }
 
     if (isFirstAirOpForStrike(controller, strikeGroup, GlobalUnitsModel.Side.US)) {
-      // console.log("********************************** HERE WE GO", strikeGroup.name, strikeGroup.targetsFirstAirOp)
       const usRegion = firstAirOpUSStrikeRegion(controller, strikeGroup)
+      // console.log(
+      //   "********************************** HERE WE GO",
+      //   strikeGroup.name,
+      //   strikeGroup.targetsFirstAirOp,
+      //   "usRegion=",
+      //   usRegion
+      // )
+      if (usRegion.length === 0) {
+        // turn 3 last air op, no strike possible
+        continue
+      }
 
       if (strikeGroup.targetsFirstAirOp.length >= 1) {
         if (GlobalGameState.gameTurn === 6 || GlobalGameState.gameTurn === 7) {
@@ -889,7 +908,8 @@ export async function moveStrikeGroups(controller, stateObject, test) {
         }
       }
     } else {
-      // console.log(">>>>>>>>>>>>>>>>>>>> SECOND AIR OP:", strikeGroup)
+      console.log(">>>>>>>>>>>>>>>>>>>> SECOND AIR OP:", strikeGroup)
+      const usRegion = secondAirOpUSStrikeRegion(controller, strikeGroup)
 
       // For SGs with target, prioritise target
       // else move as RETURN 2 box (no target possible)
