@@ -2280,6 +2280,8 @@ export default class Controller {
     if (fleetA.name === "MIDWAY") {
       locationA = Controller.MIDWAY_HEX
     }
+
+    console.log("DEBUG CLOSEST ENEMY FLEET fleetA=", fleetA, "; location=", locationA)
     if (locationA.currentHex === undefined) return undefined
 
     let hexA = {
@@ -2318,6 +2320,8 @@ export default class Controller {
         r: locationB.currentHex.r,
       }
       const dist = distanceBetweenHexes(hexA, hexB)
+      console.log("DEBUG DISTANCE BETWEEN hexA=", hexA, "; hexB=", hexB, "is", dist, "hexes")
+
       if (dist < shortestDist) {
         shortestDist = dist
       }
@@ -2332,6 +2336,7 @@ export default class Controller {
       }
       shortestDist = distanceBetweenHexes(hexA, hexB)
     }
+    console.log("DEBUG return shorrtestDist=", shortestDist)
     return shortestDist
   }
 

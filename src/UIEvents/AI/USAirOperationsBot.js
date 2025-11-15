@@ -107,7 +107,7 @@ function getFleetDistances(controller) {
   }
   if (
     !controller.allCarriersSunkorDMCV(GlobalUnitsModel.Side.JAPAN) &&
-    !controller.allCarriersSunkorDMCV(GlobalUnitsModel.Side.US)
+    !controller.allCarriersSunkorDMCV(GlobalUnitsModel.Side.US, true)
   ) {
     distanceBetweenCSFand1AF = distanceBetweenHexes(locationCSF.currentHex, location1AF.currentHex)
   }

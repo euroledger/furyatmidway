@@ -17,7 +17,7 @@ class USAIEndOfAirOperationState {
   }
 
   async nextState(stateObject) {
-    const { setAirUnitUpdate, setStrikeGroupUpdate, setFleetUnitUpdate } =
+    const { setAirUnitUpdate, setStrikeGroupUpdate, setCardNumber, setFleetUnitUpdate } =
       stateObject
 
     console.log("CHEESE! NEXT STATE AFTER AIR OPERATION (US)")
@@ -27,6 +27,7 @@ class USAIEndOfAirOperationState {
     if (endOfTurn()) {
       GlobalGameState.cardsChecked = new Array()
       GlobalGameState.currentPlayer = GlobalUnitsModel.Side.JAPAN
+      setCardNumber(() => -1)
       GlobalGameState.gamePhase = GlobalGameState.PHASE.END_OF_TURN
     } else {
       GlobalGameState.gamePhase = GlobalGameState.PHASE.INITIATIVE_DETERMINATION

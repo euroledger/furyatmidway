@@ -21,6 +21,8 @@ class JapanHumanEndOfTurnState {
   async doAction(stateObject) {
     const { setCardNumber, setEndOfTurnSummaryShow } = stateObject
     console.log("STATE JapanHumanEndOfTurnState")
+    console.log("CURRENT PLAYER=", GlobalGameState.currentPlayer)
+    console.log("card checked (1)=", this.cardChecked(1))
 
     if (
       !this.cardChecked(1) &&
@@ -31,6 +33,8 @@ class JapanHumanEndOfTurnState {
       this.markCard(1)
       GlobalGameState.currentPlayer = GlobalUnitsModel.Side.US
       GlobalGameState.gamePhase = GlobalGameState.PHASE.CARD_PLAY
+      console.log("POOOOOOOOOOO CARD 1 RETURN")
+
       return
     } else {
       if (!this.cardChecked(1)) {
@@ -50,6 +54,7 @@ class JapanHumanEndOfTurnState {
         GlobalGameState.currentPlayer = GlobalUnitsModel.Side.JAPAN
       }
       GlobalGameState.gamePhase = GlobalGameState.PHASE.CARD_PLAY
+      console.log("POOOOOOOOOOO CARD 2 RETURN")
       return
     } else if (!this.cardChecked(2)) {
       this.markCard(2)
@@ -66,6 +71,8 @@ class JapanHumanEndOfTurnState {
         GlobalGameState.currentPlayer = GlobalUnitsModel.Side.JAPAN
       }
       GlobalGameState.gamePhase = GlobalGameState.PHASE.CARD_PLAY
+      console.log("POOOOOOOOOOO CARD 3 RETURN")
+
       return
     } else if (!this.cardChecked(3)) {
       this.markCard(3)
@@ -93,6 +100,8 @@ class JapanHumanEndOfTurnState {
         GlobalGameState.gamePhase === GlobalGameState.PHASE.MIDWAY_INVASION ||
         GlobalGameState.gamePhase === GlobalGameState.PHASE.CARD_PLAY
       ) {
+        console.log("POOOOOOOOOOO CARD 4 RETURN")
+
         return
       }
     }
@@ -136,6 +145,8 @@ class JapanHumanEndOfTurnState {
       GlobalGameState.airOpJapan = 0
       GlobalGameState.airOpUS = 0
       GlobalGameState.midwayAttackGroup = ""
+      GlobalGameState.midwayAirOpsCompleted = 0
+
       if (GlobalInit.controller.japanHandContainsCard(6) && GlobalGameState.gameTurn !== 4) {
         setCardNumber(() => 6)
         GlobalGameState.gamePhase = GlobalGameState.PHASE.CARD_PLAY

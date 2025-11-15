@@ -59,6 +59,7 @@ class USAINightAirOperationsState {
 
     GlobalGameState.currentPlayer = GlobalUnitsModel.Side.JAPAN
     GlobalGameState.cardsChecked = new Array()
+    setCardNumber(() => -1)
     GlobalGameState.gamePhase = GlobalGameState.PHASE.END_OF_TURN
     GlobalGameState.updateGlobalState()
   }

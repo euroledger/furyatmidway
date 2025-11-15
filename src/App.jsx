@@ -127,8 +127,6 @@ export default App
 
 export const BoardContext = createContext()
 
-
-
 export function App() {
   const [splash, setSplash] = useState(true)
   const [showZones, setShowZones] = useState(true)
@@ -144,7 +142,7 @@ export function App() {
   const [enabledJapanReorgBoxes, setEnabledJapanReorgBoxes] = useState(false)
   const [enabledUSReorgBoxes, setEnabledUSReorgBoxes] = useState(false)
 
-  const [gameOverAlertShow,setGameOverAlertShow] = useState(false)
+  const [gameOverAlertShow, setGameOverAlertShow] = useState(false)
   useEffect(() => {
     setEnabledJapanBoxes(getJapanEnabledAirBoxes())
   }, [])
@@ -176,7 +174,7 @@ export function App() {
 
   const [loadPanelShow, setLoadPanelShow] = useState(false)
   const [buttonModalShow, setButtonModalShow] = useState(false)
-  
+
   const [modalPanel, setModalPanel] = useState(null)
   const [jpAlertShow, setJpAlertShow] = useState(false)
 
@@ -202,7 +200,7 @@ export function App() {
   const [gameStateShow, setGameStateShow] = useState(false)
   const [initiativePanelShow, setInitiativePanelShow] = useState(false)
 
-  const [cardPlayedPanelShow, setCardPlayedPanelShow]  = useState(false)
+  const [cardPlayedPanelShow, setCardPlayedPanelShow] = useState(false)
 
   const [seaBattlePanelShow, setSeaBattlePanelShow] = useState(false)
   const [seaBattleDamagePanelShow, setSeaBattleDamagePanelShow] = useState(false)
@@ -360,7 +358,6 @@ export function App() {
   // *******************************************
 
   const doStateChange = () => {
-
     if (GlobalGameState.currentPlayer === GlobalUnitsModel.Side.US) {
       console.log("DO STATE CHANGE US")
       StateManager.gameStateManager.setUSState(stateObject)
@@ -400,7 +397,7 @@ export function App() {
   //       setNightAirUnits(unitsReturn2)
   //       setNightLandingPanelShow(true)
   //     }
- 
+
   //     GlobalGameState.phaseCompleted = false
   //     GlobalGameState.nextActionButtonDisabled = true
   //     GlobalGameState.updateGlobalState()
@@ -459,7 +456,6 @@ export function App() {
   //   }
   // }, [GlobalGameState.gamePhase])
 
-
   // useEffect(() => {
   //   if (GlobalGameState.gamePhase === GlobalGameState.PHASE.MIDWAY_INVASION) {
   //     GlobalGameState.dieRolls = []
@@ -485,7 +481,7 @@ export function App() {
     }
   }, [GlobalGameState.gamePhase])
 
-    // TODO create JapanHumanMidwayDamageResolutionState class
+  // TODO create JapanHumanMidwayDamageResolutionState class
   useEffect(() => {
     if (GlobalGameState.gamePhase === GlobalGameState.PHASE.MIDWAY_DAMAGE_RESOLUTION) {
       GlobalGameState.currentPlayer = GlobalUnitsModel.Side.JAPAN
@@ -518,24 +514,20 @@ export function App() {
     }
   }, [GlobalGameState.gamePhase])
 
-    useEffect(() => {
-    if (
-      GlobalGameState.gamePhase === GlobalGameState.PHASE.NIGHT_AIR_OPERATIONS_JAPAN
-    ) {
+  useEffect(() => {
+    if (GlobalGameState.gamePhase === GlobalGameState.PHASE.NIGHT_AIR_OPERATIONS_JAPAN) {
       const side = GlobalUnitsModel.Side.JAPAN
       GlobalGameState.currentPlayer = GlobalUnitsModel.Side.JAPAN
-       
+
       doStateChange()
     }
   }, [GlobalGameState.gamePhase])
 
-      useEffect(() => {
-    if (
-      GlobalGameState.gamePhase === GlobalGameState.PHASE.NIGHT_AIR_OPERATIONS_US
-    ) {
+  useEffect(() => {
+    if (GlobalGameState.gamePhase === GlobalGameState.PHASE.NIGHT_AIR_OPERATIONS_US) {
       const side = GlobalUnitsModel.Side.US
       GlobalGameState.currentPlayer = GlobalUnitsModel.Side.US
-       
+
       doStateChange()
     }
   }, [GlobalGameState.gamePhase])
@@ -624,7 +616,7 @@ export function App() {
       doStateChange()
     }
   }, [GlobalGameState.gamePhase])
-  
+
   useEffect(() => {
     if (GlobalGameState.gamePhase === GlobalGameState.PHASE.TARGET_DETERMINATION) {
       setTargetDetermined(false)
@@ -638,15 +630,17 @@ export function App() {
   }, [GlobalGameState.gamePhase])
 
   useEffect(() => {
-
     StateManager.gameStateManager.setStateHandlers(stateObject)
 
     if (newGame) {
-      if (StateManager.gameStateManager.getCurrentPlayer() === GlobalUnitsModel.Side.JAPAN && StateManager.gameStateManager.actionComplete(GlobalUnitsModel.Side.JAPAN ) === false && splash===false) {  
-          StateManager.gameStateManager.doAction(GlobalUnitsModel.Side.JAPAN, stateObject)
+      if (
+        StateManager.gameStateManager.getCurrentPlayer() === GlobalUnitsModel.Side.JAPAN &&
+        StateManager.gameStateManager.actionComplete(GlobalUnitsModel.Side.JAPAN) === false &&
+        splash === false
+      ) {
+        StateManager.gameStateManager.doAction(GlobalUnitsModel.Side.JAPAN, stateObject)
       }
     }
-    
   }, [initComplete])
 
   useEffect(() => {
@@ -656,7 +650,6 @@ export function App() {
     }
   }, [GlobalGameState.gamePhase])
 
-  
   useEffect(() => {
     if (GlobalGameState.gamePhase === GlobalGameState.PHASE.US_CARD_DRAW) {
       StateManager.gameStateManager.setUSState(stateObject)
@@ -664,11 +657,12 @@ export function App() {
     }
   }, [GlobalGameState.gamePhase])
 
-    useEffect(() => {
-    if (GlobalGameState.gamePhase === GlobalGameState.PHASE.US_DRAWS_ONE_CARD || 
+  useEffect(() => {
+    if (
+      GlobalGameState.gamePhase === GlobalGameState.PHASE.US_DRAWS_ONE_CARD ||
       GlobalGameState.gamePhase === GlobalGameState.PHASE.JAPAN_DRAWS_ONE_CARD
     ) {
-        doStateChange()
+      doStateChange()
     }
   }, [GlobalGameState.gamePhase])
 
@@ -681,7 +675,7 @@ export function App() {
 
   useEffect(() => {
     if (GlobalGameState.gamePhase === GlobalGameState.PHASE.US_SETUP_FLEET) {
-      GlobalGameState.setupPhase = 5 
+      GlobalGameState.setupPhase = 5
       GlobalGameState.updateGlobalState()
       GlobalGameState.currentPlayer = GlobalUnitsModel.Side.US
       StateManager.gameStateManager.setUSState(stateObject)
@@ -704,31 +698,27 @@ export function App() {
       // only show this for da human
       // midwayPossible(setMidwayWarningShow, setMidwayDialogShow)
 
-      // call doAction  -> if human this will display the attack dialog 
+      // call doAction  -> if human this will display the attack dialog
       //                -> if AI make the decision and move on (alert needed to inform user of decision)
       StateManager.gameStateManager.doAction(GlobalUnitsModel.Side.JAPAN, stateObject)
-
     }
   }, [GlobalGameState.gamePhase])
 
-
   useEffect(() => {
     if (
-        GlobalGameState.gamePhase === GlobalGameState.PHASE.JAPAN_FLEET_MOVEMENT ||
-        GlobalGameState.gamePhase === GlobalGameState.PHASE.JAPAN_DMCV_FLEET_MOVEMENT
-        ) {
-          console.log(">>>> doing Japan Fleet Movement stuff ...")
+      GlobalGameState.gamePhase === GlobalGameState.PHASE.JAPAN_FLEET_MOVEMENT ||
+      GlobalGameState.gamePhase === GlobalGameState.PHASE.JAPAN_DMCV_FLEET_MOVEMENT
+    ) {
+      console.log(">>>> doing Japan Fleet Movement stuff ...")
       GlobalGameState.currentPlayer = GlobalUnitsModel.Side.JAPAN
       setDMCVCarrierSelected(() => "")
       StateManager.gameStateManager.setJapanState(stateObject)
-      StateManager.gameStateManager.doAction(GlobalUnitsModel.Side.JAPAN,stateObject)
+      StateManager.gameStateManager.doAction(GlobalUnitsModel.Side.JAPAN, stateObject)
     }
   }, [GlobalGameState.gamePhase])
 
   useEffect(() => {
-    if (
-        GlobalGameState.gamePhase === GlobalGameState.PHASE.US_FLEET_MOVEMENT_PLANNING
-        ) {
+    if (GlobalGameState.gamePhase === GlobalGameState.PHASE.US_FLEET_MOVEMENT_PLANNING) {
       GlobalGameState.currentPlayer = GlobalUnitsModel.Side.US
       console.log("US FLEET MOVEMENT PLANNING set STATE")
       StateManager.gameStateManager.setUSState(stateObject)
@@ -736,7 +726,7 @@ export function App() {
     }
   }, [GlobalGameState.gamePhase])
 
-    useEffect(() => {
+  useEffect(() => {
     if (GlobalGameState.gamePhase === GlobalGameState.PHASE.US_DMCV_FLEET_MOVEMENT_PLANNING) {
       GlobalGameState.currentPlayer = GlobalUnitsModel.Side.US
       setDMCVCarrierSelected(() => "")
@@ -747,16 +737,14 @@ export function App() {
   }, [GlobalGameState.gamePhase])
 
   useEffect(() => {
-    if (
-        GlobalGameState.gamePhase === GlobalGameState.PHASE.US_FLEET_MOVEMENT
-        ) {
+    if (GlobalGameState.gamePhase === GlobalGameState.PHASE.US_FLEET_MOVEMENT) {
       GlobalGameState.currentPlayer = GlobalUnitsModel.Side.US
       setDMCVCarrierSelected(() => "")
       StateManager.gameStateManager.setUSState(stateObject)
-      StateManager.gameStateManager.doAction(GlobalUnitsModel.Side.US,stateObject)
+      StateManager.gameStateManager.doAction(GlobalUnitsModel.Side.US, stateObject)
     }
   }, [GlobalGameState.gamePhase])
-  
+
   useEffect(() => {
     if (GlobalGameState.gamePhase === GlobalGameState.PHASE.AIR_SEARCH && GlobalGameState.isFirstAirOp) {
       GlobalGameState.isFirstAirOp = false
@@ -766,13 +754,13 @@ export function App() {
       //   StateManager.gameStateManager.setJapanState(stateObject)
       // }
       doStateChange()
-    } 
+    }
   }, [GlobalGameState.gamePhase])
 
-   useEffect(() => {
+  useEffect(() => {
     if (GlobalGameState.gamePhase === GlobalGameState.PHASE.ERROR) {
       alert("ERROR US AIR OPS HAS GONE > 4!!!!!!!!!!!!!!!!!")
-    } 
+    }
   }, [GlobalGameState.gamePhase])
 
   useEffect(() => {
@@ -790,8 +778,8 @@ export function App() {
         } else {
           StateManager.gameStateManager.setJapanState(stateObject)
           StateManager.gameStateManager.doAction(GlobalUnitsModel.Side.JAPAN, stateObject)
-        }      
-      } 
+        }
+      }
     }
   }, [GlobalGameState.gamePhase, cardNumber])
 
@@ -804,7 +792,6 @@ export function App() {
       if (displayScreen) {
         setInitiativePanelShow(true)
       } else {
-
         // maybe :-) ...........??
         // doInitiativeRoll()
         // nextAction()
@@ -835,7 +822,6 @@ export function App() {
         StateManager.gameStateManager.doAction(GlobalUnitsModel.Side.JAPAN, stateObject)
         setJapanStrikePanelEnabled(true) // for now move this in due course (only display for humans)
       }
-      
     }
   }, [GlobalGameState.gamePhase])
 
@@ -849,7 +835,7 @@ export function App() {
     }
   }, [GlobalGameState.gamePhase])
 
-   useEffect(() => {
+  useEffect(() => {
     if (GlobalGameState.gamePhase === GlobalGameState.PHASE.NIGHT_BATTLES_1) {
       GlobalGameState.dieRolls = []
       GlobalGameState.jpSeaBattleHits = 0
@@ -876,7 +862,7 @@ export function App() {
   }, [GlobalGameState.gamePhase])
 
   useEffect(() => {
-      GlobalGameState.previousPosition = previousPosition // used for save/load game
+    GlobalGameState.previousPosition = previousPosition // used for save/load game
   }, [previousPosition])
 
   useEffect(() => {
@@ -895,8 +881,7 @@ export function App() {
       doStateChange()
     }
   }, [GlobalGameState.gamePhase])
-  window.scrollTo(0,20)
-
+  window.scrollTo(0, 20)
 
   const nextAction = () => {
     StateManager.gameStateManager.doNextState(GlobalGameState.currentPlayer, stateObject)
@@ -1044,10 +1029,13 @@ export function App() {
     const mifLocation = GlobalInit.controller.getFleetLocation("MIF", GlobalUnitsModel.Side.JAPAN)
     let ijnDMCVLocation = GlobalInit.controller.getFleetLocation("IJN-DMCV", GlobalUnitsModel.Side.JAPAN)
 
-    if (GlobalGameState.initialDMCVLocation !== undefined && GlobalGameState.initialDMCVLocation !== Command.FLEET_BOX) {
+    if (
+      GlobalGameState.initialDMCVLocation !== undefined &&
+      GlobalGameState.initialDMCVLocation !== Command.FLEET_BOX
+    ) {
       ijnDMCVLocation = GlobalGameState.initialDMCVLocation
     }
-        console.log("SETTING JAPAN FLEET REGIONS ijnDMCVLocation=", ijnDMCVLocation)
+    console.log("SETTING JAPAN FLEET REGIONS ijnDMCVLocation=", ijnDMCVLocation)
 
     if (GlobalGameState.gameTurn === 4) {
       GlobalGameState.fleetSpeed = 4
@@ -1072,7 +1060,7 @@ export function App() {
       }
 
       // Edge Case: DMCV has not been placed and 1AF is in col A or Col B=> DMCV can go straight to OFFBOARD box
-        if (ijnDMCVLocation === undefined && (af1Location.currentHex.q === 1 || af1Location.currentHex.q === 2)) {
+      if (ijnDMCVLocation === undefined && (af1Location.currentHex.q === 1 || af1Location.currentHex.q === 2)) {
         // can move offboard
         if (GlobalGameState.gamePhase === GlobalGameState.PHASE.JAPAN_DMCV_FLEET_MOVEMENT) {
           setEnabledJapanFleetBoxes(true)
@@ -1103,14 +1091,13 @@ export function App() {
         ) {
           // can move offboard
           setEnabledJapanFleetBoxes(true)
-        } 
+        }
         // Edge Case: DMCV has not been placed and 1AF is in col A => DMCV can go straight to OFFBOARD box
-      if (ijnDMCVLocation === undefined && af1Location.currentHex.q === 1) {
+        if (ijnDMCVLocation === undefined && af1Location.currentHex.q === 1) {
           // can move offboard
           setEnabledJapanFleetBoxes(true)
         }
       }
-      
     }
     if (GlobalGameState.gamePhase === GlobalGameState.PHASE.JAPAN_DMCV_FLEET_MOVEMENT) {
       let jpRegion
@@ -1126,7 +1113,6 @@ export function App() {
       // if both fleets have left map do not do this
       if (jpRegion !== undefined && af1Location.boxName !== Command.FLEET_BOX) {
         jpRegion = removeHexFromRegion(jpRegion, af1Location.currentHex)
-        
       }
       if (mifLocation !== undefined && mifLocation.boxName !== Command.FLEET_BOX) {
         jpRegion = removeHexFromRegion(jpRegion, mifLocation.currentHex)
@@ -1215,7 +1201,7 @@ export function App() {
     setFightersPresent,
     getJapanEnabledAirBoxes,
     getUSEnabledAirBoxes,
-    setEnabledJapanBoxes, 
+    setEnabledJapanBoxes,
     setEnabledUSBoxes,
     setUSMapRegions,
     USMapRegions,
@@ -1235,7 +1221,7 @@ export function App() {
     setJpAlertShow,
     setEnabledJapanFleetBoxes,
     setMidwayNoAttackAlertShow,
-    setFleetUnitUpdate, 
+    setFleetUnitUpdate,
     setJpFleet,
     setUsFleet,
     setSearchValues,
@@ -1247,9 +1233,9 @@ export function App() {
     setMidwayDialogShow,
     setMidwayWarningShow,
     setCardAlertPanelShow,
-    setAirUnitUpdate, 
-    setEliminatedUnitsPanelShow, 
-    setEndOfAirOpAlertShow
+    setAirUnitUpdate,
+    setEliminatedUnitsPanelShow,
+    setEndOfAirOpAlertShow,
   }
 
   const onDrag = () => {
@@ -1258,7 +1244,6 @@ export function App() {
   const onStop = () => {
     setIsMoveable(false)
   }
-
 
   // TODO Move into load handler
   const loadState = () => {
@@ -1364,7 +1349,7 @@ export function App() {
         jpRegion = allHexesWithinDistance(af1Location.currentHex, GlobalGameState.dmcvFleetSpeed, true)
       }
       // DMCV fleet cannot move to same hex as IJN 1AF Fleet
-      
+
       if (jpRegion !== undefined && af1Location.boxName !== Command.FLEET_BOX) {
         jpRegion = removeHexFromRegion(jpRegion, af1Location.currentHex)
       }
@@ -1389,7 +1374,7 @@ export function App() {
       GlobalGameState.phaseCompleted = true
     } else if (GlobalGameState.gamePhase === GlobalGameState.PHASE.CAP_RETURN) {
       const capUnitsReturning = GlobalInit.controller.getAllCAPDefendersInCAPReturnBoxes(sideBeingAttacked())
-  
+
       for (let unit of capUnitsReturning) {
         unit.border = true
       }
@@ -1410,7 +1395,6 @@ export function App() {
     if (headless) {
       setTestClicked(true)
 
-      
       await UITesterHeadless(stateObject)
     } else {
       setTestyClicked(true)
@@ -1480,7 +1464,7 @@ export function App() {
       return false
     }
 
-   let unitsReturn2 = GlobalInit.controller.getAllAirUnitsInReturn2Boxes(GlobalUnitsModel.Side.JAPAN)
+    let unitsReturn2 = GlobalInit.controller.getAllAirUnitsInReturn2Boxes(GlobalUnitsModel.Side.JAPAN)
     if (unitsReturn2.length > 0) {
       return false
     }
@@ -1535,7 +1519,7 @@ export function App() {
       await setStrikeGroupAirUnitsToNotMoved(GlobalGameState.sideWithInitiative)
     }
 
-       // 2. CHECK ALL INTERCEPTING CAP UNITS HAVE RETURNED TO CARRIERS
+    // 2. CHECK ALL INTERCEPTING CAP UNITS HAVE RETURNED TO CARRIERS
     const capUnitsReturning = GlobalInit.controller.getAllCAPDefendersInCAPReturnBoxes(sideBeingAttacked())
     if (capUnitsReturning.length === 0) {
       return true
@@ -1654,7 +1638,7 @@ export function App() {
       // 1. If strike has not moved -> Button Disabled
       const strikeReady = await midwayStrikeReady()
       if (!strikeReady) {
-          GlobalGameState.nextActionButtonDisabled = true
+        GlobalGameState.nextActionButtonDisabled = true
         if (prevButton !== GlobalGameState.nextActionButtonDisabled) {
           GlobalGameState.updateGlobalState()
         }
@@ -1736,9 +1720,9 @@ export function App() {
       (GlobalGameState.gamePhase === GlobalGameState.PHASE.CAP_INTERCEPTION &&
         GlobalGameState.sideWithInitiative === GlobalUnitsModel.Side.US) ||
       (GlobalGameState.gamePhase === GlobalGameState.PHASE.ESCORT_DAMAGE_ALLOCATION &&
-        GlobalGameState.sideWithInitiative === GlobalUnitsModel.Side.US) || 
+        GlobalGameState.sideWithInitiative === GlobalUnitsModel.Side.US) ||
       (GlobalGameState.gamePhase === GlobalGameState.PHASE.CAP_RETURN &&
-        GlobalGameState.sideWithInitiative === GlobalUnitsModel.Side.US) 
+        GlobalGameState.sideWithInitiative === GlobalUnitsModel.Side.US)
     ) {
       image = "/images/japanflag.jpg"
     } else if (GlobalGameState.gamePhase === GlobalGameState.PHASE.AIR_SEARCH) {
@@ -1763,24 +1747,35 @@ export function App() {
         midwayMsg = "(Second Air Op)"
       }
     }
-    const font="12px"
+    const font = "12px"
 
     let hideMsg = "Hide"
     if (GlobalGameState.hideCounters) {
       hideMsg = "Show"
     }
     return (
-      <Navbar  style={{fontSize:font}} bg="black" data-bs-theme="dark" fixed="top" className="justify-content-between navbar-fixed-top">
-        <Container  style={{fontSize:font}} >
+      <Navbar
+        style={{ fontSize: font }}
+        bg="black"
+        data-bs-theme="dark"
+        fixed="top"
+        className="justify-content-between navbar-fixed-top"
+      >
+        <Container style={{ fontSize: font }}>
           <Navbar.Toggle aria-controls="responsive-navbar-nav" />
           <Navbar.Collapse id="responsive-navbar-nav">
-            <Nav   style={{fontSize:font}} className="mr-auto">
-              <Button  style={{ marginLeft: "-4em", fontSize:font,}}
-                className="me-1" size="sm" variant="outline-secondary" onClick={() => setGameStateShow(true)}>
+            <Nav style={{ fontSize: font }} className="mr-auto">
+              <Button
+                style={{ marginLeft: "-4em", fontSize: font }}
+                className="me-1"
+                size="sm"
+                variant="outline-secondary"
+                onClick={() => setGameStateShow(true)}
+              >
                 Game State
               </Button>
               <Button
-              style={{fontSize:font}} 
+                style={{ fontSize: font }}
                 className="me-1"
                 size="sm"
                 variant="outline-primary"
@@ -1809,7 +1804,7 @@ export function App() {
                 US Hand
               </Button>
               <Button
-              style={{fontSize:font}} 
+                style={{ fontSize: font }}
                 className="me-1"
                 size="sm"
                 variant="outline-danger"
@@ -1817,7 +1812,6 @@ export function App() {
                   !GlobalGameState.jpCardsDrawn && GlobalGameState.gamePhase !== GlobalGameState.PHASE.JAPAN_CARD_DRAW
                 }
                 onClick={(e) => {
-
                   if (GlobalGameState.jpPlayerType === GlobalUnitsModel.TYPE.HUMAN) {
                     if (
                       GlobalGameState.gamePhase === GlobalGameState.PHASE.JAPAN_CARD_DRAW ||
@@ -1828,7 +1822,7 @@ export function App() {
                     GlobalGameState.jpCardsDrawn = true
                     if (GlobalGameState.gamePhase === GlobalGameState.PHASE.JAPAN_DRAWS_ONE_CARD) {
                       GlobalInit.controller.drawJapanCards(1, false)
-                      
+
                       // setMidwayDialogShow(true)
                       midwayPossible(GlobalInit.controller, setMidwayWarningShow, setMidwayDialogShow)
 
@@ -1845,7 +1839,7 @@ export function App() {
                 Japan Hand
               </Button>
               <Button
-              style={{fontSize:font}} 
+                style={{ fontSize: font }}
                 className="me-1"
                 size="sm"
                 variant="outline-light"
@@ -1856,7 +1850,7 @@ export function App() {
                 Save Game
               </Button>
               <Button
-              style={{fontSize:font}} 
+                style={{ fontSize: font }}
                 className="me-1"
                 size="sm"
                 variant="outline-light"
@@ -1867,7 +1861,7 @@ export function App() {
                 Strike
               </Button>
               <Button
-              style={{fontSize:font}} 
+                style={{ fontSize: font }}
                 className="me-1"
                 size="sm"
                 variant="outline-light"
@@ -1879,7 +1873,7 @@ export function App() {
                 Fleet
               </Button>
               <Button
-              style={{fontSize:font}} 
+                style={{ fontSize: font }}
                 className="me-1"
                 size="sm"
                 variant="outline-light"
@@ -1891,16 +1885,16 @@ export function App() {
                 Reorg
               </Button>
               <Button
-                style={{fontSize:font}} 
-                  className="me-1"
-                  size="sm"
-                  variant="outline-light"
-                  onClick={() => {
-                    GlobalGameState.hideCounters = !GlobalGameState.hideCounters
-                    GlobalGameState.updateGlobalState()
-                  }}
-                >
-                  {hideMsg}
+                style={{ fontSize: font }}
+                className="me-1"
+                size="sm"
+                variant="outline-light"
+                onClick={() => {
+                  GlobalGameState.hideCounters = !GlobalGameState.hideCounters
+                  GlobalGameState.updateGlobalState()
+                }}
+              >
+                {hideMsg}
               </Button>
             </Nav>
 
@@ -1918,7 +1912,7 @@ export function App() {
                 marginTop: "15px",
                 marginRight: "10px",
                 // fontSize: "14px",
-                color: "white"
+                color: "white",
               }}
             >
               {GlobalGameState.gamePhase} <br></br>
@@ -1931,46 +1925,72 @@ export function App() {
                 marginTop: "17px",
                 marginRight: "20px",
                 // fontSize: "14px",
-                color: "white"
+                color: "white",
               }}
             >
               {GlobalGameState.getSetupMessage()}
             </p>
 
             <Nav>
-              {initComplete && (<Button
-              
-                size="sm"
-                className="me-1"
-                variant="secondary"
-                onClick={(e) => nextAction(e)}
-                disabled={GlobalGameState.nextActionButtonDisabled}
-                style={{ marginLeft: "80px", background: "#9e1527", fontSize: font }}
-              >
-                Next Action
-              </Button>)}
-              {!initComplete && (<Button
-                size="sm"
-                className="me-1"
-                variant="secondary"
-                onClick={(e) =>{
-                  GlobalGameState.gamePhase = GlobalGameState.PHASE.JAPAN_SETUP
-                  setInitComplete(true)}}
-                disabled={false}
-                style={{ background: "#9e1527", fontSize: font }}
-              >
-                Japan AI Begin
-              </Button>)}
+              {initComplete && (
+                <Button
+                  size="sm"
+                  className="me-1"
+                  variant="secondary"
+                  onClick={(e) => nextAction(e)}
+                  disabled={GlobalGameState.nextActionButtonDisabled}
+                  style={{ marginLeft: "80px", background: "#9e1527", fontSize: font }}
+                >
+                  Next Action
+                </Button>
+              )}
+              {!initComplete && (
+                <Button
+                  size="sm"
+                  className="me-1"
+                  variant="secondary"
+                  onClick={(e) => {
+                    GlobalGameState.gamePhase = GlobalGameState.PHASE.JAPAN_SETUP
+                    setInitComplete(true)
+                  }}
+                  disabled={false}
+                  style={{ background: "#9e1527", fontSize: font }}
+                >
+                  Japan AI Begin
+                </Button>
+              )}
             </Nav>
-           
-            <ButtonGroup style={{ marginRight: "-3.5em", fontSize:font}} className="ms-auto" aria-label="Basic example">
-              <Button style={{fontSize:font}} className="me-1" size="sm" variant="secondary" onClick={() => zoomIn()}>
+
+            <ButtonGroup
+              style={{ marginRight: "-3.5em", fontSize: font }}
+              className="ms-auto"
+              aria-label="Basic example"
+            >
+              <Button
+                style={{ fontSize: font }}
+                className="me-1"
+                size="sm"
+                variant="secondary"
+                onClick={() => zoomIn()}
+              >
                 Zoom In
               </Button>
-              <Button style={{fontSize:font}} className="me-1" size="sm" variant="secondary" onClick={() => zoomOut()}>
+              <Button
+                style={{ fontSize: font }}
+                className="me-1"
+                size="sm"
+                variant="secondary"
+                onClick={() => zoomOut()}
+              >
                 Zoom Out
               </Button>
-              <Button style={{fontSize:font}} className="me-1" size="sm" variant="secondary" onClick={() => resetTransform()}>
+              <Button
+                style={{ fontSize: font }}
+                className="me-1"
+                size="sm"
+                variant="secondary"
+                onClick={() => resetTransform()}
+              >
                 Reset
               </Button>
             </ButtonGroup>
@@ -1989,8 +2009,8 @@ export function App() {
   }
 
   GlobalGameState.stateHandler = gameStateHandler
-  
-  document.body.style.zoom = "100%";
+
+  document.body.style.zoom = "100%"
 
   // disable browser zoom (ctrl+ ctrl-)
   window.addEventListener(
@@ -2039,12 +2059,11 @@ export function App() {
       loadState,
       id,
       setLoading,
-      setPreviousPosition
+      setPreviousPosition,
     })
     setInitComplete(true)
     StateManager.gameStateManager.setPlayerStates(GlobalGameState.jpPlayerType, GlobalGameState.usPlayerType)
   }
-
 
   async function loady() {
     setSplash(false)
@@ -2084,12 +2103,12 @@ export function App() {
   }
   let jpAfText, usCsfText, usMidwayText, jpOpsText, usOpsText
   if (searchValues) {
-    if (GlobalInit.controller.allCarriersSunk(GlobalUnitsModel.Side.US)) {
+    if (GlobalInit.controller.allCarriersSunkorDMCV(GlobalUnitsModel.Side.US, true)) {
       usCsfText = `CSF: Closest Fleet N/A (All US Carriers Sunk)`
     } else {
       usCsfText = `CSF: Closest Fleet ${searchValues.us_csf} hexes away`
     }
-    if (GlobalInit.controller.allCarriersSunk(GlobalUnitsModel.Side.JAPAN)) {
+    if (GlobalInit.controller.allCarriersSunkorDMCV(GlobalUnitsModel.Side.JAPAN)) {
       jpAfText = `1AF: Closest Fleet N/A (All IJN Carriers Sunk)`
     } else {
       jpAfText = `1AF: Closest Fleet ${searchValues.jp_af} hexes away`
@@ -2158,8 +2177,7 @@ export function App() {
       : GlobalUnitsModel.Side.US
   let nightSide = "Night Landing: " + nSide
 
-  let hiddenNightBoog = nSide === GlobalUnitsModel.Side.US
-    && GlobalGameState.usPlayerType === GlobalUnitsModel.TYPE.AI
+  let hiddenNightBoog = nSide === GlobalUnitsModel.Side.US && GlobalGameState.usPlayerType === GlobalUnitsModel.TYPE.AI
   const nightHeaders = (
     <>
       <NightHeaders controller={GlobalInit.controller} side={nSide} night={setNightLandingDone}></NightHeaders>
@@ -2174,21 +2192,25 @@ export function App() {
   const determineSideForDamageAllocation = () => {
     // default is CAP damage allocation (i.e., to attacking escorts)
     // also applies to Anti-Aircraft damage
-    let daImage = GlobalGameState.sideWithInitiative === GlobalUnitsModel.Side.JAPAN
-      ? "/images/japanflag.jpg"
-      : "/images/usaflag.jpg"
-    let daSidebg = GlobalGameState.sideWithInitiative === GlobalUnitsModel.Side.JAPAN
-      ? GlobalUIConstants.Colors.JAPAN : 
-      GlobalUIConstants.Colors.US  
-      
-    // Flip for escort damage (i.e., to defending CAP)
-    if (GlobalGameState.gamePhase === GlobalGameState.PHASE.ESCORT_DAMAGE_ALLOCATION) {
-      daImage = GlobalGameState.sideWithInitiative === GlobalUnitsModel.Side.US
+    let daImage =
+      GlobalGameState.sideWithInitiative === GlobalUnitsModel.Side.JAPAN
         ? "/images/japanflag.jpg"
         : "/images/usaflag.jpg"
-      daSidebg = GlobalGameState.sideWithInitiative === GlobalUnitsModel.Side.US
-        ? GlobalUIConstants.Colors.JAPAN : 
-        GlobalUIConstants.Colors.US  
+    let daSidebg =
+      GlobalGameState.sideWithInitiative === GlobalUnitsModel.Side.JAPAN
+        ? GlobalUIConstants.Colors.JAPAN
+        : GlobalUIConstants.Colors.US
+
+    // Flip for escort damage (i.e., to defending CAP)
+    if (GlobalGameState.gamePhase === GlobalGameState.PHASE.ESCORT_DAMAGE_ALLOCATION) {
+      daImage =
+        GlobalGameState.sideWithInitiative === GlobalUnitsModel.Side.US
+          ? "/images/japanflag.jpg"
+          : "/images/usaflag.jpg"
+      daSidebg =
+        GlobalGameState.sideWithInitiative === GlobalUnitsModel.Side.US
+          ? GlobalUIConstants.Colors.JAPAN
+          : GlobalUIConstants.Colors.US
     }
     return { daImage, daSidebg }
   }
@@ -2197,17 +2219,21 @@ export function App() {
   const disableScreenButtons = () => {
     let disableButtons = false
     if (GlobalGameState.gamePhase === GlobalGameState.PHASE.CAP_DAMAGE_ALLOCATION) {
-       if (GlobalGameState.sideWithInitiative === GlobalUnitsModel.Side.US &&     
-           GlobalGameState.usPlayerType === GlobalUnitsModel.TYPE.AI) {
-            disableButtons = true
-       }
+      if (
+        GlobalGameState.sideWithInitiative === GlobalUnitsModel.Side.US &&
+        GlobalGameState.usPlayerType === GlobalUnitsModel.TYPE.AI
+      ) {
+        disableButtons = true
+      }
     }
     if (GlobalGameState.gamePhase === GlobalGameState.PHASE.ESCORT_DAMAGE_ALLOCATION) {
-      if (GlobalGameState.sideWithInitiative === GlobalUnitsModel.Side.JAPAN &&     
-          GlobalGameState.usPlayerType === GlobalUnitsModel.TYPE.AI) {
-           disableButtons = true
+      if (
+        GlobalGameState.sideWithInitiative === GlobalUnitsModel.Side.JAPAN &&
+        GlobalGameState.usPlayerType === GlobalUnitsModel.TYPE.AI
+      ) {
+        disableButtons = true
       }
-   }
+    }
     return disableButtons
   }
   const damageHeaders = (
@@ -2268,12 +2294,17 @@ export function App() {
   const card2bg = jpPlayedCard2 ? GlobalUIConstants.Colors.JAPAN : GlobalUIConstants.Colors.US
   const jpPlayedCard4 = GlobalInit.controller.getCardPlayed(4, GlobalUnitsModel.Side.JAPAN)
   const submarineControlSide = jpPlayedCard4 ? GlobalUnitsModel.Side.JAPAN : GlobalUnitsModel.Side.US
-  
-  let card4side = GlobalInit.controller.getCardPlayed(4, GlobalUnitsModel.Side.US) ? GlobalUIConstants.Colors.US : GlobalUIConstants.Colors.JAPAN
 
-  let hiddenCard4Boog = GlobalInit.controller.getCardPlayed(4, GlobalUnitsModel.Side.US) 
-      && GlobalGameState.usPlayerType === GlobalUnitsModel.TYPE.AI ? true : false
-      
+  let card4side = GlobalInit.controller.getCardPlayed(4, GlobalUnitsModel.Side.US)
+    ? GlobalUIConstants.Colors.US
+    : GlobalUIConstants.Colors.JAPAN
+
+  let hiddenCard4Boog =
+    GlobalInit.controller.getCardPlayed(4, GlobalUnitsModel.Side.US) &&
+    GlobalGameState.usPlayerType === GlobalUnitsModel.TYPE.AI
+      ? true
+      : false
+
   const submarineHeaders = (
     <>
       <SubmarineDamagePanelHeaders
@@ -2305,11 +2336,17 @@ export function App() {
     </>
   )
 
-  let hiddenCard2Boog = GlobalInit.controller.getCardPlayed(2, GlobalUnitsModel.Side.US) 
-      && GlobalGameState.usPlayerType === GlobalUnitsModel.TYPE.AI ? true : false
+  let hiddenCard2Boog =
+    GlobalInit.controller.getCardPlayed(2, GlobalUnitsModel.Side.US) &&
+    GlobalGameState.usPlayerType === GlobalUnitsModel.TYPE.AI
+      ? true
+      : false
 
-  let hiddenCard3Boog = GlobalInit.controller.getCardPlayed(3, GlobalUnitsModel.Side.US) 
-      && GlobalGameState.usPlayerType === GlobalUnitsModel.TYPE.AI ? true : false
+  let hiddenCard3Boog =
+    GlobalInit.controller.getCardPlayed(3, GlobalUnitsModel.Side.US) &&
+    GlobalGameState.usPlayerType === GlobalUnitsModel.TYPE.AI
+      ? true
+      : false
   const damageControlHeaders = (
     <>
       <DamageControlPanelHeaders
@@ -2382,30 +2419,35 @@ export function App() {
   )
   const endOfTurnHeader =
     GlobalGameState.gameTurn !== 7 ? `End of Turn ${GlobalGameState.gameTurn} - Summary` : "End of Game Summary"
-  
-    // determine whether to hide (AI) buttons
-    let hiddenBoog = GlobalGameState.sideWithInitiative === GlobalUnitsModel.Side.US 
-    && GlobalGameState.usPlayerType === GlobalUnitsModel.TYPE.AI
 
-    let hiddenDefenseBoog = GlobalGameState.sideWithInitiative === GlobalUnitsModel.Side.JAPAN 
-    && GlobalGameState.usPlayerType === GlobalUnitsModel.TYPE.AI
+  // determine whether to hide (AI) buttons
+  let hiddenBoog =
+    GlobalGameState.sideWithInitiative === GlobalUnitsModel.Side.US &&
+    GlobalGameState.usPlayerType === GlobalUnitsModel.TYPE.AI
 
-    let sideboog= GlobalGameState.jpPlayerType === GlobalUnitsModel.TYPE.HUMAN ? GlobalUIConstants.Colors.JAPAN : 
-    GlobalUIConstants.Colors.US
-    let imageboog = GlobalGameState.jpPlayerType === GlobalUnitsModel.TYPE.HUMAN 
+  let hiddenDefenseBoog =
+    GlobalGameState.sideWithInitiative === GlobalUnitsModel.Side.JAPAN &&
+    GlobalGameState.usPlayerType === GlobalUnitsModel.TYPE.AI
+
+  let sideboog =
+    GlobalGameState.jpPlayerType === GlobalUnitsModel.TYPE.HUMAN
+      ? GlobalUIConstants.Colors.JAPAN
+      : GlobalUIConstants.Colors.US
+  let imageboog =
+    GlobalGameState.jpPlayerType === GlobalUnitsModel.TYPE.HUMAN
       ? GlobalUIConstants.Flags.JAPAN
       : GlobalUIConstants.Flags.US
-  
-    
 
-    let card4image = GlobalInit.controller.getCardPlayed(4, GlobalUnitsModel.Side.US)  ? GlobalUIConstants.Flags.US
-      : GlobalUIConstants.Flags.JAPAN
+  let card4image = GlobalInit.controller.getCardPlayed(4, GlobalUnitsModel.Side.US)
+    ? GlobalUIConstants.Flags.US
+    : GlobalUIConstants.Flags.JAPAN
 
-    const jpCard3 =
-          GlobalInit.controller.japanHandContainsCard(3) || GlobalInit.controller.getCardPlayed(3, GlobalUnitsModel.Side.JAPAN)
-     
-    let card3bg = jpCard3 ? GlobalUIConstants.Colors.JAPAN : GlobalUIConstants.Colors.US    
-    const endOfTurnSummaryHeaders = (
+  const jpCard3 =
+    GlobalInit.controller.japanHandContainsCard(3) ||
+    GlobalInit.controller.getCardPlayed(3, GlobalUnitsModel.Side.JAPAN)
+
+  let card3bg = jpCard3 ? GlobalUIConstants.Colors.JAPAN : GlobalUIConstants.Colors.US
+  const endOfTurnSummaryHeaders = (
     <>
       <EndOfTurnSummaryHeaders
         controller={GlobalInit.controller}
@@ -2461,7 +2503,7 @@ export function App() {
       ></AirReplacementsFooters>
     </>
   )
-  
+
   const numAAADice =
     GlobalGameState.taskForceTarget === GlobalUnitsModel.TaskForce.MIDWAY
       ? Math.ceil(GlobalGameState.midwayGarrisonLevel / 2)
@@ -2609,8 +2651,6 @@ export function App() {
     </>
   )
 
-
-
   function doSubmarine(roll) {
     doSubmarineDamageRoll(roll)
   }
@@ -2618,7 +2658,6 @@ export function App() {
   function doDamageControl(roll) {
     doCVDamageControl(roll)
   }
-
 
   function doCardRoll(roll) {
     if (cardNumber === 5) {
@@ -2632,11 +2671,11 @@ export function App() {
       doTroubledReconnaissanceRoll(GlobalInit.controller, roll)
     }
   }
-// document.body.style.zoom = "108%";
+  // document.body.style.zoom = "108%";
   function doSeaBattleRoll(roll0, roll1) {
     doNavalBattleRoll(GlobalInit.controller, roll0, roll1)
   }
-  
+
   // console.log("GlobalUnitsModel.usStrikeGroups=", GlobalUnitsModel.usStrikeGroups)
   function doInitiativeRoll(roll0, roll1) {
     // for testing QUACK
@@ -2664,7 +2703,7 @@ export function App() {
       GlobalGameState.nextMidwayInvasionRoll = GlobalUnitsModel.Side.JAPAN
     }
   }
-  
+
   function doNightRollsDamage() {
     for (let i = 0; i < nightAirUnits.length; i++) {
       for (let j = 0; j < nightStepsLost[i]; j++) {
@@ -2701,7 +2740,7 @@ export function App() {
     sendDMCVUpdate(GlobalInit.controller, DMCVCarrierSelected, setDmcvShipMarkerUpdate, dmcvSide)
   }
 
-    function doDMCVShipMarkerUpdate() {
+  function doDMCVShipMarkerUpdate() {
     sendDMCVUpdate(GlobalInit.controller, DMCVCarrierSelected, setDmcvShipMarkerUpdate, dmcvSide)
   }
 
@@ -2835,8 +2874,9 @@ export function App() {
   }
   let damagedCarriers = GlobalInit.controller.getDamagedCarriersOneOrTwoHits(GlobalUnitsModel.Side.US)
   let damageControlButtonDisabled =
-    (damagedCV=== "x") || (damagedCV === "" && GlobalGameState.dieRolls.length === 0) 
-    || GlobalGameState.dieRolls.length > 0
+    damagedCV === "x" ||
+    (damagedCV === "" && GlobalGameState.dieRolls.length === 0) ||
+    GlobalGameState.dieRolls.length > 0
 
   let damageControlCloseButtonDisabled = !damageControlButtonDisabled || damagedCV === ""
   if (damageControlSide === GlobalUnitsModel.Side.US) {
@@ -2851,7 +2891,7 @@ export function App() {
     autoAllocateMidwayDamage(GlobalInit.controller)
   }
   let showCAPDice = true
-  let capInterceptionDiceButtonDisabled = (capAirUnits.length === 0 || GlobalGameState.dieRolls.length > 0)
+  let capInterceptionDiceButtonDisabled = capAirUnits.length === 0 || GlobalGameState.dieRolls.length > 0
 
   if (GlobalGameState.taskForceTarget === GlobalUnitsModel.TaskForce.MIDWAY && GlobalGameState.elitePilots) {
     if (GlobalGameState.usPlayerType === GlobalUnitsModel.TYPE.AI && !GlobalGameState.doneCapSelection) {
@@ -2859,9 +2899,11 @@ export function App() {
       showCAPDice = false
     }
 
-       if (GlobalGameState.usPlayerType === GlobalUnitsModel.TYPE.AI 
-        && GlobalGameState.doneCapSelection 
-        && GlobalGameState.dieRolls.length > 0) {
+    if (
+      GlobalGameState.usPlayerType === GlobalUnitsModel.TYPE.AI &&
+      GlobalGameState.doneCapSelection &&
+      GlobalGameState.dieRolls.length > 0
+    ) {
       capInterceptionDiceButtonDisabled = true
     }
   }
@@ -2872,7 +2914,7 @@ export function App() {
     GlobalGameState.midwayInvasionLevel === 0 || GlobalGameState.midwayGarrisonLevel === 0
 
   let mstr = GlobalGameState.midwayAttackDeclaration ? "will" : "will not"
-  let ijnMidwayStr = `IJN ${mstr} attack Midway this turn`  
+  let ijnMidwayStr = `IJN ${mstr} attack Midway this turn`
   let airOpsDiceButtonDisabled =
     GlobalGameState.sideWithInitiative !== undefined &&
     GlobalGameState.sideWithInitiative !== null &&
@@ -2928,7 +2970,11 @@ export function App() {
           // setButtonModalShow(false)
         }}
       ></LoadGamePanel>
-      <ButtonModal show={buttonModalShow} restoreFunction={restoreFunction} setButtonModalShow={setButtonModalShow}></ButtonModal>
+      <ButtonModal
+        show={buttonModalShow}
+        restoreFunction={restoreFunction}
+        setButtonModalShow={setButtonModalShow}
+      ></ButtonModal>
       <SaveGamePanel
         saveGameState={saveGameState}
         setSaveAlertShow={setSaveAlertShow}
@@ -2938,11 +2984,15 @@ export function App() {
       ></SaveGamePanel>
 
       <AlertPanel show={gameOverAlertShow}>
-        <h4 style={{
+        <h4
+          style={{
             display: "flex",
             justifyContent: "center",
             alignItems: "center",
-          }}>GAME OVER</h4>
+          }}
+        >
+          GAME OVER
+        </h4>
         <div
           style={{
             display: "flex",
@@ -2953,7 +3003,7 @@ export function App() {
           <p>All {sideBeingAttacked()} Fleets Sunk</p>
           <br></br>
         </div>
-         <div
+        <div
           style={{
             display: "flex",
             justifyContent: "center",
@@ -2967,7 +3017,7 @@ export function App() {
         <h4>ALERT</h4>
         <p>This air unit is not a fighter unit so cannot be used for CAP.</p>
       </AlertPanel>
-       <AlertPanel show={reorgAlertShow} onHide={() => setReorgAlertShow(false)}>
+      <AlertPanel show={reorgAlertShow} onHide={() => setReorgAlertShow(false)}>
         <h4>ALERT</h4>
         <p>Reorganize Hangar Units to allow CAP Unit to land</p>
       </AlertPanel>
@@ -2979,10 +3029,7 @@ export function App() {
         <h4>IJN FLEET MOVEMENT</h4>
         <p>{jpMsg}</p>
       </AlertPanel>
-      <AlertPanel
-        show={fleetMoveAlertShow}
-        onHide={() => setFleetMoveAlertShow(false)}
-      >
+      <AlertPanel show={fleetMoveAlertShow} onHide={() => setFleetMoveAlertShow(false)}>
         <h4>INFO</h4>
         <p>
           Drag the Fleet Unit to any hex in the shaded area of the map, or press Next Action to leave fleet in current
@@ -3201,12 +3248,16 @@ export function App() {
         }}
         doRoll={doCAPRolls}
         disabled={true}
-        image={GlobalGameState.sideWithInitiative === GlobalUnitsModel.Side.US
-                ? "/images/japanflag.jpg"
-                : "/images/usaflag.jpg"}
-        sidebg = {GlobalGameState.sideWithInitiative === GlobalUnitsModel.Side.US 
-          ? GlobalUIConstants.Colors.JAPAN : 
-          GlobalUIConstants.Colors.US}    
+        image={
+          GlobalGameState.sideWithInitiative === GlobalUnitsModel.Side.US
+            ? "/images/japanflag.jpg"
+            : "/images/usaflag.jpg"
+        }
+        sidebg={
+          GlobalGameState.sideWithInitiative === GlobalUnitsModel.Side.US
+            ? GlobalUIConstants.Colors.JAPAN
+            : GlobalUIConstants.Colors.US
+        }
       ></LargeDicePanel>
       <LargeDicePanel
         numDice={0}
@@ -3272,12 +3323,16 @@ export function App() {
         diceButtonDisabled={GlobalGameState.dieRolls.length !== 0}
         closeButtonDisabled={GlobalGameState.dieRolls.length === 0}
         disabled={false}
-        image={GlobalGameState.sideWithInitiative === GlobalUnitsModel.Side.US
-          ? "/images/japanflag.jpg"
-          : "/images/usaflag.jpg"}
-        sidebg = {GlobalGameState.sideWithInitiative === GlobalUnitsModel.Side.US 
-          ? GlobalUIConstants.Colors.JAPAN : 
-          GlobalUIConstants.Colors.US}    
+        image={
+          GlobalGameState.sideWithInitiative === GlobalUnitsModel.Side.US
+            ? "/images/japanflag.jpg"
+            : "/images/usaflag.jpg"
+        }
+        sidebg={
+          GlobalGameState.sideWithInitiative === GlobalUnitsModel.Side.US
+            ? GlobalUIConstants.Colors.JAPAN
+            : GlobalUIConstants.Colors.US
+        }
       ></LargeDicePanel>
 
       <AttackDicePanel
@@ -3320,12 +3375,16 @@ export function App() {
         diceButtonDisabled={GlobalGameState.dieRolls.length !== 0}
         closeButtonDisabled={pooButton}
         disabled={false}
-        image={GlobalGameState.sideWithInitiative === GlobalUnitsModel.Side.JAPAN
-          ? "/images/japanflag.jpg"
-          : "/images/usaflag.jpg"}
-        sidebg = {GlobalGameState.sideWithInitiative === GlobalUnitsModel.Side.US 
-          ? GlobalUIConstants.Colors.US : 
-          GlobalUIConstants.Colors.JAPAN}   
+        image={
+          GlobalGameState.sideWithInitiative === GlobalUnitsModel.Side.JAPAN
+            ? "/images/japanflag.jpg"
+            : "/images/usaflag.jpg"
+        }
+        sidebg={
+          GlobalGameState.sideWithInitiative === GlobalUnitsModel.Side.US
+            ? GlobalUIConstants.Colors.US
+            : GlobalUIConstants.Colors.JAPAN
+        }
       ></AttackDicePanel>
       <NightLandingDicePanel
         controller={GlobalInit.controller}
@@ -3350,8 +3409,7 @@ export function App() {
           doNightRollsDamage()
           if (nSide === GlobalUnitsModel.Side.US && GlobalGameState.usPlayerType === GlobalUnitsModel.TYPE.AI) {
             nextAction(e)
-          } 
-            
+          }
         }}
         doRoll={doNightLandingRolls}
         disabled={true}
@@ -3405,13 +3463,17 @@ export function App() {
         disabled={false}
         setDamageDone={setDamageDone}
         damageDone={damageDone}
-        image={GlobalGameState.sideWithInitiative === GlobalUnitsModel.Side.JAPAN
-          ? "/images/japanflag.jpg"
-          : "/images/usaflag.jpg"}
-        sidebg = {GlobalGameState.sideWithInitiative === GlobalUnitsModel.Side.US 
-          ? GlobalUIConstants.Colors.US : 
-          GlobalUIConstants.Colors.JAPAN}      >    
-      </CarrierDamageDicePanel>
+        image={
+          GlobalGameState.sideWithInitiative === GlobalUnitsModel.Side.JAPAN
+            ? "/images/japanflag.jpg"
+            : "/images/usaflag.jpg"
+        }
+        sidebg={
+          GlobalGameState.sideWithInitiative === GlobalUnitsModel.Side.US
+            ? GlobalUIConstants.Colors.US
+            : GlobalUIConstants.Colors.JAPAN
+        }
+      ></CarrierDamageDicePanel>
       <MidwayDamageDicePanel
         numDice={1}
         controller={GlobalInit.controller}
@@ -3471,7 +3533,7 @@ export function App() {
         nextAction={nextAction}
         width={30}
       ></SubmarineAlertPanel>
-      
+
       <CardAlertPanel
         show={!testClicked && cardAlertPanelShow}
         controller={GlobalInit.controller}
@@ -3726,7 +3788,6 @@ export function App() {
         }}
         // closeButtonDisabled={false} // QUACK TESTING ONLYY
         closeButtonDisabled={summaryButtonDisabled}
-
         sidebg={GlobalUIConstants.Colors.BOTH}
         image={GlobalUIConstants.Flags.BOTH}
       ></LargeDicePanel>
