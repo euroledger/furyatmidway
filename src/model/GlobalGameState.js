@@ -108,6 +108,8 @@ export default class GlobalGameState {
     us: 0,
   }
 
+  static gameSaveId = 0
+
   static taskForceTarget = ""
   static currentCarrierAttackTarget = ""
   static fleetTarget = ""

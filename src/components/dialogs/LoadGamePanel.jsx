@@ -5,7 +5,7 @@ import Col from "react-bootstrap/Col"
 import GlobalGameState from "../../model/GlobalGameState"
 import "./modal.css"
 import GlobalUIConstants from "../UIConstants"
-import { deleteAllAutoSavedGames } from "../../PlayerState/StateUtils"
+import { deleteAllAutoSavedGames } from "../../Utils"
 import "./CustomModal.css"
 import MinimizeButton from "./MinimizeButton"
 

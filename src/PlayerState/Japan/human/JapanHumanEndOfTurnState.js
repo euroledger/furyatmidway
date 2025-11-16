@@ -2,7 +2,6 @@ import GlobalGameState from "../../../model/GlobalGameState"
 import GlobalInit from "../../../model/GlobalInit"
 import { determineMidwayInvasion } from "../../StateUtils"
 import GlobalUnitsModel from "../../../model/GlobalUnitsModel"
-import { deleteAllAutoSavedGames } from "../../StateUtils"
 
 class JapanHumanEndOfTurnState {
   markCard = (cardNumber) => {
@@ -33,8 +32,6 @@ class JapanHumanEndOfTurnState {
       this.markCard(1)
       GlobalGameState.currentPlayer = GlobalUnitsModel.Side.US
       GlobalGameState.gamePhase = GlobalGameState.PHASE.CARD_PLAY
-      console.log("POOOOOOOOOOO CARD 1 RETURN")
-
       return
     } else {
       if (!this.cardChecked(1)) {
@@ -54,7 +51,6 @@ class JapanHumanEndOfTurnState {
         GlobalGameState.currentPlayer = GlobalUnitsModel.Side.JAPAN
       }
       GlobalGameState.gamePhase = GlobalGameState.PHASE.CARD_PLAY
-      console.log("POOOOOOOOOOO CARD 2 RETURN")
       return
     } else if (!this.cardChecked(2)) {
       this.markCard(2)
@@ -71,8 +67,6 @@ class JapanHumanEndOfTurnState {
         GlobalGameState.currentPlayer = GlobalUnitsModel.Side.JAPAN
       }
       GlobalGameState.gamePhase = GlobalGameState.PHASE.CARD_PLAY
-      console.log("POOOOOOOOOOO CARD 3 RETURN")
-
       return
     } else if (!this.cardChecked(3)) {
       this.markCard(3)
@@ -100,8 +94,6 @@ class JapanHumanEndOfTurnState {
         GlobalGameState.gamePhase === GlobalGameState.PHASE.MIDWAY_INVASION ||
         GlobalGameState.gamePhase === GlobalGameState.PHASE.CARD_PLAY
       ) {
-        console.log("POOOOOOOOOOO CARD 4 RETURN")
-
         return
       }
     }
@@ -118,6 +110,10 @@ class JapanHumanEndOfTurnState {
     // if so -> go to MIDWAY_INVASION
 
     GlobalGameState.doneCapSelection = false
+    GlobalGameState.airOpJapan = 0
+    GlobalGameState.airOpUS = 0
+    GlobalGameState.midwayAttackGroup = ""
+    GlobalGameState.midwayAirOpsCompleted = 0
     if (GlobalGameState.gameTurn === 7) {
       if (GlobalInit.controller.japanHandContainsCard(6)) {
         setCardNumber(() => 6)
@@ -141,11 +137,6 @@ class JapanHumanEndOfTurnState {
       }
       // else ... START OF NEW TURN
       await GlobalInit.controller.setAllUnitsToNotMoved()
-
-      GlobalGameState.airOpJapan = 0
-      GlobalGameState.airOpUS = 0
-      GlobalGameState.midwayAttackGroup = ""
-      GlobalGameState.midwayAirOpsCompleted = 0
 
       if (GlobalInit.controller.japanHandContainsCard(6) && GlobalGameState.gameTurn !== 4) {
         setCardNumber(() => 6)

@@ -1435,16 +1435,16 @@ export default class Controller {
 
     if (GlobalGameState.taskForceTarget === GlobalUnitsModel.TaskForce.TASK_FORCE_16) {
       if (
-        (this.isSunk(GlobalUnitsModel.Carrier.ENTERPRISE) ||
+        (this.isSunk(GlobalUnitsModel.Carrier.ENTERPRISE, true) ||
           GlobalGameState.usDMCVCarrier === GlobalUnitsModel.Carrier.ENTERPRISE) &&
-        !this.isSunk(GlobalUnitsModel.Carrier.HORNET)
+        !this.isSunk(GlobalUnitsModel.Carrier.HORNET, true)
       ) {
         return GlobalUnitsModel.Carrier.HORNET
       }
 
       if (
-        !this.isSunk(GlobalUnitsModel.Carrier.ENTERPRISE) &&
-        (this.isSunk(GlobalUnitsModel.Carrier.HORNET) ||
+        !this.isSunk(GlobalUnitsModel.Carrier.ENTERPRISE, true) &&
+        (this.isSunk(GlobalUnitsModel.Carrier.HORNET, true) ||
           GlobalGameState.usDMCVCarrier === GlobalUnitsModel.Carrier.HORNET)
       ) {
         return GlobalUnitsModel.Carrier.ENTERPRISE
@@ -1455,6 +1455,7 @@ export default class Controller {
 
   autoAssignTargets() {
     let carrierAttackTarget = this.getTargetForAttack()
+    console.log("carrierAttackTarget=", carrierAttackTarget)
     if (carrierAttackTarget === null) {
       return null
     }
@@ -2474,7 +2475,24 @@ export default class Controller {
     }
     return strength
   }
+  getMidwayFighterAirStrength(side) {
+    let units = this.getAllAirUnits(side)
+    units = units.filter(
+      (unit) => unit.aircraftUnit.attack === false && unit.carrier === GlobalUnitsModel.Carrier.MIDWAY
+    )
 
+    let strength = units.reduce((sum, unit) => sum + unit.aircraftUnit.steps, 0)
+    return strength
+  }
+  getCarrierFighterAirStrength(side) {
+    let units = this.getAllAirUnits(side)
+    units = units.filter(
+      (unit) => unit.aircraftUnit.attack === false && unit.carrier !== GlobalUnitsModel.Carrier.MIDWAY
+    )
+
+    let strength = units.reduce((sum, unit) => sum + unit.aircraftUnit.steps, 0)
+    return strength
+  }
   getMidwayAttackAirStrength(side) {
     let units = this.getAllAirUnits(side)
     units = units.filter(

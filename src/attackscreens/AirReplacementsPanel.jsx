@@ -447,11 +447,20 @@ export function AirReplacementsFooters({
     setAirReplacementsSelected(true)
     moveAirUnitFromEliminatedBox(controller, side, selectedCV, selectedAirUnit, setAirUnitUpdate)
   }
-  if (selectedCV && availableJapanCVs.length === 1 && !airReplacementsSelected) {
-    // rep = false
-    setAirReplacementsSelected(true)
-    moveAirUnitFromEliminatedBox(controller, side, selectedCV, selectedAirUnit, setAirUnitUpdate)
+  if (side === GlobalUnitsModel.Side.US) {
+    if (selectedCV && availableUSCVs.length === 1 && !airReplacementsSelected) {
+      // rep = false
+      setAirReplacementsSelected(true)
+      moveAirUnitFromEliminatedBox(controller, side, selectedCV, selectedAirUnit, setAirUnitUpdate)
+    }
+  } else {
+    if (selectedCV && availableJapanCVs.length === 1 && !airReplacementsSelected) {
+      // rep = false
+      setAirReplacementsSelected(true)
+      moveAirUnitFromEliminatedBox(controller, side, selectedCV, selectedAirUnit, setAirUnitUpdate)
+    }
   }
+
   return (
     <>
       {showCarrierDisplay && (

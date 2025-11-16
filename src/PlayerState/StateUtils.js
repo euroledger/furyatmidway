@@ -824,17 +824,6 @@ function decrementAirOpsPoints() {
   GlobalGameState.phaseCompleted = true
 }
 
-export function deleteAllAutoSavedGames() {
-  let keys = Object.keys(localStorage)
-  const savedGameArray = keys.filter((key) => key.startsWith("fam-")).map((item) => item.replace("fam-", ""))
-
-  for (const savedGame of savedGameArray) {
-    if (savedGame.includes("AIROP")) {
-      localStorage.removeItem("fam-" + savedGame)
-    }
-  }
-  GlobalGameState.updateGlobalState()
-}
 export function determineMidwayInvasion(setCardNumber, setEndOfTurnSummaryShow, currentCardNumber) {
   // before midway invasion, check cards playable at end of turn
   if (currentCardNumber !== -1) {
@@ -1176,7 +1165,10 @@ export function displayAttackTargetPanel(controller) {
     ) {
       return false
     }
-    if (controller.isSunk(GlobalUnitsModel.Carrier.ENTERPRISE) || controller.isSunk(GlobalUnitsModel.Carrier.HORNET)) {
+    if (
+      controller.isSunk(GlobalUnitsModel.Carrier.ENTERPRISE, true) ||
+      controller.isSunk(GlobalUnitsModel.Carrier.HORNET, true)
+    ) {
       return false
     }
   }
@@ -1256,7 +1248,7 @@ export async function moveCAPUnitsFromReturnBoxToCarrier(controller, side, setTe
     } else {
       update.index = controller.getFirstAvailableZone(update.boxName)
     }
-     if (update.index === -1 && destinationsArray.length > 2) {
+    if (update.index === -1 && destinationsArray.length > 2) {
       update.boxName = destinationsArray[2]
     }
     if (unit.parentCarrier === GlobalUnitsModel.Carrier.MIDWAY) {

@@ -479,6 +479,7 @@ function loadAirUnits(airUnitMap) {
     // GlobalGameState.temporaryGamePhase = GlobalGameState.PHASE.US_FLEET_MOVEMENT_PLANNING
 
     // GlobalGameState.hideCounters = false // QUACK TESTING
+    // GlobalGameState.gameSaveId = 1 // QUACK TESTING
   }
 }
 

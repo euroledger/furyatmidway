@@ -23,7 +23,19 @@ export default class GameStatePanel extends React.Component {
   scrollToBottom = () => {
     this.messagesEndRef.current?.scrollIntoView({ behavior: "smooth" })
   }
-
+  appendUSSunkDMCVTowed (carrier) {
+    if (GlobalInit.controller.isSunk(carrier, false)) {
+      return " -> SUNK"
+    }
+    const cv = GlobalUnitsModel.usFleetUnits.get(carrier)
+    if (cv.towed) {
+      return " -> BEING TOWED"
+    }
+    if (cv.dmcv) {
+      return " -> DMCV"
+    }
+    return ""
+  }
   render() {
     const logRows = GlobalGameState.logItems.map((logItem, index) => {
       return (
@@ -36,14 +48,20 @@ export default class GameStatePanel extends React.Component {
     const mif = GlobalGameState.midwayInvasionLevel > 0 ? GlobalGameState.midwayInvasionLevel : "X"
     const mad = GlobalGameState.midwayAttackDeclaration ? "Yes" : "No"
 
-    const yh = GlobalInit.controller.getCarrierHits(GlobalUnitsModel.Carrier.YORKTOWN)
-    const eh = GlobalInit.controller.getCarrierHits(GlobalUnitsModel.Carrier.ENTERPRISE)
-    const hh = GlobalInit.controller.getCarrierHits(GlobalUnitsModel.Carrier.HORNET)
+    let yh = GlobalInit.controller.getCarrierHits(GlobalUnitsModel.Carrier.YORKTOWN)
+    let eh = GlobalInit.controller.getCarrierHits(GlobalUnitsModel.Carrier.ENTERPRISE)
+    let hh = GlobalInit.controller.getCarrierHits(GlobalUnitsModel.Carrier.HORNET)
     const mh = GlobalGameState.totalMidwayHits
+
+    yh = yh + this.appendUSSunkDMCVTowed(GlobalUnitsModel.Carrier.YORKTOWN)
+    eh = eh + this.appendUSSunkDMCVTowed(GlobalUnitsModel.Carrier.ENTERPRISE)
+    hh = hh + this.appendUSSunkDMCVTowed(GlobalUnitsModel.Carrier.HORNET)
 
     const mas = GlobalInit.controller.getMidwayAttackAirStrength(GlobalUnitsModel.Side.US)
     const cas = GlobalInit.controller.getCarrierAttackAirStrength(GlobalUnitsModel.Side.US)
 
+    const mfs = GlobalInit.controller.getMidwayFighterAirStrength(GlobalUnitsModel.Side.US)
+    const cfs = GlobalInit.controller.getCarrierFighterAirStrength(GlobalUnitsModel.Side.US)
     return (
       <>
         <Accordion defaultActiveKey="1">
@@ -73,9 +91,16 @@ export default class GameStatePanel extends React.Component {
                 Midway Runway Damage: {mh}
               </p>
 
-              <p className="text-left">Midway Attack Strength: {mas}</p>
+              <p style={{ marginTop: "15px" }} className="text-left">
+                Midway Attack Strength: {mfs}
+              </p>
               <p style={{ marginTop: "-15px" }} className="text-left">
-                US Carrier Attack Strength: {cas}
+                Midway Fighter Strength: {cfs}
+              </p>
+
+              <p className="text-left">US Carrier Attack Strength: {mas}</p>
+              <p style={{ marginTop: "-15px" }} className="text-left">
+                US Carrier Fighter Strength: {cas}
               </p>
             </Accordion.Body>
           </Accordion.Item>
