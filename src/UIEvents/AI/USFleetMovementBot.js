@@ -339,11 +339,9 @@ function doTurns5To7FleetMovement(regions, dmcvLocation) {
   if (current1AFLocation.boxName === Command.FLEET_BOX) {
     const currentDMCVLocation = GlobalInit.controller.getFleetLocation("IJN-DMCV", GlobalUnitsModel.Side.JAPAN)
 
-    console.log(">>>>>>>>>>>> DMCV LOCATION=", currentDMCVLocation)
     if (currentDMCVLocation !== undefined && currentDMCVLocation.boxName !== Command.FLEET_BOX) {
       // IF distance to DMCV is > 5 do not and DMCV is in row 1 - do not go for DMCV
       const distanceFromCSFToDMCV = distanceBetweenHexes(currentCSFLocation.currentHex, currentDMCVLocation.currentHex)
-      console.log(">>>>>>> GO AFTER DMCV, distance =", distanceFromCSFToDMCV)
 
       // get closest hex to DMCV
       const { target } = closestHexTo(regions, currentDMCVLocation.currentHex)
@@ -351,7 +349,6 @@ function doTurns5To7FleetMovement(regions, dmcvLocation) {
     } else if (currentMIFLocation !== undefined && currentMIFLocation.boxName !== Command.FLEET_BOX) {
       // IF distance to DMCV is > 5 do not and DMCV is in row 1 - do not go for DMCV
       const distanceFromCSFToMIF = distanceBetweenHexes(currentCSFLocation.currentHex, currentMIFLocation.currentHex)
-      console.log(">>>>>>> GO AFTER MIF, distance =", distanceFromCSFToMIF)
 
       // get closest hex to MIF
       const { target } = closestHexTo(regions, currentMIFLocation.currentHex)

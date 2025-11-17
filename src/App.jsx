@@ -2430,9 +2430,12 @@ export function App() {
     </>
   )
   if (csfLocation && csfLocation.currentHex !== undefined && csfLocation.currentHex.x === NaN) {
-        console.log(">>>>>>>>>>>>>>>> csfLocation.x=", csfLocation.currentHex.x, "csfLocation.y=", csfLocation.currentHex.y)
-
+    console.log(">>>>>>>>>>>>>>>> csfLocation.x=", csfLocation.currentHex.x, "csfLocation.y=", csfLocation.currentHex.y)
     alert("CSF LOCATION FUCKED UP")
+  }
+
+  if (csfLocation && csfLocation.currentHex !== undefined) {
+    console.log("NOOBS  csfLocation.x=", csfLocation.currentHex.x, "csfLocation.y=", csfLocation.currentHex.y)
   }
 
   const endOfTurnHeader =

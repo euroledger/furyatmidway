@@ -1780,13 +1780,6 @@ export default class Controller {
   }
 
   isMidwayBaseDestroyed() {
-    console.log("GlobalGameState.totalMidwayHits=", GlobalGameState.totalMidwayHits)
-    console.log("GlobalGameState.US_MIDWAY=", GlobalGameState.US_MIDWAY)
-
-    console.log("GlobalGameState.midwayBox0Damaged=", GlobalGameState.midwayBox0Damaged)
-    console.log("GlobalGameState.midwayBox1Damaged=", GlobalGameState.midwayBox1Damaged)
-    console.log("GlobalGameState.midwayBox2Damaged=", GlobalGameState.midwayBox2Damaged)
-
     if (GlobalGameState.midwayBox0Damaged && GlobalGameState.midwayBox1Damaged && GlobalGameState.midwayBox2Damaged) {
       GlobalGameState.US_MIDWAY = 0
       return true

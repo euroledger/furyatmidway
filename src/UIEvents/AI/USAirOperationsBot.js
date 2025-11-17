@@ -10,6 +10,9 @@ import {
   firstAirOpUSStrikeRegion,
   secondAirOpUSStrikeRegion,
   setValidDestinationBoxesNightOperations,
+  getCarrierForLocation,
+  checkForReorganization,
+  reorganizeUnits,
 } from "../../controller/AirOperationsHandler"
 import { usAirBoxArray } from "../../AirUnitData"
 import USAirBoxOffsets from "../../components/draganddrop/USAirBoxOffsets"
@@ -252,7 +255,7 @@ async function hangarToFlightDeck({ controller, unit, setTestUpdate, test }) {
   const index = controller.getFlightDeckSlot(unit.carrier, GlobalUnitsModel.Side.US, true, box)
   console.log("DEBUG got index for carrier", unit.carrier, "index=", index)
   if (index !== -1) {
-    await delay (10)
+    await delay(10)
     await moveAirUnitToHangar({ controller, unit, setTestUpdate, test, box, index })
   }
 }
@@ -383,6 +386,107 @@ export async function moveAirUnit(controller, unit, setTestUpdate, night) {
   await delay(50)
 }
 
+export function checkAllBoxesForReorganization(controller, unit, fromBox, side, auto) {
+  let carrierForUnit = getCarrierForLocation(controller, unit.name, side)
+
+  if (carrierForUnit === undefined) {
+    carrierForUnit = controller.getCarrierForAirUnit(unit.name)
+
+    if (carrierForUnit === undefined) {
+      return []
+    }
+    // all carriers in this TF sunk or DMCV
+  }
+
+  let carrierName = carrierForUnit
+  // if (carrierName === undefined) {
+  //   carrierName = carrierForUnit
+  // }
+  console.log("carrierName=", carrierName, "carrierForUnit=", carrierForUnit)
+  let toBox = controller.getAirBoxForNamedShip(side, carrierName, "HANGAR")
+
+  // check reorg within box
+  let reorgUnits = checkForReorganization(controller, fromBox, toBox, auto)
+
+  if (reorgUnits && reorgUnits.length > 0) {
+    console.log("OUTA HERE PUNK!!!")
+    controller.setReorganizationUnits(unit.name, reorgUnits)
+    return reorgUnits
+  }
+  let flightBox = controller.getAirBoxForNamedShip(side, carrierName, "FLIGHT")
+  let fromFlightBox = controller.getAirBoxForNamedShip(side, carrierName, "FLIGHT")
+
+  // check reorg within box
+  console.log("FLIGHT BOLLOCKS 1 fromBox=", fromBox, "toBox=", toBox)
+  reorgUnits = checkForReorganization(controller, fromFlightBox, flightBox, auto)
+
+  console.log("+++++++++++++ REORG FLIGHT 1 DECK UNITS=", reorgUnits)
+  if (reorgUnits) {
+    controller.setReorganizationUnits(unit.name, reorgUnits)
+    return reorgUnits
+  } else {
+    let carrier = controller.getOtherCarrierInTF(carrierName, side)
+    if (carrier) {
+      flightBox = controller.getAirBoxForNamedShip(side, carrier.name, "FLIGHT")
+      fromFlightBox = controller.getAirBoxForNamedShip(side, carrier.name, "FLIGHT")
+
+      // check reorg within box
+      // console.log("FLIGHT BOLLOCKS 2 fromBox=", fromBox, "toBox=", toBox)
+      reorgUnits = checkForReorganization(controller, fromFlightBox, flightBox, auto)
+      // console.log("+++++++++++++ REORG FLIGHT 2 DECK UNITS=", reorgUnits)
+      if (reorgUnits) {
+        controller.setReorganizationUnits(unit.name, reorgUnits)
+        return reorgUnits
+      }
+    }
+  }
+  // check reorg across boxes
+  // 1. Same Carrier
+  reorgUnits = checkForReorganization(controller, fromBox, toBox, auto)
+
+  if (reorgUnits) {
+    controller.setReorganizationUnits(unit.name, reorgUnits)
+    if (side === GlobalUnitsModel.Side.JAPAN) {
+      return reorgUnits // Japan air unit must use its own carrier if possible
+    }
+  }
+  // 2. Other Carrier in Same Task Force
+  let carrier = controller.getOtherCarrierInTF(carrierName, side)
+  if (!carrier) {
+    if (reorgUnits === null) {
+      return []
+    }
+    return reorgUnits
+  }
+  toBox = controller.getAirBoxForNamedShip(side, carrier.name, "HANGAR")
+
+  let reorgUnits2 = checkForReorganization(controller, fromBox, toBox, auto)
+
+  if (reorgUnits2) {
+    if (reorgUnits2) {
+      reorgUnits2 = mergeUnique(reorgUnits, reorgUnits2)
+    }
+    controller.setReorganizationUnits(unit.name, reorgUnits2)
+    return reorgUnits2
+  }
+
+  // 3. Other Task Force Carrier(s)
+  const taskForce = controller.getTaskForceForCarrier(carrier.name, side)
+  const carriersInOtherTaskForce = controller.getCarriersInOtherTF(taskForce, side)
+
+  let reorgUnits1 = new Array()
+  for (const carrier of carriersInOtherTaskForce) {
+    toBox = controller.getAirBoxForNamedShip(side, carrier.name, "HANGAR")
+    let reorgUnits2 = checkForReorganization(controller, fromBox, toBox, auto)
+    if (reorgUnits2) {
+      reorgUnits1 = mergeUnique(reorgUnits1, reorgUnits2)
+    }
+  }
+  if (reorgUnits1) {
+    controller.setReorganizationUnits(unit.name, reorgUnits1)
+  }
+  return reorgUnits1
+}
 export async function generateUSAirOperationsMovesCarriers(controller, stateObject, test) {
   // return // QUACK TESTING US DOES NOTHING...
 
@@ -468,7 +572,7 @@ export async function generateUSAirOperationsMovesCarriers(controller, stateObje
   }
 
   // get all attack aircraft
-  let usAirUnitsOnFlightDecks = controller.getAllUnitsOnUSFlightDecks(false)
+  let usAirUnitsOnFlightDecks = controller.getAllUnitsOnUSFlightDecks()
 
   // Set Up Strike Groups first
 
@@ -479,6 +583,7 @@ export async function generateUSAirOperationsMovesCarriers(controller, stateObje
     }
   }
 
+  console.log("QUACK 1 usAirUnitsOnFlightDecks=", usAirUnitsOnFlightDecks)
   for (let unit of usAirUnitsOnFlightDecks) {
     if (unit.carrier.includes("Midway") || unit.aircraftUnit.moved) {
       continue
@@ -486,6 +591,8 @@ export async function generateUSAirOperationsMovesCarriers(controller, stateObje
     setValidDestinationBoxes(controller, unit.name, GlobalUnitsModel.Side.US)
 
     const destinations = controller.getValidAirUnitDestinations(unit.name)
+
+    console.log("DEBUG UNIT", unit.name, "destinations=", destinations)
     const unitsOnCarrierFlighftDeck = controller.getAllUnitsOnUSFlightDeckofNamedCarrier(unit.carrier)
 
     const hits = controller.getCarrierHits(unit.carrier)
@@ -541,6 +648,26 @@ export async function generateUSAirOperationsMovesCarriers(controller, stateObje
   usAirUnitsOnFlightDecks = controller.getAllUnitsOnUSFlightDecks(true)
 
   for (let unit of usAirUnitsOnFlightDecks) {
+    const location = controller.getAirUnitLocation(unit.name)
+    console.log("UNIT", unit.name, "LOCATION=", location.boxName)
+    if (location.boxName.includes("MIDWAY")) {
+      continue
+    }
+    // check for rare edge case of two 1-step units on flight deck of same type
+    const reorgUnits = checkAllBoxesForReorganization(
+      controller,
+      unit,
+      location.boxName,
+      GlobalUnitsModel.Side.US,
+      false
+    )
+
+    console.log(">>>>>>>>>>>> IN BOT reorgUnits=", reorgUnits)
+    // auto reorganize units if AI
+    if (reorgUnits && reorgUnits.length === 2) {
+      reorganizeUnits(controller, reorgUnits, unit)
+    }
+
     if (unit.carrier.includes("Midway")) {
       continue
     }

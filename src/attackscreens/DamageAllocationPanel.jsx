@@ -38,7 +38,6 @@ export function DamageHeaders({
 
   // TODO have array of air units, one for each step: display the names of elimintated steps
   useEffect(() => {
-    console.log(">>>>>>> GOT A STEP STELECTION:", GlobalGameState.testStepLossSelection)
     if (GlobalGameState.testStepLossSelection === -1) {
       return
     }

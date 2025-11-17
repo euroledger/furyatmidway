@@ -1341,7 +1341,7 @@ export function checkAllUSBoxesForReorganizationCAP(controller, unit, fromBox, s
   return []
 }
 
-function getCarrierForLocation(controller, name, side) {
+export function getCarrierForLocation(controller, name, side) {
   const { boxName } = controller.getAirUnitLocation(name)
   const tf = controller.getTaskForceForAirBox(boxName)
   const carriersInTF = controller.getAllCarriersInTaskForce(tf, side)
@@ -1441,7 +1441,7 @@ export function checkAllBoxesForReorganization(controller, unit, fromBox, side, 
   return reorgUnits1
 }
 
-function reorganizeUnits(controller, reorgUnits, unit) {
+export function reorganizeUnits(controller, reorgUnits, unit) {
   if (reorgUnits.length === 0 || reorgUnits.length === 1) {
     // orphan
     moveAirUnitToEliminatedBox(controller, unit)
