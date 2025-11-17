@@ -87,9 +87,9 @@ export default class GlobalGameState {
   static hide = (counterData) => {
     return GlobalGameState.hideCounters && counterData.side === GlobalUnitsModel.Side.US
   }
-  
-  static alertSent = false 
-  
+
+  static alertSent = false
+
   static gameTurn = 1
   static winner = ""
 
@@ -136,8 +136,6 @@ export default class GlobalGameState {
   // Can attack both carriers in a task force
   static carrierTarget1 = ""
   static carrierTarget2 = ""
-
-  static stateHandler = () => {}
 
   static doneCapSelection = false
   static dieRolls = new Array()
@@ -201,6 +199,8 @@ export default class GlobalGameState {
   static elitePilots = false
   static semperFi = false
 
+  static stateHandler = () => {}
+  
   static updateGlobalState = () => {
     this.stateHandler()
   }

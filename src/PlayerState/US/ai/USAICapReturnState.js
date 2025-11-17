@@ -8,8 +8,6 @@ class USAICapReturnState {
     const { setTestUpdate } = stateObject
 
     console.log(">>>>>>>> US CAP RETURN!!!!!!!!!!!!!!!!! return CAP units to parent carrier")
-
-        const poo = GlobalInit.controller.getAllAirUnitsInBox(GlobalUnitsModel.AirBox.US_HORNET_FLIGHT_DECK)
     
     await moveCAPUnitsFromReturnBoxToCarrier(GlobalInit.controller, GlobalUnitsModel.Side.US, setTestUpdate)
     this.nextState(stateObject)

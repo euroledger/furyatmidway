@@ -281,6 +281,7 @@ export function App() {
     index: -1,
   })
 
+
   const [testUpdate, setTestUpdate] = useState({
     unit: {},
     position: {},
@@ -1163,6 +1164,7 @@ export function App() {
     // FOR AI AND TESTING
     controller: GlobalInit.controller,
     setRestoreFunction,
+    setEliminatedSteps,
     doAIDMCVShipMarkerUpdate,
     setTowedToFriendlyPortPanelShow,
     setCarrierPlanesDitchPanelShow,
@@ -1709,6 +1711,7 @@ export function App() {
     if (
       GlobalGameState.gamePhase === GlobalGameState.PHASE.JAPAN_SETUP ||
       GlobalGameState.gamePhase === GlobalGameState.PHASE.JAPAN_CARD_DRAW ||
+      GlobalGameState.gamePhase === GlobalGameState.PHASE.JAPAN_DRAWS_ONE_CARD ||
       GlobalGameState.gamePhase === GlobalGameState.PHASE.JAPAN_MIDWAY ||
       GlobalGameState.gamePhase === GlobalGameState.PHASE.JAPAN_FLEET_MOVEMENT ||
       GlobalGameState.gamePhase === GlobalGameState.PHASE.JAPAN_DMCV_FLEET_MOVEMENT ||
@@ -1824,7 +1827,10 @@ export function App() {
                       GlobalInit.controller.drawJapanCards(1, false)
 
                       // setMidwayDialogShow(true)
-                      midwayPossible(GlobalInit.controller, setMidwayWarningShow, setMidwayDialogShow)
+                      midwayPossible(
+                        GlobalInit.controller, 
+                        setMidwayWarningShow, 
+                        setMidwayDialogShow)
 
                       console.log("GOING TO JAPAN MIDWAY")
                       GlobalGameState.gamePhase = GlobalGameState.PHASE.JAPAN_MIDWAY
@@ -2103,13 +2109,19 @@ export function App() {
   }
   let jpAfText, usCsfText, usMidwayText, jpOpsText, usOpsText
   if (searchValues) {
-    if (GlobalInit.controller.allCarriersSunkorDMCV(GlobalUnitsModel.Side.US, true)) {
-      usCsfText = `CSF: Closest Fleet N/A (All US Carriers Sunk)`
+    // this line doesn't seem right as there could be the 1AF sunk but MIF/DMCV fleet still on the board
+    // if (GlobalInit.controller.allCarriersSunkorDMCV(GlobalUnitsModel.Side.US, true)) {
+    if (searchValues.us_csf === 100) {
+      usCsfText = `CSF: Closest Fleet N/A`
     } else {
       usCsfText = `CSF: Closest Fleet ${searchValues.us_csf} hexes away`
     }
-    if (GlobalInit.controller.allCarriersSunkorDMCV(GlobalUnitsModel.Side.JAPAN)) {
-      jpAfText = `1AF: Closest Fleet N/A (All IJN Carriers Sunk)`
+
+    // this line doesn't seem right as there could be the CSF sunk but DMCV fleet still on the board
+    // if (GlobalInit.controller.allCarriersSunkorDMCV(GlobalUnitsModel.Side.JAPAN)) {
+
+    if (searchValues.jp_af === 100) {
+      jpAfText = `1AF: Closest Fleet N/A`
     } else {
       jpAfText = `1AF: Closest Fleet ${searchValues.jp_af} hexes away`
     }
@@ -2417,6 +2429,12 @@ export function App() {
       <CarrierPlanesDitchDamageFooters eliminatedSteps={eliminatedSteps}></CarrierPlanesDitchDamageFooters>
     </>
   )
+  if (csfLocation && csfLocation.currentHex !== undefined && csfLocation.currentHex.x === NaN) {
+        console.log(">>>>>>>>>>>>>>>> csfLocation.x=", csfLocation.currentHex.x, "csfLocation.y=", csfLocation.currentHex.y)
+
+    alert("CSF LOCATION FUCKED UP")
+  }
+
   const endOfTurnHeader =
     GlobalGameState.gameTurn !== 7 ? `End of Turn ${GlobalGameState.gameTurn} - Summary` : "End of Game Summary"
 
@@ -2676,6 +2694,10 @@ export function App() {
     doNavalBattleRoll(GlobalInit.controller, roll0, roll1)
   }
 
+  let noMidwayMsg = "No attack aircraft on deck"
+  if (GlobalInit.controller.isMidwayBaseDestroyed()) {
+    noMidwayMsg = "Midway Base Destroyed"
+  }
   // console.log("GlobalUnitsModel.usStrikeGroups=", GlobalUnitsModel.usStrikeGroups)
   function doInitiativeRoll(roll0, roll1) {
     // for testing QUACK
@@ -3122,7 +3144,8 @@ export function App() {
         <p>{ijnMidwayStr}</p>
         <p>Press Close to Continue</p>
       </AlertPanel>
-      <AlertPanel
+      
+       <AlertPanel
         show={midwayWarningShow}
         onHide={(e) => {
           nextAction(e)
@@ -3131,7 +3154,7 @@ export function App() {
       >
         <h4 style={{ justifyContent: "center", alignItems: "center" }}>INFO</h4>
         <p>No Midway attack possible</p>
-        <p>(No attack aircraft on deck)</p>
+        <p>({noMidwayMsg})</p>
       </AlertPanel>
       <DicePanel
         numDice={2}

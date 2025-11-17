@@ -157,8 +157,9 @@ function FleetCounter({
   ) {
     hex = fleetUnitUpdate.position.currentHex
 
-    // console.log("I am", fleetUnitUpdate.name, "fleetUnitUpdate=", fleetUnitUpdate)
     if (side === GlobalUnitsModel.Side.US) {
+          // console.log("I am", fleetUnitUpdate.name, "fleetUnitUpdate=", fleetUnitUpdate)
+
       const locationDMCV = controller.getFleetLocation("US-DMCV", GlobalUnitsModel.Side.US)
       const locationCSF = controller.getFleetLocation("CSF", GlobalUnitsModel.Side.US)
       const location1AF = controller.getFleetLocation("1AF-USMAP", GlobalUnitsModel.Side.US)

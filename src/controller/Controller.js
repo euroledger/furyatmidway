@@ -1021,16 +1021,18 @@ export default class Controller {
 
   getNextAvailableFleetBox(side) {
     const locationsUS = this.getUSFleetLocations()
+    console.log(">>>>>>>>>> locationsUS=", locationsUS)
+
     const locationsJapan = this.getJapanFleetLocations()
+    console.log(">>>>>>>>>> locationsJapan=", locationsJapan)
 
     const takenBoxes = new Array()
     for (let fleet of locationsUS.keys()) {
       if (fleet.toUpperCase().includes("MAP") || fleet.includes("SG")) {
         continue
       }
-      console.log(">>>>>>> test:", fleet)
+
       const location = locationsUS.get(fleet)
-      console.log(">>>>>>> test:", fleet, "location=", location)
 
       if (location.boxName === HexCommand.FLEET_BOX) {
         takenBoxes.push(location.boxIndex)
@@ -1040,9 +1042,7 @@ export default class Controller {
       if (fleet.toUpperCase().includes("MAP") || fleet.includes("SG")) {
         continue
       }
-      console.log(">>>>>>> test:", fleet)
       const location = locationsJapan.get(fleet)
-      console.log(">>>>>>> test:", fleet, "location=", location)
 
       if (location.boxName === HexCommand.FLEET_BOX) {
         takenBoxes.push(location.boxIndex)
@@ -1780,6 +1780,17 @@ export default class Controller {
   }
 
   isMidwayBaseDestroyed() {
+    console.log("GlobalGameState.totalMidwayHits=", GlobalGameState.totalMidwayHits)
+    console.log("GlobalGameState.US_MIDWAY=", GlobalGameState.US_MIDWAY)
+
+    console.log("GlobalGameState.midwayBox0Damaged=", GlobalGameState.midwayBox0Damaged)
+    console.log("GlobalGameState.midwayBox1Damaged=", GlobalGameState.midwayBox1Damaged)
+    console.log("GlobalGameState.midwayBox2Damaged=", GlobalGameState.midwayBox2Damaged)
+
+    if (GlobalGameState.midwayBox0Damaged && GlobalGameState.midwayBox1Damaged && GlobalGameState.midwayBox2Damaged) {
+      GlobalGameState.US_MIDWAY = 0
+      return true
+    }
     return GlobalGameState.totalMidwayHits >= 3 || GlobalGameState.midwayGarrisonLevel <= 3
   }
 

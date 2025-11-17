@@ -7,8 +7,8 @@ import { delay } from "../../../Utils"
 
 class USAIEscortDamageAllocationState {
   async doAction(stateObject) {
-    const { setCapSteps, capSteps, setCapAirUnits } = stateObject
-    console.log("DO ESCORT DAMAGE ALLOCATION FOR US number hits= ", GlobalGameState.fighterHits)
+    const { setCapSteps, capSteps, setCapAirUnits, setEliminatedSteps } = stateObject
+    console.log("DO ESCORT DAMAGE ALLOCATION FOR US")
 
     // Only fighters so select by combat strength
 
@@ -23,6 +23,7 @@ class USAIEscortDamageAllocationState {
       // let strikeUnits = GlobalInit.controller.getAttackingStrikeUnits()
       // US Damage Allocation Bot...picks one unit to take this hit
       let capUnits = GlobalInit.controller.getAllCAPDefenders(GlobalUnitsModel.Side.US)
+
       if (capUnits.length === 0) {
         break // all cap units eliminated
       }
@@ -35,10 +36,10 @@ class USAIEscortDamageAllocationState {
     }
 
     setCapSteps(() => capSteps - numHitsAllocated)
+    setEliminatedSteps(() => numHitsAllocated)
   }
 
   async nextState(stateObject) {
-    console.log("END OF ESCORT_DAMAGE_ALLOCATION attacking steps remaining=", GlobalGameState.attackingStepsRemaining)
     if (GlobalGameState.attackingStepsRemaining > 0) {
       // if elite pilots and midway attack we did escort counterattack first
       // so transition to CAP_INTERCEPTION

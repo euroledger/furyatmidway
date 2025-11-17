@@ -63,6 +63,8 @@ class USAIAirOperationsState {
       GlobalGameState.updateGlobalState()
     } else {
       console.log("+++++++++++++++++++++++++ DOING TIDY UP...")
+
+      // No idea why this is commented out
       // await tidyUp(setAirUnitUpdate, setStrikeGroupUpdate, setFleetUnitUpdate)
       GlobalGameState.gamePhase = GlobalGameState.PHASE.END_OF_AIR_OPERATION
       setEndOfAirOpAlertShow(true)

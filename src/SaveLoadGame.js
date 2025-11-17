@@ -70,6 +70,8 @@ export function saveGameState(controller, gameId) {
 
   const usFleetText = JSON.stringify(Array.from(GlobalUnitsModel.usFleetUnits.entries()))
 
+    console.log(">>>>>>>>>>>>>>>>>>>>>>> SAVINIG US MAP OBJECTS=", usMapText)
+
   const jpFleetText = JSON.stringify(Array.from(GlobalUnitsModel.jpFleetUnits.entries()))
   const logItems = JSON.stringify(Array.from(GlobalGameState.logItems.entries()))
   // console.log(logItems)
@@ -694,6 +696,8 @@ export function loadGameStateForId(controller, gameId) {
 
   const usMapText = gameDetails.usMap
   const usFleetMap = new Map(JSON.parse(usMapText))
+
+  console.log(">>>>>>>>>>>>>>>>>>>>>>> US FLEET MAP=", usFleetMap)
 
   const usfleetUpdates = createFleetUpdates(usFleetMap)
   const jpfleetUpdates = createFleetUpdates(jpFleetMap)

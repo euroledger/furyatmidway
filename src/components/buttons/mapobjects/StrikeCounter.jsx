@@ -194,6 +194,8 @@ function StrikeCounter({ setStrikeGroupPopup, currentUSHex, currentJapanHex, cou
       }
       if (GlobalGameState.gamePhase !== GlobalGameState.PHASE.MIDWAY_ATTACK) {
         const locationOfEnemyCarrier = controller.getFleetLocation("CSF", GlobalUnitsModel.Side.US)
+
+        console.log("DEBUG locationOfEnemyCarrier=", locationOfEnemyCarrier)
         const locationOfEnemyDMCV = controller.getFleetLocation("US-DMCV", GlobalUnitsModel.Side.US)
         let distanceToDMCV, distanceToCSF
 
@@ -251,12 +253,12 @@ function StrikeCounter({ setStrikeGroupPopup, currentUSHex, currentJapanHex, cou
           }
         }
         if (jpRegion.length === 0) {
+          console.log("DEBUG NO ENEMY TARGET -> REMOVE STRIKE GROUP", counterData.name)
           counterData.attacked = true
           setStrikeGroupAirUnitsToNotMoved(GlobalUnitsModel.Side.JAPAN)
         } else {
           setJapanMapRegions(jpRegion)
         }
-        setJapanMapRegions(jpRegion)
       } else {
         setCurrentHex(locationOfCarrier)
         if (locationOfCarrier) {

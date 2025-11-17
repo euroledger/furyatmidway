@@ -252,6 +252,7 @@ async function hangarToFlightDeck({ controller, unit, setTestUpdate, test }) {
   const index = controller.getFlightDeckSlot(unit.carrier, GlobalUnitsModel.Side.US, true, box)
   console.log("DEBUG got index for carrier", unit.carrier, "index=", index)
   if (index !== -1) {
+    await delay (10)
     await moveAirUnitToHangar({ controller, unit, setTestUpdate, test, box, index })
   }
 }

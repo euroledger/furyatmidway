@@ -26,7 +26,6 @@ function AirCounter({ getAirBox, setAirBox, counterData, side }) {
     testUpdate,
     setIsMoveable,
     setAlertShow,
-    setReorgAlertShow,
     setEnabledUSBoxes,
     setEnabledJapanBoxes,
     setEnabledJapanReorgBoxes,
@@ -223,7 +222,7 @@ function AirCounter({ getAirBox, setAirBox, counterData, side }) {
 
   const [theSide, setSide] = useState(side)
 
-  const doUpdate = (update) => {
+  const doUpdate = async (update) => {
     const unit = controller.getAirUnitInBox(update.boxName, update.index)
 
     // Ensure we only send this alert once so we can debug it
@@ -232,7 +231,7 @@ function AirCounter({ getAirBox, setAirBox, counterData, side }) {
       console.log("DEBUG airboxmodel=", controller.getBoxMap())
 
       alert(`ERROR unit already there -> ${update.boxName}, index ${update.index}`)
-      GlobalGameState.alertSent = true
+      // GlobalGameState.alertSent = true
       return
     }
 

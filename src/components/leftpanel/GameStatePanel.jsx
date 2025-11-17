@@ -46,7 +46,6 @@ export default class GameStatePanel extends React.Component {
     })
     const mg = GlobalGameState.midwayGarrisonLevel > 0 ? GlobalGameState.midwayGarrisonLevel : "X"
     const mif = GlobalGameState.midwayInvasionLevel > 0 ? GlobalGameState.midwayInvasionLevel : "X"
-    const mad = GlobalGameState.midwayAttackDeclaration ? "Yes" : "No"
 
     let yh = GlobalInit.controller.getCarrierHits(GlobalUnitsModel.Carrier.YORKTOWN)
     let eh = GlobalInit.controller.getCarrierHits(GlobalUnitsModel.Carrier.ENTERPRISE)
@@ -92,15 +91,15 @@ export default class GameStatePanel extends React.Component {
               </p>
 
               <p style={{ marginTop: "15px" }} className="text-left">
-                Midway Attack Strength: {mfs}
+                Midway Attack Strength: {mas} steps
               </p>
               <p style={{ marginTop: "-15px" }} className="text-left">
-                Midway Fighter Strength: {cfs}
+                Midway Fighter Strength: {mfs} steps
               </p>
 
-              <p className="text-left">US Carrier Attack Strength: {mas}</p>
+              <p className="text-left">US Carrier Attack Strength: {cas} steps</p>
               <p style={{ marginTop: "-15px" }} className="text-left">
-                US Carrier Fighter Strength: {cas}
+                US Carrier Fighter Strength: {cfs} steps
               </p>
             </Accordion.Body>
           </Accordion.Item>

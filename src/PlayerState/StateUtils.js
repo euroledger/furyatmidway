@@ -27,7 +27,7 @@ import {
   moveOrphanedAirUnitsInReturn1Boxes,
 } from "../controller/AirOperationsHandler"
 import Command from "../commands/Command"
-export const DELAY_MS = 1
+export const DELAY_MS = 10
 
 export function calcAirOpsPointsMidway(distanceFromFleetToMidway) {
   if (distanceFromFleetToMidway <= 2) {
@@ -371,10 +371,13 @@ export async function usFleetMovementNextStateHandler({
 export function isMidwayAttackPossible() {
   // if there are no attack planes on deck cannot attack Midway
   const attackUnitsOnDeck = GlobalInit.controller.getAllUnitsOnJapaneseFlightDecks(false)
-  if (attackUnitsOnDeck.length === 0) {
+  if (attackUnitsOnDeck.length === 0 || GlobalInit.controller.isMidwayBaseDestroyed()) {
+    console.log("MIDWAY ATTACK POSSIBLE")
     GlobalGameState.midwayAttackDeclaration = false
     return false
   } else {
+    console.log("MIDWAY ATTACK NOT POSSIBLE")
+
     return true
   }
 }
@@ -692,9 +695,7 @@ export async function setNextStateFollowingCardPlay(stateObject) {
       if (GlobalGameState.gameTurn !== 4) {
         GlobalGameState.currentPlayer = GlobalUnitsModel.Side.US
         GlobalGameState.gamePhase = GlobalGameState.PHASE.JAPAN_DRAWS_ONE_CARD
-        // midwayPossible(GlobalInit.controller, setMidwayWarningShow, setMidwayDialogShow)
       } else {
-        // midwayDeclarationHandler()
         GlobalGameState.currentPlayer = GlobalUnitsModel.Side.US
         GlobalGameState.gamePhase = GlobalGameState.PHASE.US_DRAWS_ONE_CARD
       }
@@ -949,17 +950,35 @@ export async function removeMIFFleet(setFleetUnitUpdate) {
 }
 
 export async function checkRemoveDMCVFleet(side, setFleetUnitUpdate) {
+  // BUG OF DMCV GOING TO FLEET BOX ERRONEOUSLY...
+  // console.log("DEBUG US DMCV=", GlobalGameState.usDMCVCarrier)
+  // console.log("DEBUG IJN DMCV=", GlobalGameState.jpDMCVCarrier)
+
+  // console.log("DEBGUG CARRIER ATTACK TARGET=", GlobalGameState.currentCarrierAttackTarget)
+  // if (
+  //   side === GlobalUnitsModel.Side.US &&
+  //   GlobalGameState.usDMCVCarrier !== GlobalGameState.currentCarrierAttackTarget
+  // ) {
+  //   return
+  // }
+  // if (
+  //   side === GlobalUnitsModel.Side.JAPAN &&
+  //   GlobalGameState.jpDMCVCarrier !== GlobalGameState.currentCarrierAttackTarget
+  // ) {
+  //   return
+  // }
   if (GlobalInit.controller.allCarriersSunk(side, true)) {
     if (side === GlobalUnitsModel.Side.US) {
       GlobalGameState.allUSCarriersSunk = true
     } else {
       GlobalGameState.allJapanCarriersSunk = true
     }
+    await delay(100)
     // 1. Create Fleet Update to remove the fleet marker for that side
     const update1 = createRemoveDMCVFleetUpdate(side)
     setFleetUnitUpdate(update1)
 
-    await delay(1)
+    await delay(100)
     // 2. Create Fleet Update to remove the fleet marker from the other side's map
     const update2 = createMapUpdateForFleet(GlobalInit.controller, update1.name, side)
     setFleetUnitUpdate(update2)
@@ -969,17 +988,21 @@ export async function checkRemoveDMCVFleet(side, setFleetUnitUpdate) {
 }
 
 export async function checkRemoveFleet(side, setFleetUnitUpdate) {
+  console.log("CHECKING REMOVE FLEET")
   if (GlobalInit.controller.allCarriersSunkorDMCV(side, true)) {
+    console.log("DEBUG US FLEET SUNK")
     if (side === GlobalUnitsModel.Side.US) {
       GlobalGameState.allUSCarriersSunk = true
     } else {
       GlobalGameState.allJapanCarriersSunk = true
     }
     // 1. Create Fleet Update to remove the fleet marker for that side
+    await delay(10)
+
     const update1 = createRemoveFleetUpdate(side)
     setFleetUnitUpdate(update1)
 
-    await delay(1)
+    await delay(10)
     // 2. Create Fleet Update to remove the fleet marker from the other side's map
     const update2 = createMapUpdateForFleet(GlobalInit.controller, update1.name, side)
     setFleetUnitUpdate(update2)
@@ -994,8 +1017,17 @@ export async function tidyUp(setAirUnitUpdate, setStrikeGroupUpdate, setFleetUni
       ? GlobalUnitsModel.Side.JAPAN
       : GlobalUnitsModel.Side.US
 
+  console.log("DEBUG CHECK REMOVE FLEET...")
   await checkRemoveFleet(otherSide, setFleetUnitUpdate)
-  await checkRemoveDMCVFleet(otherSide, setFleetUnitUpdate)
+  if (otherSide === GlobalUnitsModel.Side.US) {
+    if (GlobalGameState.usDMCVCarrier !== "") {
+      await checkRemoveDMCVFleet(otherSide, setFleetUnitUpdate)
+    }
+  } else {
+    if (GlobalGameState.jpDMCVCarrier !== "") {
+      await checkRemoveDMCVFleet(otherSide, setFleetUnitUpdate)
+    }
+  }
 
   await setStrikeGroupAirUnitsToNotMoved(GlobalGameState.sideWithInitiative, setAirUnitUpdate)
 
@@ -1274,7 +1306,8 @@ export async function midwayPossible(controller, setMidwayWarningShow, setMidway
   // if there are no attack planes on deck cannot attack Midway
   // otherwise display the attack declaration dialog
   const attackUnitsOnDeck = controller.getAllUnitsOnJapaneseFlightDecks(false)
-  if (attackUnitsOnDeck.length === 0) {
+  console.log("QUACK GlobalInit.controller.isMidwayBaseDestroyed()=", GlobalInit.controller.isMidwayBaseDestroyed())
+  if (attackUnitsOnDeck.length === 0 || GlobalInit.controller.isMidwayBaseDestroyed()) {
     GlobalGameState.midwayAttackDeclaration = false
     setMidwayWarningShow(true)
   } else {
@@ -1327,7 +1360,7 @@ async function removeSunkenFleet(side, setFleetUnitUpdate) {
   const update1 = createRemoveFleetUpdate(side)
   setFleetUnitUpdate(update1)
 
-  await delay(1)
+  await delay(10)
   // 2. Create Fleet Update to remove the fleet marker from the other side's map
   const update2 = createMapUpdateForFleet(GlobalInit.controller, update1.name, side)
   setFleetUnitUpdate(update2)

@@ -5,7 +5,7 @@ import { midwayPossible, goToDMCVState } from "../../StateUtils"
 
 class JapanHumanMidwayDeclarationState {
   async doAction(stateObject) {
-    const { setMidwayWarningShow, setMidwayDialogShow } = stateObject
+    const { setMidwayWarningShow, setMidwayDialogShow} = stateObject
     console.log("DO (HUMAN) MIDWAY DECLARATION ACTION")
     GlobalGameState.currentPlayer = GlobalUnitsModel.Side.JAPAN
     midwayPossible(GlobalInit.controller, setMidwayWarningShow, setMidwayDialogShow)

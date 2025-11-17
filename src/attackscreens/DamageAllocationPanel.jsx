@@ -3,6 +3,7 @@ import "./cap.css"
 import GlobalGameState from "../model/GlobalGameState"
 import { doDamageAllocation } from "../DiceHandler"
 import GlobalUnitsModel from "../model/GlobalUnitsModel"
+import GlobalInit from "../model/GlobalInit"
 
 export function DamageHeaders({
   controller,
@@ -24,6 +25,8 @@ export function DamageHeaders({
     unitsInGroup = controller.getAttackingStrikeUnits(true)
   }
   const arrLength = unitsInGroup.length
+
+  console.log(">>>> arrLEngth=", arrLength)
   useEffect(() => {
     // add or remove refs
     setElRefs((elRefs) =>
@@ -35,6 +38,7 @@ export function DamageHeaders({
 
   // TODO have array of air units, one for each step: display the names of elimintated steps
   useEffect(() => {
+    console.log(">>>>>>> GOT A STEP STELECTION:", GlobalGameState.testStepLossSelection)
     if (GlobalGameState.testStepLossSelection === -1) {
       return
     }
@@ -136,7 +140,9 @@ export function DamageHeaders({
     }
 
     doDamageAllocation(controller, airUnit)
+  
     setEliminatedSteps(() => eliminatedSteps + 1)
+
     GlobalGameState.updateGlobalState()
 
     setEliminatedUnits(()=> [...eliminatedUnits,airUnit])

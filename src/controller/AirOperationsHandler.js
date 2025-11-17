@@ -69,6 +69,7 @@ export function getValidUSDestinationsCAP(controller, parentCarrier, side, name)
     const boxName = controller.getAirBoxForNamedShip(side, carrier.name, "FLIGHT_DECK")
 
     const destAvailable = controller.isFlightDeckAvailable(carrier.name, side)
+    console.log("DEBUG thisTF:", "flightDeckAvailable=", destAvailable)
     if (!controller.isSunk(carrier.name) && destAvailable) {
       // this unit can go to its parent carrier flight deck
       destinationsArray.push(boxName)
@@ -77,6 +78,7 @@ export function getValidUSDestinationsCAP(controller, parentCarrier, side, name)
     }
     // As this is CAP -> can go to hangar instead
     // if carrier not at capacity
+    console.log("DEBUG CHECK HANGAR AVAILABLE")
     if (controller.isHangarAvailable(carrier.name)) {
       const capHangar = controller.getAirBoxForNamedShip(side, carrier.name, "HANGAR")
       destinationsArray.push(capHangar)

@@ -38,7 +38,7 @@ export function autoSave(controller, side) {
 
   saveGameState(controller, gameId)
 
-  deleteAllAutoSavedGames(3)
+  // deleteAllAutoSavedGames(3)
 }
 
 export function deleteAllAutoSavedGames(numToPreserve) {
