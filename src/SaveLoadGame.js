@@ -465,6 +465,7 @@ function loadAirUnits(airUnitMap) {
     // GlobalGameState.midwayGarrisonLevel = 4
     // GlobalGameState.carrierHitsDetermined = false
     GlobalGameState.alertSent = false // always set to false
+    // GlobalGameState.distanceBetweenCarrierFleets = 4
 
     // GlobalGameState.CSFLeftMap = false
     // GlobalGameState.AF1LeftMap = false

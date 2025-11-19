@@ -1581,6 +1581,9 @@ export function App() {
     getAllAirUnitsRequiringMoves()
   }
 
+  console.log(">>>>>>>>>>>>>> DEBUG NUM US ATTACK STEPS LEFT=", 
+    GlobalInit.controller.getCarrierAttackAirStrength(GlobalUnitsModel.Side.US))
+
   if (GlobalGameState.gamePhase === GlobalGameState.PHASE.NIGHT_AIR_OPERATIONS_JAPAN) {
     getAllAirUnitsRequiringMovesNightAirOperation(GlobalUnitsModel.Side.JAPAN)
   }
@@ -2429,14 +2432,6 @@ export function App() {
       <CarrierPlanesDitchDamageFooters eliminatedSteps={eliminatedSteps}></CarrierPlanesDitchDamageFooters>
     </>
   )
-  if (csfLocation && csfLocation.currentHex !== undefined && csfLocation.currentHex.x === NaN) {
-    console.log(">>>>>>>>>>>>>>>> csfLocation.x=", csfLocation.currentHex.x, "csfLocation.y=", csfLocation.currentHex.y)
-    alert("CSF LOCATION FUCKED UP")
-  }
-
-  if (csfLocation && csfLocation.currentHex !== undefined) {
-    console.log("NOOBS  csfLocation.x=", csfLocation.currentHex.x, "csfLocation.y=", csfLocation.currentHex.y)
-  }
 
   const endOfTurnHeader =
     GlobalGameState.gameTurn !== 7 ? `End of Turn ${GlobalGameState.gameTurn} - Summary` : "End of Game Summary"
@@ -2990,9 +2985,7 @@ export function App() {
         loadMyGameHandler={loadMyGame}
         setButtonModalShow={setButtonModalShow}
         onHide={() => {
-          console.log("HIDE THE FUCKER")
           setLoadPanelShow(false)
-          // setButtonModalShow(false)
         }}
       ></LoadGamePanel>
       <ButtonModal
@@ -3386,14 +3379,19 @@ export function App() {
                 }
                 GlobalGameState.dieRolls = []
                 setNumDiceToRoll(carrierHits)
+                console.log("QUACK 1")
                 nextAction(e)
               }
             : (e) => {
                 setAttackResolutionPanelShow(false)
                 setAttackResolved(true)
                 if (allFleetsSunk(sideBeingAttacked())) {
+                                  console.log("QUACK 2")
+
                   setGameOverAlertShow(true)
                 } else {
+                                  console.log("QUACK 3")
+
                   nextAction(e)
                 }
               }

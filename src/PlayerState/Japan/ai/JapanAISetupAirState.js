@@ -20,6 +20,8 @@ class JapanAISetupState {
       let position1 = JapanAirBoxOffsets.find((box) => box.name === update.boxName)
       update.position = position1.offsets[update.index]
 
+        update.handle=7
+
       setTestUpdate(update)
       await delay(GlobalGameState.DELAY)
       if (update.nextAction) {

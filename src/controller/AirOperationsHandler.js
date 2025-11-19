@@ -1215,7 +1215,7 @@ export function checkForReorganization(controller, fromBox, toBox, auto) {
   return null
 }
 
-function mergeUnique(arr1, arr2) {
+export function mergeUnique(arr1, arr2) {
   if (arr1 === null) {
     return arr2
   }

@@ -78,6 +78,7 @@ function FleetCounter({
   }
   let hex = {}
 
+
   if (fleetUnitUpdate) {
     if (fleetUnitUpdate.position.currentHex === HexCommand.OFFBOARD && !fleetUnitUpdate.name.includes("DMCV")) {
       return

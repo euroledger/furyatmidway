@@ -240,12 +240,12 @@ export async function usFleetMovementHandler({ setFleetUnitUpdate }) {
     update2 = createMapUpdateForFleet(GlobalInit.controller, "US-DMCV", GlobalUnitsModel.Side.US)
   }
   if (update2 !== null) {
-    await setFleetUnitUpdate(update2)
+    setFleetUnitUpdate(update2)
   }
   await delay(1)
 
   if (update1 !== null) {
-    await setFleetUnitUpdate(update1)
+    setFleetUnitUpdate(update1)
   }
   await delay(1)
 
@@ -397,17 +397,23 @@ const canCSFMoveOffBoard = (csfLocation) => {
   if (GlobalGameState.gameTurn === 4) {
     GlobalGameState.fleetSpeed = 4
     GlobalGameState.dmcvFleetSpeed = 2
+    if (csfLocation !== undefined && csfLocation.currentHex !== undefined && csfLocation.currentHex.q >= 6) {
+      // can move offboard
+      if (GlobalGameState.gamePhase === GlobalGameState.PHASE.US_FLEET_MOVEMENT_PLANNING) {
+        canMoveOffBoard = true
+      }
+    }
   } else {
+    if (csfLocation !== undefined && csfLocation.currentHex !== undefined && csfLocation.currentHex.q >= 8) {
+      // can move offboard
+      if (GlobalGameState.gamePhase === GlobalGameState.PHASE.US_FLEET_MOVEMENT_PLANNING) {
+        canMoveOffBoard = true
+      }
+    }
     GlobalGameState.fleetSpeed = 2
     GlobalGameState.dmcvFleetSpeed = 1
   }
 
-  if (csfLocation !== undefined && csfLocation.currentHex !== undefined && csfLocation.currentHex.q >= 6) {
-    // can move offboard
-    if (GlobalGameState.gamePhase === GlobalGameState.PHASE.US_FLEET_MOVEMENT_PLANNING) {
-      canMoveOffBoard = true
-    }
-  }
   return canMoveOffBoard
 }
 
@@ -1230,6 +1236,86 @@ export async function removeDMCVFleetForCarrier(side, setFleetUnitUpdate) {
   update1.initial = false
   update2.initial = false
 
+  console.log("UPDATE1=", update1)
+  console.log("UPDATE2=", update2)
+
+  setFleetUnitUpdate(update1)
+  await delay(20)
+  setFleetUnitUpdate(update2)
+  await delay(20)
+  setFleetUnitUpdate({
+    name: "",
+    position: {},
+  }) // reset to avoid updates causing problems for other markers
+}
+
+export async function removeCarrierFleetToOffMapBox(side, setFleetUnitUpdate) {
+  let update1 = {
+    position: {},
+  }
+  let update2 = {
+    position: {},
+  }
+
+  update1.position.currentHex = HexCommand.FLEET_BOX
+  update2.position.currentHex = HexCommand.FLEET_BOX
+
+  if (side === GlobalUnitsModel.Side.US) {
+    const index1 = GlobalInit.controller.getNextAvailableFleetBox(GlobalUnitsModel.Side.US)
+
+    update1 = {
+      name: "CSF-JPMAP",
+      position: {
+        currentHex: {
+          boxName: HexCommand.FLEET_BOX,
+          boxIndex: index1,
+        },
+      },
+      initial: false,
+      loading: false,
+      side: GlobalUnitsModel.Side.JAPAN,
+    }
+    update2 = {
+      name: "CSF",
+      position: {
+        currentHex: {
+          boxName: HexCommand.FLEET_BOX,
+          boxIndex: index1,
+        },
+      },
+      initial: false,
+      loading: false,
+      side: GlobalUnitsModel.Side.US,
+    }
+  } else {
+    update1 = {
+      name: "1AF-USMAP",
+      position: {
+        currentHex: {
+          boxName: HexCommand.FLEET_BOX,
+          boxIndex: index1,
+        },
+      },
+      initial: false,
+      loading: false,
+      side: GlobalUnitsModel.Side.US,
+    }
+    update2 = {
+      name: "1AF",
+      position: {
+        currentHex: {
+          boxName: HexCommand.FLEET_BOX,
+          boxIndex: index1,
+        },
+      },
+      initial: false,
+      loading: false,
+      side: GlobalUnitsModel.Side.JAPAN,
+    }
+  }
+  update1.initial = false
+  update2.initial = false
+
   setFleetUnitUpdate(update1)
   await delay(1)
   setFleetUnitUpdate(update2)
@@ -1297,6 +1383,8 @@ export async function moveCAPUnitsFromReturnBoxToCarrier(controller, side, setTe
     update.position = position1.offsets[update.index]
 
     console.log("DO CAP UNIT UPDATE:", update)
+    update.handle = 8
+
     setTestUpdate(update)
     await delay(10)
   }

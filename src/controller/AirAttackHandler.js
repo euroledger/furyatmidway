@@ -42,6 +42,7 @@ export function setUpAirAttack(controller, location, strikeGroup, setCardNumber,
     }
     // }
     GlobalGameState.taskForceTarget = GlobalUnitsModel.TaskForce.MIDWAY
+    GlobalGameState.currentCarrierAttackTarget === GlobalUnitsModel.Carrier.MIDWAY
   } else {
     GlobalGameState.taskForceTarget = fleetTarget
     if (fleetTarget.includes("DMCV") || fleetTarget.includes("MIF")) {
@@ -81,7 +82,6 @@ export function setUpAirAttack(controller, location, strikeGroup, setCardNumber,
         // GlobalGameState.gamePhase = GlobalGameState.PHASE.CAP_INTERCEPTION
       }
       GlobalGameState.gamePhase = GlobalGameState.PHASE.TARGET_DETERMINATION
-
     }
     if (
       controller.japanHandContainsCard(11) &&

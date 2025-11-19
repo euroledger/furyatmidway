@@ -17,6 +17,7 @@ import {
 } from "../../../controller/AirOperationsHandler"
 import HexCommand from "../../../commands/HexCommand"
 
+
 function AirCounter({ getAirBox, setAirBox, counterData, side }) {
   const {
     loading,
@@ -38,6 +39,8 @@ function AirCounter({ getAirBox, setAirBox, counterData, side }) {
     left: counterData.position.left,
     top: counterData.position.top,
   })
+  const [alertSent, setAlertSent] = useState(false)
+
   const location = controller.getAirUnitLocation(counterData.name)
   const checkForAirUnitReorganization = () => {
     if (side === GlobalUnitsModel.Side.JAPAN && enabledJapanReorgBoxes) {
@@ -226,12 +229,16 @@ function AirCounter({ getAirBox, setAirBox, counterData, side }) {
     const unit = controller.getAirUnitInBox(update.boxName, update.index)
 
     // Ensure we only send this alert once so we can debug it
-    if (unit && !GlobalGameState.alertSent) {
+    if (unit && !alertSent) {
       console.log("DEBUG trying to move unit", counterData.name, "update=", update)
       console.log("DEBUG airboxmodel=", controller.getBoxMap())
 
+      console.log("DEBUG update.handle=", update.handle)
+      console.log("UNIT ALREADY THERE -> ", unit.name)
+
       alert(`ERROR unit already there -> ${update.boxName}, index ${update.index}`)
       // GlobalGameState.alertSent = true
+      setAlertSent(true)
       return
     }
 
@@ -288,7 +295,7 @@ function AirCounter({ getAirBox, setAirBox, counterData, side }) {
     position.left !== airUnitUpdate.position.left + "%" &&
     position.top !== airUnitUpdate.position.top + "%"
   if (doUpdatePoo) {
-    // console.log("I am ", counterData.name, " -> HUMAN AIR UNIT UPDATE = ", testUpdate)
+    console.log("I am ", counterData.name, " -> HUMAN AIR UNIT UPDATE = ", testUpdate)
 
     doUpdate(airUnitUpdate)
   } else {
@@ -302,7 +309,7 @@ function AirCounter({ getAirBox, setAirBox, counterData, side }) {
     position.left !== testUpdate.position.left + "%" &&
     position.top !== testUpdate.position.top + "%"
   ) {
-    // console.log("I am ", counterData.name, " -> AIR UNIT (TEST/AI) UPDATE = ", testUpdate)
+    console.log("I am ", counterData.name, " -> AIR UNIT (TEST/AI) UPDATE = ", testUpdate)
 
     doUpdate(testUpdate)
   }

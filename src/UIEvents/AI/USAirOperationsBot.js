@@ -4,6 +4,7 @@ import Controller from "../../controller/Controller"
 import { distanceBetweenHexes } from "../../components/HexUtils"
 import HexCommand from "../../commands/HexCommand"
 import { createStrikeGroupUpdate } from "../../AirUnitData"
+import { mergeUnique } from "../../controller/AirOperationsHandler"
 import {
   setValidDestinationBoxes,
   isFirstAirOpForStrike,
@@ -110,7 +111,9 @@ function getFleetDistances(controller) {
   }
   if (
     !controller.allCarriersSunkorDMCV(GlobalUnitsModel.Side.JAPAN) &&
-    !controller.allCarriersSunkorDMCV(GlobalUnitsModel.Side.US, true)
+    !controller.allCarriersSunkorDMCV(GlobalUnitsModel.Side.US, true) &&
+    locationCSF.currentHex !== undefined &&
+    location1AF.currentHex !== undefined
   ) {
     distanceBetweenCSFand1AF = distanceBetweenHexes(locationCSF.currentHex, location1AF.currentHex)
   }
@@ -153,7 +156,11 @@ function getNextAvailableStrikeBox(controller, side) {
     }
   }
 }
+
 async function moveAirUnitToHangar({ controller, unit, setTestUpdate, test, box, index }) {
+  console.log("DEBUG MOVE AIR UNIT TO HANGAR", box, "NAME=", unit.name)
+  await delay(40)
+
   const update = {
     name: unit.name,
     boxName: box,
@@ -165,9 +172,10 @@ async function moveAirUnitToHangar({ controller, unit, setTestUpdate, test, box,
     controller.addAirUnitToBox(update.boxName, update.index, unit)
     return
   }
+  update.handle = 1
   setTestUpdate(update)
 
-  await delay(DELAY_MS)
+  await delay(40)
 }
 
 async function moveAirUnitToCAP({ controller, unit, setTestUpdate, test, box, index }) {
@@ -182,6 +190,8 @@ async function moveAirUnitToCAP({ controller, unit, setTestUpdate, test, box, in
     controller.addAirUnitToBox(update.boxName, update.index, unit)
     return
   }
+  update.handle = 2
+
   setTestUpdate(update)
 
   await delay(DELAY_MS)
@@ -207,6 +217,8 @@ async function moveAirUnitToStrikeGroup({ controller, unit, setTestUpdate, test,
     controller.addAirUnitToBox(update.boxName, update.index, unit)
     return
   }
+  update.handle = 3
+
   setTestUpdate(update)
 
   await delay(40)
@@ -237,7 +249,7 @@ async function moveStrikeGroup(controller, unit, fromHex, toHex, setStrikeGroupU
 }
 async function hangarToFlightDeck({ controller, unit, setTestUpdate, test }) {
   console.log("DEBUG move unit to flight deck:", unit.name)
-  await delay(10)
+  await delay(40)
   // 7b. Get valid destinations for units in Hangar
   // 7c. Move Units from Hangar to Flight Deck
   setValidDestinationBoxes(controller, unit.name, GlobalUnitsModel.Side.US)
@@ -255,13 +267,14 @@ async function hangarToFlightDeck({ controller, unit, setTestUpdate, test }) {
   const index = controller.getFlightDeckSlot(unit.carrier, GlobalUnitsModel.Side.US, true, box)
   console.log("DEBUG got index for carrier", unit.carrier, "index=", index)
   if (index !== -1) {
-    await delay(10)
+    await delay(40)
     await moveAirUnitToHangar({ controller, unit, setTestUpdate, test, box, index })
   }
+  await delay(40)
 }
 
 async function flightDecktoCAP(controller, unit, setTestUpdate, test, midway) {
-  await delay(10)
+  await delay(40)
   // 7b. Get valid destinations for units in Hangar
   // 7c. Move Units from Hangar to Flight Deck
   setValidDestinationBoxes(controller, unit.name, GlobalUnitsModel.Side.US)
@@ -287,6 +300,7 @@ async function flightDecktoCAP(controller, unit, setTestUpdate, test, midway) {
   if (index !== -1) {
     await moveAirUnitToCAP({ controller, unit, setTestUpdate, test, box, index })
   }
+  await delay(40)
 }
 
 export async function moveAirUnitsFromHangarEndOfNightOperation(controller, side, setTestUpdate) {
@@ -342,6 +356,8 @@ export async function moveAirUnitNight(controller, unit, setTestUpdate, destBoxe
   update.log = true
   await delay(50)
 
+  update.handle = 4
+
   setTestUpdate(update)
   await delay(50)
 }
@@ -381,6 +397,7 @@ export async function moveAirUnit(controller, unit, setTestUpdate, night) {
   update.position = position1.offsets[update.index]
 
   await delay(50)
+  update.handle = 5
 
   setTestUpdate(update)
   await delay(50)

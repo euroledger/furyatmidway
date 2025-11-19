@@ -6,6 +6,7 @@ import { getUSFleetRegions } from "../../StateUtils"
 import { doUSFleetMovementAction } from "../../../UIEvents/AI/USFleetMovementBot"
 import { convertHexCoords } from "../../../components/HexUtils"
 import { createFleetUpdate } from "../../../AirUnitData"
+import { removeCarrierFleetToOffMapBox } from "../../StateUtils"
 import { delay } from "../../../Utils"
 
 class USAIFleetMovementPlanningState {
@@ -16,21 +17,28 @@ class USAIFleetMovementPlanningState {
     const { canCSFMoveFleetOffBoard, usCSFRegions } = getUSFleetRegions()
 
     await delay(GlobalGameState.DELAY)
-    let destination = doUSFleetMovementAction(GlobalInit.controller, usCSFRegions, canCSFMoveFleetOffBoard)
-    console.log("US FLEET DESTINATION:", destination)
-    if (!destination) {
-      // CSF is off board
-      this.nextState(stateObject)
-      // GlobalGameState.phaseCompleted = true
+
+    // If DMCV fleet can move offboard it always does so
+    // Otherwise it heads for the board edge
+    if (GlobalInit.controller.isFleetCrippled(GlobalUnitsModel.Side.US) && canCSFMoveFleetOffBoard) {
+      const update = await removeCarrierFleetToOffMapBox(GlobalUnitsModel.Side.US, setFleetUnitUpdate)
+      setFleetUnitUpdate(update)
     } else {
-      const c = convertHexCoords(destination)
-      console.log("US FLEET DESTINATION:", c)
+      let destination = doUSFleetMovementAction(GlobalInit.controller, usCSFRegions, canCSFMoveFleetOffBoard)
+      console.log("1) US FLEET DESTINATION:", destination)
+      if (!destination) {
+        // CSF is off board
+        this.nextState(stateObject)
+        // GlobalGameState.phaseCompleted = true
+      } else {
+        const c = convertHexCoords(destination)
+        console.log("(2) US FLEET DESTINATION:", c)
 
-      const usFleetMove = createFleetUpdate("CSF", destination.q, destination.r)
-      setFleetUnitUpdate(usFleetMove)
-
-      this.nextState(stateObject)
+        const usFleetMove = createFleetUpdate("CSF", destination.q, destination.r)
+        setFleetUnitUpdate(usFleetMove)
+      }
     }
+    this.nextState(stateObject)
   }
 
   async nextState(stateObject) {

@@ -4,7 +4,7 @@ import GlobalInit from "../../../model/GlobalInit"
 import { getUSFleetRegions } from "../../StateUtils"
 import { doUSDMCVFleetMovementAction } from "../../../UIEvents/AI/USFleetMovementBot"
 import { convertHexCoords } from "../../../components/HexUtils"
-import { createFleetUpdate, createRemoveDMCVFleetUpdate } from "../../../AirUnitData"
+import { createFleetUpdate, createRemoveDMCVFleetUpdate, createMapUpdateForFleet } from "../../../AirUnitData"
 import { getRandomElementFrom } from "../../../Utils"
 import HexCommand from "../../../commands/HexCommand"
 import { checkRemoveFleet } from "../../StateUtils"
@@ -29,6 +29,17 @@ class USAIDMCVFleetMovementPlanningState {
     if (canUSDMCVMoveFleetOffBoard) {
       const update = createRemoveDMCVFleetUpdate(GlobalUnitsModel.Side.US)
       setFleetUnitUpdate(update)
+
+      //    await delay(100)
+
+      // const update1 = createRemoveDMCVFleetUpdate(side)
+      // console.log("UPDATE1=", update1)
+      // setFleetUnitUpdate(update1)
+
+      await delay(100)
+      // 2. Create Fleet Update to remove the fleet marker from the other side's map
+      const update2 = createMapUpdateForFleet(GlobalInit.controller, update.name, GlobalUnitsModel.Side.US)
+      setFleetUnitUpdate(update2)
     } else {
       const destination = doUSDMCVFleetMovementAction(GlobalInit.controller, usDMCVRegions)
 

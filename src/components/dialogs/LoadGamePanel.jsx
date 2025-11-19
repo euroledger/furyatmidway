@@ -12,6 +12,18 @@ import MinimizeButton from "./MinimizeButton"
 function getSavedKey(idx) {
   let keys = Object.keys(localStorage)
   const savedGameArray = keys.filter((key) => key.startsWith("fam-")).map((item) => item.replace("fam-", ""))
+  savedGameArray.sort((a, b) => {
+    if (a.startsWith("#") && b.startsWith("#")) {
+      const tokensArrayA = a.split("-")
+      const tokensArrayB = b.split("-")
+
+      const idA = parseInt(tokensArrayA[0].slice(1))
+      const idB = parseInt(tokensArrayB[0].slice(1))
+
+      return idA - idB
+    }
+    return 0
+  })
   return savedGameArray[idx]
 }
 function ConfirmPanel({ idx, setShowConfirmPanel }) {
@@ -101,6 +113,17 @@ function LoadGamePanel(props) {
   let keys = Object.keys(localStorage)
   const savedGameArray = keys.filter((key) => key.startsWith("fam-")).map((item) => item.replace("fam-", ""))
 
+  savedGameArray.sort((a, b) => {
+    if (a.startsWith("#") && b.startsWith("#")) {
+      const tokensArrayA = a.split("-")
+      const tokensArrayB = b.split("-")
+
+      const idA = parseInt(tokensArrayA[0].slice(1))
+      const idB = parseInt(tokensArrayB[0].slice(1))
+      return idA - idB
+    }
+    return 0
+  })
   function showPanel(e, idx) {
     setIdx(() => idx)
     setShowConfirmPanel(true)

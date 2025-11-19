@@ -1231,6 +1231,36 @@ export default class Controller {
     return sunkCarriers
   }
 
+  isFleetCrippled(side) {
+    let damagedCarriers = new Array()
+    if (side === GlobalUnitsModel.Side.JAPAN) {
+      if (this.getCarrierHits(GlobalUnitsModel.Carrier.AKAGI) >= 2) {
+        damagedCarriers.push(GlobalUnitsModel.Carrier.AKAGI)
+      }
+      if (this.getCarrierHits(GlobalUnitsModel.Carrier.KAGA) >= 2) {
+        damagedCarriers.push(GlobalUnitsModel.Carrier.KAGA)
+      }
+      if (this.getCarrierHits(GlobalUnitsModel.Carrier.HIRYU) >= 2) {
+        damagedCarriers.push(GlobalUnitsModel.Carrier.HIRYU)
+      }
+      if (this.getCarrierHits(GlobalUnitsModel.Carrier.SORYU) >= 2) {
+        damagedCarriers.push(GlobalUnitsModel.Carrier.SORYU)
+      }
+      return damagedCarriers.length === 4
+    } else {
+      if (this.getCarrierHits(GlobalUnitsModel.Carrier.ENTERPRISE) >= 2) {
+        damagedCarriers.push(GlobalUnitsModel.Carrier.ENTERPRISE)
+      }
+      if (this.getCarrierHits(GlobalUnitsModel.Carrier.HORNET) >= 2) {
+        damagedCarriers.push(GlobalUnitsModel.Carrier.HORNET)
+      }
+      if (this.getCarrierHits(GlobalUnitsModel.Carrier.YORKTOWN) >= 2) {
+        damagedCarriers.push(GlobalUnitsModel.Carrier.YORKTOWN)
+      }
+      return damagedCarriers.length === 3
+    }
+  }
+
   // get carriers with damage 2 (eligible for DMCV)
   getDamagedCarriers(side) {
     let damagedCarriers = new Array()

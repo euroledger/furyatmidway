@@ -211,8 +211,9 @@ export function EndOfTurnSummaryHeaders({ controller, sidebg }) {
               <p
                 style={{
                   marginTop: "50px",
-                  marginLeft: "-30px",
+                  marginLeft: "-16px",
                   color: "white",
+                  fontSize: "18px"
                 }}
               >
                 &emsp;

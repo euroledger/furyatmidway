@@ -587,6 +587,7 @@ export function createRemoveFleetUpdate(side) {
 
 export function createMapUpdateForFleet(controller, name, side) {
   const location = controller.getFleetLocation(name, side)
+
   let otherName
   if (name === "CSF") {
     otherName = "CSF-JPMAP"

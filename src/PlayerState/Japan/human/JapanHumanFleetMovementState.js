@@ -27,7 +27,6 @@ class JapanHumanFleetMovementState {
     )
 
       console.log(
-          "********** IJN FLEET MOVEMENT distance between fleets THIS turn =>",
           GlobalGameState.distanceBetweenCarrierFleets
         )
     const { setMidwayNoAttackAlertShow, setJapanMapRegions, setJapanMIFMapRegions, setFleetUnitUpdate } = stateObject

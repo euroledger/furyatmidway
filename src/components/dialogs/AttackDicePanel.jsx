@@ -126,6 +126,8 @@ function AttackDicePanel(props) {
     myBigMargin = margin
   }
 
+  let imageMargin = "-18px"
+
   const diceButtonStr = numDice > 1 ? "Roll Dice" : "Roll Die"
   const attackers = controller.getStrikeUnitsAttackingCarrier()
 
@@ -153,9 +155,11 @@ function AttackDicePanel(props) {
       GlobalGameState.taskForceTarget === GlobalUnitsModel.TaskForce.JAPAN_DMCV ||
       GlobalGameState.taskForceTarget === GlobalUnitsModel.TaskForce.US_DMCV
     ) {
-      dbDRM="" // can never be planes on deck for DMCV
+      dbDRM = "" // can never be planes on deck for DMCV
     }
   } else {
+    imageMargin = "30px"
+
     GlobalGameState.currentCarrierAttackTarget = GlobalUnitsModel.TaskForce.MIF
 
     if (GlobalGameState.taskForceTarget === GlobalUnitsModel.TaskForce.JAPAN_DMCV) {
@@ -278,6 +282,7 @@ function AttackDicePanel(props) {
                   style={{
                     maxHeight: "200",
                     minHeight: "200px",
+                    marginLeft: { imageMargin },
                   }}
                 >
                   <SingleCarrier controller={controller}></SingleCarrier>

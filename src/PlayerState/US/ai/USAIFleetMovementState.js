@@ -19,7 +19,6 @@ class USAIFleetMovementState {
     )
 
     console.log(
-      "********** US FLEET MOVEMENT distance between fleets last turn =>",
       GlobalGameState.distanceBetweenCarrierFleets
     )
   }

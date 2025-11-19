@@ -43,6 +43,7 @@ class ViewEventAirUnitMoveHandler {
       }
     }
 
+    console.log("DEBUG ADD AIR UNIT", counterData.name, "TO BOX", name)
     this.controller.addAirUnitToBox(name, index, counterData)
     let command = new MoveCommand(COMMAND_TYPE.MOVE_AIR_UNIT, counterData.longName, from, to)
 

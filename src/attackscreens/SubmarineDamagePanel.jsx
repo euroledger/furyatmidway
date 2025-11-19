@@ -412,8 +412,10 @@ export function SubmarineDamagePanelFooters({
     let damage
     GlobalGameState.sideWithInitiative = side
     if (box === "BOW") {
+      console.log("DO BOW DAMAGE")
       damage = doCarrierDamageRolls(controller, 1)
     } else {
+      console.log("DO STERN DAMAGE")
       damage = doCarrierDamageRolls(controller, 4)
     }
     setDamageDone(true)

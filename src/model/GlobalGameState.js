@@ -119,7 +119,7 @@ export default class GlobalGameState {
 
   static attackingStrikeGroup = ""
 
-  static distanceBetweenCarrierFleets = undefined
+  static distanceBetweenCarrierFleets = 100
   static initial1AFLocation = undefined // location of 1AF at start of movement phase
   static initialMIFLocation = undefined // location of IJN MIF at start of movement phase
   static initialDMCVLocation = undefined // location of IJN DMCV at start of movement phase
