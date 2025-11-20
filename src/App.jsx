@@ -3379,19 +3379,14 @@ export function App() {
                 }
                 GlobalGameState.dieRolls = []
                 setNumDiceToRoll(carrierHits)
-                console.log("QUACK 1")
                 nextAction(e)
               }
             : (e) => {
                 setAttackResolutionPanelShow(false)
                 setAttackResolved(true)
                 if (allFleetsSunk(sideBeingAttacked())) {
-                                  console.log("QUACK 2")
-
                   setGameOverAlertShow(true)
                 } else {
-                                  console.log("QUACK 3")
-
                   nextAction(e)
                 }
               }

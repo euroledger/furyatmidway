@@ -4,6 +4,7 @@ import GlobalUnitsModel from "../../../model/GlobalUnitsModel"
 import { delay } from "../../../Utils"
 import { endOfNightAirOperation } from "../../StateUtils"
 import { moveAirUnit } from "../../../UIEvents/AI/USAirOperationsBot"
+import { autoSave } from "../../../Utils"
 
 class USAINightAirOperationsState {
   async doAction(stateObject) {
@@ -60,6 +61,7 @@ class USAINightAirOperationsState {
     GlobalGameState.currentPlayer = GlobalUnitsModel.Side.JAPAN
     GlobalGameState.cardsChecked = new Array()
     setCardNumber(() => -1)
+    autoSave(GlobalInit.controller, GlobalUnitsModel.Side.US)
     GlobalGameState.gamePhase = GlobalGameState.PHASE.END_OF_TURN
     GlobalGameState.updateGlobalState()
   }

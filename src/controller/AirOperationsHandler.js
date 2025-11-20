@@ -1373,7 +1373,7 @@ export function checkAllBoxesForReorganization(controller, unit, fromBox, side, 
   // console.log("FLIGHT BOLLOCKS 1 fromBox=", fromBox, "toBox=", toBox)
   reorgUnits = checkForReorganization(controller, fromFlightBox, flightBox, auto)
 
-  // console.log("+++++++++++++ REORG FLIGHT 1 DECK UNITS=", reorgUnits)
+  console.log("+++++++++++++ REORG FLIGHT 1 DECK UNITS=", reorgUnits)
   if (reorgUnits) {
     controller.setReorganizationUnits(unit.name, reorgUnits)
     return reorgUnits
@@ -1386,7 +1386,7 @@ export function checkAllBoxesForReorganization(controller, unit, fromBox, side, 
       // check reorg within box
       // console.log("FLIGHT BOLLOCKS 2 fromBox=", fromBox, "toBox=", toBox)
       reorgUnits = checkForReorganization(controller, fromFlightBox, flightBox, auto)
-      // console.log("+++++++++++++ REORG FLIGHT 2 DECK UNITS=", reorgUnits)
+      console.log("+++++++++++++ REORG FLIGHT 2 DECK UNITS=", reorgUnits)
       if (reorgUnits) {
         controller.setReorganizationUnits(unit.name, reorgUnits)
         return reorgUnits

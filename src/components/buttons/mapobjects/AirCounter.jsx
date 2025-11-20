@@ -17,7 +17,6 @@ import {
 } from "../../../controller/AirOperationsHandler"
 import HexCommand from "../../../commands/HexCommand"
 
-
 function AirCounter({ getAirBox, setAirBox, counterData, side }) {
   const {
     loading,
@@ -229,7 +228,7 @@ function AirCounter({ getAirBox, setAirBox, counterData, side }) {
     const unit = controller.getAirUnitInBox(update.boxName, update.index)
 
     // Ensure we only send this alert once so we can debug it
-    if (unit && !alertSent) {
+    if (unit && !alertSent && unit.name !== counterData.name) {
       console.log("DEBUG trying to move unit", counterData.name, "update=", update)
       console.log("DEBUG airboxmodel=", controller.getBoxMap())
 
@@ -310,6 +309,15 @@ function AirCounter({ getAirBox, setAirBox, counterData, side }) {
     position.top !== testUpdate.position.top + "%"
   ) {
     console.log("I am ", counterData.name, " -> AIR UNIT (TEST/AI) UPDATE = ", testUpdate)
+    console.log(
+      "DEBUG, current position, (",
+      position.left,
+      position.top,
+      "), test update position=(",
+      testUpdate.position.left,
+      testUpdate.position.top,
+      ")"
+    )
 
     doUpdate(testUpdate)
   }

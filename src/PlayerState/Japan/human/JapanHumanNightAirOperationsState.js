@@ -1,6 +1,7 @@
 import GlobalGameState from "../../../model/GlobalGameState"
 import GlobalInit from "../../../model/GlobalInit"
 import GlobalUnitsModel from "../../../model/GlobalUnitsModel"
+import { autoSave } from "../../../Utils"
 
 class JapanHumanNightAirOperationsState {
   async doAction(stateObject) {
@@ -24,6 +25,7 @@ class JapanHumanNightAirOperationsState {
 
   async nextState(stateObject) {
     console.log(">>>>> MOVING ON FROM JAPAN NIGHT AIR OPERATIONS<<<<<<<<<")
+    autoSave(GlobalInit.controller, GlobalUnitsModel.Side.JAPAN)
     GlobalGameState.gamePhase = GlobalGameState.PHASE.NIGHT_AIR_OPERATIONS_US
   }
 

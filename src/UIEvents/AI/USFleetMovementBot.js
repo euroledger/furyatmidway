@@ -65,7 +65,7 @@ export function furthestHexFrom(regions, hex) {
     console.log("\tRegionHex", regionHex, "currentDist=", currentDist)
     if (currentDist > dist) {
       dist = currentDist
-      targetHex = hex
+      targetHex = regionHex
     }
   }
   console.log("return dist:", dist, "targetHex:", targetHex)
@@ -355,7 +355,7 @@ function doTurns2And3FleetMovement(regions, dmcvLocation) {
   }
 
   console.log("DEBUG 44 RETURN fleetHex:", fleetHex)
-  return fleetHex.targetHex
+  return fleetHex
 }
 
 function doTurns5To7FleetMovement(regions, dmcvLocation) {

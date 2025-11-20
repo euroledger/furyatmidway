@@ -23,17 +23,35 @@ export function autoSave(controller, side) {
   const date = getDateStamp()
   let gameId
   GlobalGameState.gameSaveId = GlobalGameState.gameSaveId ?? 1
+
+  let jpStr = "END-IJNAIROP" + GlobalGameState.airOpJapan
+  let usStr = "END-USAIROP" + GlobalGameState.airOpUS
+
+  if (GlobalGameState.gamePhase === GlobalGameState.PHASE.NIGHT_AIR_OPERATIONS_JAPAN) {
+    jpStr = "END-IJNNIGHTAIROP"
+  }
+  if (GlobalGameState.gamePhase === GlobalGameState.PHASE.NIGHT_AIR_OPERATIONS_US) {
+    usStr = "END-USNIGHTAIROP"
+  }
+  if (GlobalGameState.gamePhase === GlobalGameState.PHASE.JAPAN_FLEET_MOVEMENT) {
+    jpStr = "END-IJNFLEETMOVE"
+  }
   if (GlobalGameState.currentCarrierAttackTarget === GlobalUnitsModel.Carrier.MIDWAY) {
     gameId = `fam-#${GlobalGameState.gameSaveId}-${date}-GT${GlobalGameState.gameTurn}-END-MIDWAY-AIROP${
       GlobalGameState.airOpJapan + 1
     }`
   } else {
-    if (side === GlobalUnitsModel.Side.US) {
-      gameId = `fam-#${GlobalGameState.gameSaveId}-${date}-GT${GlobalGameState.gameTurn}-END-USAIROP${GlobalGameState.airOpUS}`
+    if (side === GlobalUnitsModel.Side.JAPAN) {
+      gameId = `fam-#${GlobalGameState.gameSaveId}-${date}-GT${GlobalGameState.gameTurn}-${jpStr}`
     } else {
-      gameId = `fam-#${GlobalGameState.gameSaveId}-${date}-GT${GlobalGameState.gameTurn}-END-IJNAIROP${GlobalGameState.airOpJapan}`
+      gameId = `fam-#${GlobalGameState.gameSaveId}-${date}-GT${GlobalGameState.gameTurn}-${usStr}`
     }
   }
+
+  const alertStr = "SAVING GAME " + gameId
+
+  alert(alertStr)
+  console.log("gameId=", gameId)
   GlobalGameState.gameSaveId++
 
   saveGameState(controller, gameId)
@@ -51,7 +69,7 @@ export function deleteAllAutoSavedGames(numToPreserve) {
   let numToDelete = savedGameArray.length
 
   if (numToPreserve && numToDelete <= numToPreserve) {
-    return 
+    return
   }
 
   numToDelete = savedGameArray.length - numToPreserve
@@ -62,17 +80,13 @@ export function deleteAllAutoSavedGames(numToPreserve) {
     const gameIdA = parseInt(tokensArrayA[0])
     const gameIdB = parseInt(tokensArrayB[0])
 
-    console.log(">>>> gameIdA=", gameIdA, "gameIdB=", gameIdB)
     return gameIdA - gameIdB
   })
-  console.log("QUACK !!!!!!numToDelete=", numToDelete, "savedGameArray=", savedGameArray)
   let count = 1
   for (const savedGame of savedGameArray) {
     if (savedGame.includes("AIROP")) {
-      console.log("REMOVE", "fam-#" + savedGame)
       localStorage.removeItem("fam-#" + savedGame)
     }
-    console.log("NOW COUNT IS", count, "numToDelete IS", numToDelete)
     if (count >= numToDelete) {
       break
     }

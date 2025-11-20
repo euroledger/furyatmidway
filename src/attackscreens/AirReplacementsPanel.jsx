@@ -353,11 +353,7 @@ export function AirReplacementsFooters({
     if (GlobalGameState.testCarrierSelection === -1) {
       return
     }
-    console.log(">>>>>>>>>>> SNOOOOTY elRefsCV=", elRefsCV)
-
     const myRef = elRefsCV[GlobalGameState.testCarrierSelection]
-    console.log("*********** SNOOT 2 myRef=", myRef)
-
     if (myRef !== undefined && myRef.current !== undefined && myRef.current !== null) {
       myRef.current.click(myRef.current)
     }

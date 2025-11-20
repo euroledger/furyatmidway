@@ -157,8 +157,8 @@ function getNextAvailableStrikeBox(controller, side) {
   }
 }
 
-async function moveAirUnitToHangar({ controller, unit, setTestUpdate, test, box, index }) {
-  console.log("DEBUG MOVE AIR UNIT TO HANGAR", box, "NAME=", unit.name)
+async function moveAirUnitToFlightDeck({ controller, unit, setTestUpdate, test, box, index }) {
+  console.log("DEBUG MOVE AIR UNIT TO FLIGHT DECK", box, "NAME=", unit.name)
   await delay(40)
 
   const update = {
@@ -268,7 +268,7 @@ async function hangarToFlightDeck({ controller, unit, setTestUpdate, test }) {
   console.log("DEBUG got index for carrier", unit.carrier, "index=", index)
   if (index !== -1) {
     await delay(40)
-    await moveAirUnitToHangar({ controller, unit, setTestUpdate, test, box, index })
+    await moveAirUnitToFlightDeck({ controller, unit, setTestUpdate, test, box, index })
   }
   await delay(40)
 }

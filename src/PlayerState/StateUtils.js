@@ -371,12 +371,18 @@ export async function usFleetMovementNextStateHandler({
 export function isMidwayAttackPossible() {
   // if there are no attack planes on deck cannot attack Midway
   const attackUnitsOnDeck = GlobalInit.controller.getAllUnitsOnJapaneseFlightDecks(false)
+  console.log(
+    "attackUnitsOnDeck.length=",
+    attackUnitsOnDeck,
+    "GlobalInit.controller.isMidwayBaseDestroyed()=",
+    GlobalInit.controller.isMidwayBaseDestroyed()
+  )
   if (attackUnitsOnDeck.length === 0 || GlobalInit.controller.isMidwayBaseDestroyed()) {
-    console.log("MIDWAY ATTACK POSSIBLE")
+    console.log("MIDWAY ATTACK NOT POSSIBLE")
     GlobalGameState.midwayAttackDeclaration = false
     return false
   } else {
-    console.log("MIDWAY ATTACK NOT POSSIBLE")
+    console.log("MIDWAY ATTACK POSSIBLE")
 
     return true
   }

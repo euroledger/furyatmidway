@@ -426,7 +426,7 @@ export async function doDMCVDamage(
   setFleetUnitUpdate,
   side
 ) {
-  await delay(1)
+  await delay(10)
   const otherSide = side === GlobalUnitsModel.Side.US ? GlobalUnitsModel.Side.JAPAN : GlobalUnitsModel.Side.US
   GlobalGameState.currentCarrierAttackTarget =
     side === GlobalUnitsModel.Side.JAPAN ? GlobalGameState.jpDMCVCarrier : GlobalGameState.usDMCVCarrier
@@ -444,12 +444,12 @@ export async function doDMCVDamage(
     const update1 = createRemoveDMCVFleetUpdate(side)
     setFleetUnitUpdate(update1)
 
-    await delay(1)
+    await delay(10)
     // 2. Create Fleet Update to remove the fleet marker from the other side's map
     const update2 = createMapUpdateForFleet(GlobalInit.controller, update1.name, side)
     setFleetUnitUpdate(update2)
   }
-  await delay(1)
+  await delay(10)
 
   // ---- END ---
 

@@ -26,7 +26,6 @@ export function DamageHeaders({
   }
   const arrLength = unitsInGroup.length
 
-  console.log(">>>> arrLEngth=", arrLength)
   useEffect(() => {
     // add or remove refs
     setElRefs((elRefs) =>
