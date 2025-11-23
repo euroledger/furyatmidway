@@ -12,6 +12,9 @@ class ViewEventAirUnitSetupHandler {
     // event contains type and data
     const { counterData, name, index, side } = event.data
 
+    if (GlobalGameState.gamePhase === GlobalGameState.PHASE.CAP_RETURN) {
+      counterData.border = undefined
+    }
     const { boxName, boxIndex } = this.controller.getAirUnitLocation(counterData.name)
     const from = boxName === GlobalUnitsModel.AirBox.OFFBOARD ? "OFFBOARD" : boxName + " - box " + boxIndex
     const to = `${name} - box ${index}`

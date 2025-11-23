@@ -84,7 +84,7 @@ export function deleteAllAutoSavedGames(numToPreserve) {
   })
   let count = 1
   for (const savedGame of savedGameArray) {
-    if (savedGame.includes("AIROP")) {
+    if (savedGame.includes("AIROP") || savedGame.includes("FLEETMOVE")) {
       localStorage.removeItem("fam-#" + savedGame)
     }
     if (count >= numToDelete) {

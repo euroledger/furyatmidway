@@ -287,6 +287,7 @@ function AirCounter({ getAirBox, setAirBox, counterData, side }) {
     }
   }
 
+  let human = false
   // HUMAN STUFF
   const doUpdatePoo =
     counterData.name === airUnitUpdate.name &&
@@ -294,15 +295,15 @@ function AirCounter({ getAirBox, setAirBox, counterData, side }) {
     position.left !== airUnitUpdate.position.left + "%" &&
     position.top !== airUnitUpdate.position.top + "%"
   if (doUpdatePoo) {
-    console.log("I am ", counterData.name, " -> HUMAN AIR UNIT UPDATE = ", testUpdate)
+    console.log("I am ", counterData.name, " -> HUMAN AIR UNIT UPDATE = ", airUnitUpdate)
 
     doUpdate(airUnitUpdate)
-  } else {
-    // console.log("Name:", counterData.name, " airUnitUpdate.position=",  airUnitUpdate.position)
-  }
+    human = true
+  } 
 
   // AI STUFF
   if (
+    !human && 
     counterData.name === testUpdate.name &&
     testUpdate.position != undefined &&
     position.left !== testUpdate.position.left + "%" &&

@@ -16,6 +16,8 @@ class JapanHumanAirAttack1State {
     if (GlobalGameState.currentCarrierAttackTarget === GlobalUnitsModel.Carrier.MIDWAY) {
       console.log("GO TO DAMAGE RESOLUTION")
       GlobalGameState.gamePhase = GlobalGameState.PHASE.MIDWAY_DAMAGE_RESOLUTION
+      console.log("UPDATE THE FUCKING GLOBAL STATE...")
+      GlobalGameState.updateGlobalState()
     } else {
       if (GlobalGameState.currentCarrierAttackTarget === GlobalUnitsModel.TaskForce.MIF) {
         await endOfAirOperation(

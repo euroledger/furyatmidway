@@ -1551,6 +1551,7 @@ export function App() {
     units = units.concat(returningUnits).concat(capUnitsReturning)
 
     for (let unit of units) {
+      console.log("DEBUG ***************** setting unit border to true:", unit.name)
       unit.border = true
     }
   }

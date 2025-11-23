@@ -22,11 +22,21 @@ NodeJS comes with a tool called npm, and it is this we use to install the game.
 
 `git clone https://github.com/euroledger/furyatmidway.git`
 
-3. Otherwise download the zip file
+3. Otherwise download the zip file:
+
+Go to the github repository
+
+`https://github.com/euroledger/furyatmidway`
+
+Then select `Code` and `Download ZIP` as shown here
+
+![image info](/public/images/download.jpg)
+
+Unpack the zip folder into a new source code folder called furyatmidwasy then:
 
 4. cd to the source code folder:
 
-cd furyatmidway
+`cd furyatmidway`
 
 5. Install the game:
 

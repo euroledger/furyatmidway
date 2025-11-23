@@ -8,6 +8,8 @@ class ViewEventAirUnitMoveHandler {
     this.controller = controller
   }
   handleEvent(event) {
+        console.log("POOOOOOO MOV !!!!!!!!!!!!!!!!! yay )))))))))))))))")
+
     // event contains type and data
     const { counterData, name, index, side, loading } = event.data
 
@@ -75,6 +77,7 @@ class ViewEventAirUnitMoveHandler {
         }
       }
     }
+    console.log("DEBUG >>>>>>>>>>>> SET BORDER TO UNDEFINED:", counterData.name)
     counterData.border = undefined
     GlobalGameState.log(`${command.toString()}`)
   }
