@@ -11,12 +11,8 @@ class JapanHumanAirAttack1State {
     const { setAirUnitUpdate, setEliminatedUnitsPanelShow } = stateObject
     console.log("MOVE ON FROM JAPAN AI AIR ATTACK")
 
-    console.log("DEBUG GlobalGameState.currentCarrierAttackTarget=", GlobalGameState.currentCarrierAttackTarget)
-
     if (GlobalGameState.currentCarrierAttackTarget === GlobalUnitsModel.Carrier.MIDWAY) {
-      console.log("GO TO DAMAGE RESOLUTION")
       GlobalGameState.gamePhase = GlobalGameState.PHASE.MIDWAY_DAMAGE_RESOLUTION
-      console.log("UPDATE THE FUCKING GLOBAL STATE...")
       GlobalGameState.updateGlobalState()
     } else {
       if (GlobalGameState.currentCarrierAttackTarget === GlobalUnitsModel.TaskForce.MIF) {

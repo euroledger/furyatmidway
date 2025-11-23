@@ -419,14 +419,12 @@ export function checkAllBoxesForReorganization(controller, unit, fromBox, side, 
   // if (carrierName === undefined) {
   //   carrierName = carrierForUnit
   // }
-  console.log("carrierName=", carrierName, "carrierForUnit=", carrierForUnit)
   let toBox = controller.getAirBoxForNamedShip(side, carrierName, "HANGAR")
 
   // check reorg within box
   let reorgUnits = checkForReorganization(controller, fromBox, toBox, auto)
 
   if (reorgUnits && reorgUnits.length > 0) {
-    console.log("OUTA HERE PUNK!!!")
     controller.setReorganizationUnits(unit.name, reorgUnits)
     return reorgUnits
   }
@@ -434,10 +432,10 @@ export function checkAllBoxesForReorganization(controller, unit, fromBox, side, 
   let fromFlightBox = controller.getAirBoxForNamedShip(side, carrierName, "FLIGHT")
 
   // check reorg within box
-  console.log("FLIGHT BOLLOCKS 1 fromBox=", fromBox, "toBox=", toBox)
+  // console.log("FLIGHT BOLLOCKS 1 fromBox=", fromBox, "toBox=", toBox)
   reorgUnits = checkForReorganization(controller, fromFlightBox, flightBox, auto)
 
-  console.log("+++++++++++++ REORG FLIGHT 1 DECK UNITS=", reorgUnits)
+  // console.log("+++++++++++++ REORG FLIGHT 1 DECK UNITS=", reorgUnits)
   if (reorgUnits) {
     controller.setReorganizationUnits(unit.name, reorgUnits)
     return reorgUnits
@@ -666,7 +664,6 @@ export async function generateUSAirOperationsMovesCarriers(controller, stateObje
 
   for (let unit of usAirUnitsOnFlightDecks) {
     const location = controller.getAirUnitLocation(unit.name)
-    console.log("UNIT", unit.name, "LOCATION=", location.boxName)
     if (location.boxName.includes("MIDWAY")) {
       continue
     }
@@ -679,7 +676,6 @@ export async function generateUSAirOperationsMovesCarriers(controller, stateObje
       false
     )
 
-    console.log(">>>>>>>>>>>> IN BOT reorgUnits=", reorgUnits)
     // auto reorganize units if AI
     if (reorgUnits && reorgUnits.length === 2) {
       reorganizeUnits(controller, reorgUnits, unit)
