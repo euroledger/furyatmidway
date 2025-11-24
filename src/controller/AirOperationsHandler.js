@@ -160,7 +160,7 @@ export function getValidJapanDestinationsCAP(controller, parentCarrier, side) {
     const capHangar = controller.getAirBoxForNamedShip(side, parentCarrier, "HANGAR")
     destinationsArray.push(capHangar)
     if (controller.getCarrierHits(parentCarrier) === 0) {
-            // if parent has 1 hit, allow CAP units to return to other carrier,
+      // if parent has 1 hit, allow CAP units to return to other carrier,
 
       return destinationsArray
     }
@@ -674,8 +674,8 @@ export function doHangarNight(controller, name, side) {
 
   // check there is room on this carrier's flight deck
   const destAvailable = controller.isFlightDeckAvailable(carrierName, side, true)
-  if( destAvailable && destBox) {
-     destinationsArray.push(destBox)
+  if (destAvailable && destBox) {
+    destinationsArray.push(destBox)
   }
   const numFreeSlotsOnFlightDeck = controller.getNumFreeSlotsOnFlightDeck(carrierName, side)
 
@@ -695,9 +695,9 @@ export function doHangarNight(controller, name, side) {
   //   return 0
   // }
   // if (destBox) {
-    // destinationsArray.push(destBox)
-    console.log(">>>>>>>>>> destinations array=", destinationsArray)
-    controller.setValidAirUnitDestinations(name, destinationsArray)
+  // destinationsArray.push(destBox)
+  console.log(">>>>>>>>>> destinations array=", destinationsArray)
+  controller.setValidAirUnitDestinations(name, destinationsArray)
   // }
   return numFreeSlotsOnFlightDeck
 }
@@ -1546,6 +1546,26 @@ export function setValidDestinationBoxesNightOperations(controller, airUnitName,
   }
   return numFree
 }
+
+export function setValidSetUpAirUnitDestinations(controller, unit, side) {
+  // 1. get CAP, HANGAR, FLIGHT DECK BOXES FOR unit's carrier
+
+  // 2. If fighter add CAP box to dest list
+
+  // 3. For all units add flight deck and hangar to list
+
+  const destBoxCAP = controller.getCapBoxForNamedCarrier(unit.carrier, side)
+  const destBoxFlightDeck = controller.getAirBoxForNamedShip(side, unit.carrier, "FLIGHT_DECK")
+  const destBoxHangar = controller.getAirBoxForNamedShip(side, unit.carrier, "HANGAR")
+
+  const boxArray = new Array()
+  if (!unit.aircraftUnit.attack) {
+    boxArray.push(destBoxCAP)
+  }
+  boxArray.push(destBoxFlightDeck, destBoxHangar)
+  controller.setValidAirUnitDestinations(unit.name, boxArray)
+}
+
 export function setValidDestinationBoxes(controller, airUnitName, side) {
   controller.setValidAirUnitDestinations(airUnitName, new Array()) // just to be sure last entries are gone
 

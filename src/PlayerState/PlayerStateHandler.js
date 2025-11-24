@@ -28,8 +28,8 @@ class PlayerStateHandler {
     const { setEnabledJapanBoxes, setEnabledUSBoxes, getJapanEnabledAirBoxes, getUSEnabledAirBoxes } = this.stateObject
 
     GlobalGameState.updateGlobalState()
-    const enabledBoxes = getJapanEnabledAirBoxes()
-    setEnabledJapanBoxes(() => enabledBoxes)
+    // const enabledBoxes = getJapanEnabledAirBoxes()
+    // setEnabledJapanBoxes(() => enabledBoxes)
     const enabledUSBoxes = getUSEnabledAirBoxes()
     setEnabledUSBoxes(() => enabledUSBoxes)
   }

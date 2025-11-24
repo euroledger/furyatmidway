@@ -5,10 +5,6 @@ import JapanHumanCardDrawState from "./JapanHumanCardDrawState"
 class JapanHumanSetupAirState {
   async doAction(stateObject) {
     console.log("JAPAN SETUP AIR STATE")
-    const { getJapanEnabledAirBoxes, setEnabledJapanBoxes } = stateObject
-
-    const enabledBoxes = getJapanEnabledAirBoxes()
-    setEnabledJapanBoxes(() => enabledBoxes)
   }
 
   async nextState() {

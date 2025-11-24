@@ -143,9 +143,9 @@ export function App() {
   const [enabledUSReorgBoxes, setEnabledUSReorgBoxes] = useState(false)
 
   const [gameOverAlertShow, setGameOverAlertShow] = useState(false)
-  useEffect(() => {
-    setEnabledJapanBoxes(getJapanEnabledAirBoxes())
-  }, [])
+  // useEffect(() => {
+  //   setEnabledJapanBoxes(getJapanEnabledAirBoxes())
+  // }, [])
   useEffect(() => {
     setEnabledUSBoxes(getUSEnabledAirBoxes())
   }, [])
@@ -1582,8 +1582,8 @@ export function App() {
     getAllAirUnitsRequiringMoves()
   }
 
-  console.log(">>>>>>>>>>>>>> DEBUG NUM US ATTACK STEPS LEFT=", 
-    GlobalInit.controller.getCarrierAttackAirStrength(GlobalUnitsModel.Side.US))
+  // console.log(">>>>>>>>>>>>>> DEBUG NUM US ATTACK STEPS LEFT=", 
+    // GlobalInit.controller.getCarrierAttackAirStrength(GlobalUnitsModel.Side.US))
 
   if (GlobalGameState.gamePhase === GlobalGameState.PHASE.NIGHT_AIR_OPERATIONS_JAPAN) {
     getAllAirUnitsRequiringMovesNightAirOperation(GlobalUnitsModel.Side.JAPAN)

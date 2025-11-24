@@ -11,11 +11,13 @@ import {
   moveOrphanedCAPUnitsToEliminatedBoxNight,
   moveOrphanedAirUnitsInReturn1Boxes,
   setValidDestinationBoxesNightOperations,
+  setValidSetUpAirUnitDestinations,
   checkForReorganization,
   checkAllBoxesForReorganization,
   getReorgUnitsCAP,
 } from "../../../controller/AirOperationsHandler"
 import HexCommand from "../../../commands/HexCommand"
+import GlobalInit from "../../../model/GlobalInit"
 
 function AirCounter({ getAirBox, setAirBox, counterData, side }) {
   const {
@@ -123,7 +125,7 @@ function AirCounter({ getAirBox, setAirBox, counterData, side }) {
   }
 
   const onDrag = () => {
-    // console.log("AIR UNIT DRAG ->", counterData)
+    console.log("AIR UNIT DRAG ->", counterData)
     const location = controller.getAirUnitLocation(counterData.name)
 
     if (!location.boxName.includes("CAP RETURNING") && GlobalGameState.gamePhase === GlobalGameState.PHASE.CAP_RETURN) {
@@ -196,6 +198,16 @@ function AirCounter({ getAirBox, setAirBox, counterData, side }) {
         GlobalGameState.sideWithInitiative !== counterData.side &&
         !location.boxName.includes("CAP RETURNING"))
     ) {
+      console.log("GET THE FUCK OUTTA HERE...unit=", counterData.name, "carrier=", counterData.carrier)
+      setValidSetUpAirUnitDestinations(GlobalInit.controller, counterData, side)
+      
+      const destBoxes = controller.getValidAirUnitDestinations(counterData.name)
+      console.log("DEST BOXES=", destBoxes)
+      if (counterData.side === GlobalUnitsModel.Side.JAPAN) {
+        setEnabledJapanBoxes(() => destBoxes)
+      } else {
+        setEnabledUSBoxes(() => destBoxes)
+      }
       return
     }
 
@@ -299,11 +311,11 @@ function AirCounter({ getAirBox, setAirBox, counterData, side }) {
 
     doUpdate(airUnitUpdate)
     human = true
-  } 
+  }
 
   // AI STUFF
   if (
-    !human && 
+    !human &&
     counterData.name === testUpdate.name &&
     testUpdate.position != undefined &&
     position.left !== testUpdate.position.left + "%" &&
@@ -489,6 +501,7 @@ function AirCounter({ getAirBox, setAirBox, counterData, side }) {
       await moveOrphanedAirUnitsInReturn1Boxes(counterData.side, box, counterData)
     }
     const destBoxes = controller.getValidAirUnitDestinations(counterData.name)
+    console.log("DEST BOXES=", destBoxes)
     if (counterData.side === GlobalUnitsModel.Side.JAPAN) {
       setEnabledJapanBoxes(() => destBoxes)
     } else {
