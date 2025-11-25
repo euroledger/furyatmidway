@@ -164,7 +164,6 @@ function doTurn4FleetMovement(regions, dmcvLocation) {
 
   if (goToDMCVState(GlobalUnitsModel.Side.US) && !GlobalGameState.usDMCVFleetPlaced && dist > 4) {
     // go to closest hex to row I
-    console.log("QUACK 1 return targetHex:", targetHex)
     return targetHex
   }
 
@@ -214,8 +213,6 @@ function doTurn4FleetMovement(regions, dmcvLocation) {
 
 
   let fleetHex = getRandomElementFrom(targetHexes)
-
-    console.log("QUACK 11 random fleetHex:", fleetHex)
 
   // return { q: 3, r: 1 }
 

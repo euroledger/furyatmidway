@@ -47,16 +47,11 @@ export function autoSave(controller, side) {
       gameId = `fam-#${GlobalGameState.gameSaveId}-${date}-GT${GlobalGameState.gameTurn}-${usStr}`
     }
   }
-
-  const alertStr = "SAVING GAME " + gameId
-
-  alert(alertStr)
-  console.log("gameId=", gameId)
   GlobalGameState.gameSaveId++
 
   saveGameState(controller, gameId)
 
-  // deleteAllAutoSavedGames(3)
+  deleteAllAutoSavedGames(5)
 }
 
 export function deleteAllAutoSavedGames(numToPreserve) {

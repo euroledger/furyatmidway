@@ -464,6 +464,10 @@ export default class Controller {
       } else {
         capUnits = capUnits.filter((unit) => unit.name !== unitToRemove.name)
       }
+    } else {
+      unitToRemove.aircraftUnit.steps = 1
+      const newImage = unitToRemove.image.replace("front", "back")
+      unitToRemove.image = newImage
     }
     return capUnits
   }

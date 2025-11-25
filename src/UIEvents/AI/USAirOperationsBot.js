@@ -598,7 +598,6 @@ export async function generateUSAirOperationsMovesCarriers(controller, stateObje
     }
   }
 
-  console.log("QUACK 1 usAirUnitsOnFlightDecks=", usAirUnitsOnFlightDecks)
   for (let unit of usAirUnitsOnFlightDecks) {
     if (unit.carrier.includes("Midway") || unit.aircraftUnit.moved) {
       continue
@@ -863,7 +862,6 @@ export function getClosestHexToTarget(target, usRegion) {
   // Find hex in usRegion that is closest to target
   let distance = 100
   let toHex
-  console.log("QUACK 1 ---------------> usRegion=", usRegion)
   for (const hex of usRegion) {
     const distanceBH = distanceBetweenHexes(hex, target.currentHex)
     if (distanceBH < distance) {

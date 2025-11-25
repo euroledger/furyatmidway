@@ -3610,7 +3610,7 @@ export function App() {
         setSubmarineDamagePanelShow={setSubmarineDamagePanelShow}
         onHide={(e) => {
           setCardPlayedPanelShow(false)
-          if (cardNumber === 13 || cardNumber === 5) {
+          if (cardNumber === 13 || cardNumber === 5 || cardNumber === 8) {
             nextAction()
           }
         }}

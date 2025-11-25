@@ -198,11 +198,9 @@ function AirCounter({ getAirBox, setAirBox, counterData, side }) {
         GlobalGameState.sideWithInitiative !== counterData.side &&
         !location.boxName.includes("CAP RETURNING"))
     ) {
-      console.log("GET THE FUCK OUTTA HERE...unit=", counterData.name, "carrier=", counterData.carrier)
       setValidSetUpAirUnitDestinations(GlobalInit.controller, counterData, side)
       
       const destBoxes = controller.getValidAirUnitDestinations(counterData.name)
-      console.log("DEST BOXES=", destBoxes)
       if (counterData.side === GlobalUnitsModel.Side.JAPAN) {
         setEnabledJapanBoxes(() => destBoxes)
       } else {
