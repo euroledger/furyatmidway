@@ -201,7 +201,7 @@ function doTurn4FleetMovement(regions, dmcvLocation) {
   //   distanceBetweenHexes(targetHexes[0], dmcvLocation.currentHex)
   // )
 
-  // make sure the two fleets (US CSF AND DMCV DON'T END UP IN THE SAME HEX)
+  // make sure the two fleets (US CSF AND DMCV) DON'T END UP IN THE SAME HEX
   if (
     dmcvLocation !== undefined &&
     targetHexes.length === 1 &&
@@ -218,14 +218,14 @@ function doTurn4FleetMovement(regions, dmcvLocation) {
 
   oneOrZero = Math.random() >= 0.5 ? 1 : 0
 
-  // 50-50 to move away if fleets are 4-5 hexes (to put any IJN airstrikes out of range
-  if (
-    oneOrZero === 1 &&
-    GlobalGameState.distanceBetweenCarrierFleets >= 3 &&
-    GlobalGameState.distanceBetweenCarrierFleets <= 5
-  ) {
-    fleetHex = furthestHexFrom(regions, current1AFLocation.currentHex)
-  }
+  // // 50-50 to move away if fleets are 4-5 hexes (to put any IJN airstrikes out of range
+  // if (
+  //   oneOrZero === 1 &&
+  //   GlobalGameState.distanceBetweenCarrierFleets >= 3 &&
+  //   GlobalGameState.distanceBetweenCarrierFleets <= 5
+  // ) {
+  //   fleetHex = furthestHexFrom(regions, current1AFLocation.currentHex)
+  // }
 
   console.log("QUACK 99 return fleetHex:", fleetHex.targetHex)
   return fleetHex.targetHex

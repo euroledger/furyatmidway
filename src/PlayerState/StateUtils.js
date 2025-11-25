@@ -675,6 +675,7 @@ export async function setNextStateFollowingCardPlay(stateObject) {
       console.log("MOVE ON FROM CARD 4")
       if (GlobalGameState.gameTurn === 7) {
         // determineMidwayInvasion(setCardNumber, setEndOfTurnSummaryShow, -1)
+        setCardNumber(() => -1)
         GlobalGameState.currentPlayer = GlobalUnitsModel.Side.JAPAN
         GlobalGameState.gamePhase = GlobalGameState.PHASE.END_OF_TURN
       } else {
@@ -890,6 +891,7 @@ export function determineMidwayInvasion(setCardNumber, setEndOfTurnSummaryShow, 
         setCardNumber(() => 8)
         GlobalGameState.currentPlayer = GlobalUnitsModel.Side.US
         GlobalGameState.gamePhase = GlobalGameState.PHASE.CARD_PLAY
+        GlobalGameState.updateGlobalState()
       } else {
         GlobalGameState.gamePhase = GlobalGameState.PHASE.MIDWAY_INVASION
       }

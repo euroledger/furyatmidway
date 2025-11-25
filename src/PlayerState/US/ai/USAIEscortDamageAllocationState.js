@@ -19,7 +19,7 @@ class USAIEscortDamageAllocationState {
 
       GlobalGameState.testStepLossSelection = -1
       GlobalGameState.updateGlobalState()
-      await delay(10)
+      await delay(30)
       // let strikeUnits = GlobalInit.controller.getAttackingStrikeUnits()
       // US Damage Allocation Bot...picks one unit to take this hit
       let capUnits = GlobalInit.controller.getAllCAPDefenders(GlobalUnitsModel.Side.US)
@@ -31,7 +31,7 @@ class USAIEscortDamageAllocationState {
       numHitsAllocated++
 
       console.log(">>>> CAP ELIM index=", index)
-      await delay(20)
+      await delay(30)
 
       GlobalGameState.testStepLossSelection = index
       GlobalGameState.updateGlobalState()
@@ -45,6 +45,8 @@ class USAIEscortDamageAllocationState {
   }
 
   async nextState(stateObject) {
+    const { capAirUnits, setAirUnitUpdate, setEliminatedUnitsPanelShow } = stateObject
+
     if (GlobalGameState.attackingStepsRemaining > 0) {
       // if elite pilots and midway attack we did escort counterattack first
       // so transition to CAP_INTERCEPTION

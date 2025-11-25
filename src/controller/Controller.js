@@ -457,10 +457,21 @@ export default class Controller {
   removeUnitFromCAPDefenders(unitToRemove, side) {
     let capUnits = this.getAllCAPDefenders(side)
 
+    console.log("POOOOOOOOOOOO PROCESS", unitToRemove.name, "STEPS=", unitToRemove.aircraftUnit.steps)
+
+    if (unitToRemove.aircraftUnit.steps === 0) {
+      unitToRemove.aircraftUnit.intercepting = false
+      capUnits = capUnits.filter((unit) => unit.name !== unitToRemove.name)
+      for (const u of capUnits) {
+        console.log("\tUNIT", u.name, "STEPS", u.aircraftUnit.steps)
+      }
+      return capUnits
+    }
     if (unitToRemove.aircraftUnit.steps === 1) {
       unitToRemove.aircraftUnit.intercepting = false
       if (capUnits.length === 0) {
-        return
+        console.log("RETURN FUCK ALL")
+        return []
       } else {
         capUnits = capUnits.filter((unit) => unit.name !== unitToRemove.name)
       }
@@ -468,6 +479,9 @@ export default class Controller {
       unitToRemove.aircraftUnit.steps = 1
       const newImage = unitToRemove.image.replace("front", "back")
       unitToRemove.image = newImage
+    }
+    for (const u of capUnits) {
+      console.log("\tUNIT", u.name, "STEPS", u.aircraftUnit.steps)
     }
     return capUnits
   }
