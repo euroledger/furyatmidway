@@ -867,6 +867,15 @@ export function getReorgUnitsCAP(side, box, unit) {
   return reorgUnits
 }
 
+export async function moveOrphanedStrikeUnitsToEliminatedBox(side, box, unit) {
+  const unitsReturning = GlobalInit.controller.getAirUnitsInStrikeBoxesReadyToReturn(side)
+
+  for (const unit of unitsReturning) {
+    await delay(10)
+    GlobalGameState.orphanedAirUnits.push(unit)
+    moveAirUnitToEliminatedBox(GlobalInit.controller, unit)
+  }
+}
 export async function moveOrphanedAirUnitsInReturn1Boxes(side, box, unit) {
   // check for possibility of reorganization first, if there is do NOT orphan any units
 

@@ -158,7 +158,6 @@ function getNextAvailableStrikeBox(controller, side) {
 }
 
 async function moveAirUnitToFlightDeck({ controller, unit, setTestUpdate, test, box, index }) {
-  console.log("DEBUG MOVE AIR UNIT TO FLIGHT DECK", box, "NAME=", unit.name)
   await delay(40)
 
   const update = {
@@ -248,7 +247,6 @@ async function moveStrikeGroup(controller, unit, fromHex, toHex, setStrikeGroupU
   await delay(DELAY_MS)
 }
 async function hangarToFlightDeck({ controller, unit, setTestUpdate, test }) {
-  console.log("DEBUG move unit to flight deck:", unit.name)
   await delay(40)
   // 7b. Get valid destinations for units in Hangar
   // 7c. Move Units from Hangar to Flight Deck
@@ -265,7 +263,6 @@ async function hangarToFlightDeck({ controller, unit, setTestUpdate, test }) {
     return
   }
   const index = controller.getFlightDeckSlot(unit.carrier, GlobalUnitsModel.Side.US, true, box)
-  console.log("DEBUG got index for carrier", unit.carrier, "index=", index)
   if (index !== -1) {
     await delay(40)
     await moveAirUnitToFlightDeck({ controller, unit, setTestUpdate, test, box, index })
@@ -318,14 +315,6 @@ export async function moveAirUnitsFromHangarEndOfNightOperation(controller, side
   for (const unit of fighters) {
     const numFreeFlightDeckSlots = setValidDestinationBoxesNightOperations(controller, unit.name, side, true)
     const destBoxes = controller.getValidAirUnitDestinations(unit.name)
-    // console.log(
-    //   "PUCKA!!!!!!! unit:",
-    //   unit.name,
-    //   "DESTINATIONS=",
-    //   destBoxes,
-    //   "NUM FREE FLIGHT DECK SLOGS=",
-    //   numFreeFlightDeckSlots
-    // )
     await delay(10)
     await moveAirUnitNight(controller, unit, setTestUpdate, destBoxes)
   }
@@ -377,7 +366,6 @@ export async function moveAirUnit(controller, unit, setTestUpdate, night) {
 
     // TODO MOVE TO ELIMINATED UNITS (ORPHAN!)
 
-    console.log("DEBUG destBoxes length 0 -> MOVE ORPHAN TO ELIMINATED BOX!")
     return
   }
   // TODO Decide on best destination!! not just first one
@@ -606,7 +594,6 @@ export async function generateUSAirOperationsMovesCarriers(controller, stateObje
 
     const destinations = controller.getValidAirUnitDestinations(unit.name)
 
-    console.log("DEBUG UNIT", unit.name, "destinations=", destinations)
     const unitsOnCarrierFlighftDeck = controller.getAllUnitsOnUSFlightDeckofNamedCarrier(unit.carrier)
 
     const hits = controller.getCarrierHits(unit.carrier)
@@ -936,7 +923,6 @@ export async function moveStrikeGroups(controller, stateObject, test) {
 
   strikeUnits = strikeGroupsWithTarget.concat(strikeGroupsWithOutTarget)
 
-  // console.log(">>>>>>>>>>>>>>>>>>>>>>> IMPORTANT! strikeUnits=", strikeUnits)
   let ijndmcvTargeted = false // only 1 SG should move to attack this fleet if more than 1 target
   const numberTargetsInRange = numTargetsInRange(strikeUnits)
 
@@ -955,7 +941,7 @@ export async function moveStrikeGroups(controller, stateObject, test) {
     if (isFirstAirOpForStrike(controller, strikeGroup, GlobalUnitsModel.Side.US)) {
       const usRegion = firstAirOpUSStrikeRegion(controller, strikeGroup)
       // console.log(
-      //   "********************************** HERE WE GO",
+      //   "DEBUG",
       //   strikeGroup.name,
       //   strikeGroup.targetsFirstAirOp,
       //   "usRegion=",
@@ -966,12 +952,27 @@ export async function moveStrikeGroups(controller, stateObject, test) {
         continue
       }
 
+      // console.log("DEBUG SG", strikeGroup.name, "strikeGroup.targetsFirstAirOp=", strikeGroup.targetsFirstAirOp)
+
       if (strikeGroup.targetsFirstAirOp.length >= 1) {
         if (GlobalGameState.gameTurn === 6 || GlobalGameState.gameTurn === 7) {
           // prioritise MIF
           if (strikeGroup.targetsFirstAirOp.includes("MIF")) {
             const locationMIF = controller.getFleetLocation("MIF", GlobalUnitsModel.Side.JAPAN)
             await moveStrikeGroup(controller, strikeGroup, HexCommand.OFFBOARD, locationMIF, setStrikeGroupUpdate, test)
+            return true
+          }
+          // Then check DMCV
+          if (strikeGroup.targetsFirstAirOp.includes("IJN-DMCV")) {
+            const locationDMCV = controller.getFleetLocation("IJN-DMCV", GlobalUnitsModel.Side.JAPAN)
+            await moveStrikeGroup(
+              controller,
+              strikeGroup,
+              HexCommand.OFFBOARD,
+              locationDMCV,
+              setStrikeGroupUpdate,
+              test
+            )
             return true
           }
         }
@@ -1022,7 +1023,7 @@ export async function moveStrikeGroups(controller, stateObject, test) {
       } else if (strikeGroup.targetsFirstAirOp.length === 0) {
         // else move as close as possible to target
         //  => loop through all hexes and pick the one which has lowest range to target
-        if (!ijndmcvTargeted && numTargetsInRange > 1 && strikeGroup.targetsSecondAirOp.includes("IJN-DMCV")) {
+        if (!ijndmcvTargeted && numberTargetsInRange > 1 && strikeGroup.targetsSecondAirOp.includes("IJN-DMCV")) {
           const locationIJNDMCV = controller.getFleetLocation("IJN-DMCV", GlobalUnitsModel.Side.JAPAN)
           const toHex = getClosestHexToTarget(locationIJNDMCV, usRegion)
           await moveStrikeGroup(controller, strikeGroup, HexCommand.OFFBOARD, toHex, setStrikeGroupUpdate, test)
@@ -1047,7 +1048,7 @@ export async function moveStrikeGroups(controller, stateObject, test) {
         }
       }
     } else {
-      console.log(">>>>>>>>>>>>>>>>>>>> SECOND AIR OP:", strikeGroup)
+      // console.log(">>>>>>>>>>>>>>>>>>>> SECOND AIR OP:", strikeGroup)
       const usRegion = secondAirOpUSStrikeRegion(controller, strikeGroup)
 
       // For SGs with target, prioritise target

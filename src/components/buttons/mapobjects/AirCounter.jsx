@@ -9,6 +9,7 @@ import {
   setValidDestinationBoxes,
   moveOrphanedCAPUnitsToEliminatedBox,
   moveOrphanedCAPUnitsToEliminatedBoxNight,
+  moveOrphanedStrikeUnitsToEliminatedBox,
   moveOrphanedAirUnitsInReturn1Boxes,
   setValidDestinationBoxesNightOperations,
   setValidSetUpAirUnitDestinations,
@@ -142,10 +143,19 @@ function AirCounter({ getAirBox, setAirBox, counterData, side }) {
     // if carrier fleet is off board that side cannot fly operations from carriers
     if (counterData.carrier !== GlobalUnitsModel.Carrier.MIDWAY) {
       if (side === GlobalUnitsModel.Side.US && locationCSF && locationCSF.boxName === HexCommand.FLEET_BOX) {
+        if (location.boxName.includes("STRIKE")) {
+          // rare edge case where CSF sunk or moved off board with strikes still at sea
+          moveOrphanedStrikeUnitsToEliminatedBox(counterData.side)
+        }
         return
       }
       if (side === GlobalUnitsModel.Side.JAPAN && location1AF && location1AF.boxName === HexCommand.FLEET_BOX) {
-        moveOrphanedCAPUnitsToEliminatedBoxNight(counterData.side)
+        if (location.boxName.includes("STRIKE")) {
+          // rare edge case where 1AF sunk or moved off board with strikes still at sea
+          moveOrphanedStrikeUnitsToEliminatedBox(counterData.side)
+        } else {
+          moveOrphanedCAPUnitsToEliminatedBoxNight(counterData.side)
+        }
         return
       }
     }
@@ -199,7 +209,7 @@ function AirCounter({ getAirBox, setAirBox, counterData, side }) {
         !location.boxName.includes("CAP RETURNING"))
     ) {
       setValidSetUpAirUnitDestinations(GlobalInit.controller, counterData, side)
-      
+
       const destBoxes = controller.getValidAirUnitDestinations(counterData.name)
       if (counterData.side === GlobalUnitsModel.Side.JAPAN) {
         setEnabledJapanBoxes(() => destBoxes)
