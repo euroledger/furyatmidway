@@ -4,7 +4,6 @@ import GameStatePanel from "../leftpanel/GameStatePanel"
 import "./modal.css"
 
 function GameStatusPanel(props) {
-  const bg = "#003300"
   return (
     <Modal {...props} size="lg" aria-labelledby="contained-modal-title-vcenter" centered>
       <Modal.Body style={{ backgroundColor: "#003300", color: "black" }}>

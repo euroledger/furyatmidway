@@ -10,7 +10,6 @@ import HexCommand from "../../../commands/HexCommand"
 import { checkRemoveFleet } from "../../StateUtils"
 import { delay } from "../../../Utils"
 
-
 class USAIDMCVFleetMovementPlanningState {
   async doAction(stateObject) {
     const { setFleetUnitUpdate, doAIDMCVShipMarkerUpdate } = stateObject
@@ -56,24 +55,28 @@ class USAIDMCVFleetMovementPlanningState {
 
         console.log(">>>> DEBUG damagedCarriers=", damagedCarriers)
         // 2. select a carrier
-        const cv = getRandomElementFrom(damagedCarriers)
+        // ONLY DO THIS IS WE HAVEN'T ALREADY SELECTED A DMCV (last turn for example)
+        if (!GlobalGameState.usDMCVCarrier) {
+          const cv = getRandomElementFrom(damagedCarriers)
 
-        console.log(">>>> DEBUG cv=", cv)
+          console.log(">>>> DEBUG cv=", cv)
 
-        // 3. do the DMCV marker update
-        let carrierUnit = GlobalInit.controller.getCarrier(cv)
+          // 3. do the DMCV marker update
+          let carrierUnit = GlobalInit.controller.getCarrier(cv)
 
-        console.log(">>>> DEBUG carrierUnit=", carrierUnit)
+          console.log(">>>> DEBUG carrierUnit=", carrierUnit)
 
-        GlobalGameState.usDMCVCarrier = carrierUnit.name
-        GlobalGameState.updateGlobalState()
+          GlobalGameState.usDMCVCarrier = carrierUnit.name
+          GlobalGameState.updateGlobalState()
 
-        if (!carrierUnit.dmcv) {
-          console.log(">>>>>>>>>>>>>>>>>>> DO DMCV SHIP MARKER UPDATE !!")
-          doAIDMCVShipMarkerUpdate(GlobalUnitsModel.Side.US)
+          if (!carrierUnit.dmcv) {
+            console.log(">>>>>>>>>>>>>>>>>>> DO DMCV SHIP MARKER UPDATE !!")
+            doAIDMCVShipMarkerUpdate(GlobalUnitsModel.Side.US)
+          }
+
+          console.log("DEBUG:SETTING US CARRIER TO BE DMCV ->", carrierUnit)
+          carrierUnit.dmcv = true
         }
-
-        carrierUnit.dmcv = true
       }
     }
 

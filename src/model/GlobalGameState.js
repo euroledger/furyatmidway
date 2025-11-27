@@ -115,7 +115,9 @@ export default class GlobalGameState {
   static fleetTarget = ""
 
   static jpDMCVCarrier = ""
+  static jpDMCVTurnPlaced = -1
   static usDMCVCarrier = ""
+  static usDMCVTurnPlaced = -1
 
   static attackingStrikeGroup = ""
 
@@ -200,7 +202,7 @@ export default class GlobalGameState {
   static semperFi = false
 
   static stateHandler = () => {}
-  
+
   static updateGlobalState = () => {
     this.stateHandler()
   }

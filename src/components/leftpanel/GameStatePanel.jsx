@@ -23,7 +23,7 @@ export default class GameStatePanel extends React.Component {
   scrollToBottom = () => {
     this.messagesEndRef.current?.scrollIntoView({ behavior: "smooth" })
   }
-  appendUSSunkDMCVTowed (carrier) {
+  appendUSSunkDMCVTowed(carrier) {
     if (GlobalInit.controller.isSunk(carrier, false)) {
       return " -> SUNK"
     }
@@ -31,7 +31,16 @@ export default class GameStatePanel extends React.Component {
     if (cv.towed) {
       return " -> BEING TOWED"
     }
+
     if (cv.dmcv) {
+      // edge case -> do not show DMCV if it was just placed and we are in IJN Fleet Movement
+      // (this shouldn't be revealed at this point)
+      if (
+        GlobalGameState.gamePhase === GlobalGameState.PHASE.JAPAN_FLEET_MOVEMENT &&
+        GlobalGameState.usDMCVTurnPlaced === GlobalGameState.gameTurn
+      ) {
+        return ""
+      }
       return " -> DMCV"
     }
     return ""
