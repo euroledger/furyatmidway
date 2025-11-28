@@ -478,6 +478,7 @@ export function App() {
 
   useEffect(() => {
     if (GlobalGameState.gamePhase === GlobalGameState.PHASE.CAP_RETURN) {
+      console.log("DEBUG GOING TO US CAP RETURN")
       doStateChange()
     }
   }, [GlobalGameState.gamePhase])
@@ -1789,6 +1790,9 @@ export function App() {
                   !GlobalGameState.usCardsDrawn && GlobalGameState.gamePhase !== GlobalGameState.PHASE.US_CARD_DRAW
                 }
                 onClick={(e) => {
+                  if (GlobalGameState.hideCounters) {
+                    return // do not allow human player to see US Hand in full 'secret' mode
+                  }
                   if (GlobalGameState.usPlayerType === GlobalUnitsModel.TYPE.HUMAN) {
                     if (
                       GlobalGameState.gamePhase === GlobalGameState.PHASE.US_CARD_DRAW ||

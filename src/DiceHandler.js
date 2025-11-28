@@ -835,12 +835,10 @@ export function doAttackFireRolls(controller, testRolls) {
     GlobalGameState.carrierAttackHitsThisAttack = hits
 
     // QUACK REMOVE TEESTING ONLY
-    // if (GlobalGameState.currentCarrierAttackTarget === GlobalUnitsModel.Carrier.SORYU) {
-    //   GlobalGameState.carrierAttackHits = 0
-    //   GlobalGameState.carrierAttackHitsThisAttack = 0
-    // } else {
-    // GlobalGameState.carrierAttackHits = 2
-    // GlobalGameState.carrierAttackHitsThisAttack = 2
+
+    // GlobalGameState.carrierAttackHits = 0
+    // GlobalGameState.carrierAttackHitsThisAttack = 0
+
     // }
   }
   return hits

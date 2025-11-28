@@ -76,6 +76,7 @@ class USAIDMCVFleetMovementPlanningState {
 
           console.log("DEBUG:SETTING US CARRIER TO BE DMCV ->", carrierUnit)
           carrierUnit.dmcv = true
+          GlobalGameState.usDMCVTurnPlaced = GlobalGameState.gameTurn
         }
       }
     }

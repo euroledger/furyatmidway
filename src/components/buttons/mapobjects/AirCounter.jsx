@@ -42,6 +42,7 @@ function AirCounter({ getAirBox, setAirBox, counterData, side }) {
     top: counterData.position.top,
   })
   const [alertSent, setAlertSent] = useState(false)
+  const [human, setHuman] = useState(false)
 
   const location = controller.getAirUnitLocation(counterData.name)
   const checkForAirUnitReorganization = () => {
@@ -307,7 +308,6 @@ function AirCounter({ getAirBox, setAirBox, counterData, side }) {
     }
   }
 
-  let human = false
   // HUMAN STUFF
   const doUpdatePoo =
     counterData.name === airUnitUpdate.name &&
@@ -318,7 +318,7 @@ function AirCounter({ getAirBox, setAirBox, counterData, side }) {
     console.log("I am ", counterData.name, " -> HUMAN AIR UNIT UPDATE = ", airUnitUpdate)
 
     doUpdate(airUnitUpdate)
-    human = true
+    setHuman(true)
   }
 
   // AI STUFF
@@ -329,7 +329,7 @@ function AirCounter({ getAirBox, setAirBox, counterData, side }) {
     position.left !== testUpdate.position.left + "%" &&
     position.top !== testUpdate.position.top + "%"
   ) {
-    console.log("I am ", counterData.name, " -> AIR UNIT (TEST/AI) UPDATE = ", testUpdate)
+    console.log("&&& human = ", human, "I am ", counterData.name, " -> AIR UNIT (TEST/AI) UPDATE = ", testUpdate)
     console.log(
       "DEBUG, current position, (",
       position.left,
@@ -339,6 +339,7 @@ function AirCounter({ getAirBox, setAirBox, counterData, side }) {
       testUpdate.position.top,
       ")"
     )
+    setHuman(false)
 
     doUpdate(testUpdate)
   }

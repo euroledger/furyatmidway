@@ -78,7 +78,6 @@ function FleetCounter({
   }
   let hex = {}
 
-
   if (fleetUnitUpdate) {
     if (fleetUnitUpdate.position.currentHex === HexCommand.OFFBOARD && !fleetUnitUpdate.name.includes("DMCV")) {
       return
@@ -159,7 +158,7 @@ function FleetCounter({
     hex = fleetUnitUpdate.position.currentHex
 
     if (side === GlobalUnitsModel.Side.US) {
-          // console.log("I am", fleetUnitUpdate.name, "fleetUnitUpdate=", fleetUnitUpdate)
+      // console.log("I am", fleetUnitUpdate.name, "fleetUnitUpdate=", fleetUnitUpdate)
 
       const locationDMCV = controller.getFleetLocation("US-DMCV", GlobalUnitsModel.Side.US)
       const locationCSF = controller.getFleetLocation("CSF", GlobalUnitsModel.Side.US)
@@ -577,15 +576,15 @@ function FleetCounter({
   }
 
   let zIndex = 0
-  if (strikeGroupsAtLocation.length > 0 && GlobalGameState.gamePhase !== GlobalGameState.PHASE.RETREAT_US_FLEET) {
+  const groups = controller.getAllStrikeGroupsInLocation(hex, side)
+
+  
+  if (groups.length > 0 && GlobalGameState.gamePhase !== GlobalGameState.PHASE.RETREAT_US_FLEET) {
     zIndex = 0
   } else {
-    if (counterData.side === GlobalUnitsModel.Side.US) {
-      zIndex = 100
-    } else {
-      zIndex = 100
-    }
+    zIndex = 10
   }
+  zIndex = 0
 
   if (enabled) {
     if (position.currentHex && position.currentHex.boxName === HexCommand.FLEET_BOX) {

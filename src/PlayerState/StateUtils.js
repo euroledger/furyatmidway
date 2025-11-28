@@ -1356,6 +1356,15 @@ export async function moveCAPUnitsFromReturnBoxToCarrier(controller, side, setTe
     console.log(unit.name, "-> DESTINATIONS=", destinationsArray)
     await delay(10)
     // go to first available destination
+
+    // if destinations array is of length 0 nowhere for this CAP Unit to go
+    // ORPHAN -> eliminate
+
+    if (destinationsArray.length === 0) {
+      await moveOrphanedCAPUnitsToEliminatedBox(side)
+      continue
+    }
+
     let update = {
       name: unit.name,
       boxName: destinationsArray[0],
