@@ -203,7 +203,7 @@ describe("Numeric Evaluation Of State of Each Side's Naval and Air Power", () =>
     usAirUnitsOnFlightDecks = controller.getAllUnitsOnUSFlightDecks(true)
     expect(usAirUnitsOnFlightDecks.length).toEqual(3) // fighters only
 
-    await generateUSAirOperationsMovesCarriers(controller, { setTestUpdate: undefined }, true)
+    await generateUSAirOperationsMovesCarriers(controller, { setAirUnitUpdate: undefined }, true)
 
     // should have three strike groups, one from each carrier, each containing two units
 
@@ -264,7 +264,7 @@ describe("Numeric Evaluation Of State of Each Side's Naval and Air Power", () =>
     usAirUnitsOnFlightDecks = controller.getAllUnitsOnUSFlightDecks(true)
     expect(usAirUnitsOnFlightDecks.length).toEqual(3) // fighters only
 
-    await generateUSAirOperationsMovesCarriers(controller, { setTestUpdate: undefined }, true)
+    await generateUSAirOperationsMovesCarriers(controller, { setAirUnitUpdate: undefined }, true)
 
     // test that this has the strike group etc correctly set
     let strikeGroup = GlobalUnitsModel.usStrikeGroups.get(GlobalUnitsModel.AirBox.US_STRIKE_BOX_0)
@@ -293,7 +293,7 @@ describe("Numeric Evaluation Of State of Each Side's Naval and Air Power", () =>
 
     // Set Up Strike Groups first
 
-    await generateUSAirOperationsMovesMidway(controller, { setTestUpdate: undefined }, true)
+    await generateUSAirOperationsMovesMidway(controller, { setAirUnitUpdate: undefined }, true)
 
     // Will have new airUnitLocationsArray after this operation. See above test
 
@@ -324,7 +324,7 @@ describe("Numeric Evaluation Of State of Each Side's Naval and Air Power", () =>
     controller.addAirUnitToBox(GlobalUnitsModel.AirBox.US_ENTERPRISE_HANGAR, 0, edb2)
     controller.addAirUnitToBox(GlobalUnitsModel.AirBox.US_ENTERPRISE_HANGAR, 1, ef2)
 
-    await generateUSAirOperationsMovesCarriers(controller, { setTestUpdate: undefined }, true)
+    await generateUSAirOperationsMovesCarriers(controller, { setAirUnitUpdate: undefined }, true)
 
     let strikeUnits = controller.getStrikeUnits(GlobalUnitsModel.Side.US)
 
@@ -364,7 +364,7 @@ describe("Numeric Evaluation Of State of Each Side's Naval and Air Power", () =>
     controller.addAirUnitToBox(GlobalUnitsModel.AirBox.US_ENTERPRISE_HANGAR, 0, edb2)
     controller.addAirUnitToBox(GlobalUnitsModel.AirBox.US_ENTERPRISE_HANGAR, 1, ef2)
 
-    await generateUSAirOperationsMovesCarriers(controller, { setTestUpdate: undefined }, true)
+    await generateUSAirOperationsMovesCarriers(controller, { setAirUnitUpdate: undefined }, true)
 
     await moveStrikeGroups(controller, { setStrikeGroupUpdate: undefined }, true)
 
@@ -395,7 +395,7 @@ describe("Numeric Evaluation Of State of Each Side's Naval and Air Power", () =>
     controller.addAirUnitToBox(GlobalUnitsModel.AirBox.US_ENTERPRISE_HANGAR, 0, edb2)
     controller.addAirUnitToBox(GlobalUnitsModel.AirBox.US_ENTERPRISE_HANGAR, 1, ef2)
 
-    await generateUSAirOperationsMovesCarriers(controller, { setTestUpdate: undefined }, true)
+    await generateUSAirOperationsMovesCarriers(controller, { setAirUnitUpdate: undefined }, true)
 
     let strikeUnits = controller.getStrikeUnits(GlobalUnitsModel.Side.US)
 
@@ -423,7 +423,7 @@ describe("Numeric Evaluation Of State of Each Side's Naval and Air Power", () =>
     GlobalGameState.airOperationPoints.us = 4
 
     setInitialAirUnitLocations()
-    await generateUSAirOperationsMovesCarriers(controller, { setTestUpdate: undefined }, true)
+    await generateUSAirOperationsMovesCarriers(controller, { setAirUnitUpdate: undefined }, true)
 
     const strikeUnits = controller.getStrikeUnits(GlobalUnitsModel.Side.US)
 

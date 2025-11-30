@@ -157,7 +157,7 @@ function getNextAvailableStrikeBox(controller, side) {
   }
 }
 
-async function moveAirUnitToFlightDeck({ controller, unit, setTestUpdate, test, box, index }) {
+async function moveAirUnitToFlightDeck({ controller, unit, setAirUnitUpdate, test, box, index }) {
   await delay(40)
 
   const update = {
@@ -172,12 +172,12 @@ async function moveAirUnitToFlightDeck({ controller, unit, setTestUpdate, test, 
     return
   }
   update.handle = 1
-  setTestUpdate(update)
+  setAirUnitUpdate(update)
 
   await delay(40)
 }
 
-async function moveAirUnitToCAP({ controller, unit, setTestUpdate, test, box, index }) {
+async function moveAirUnitToCAP({ controller, unit, setAirUnitUpdate, test, box, index }) {
   const update = {
     name: unit.name,
     boxName: box,
@@ -191,12 +191,12 @@ async function moveAirUnitToCAP({ controller, unit, setTestUpdate, test, box, in
   }
   update.handle = 2
 
-  setTestUpdate(update)
+  setAirUnitUpdate(update)
 
   await delay(DELAY_MS)
 }
 
-async function moveAirUnitToStrikeGroup({ controller, unit, setTestUpdate, test, strikeBox }) {
+async function moveAirUnitToStrikeGroup({ controller, unit, setAirUnitUpdate, test, strikeBox }) {
   await delay(40)
   const airBox = strikeBox ?? getNextAvailableStrikeBox(controller, GlobalUnitsModel.Side.US)
   const update = {
@@ -218,7 +218,7 @@ async function moveAirUnitToStrikeGroup({ controller, unit, setTestUpdate, test,
   }
   update.handle = 3
 
-  setTestUpdate(update)
+  setAirUnitUpdate(update)
 
   await delay(40)
 }
@@ -246,7 +246,7 @@ async function moveStrikeGroup(controller, unit, fromHex, toHex, setStrikeGroupU
 
   await delay(DELAY_MS)
 }
-async function hangarToFlightDeck({ controller, unit, setTestUpdate, test }) {
+async function hangarToFlightDeck({ controller, unit, setAirUnitUpdate, test }) {
   await delay(40)
   // 7b. Get valid destinations for units in Hangar
   // 7c. Move Units from Hangar to Flight Deck
@@ -265,12 +265,12 @@ async function hangarToFlightDeck({ controller, unit, setTestUpdate, test }) {
   const index = controller.getFlightDeckSlot(unit.carrier, GlobalUnitsModel.Side.US, true, box)
   if (index !== -1) {
     await delay(40)
-    await moveAirUnitToFlightDeck({ controller, unit, setTestUpdate, test, box, index })
+    await moveAirUnitToFlightDeck({ controller, unit, setAirUnitUpdate, test, box, index })
   }
   await delay(40)
 }
 
-async function flightDecktoCAP(controller, unit, setTestUpdate, test, midway) {
+async function flightDecktoCAP(controller, unit, setAirUnitUpdate, test, midway) {
   await delay(40)
   // 7b. Get valid destinations for units in Hangar
   // 7c. Move Units from Hangar to Flight Deck
@@ -295,12 +295,12 @@ async function flightDecktoCAP(controller, unit, setTestUpdate, test, midway) {
   }
   const index = controller.getFirstAvailableZone(box)
   if (index !== -1) {
-    await moveAirUnitToCAP({ controller, unit, setTestUpdate, test, box, index })
+    await moveAirUnitToCAP({ controller, unit, setAirUnitUpdate, test, box, index })
   }
   await delay(40)
 }
 
-export async function moveAirUnitsFromHangarEndOfNightOperation(controller, side, setTestUpdate) {
+export async function moveAirUnitsFromHangarEndOfNightOperation(controller, side, setAirUnitUpdate) {
   // Move Fighters First -> All go to CAP
   // Move Attack aircraft to Flight Deck
   const units = controller.getAllUnitsInUSHangars()
@@ -316,17 +316,17 @@ export async function moveAirUnitsFromHangarEndOfNightOperation(controller, side
     const numFreeFlightDeckSlots = setValidDestinationBoxesNightOperations(controller, unit.name, side, true)
     const destBoxes = controller.getValidAirUnitDestinations(unit.name)
     await delay(10)
-    await moveAirUnitNight(controller, unit, setTestUpdate, destBoxes)
+    await moveAirUnitNight(controller, unit, setAirUnitUpdate, destBoxes)
   }
 
   for (const unit of attackAircraft) {
     setValidDestinationBoxesNightOperations(controller, unit.name, side, true)
     const destBoxes = controller.getValidAirUnitDestinations(unit.name)
-    await moveAirUnitNight(controller, unit, setTestUpdate, destBoxes)
+    await moveAirUnitNight(controller, unit, setAirUnitUpdate, destBoxes)
   }
 }
 // TODO JAPAN
-export async function moveAirUnitNight(controller, unit, setTestUpdate, destBoxes) {
+export async function moveAirUnitNight(controller, unit, setAirUnitUpdate, destBoxes) {
   if (destBoxes.length === 0) {
     return
   }
@@ -347,10 +347,10 @@ export async function moveAirUnitNight(controller, unit, setTestUpdate, destBoxe
 
   update.handle = 4
 
-  setTestUpdate(update)
+  setAirUnitUpdate(update)
   await delay(50)
 }
-export async function moveAirUnit(controller, unit, setTestUpdate, night) {
+export async function moveAirUnit(controller, unit, setAirUnitUpdate, night) {
   if (night) {
     setValidDestinationBoxesNightOperations(controller, unit.name, GlobalUnitsModel.Side.US)
   } else {
@@ -387,7 +387,7 @@ export async function moveAirUnit(controller, unit, setTestUpdate, night) {
   await delay(50)
   update.handle = 5
 
-  setTestUpdate(update)
+  setAirUnitUpdate(update)
   await delay(50)
 }
 
@@ -501,7 +501,7 @@ export async function generateUSAirOperationsMovesCarriers(controller, stateObje
   // console.log("DEBUG locationDMCV=", locationDMCV)
   // console.log("DEBUG allCarriersSunk=", allCarriersSunk)
 
-  const { setTestUpdate } = stateObject
+  const { setAirUnitUpdate } = stateObject
 
   // Get all air units in Return Boxes - do this first to free up strike boxes
   let units = controller.getAirUnitsInStrikeBoxesReadyToReturn(GlobalGameState.sideWithInitiative)
@@ -512,7 +512,7 @@ export async function generateUSAirOperationsMovesCarriers(controller, stateObje
         continue
       }
       await delay(50)
-      await moveAirUnit(controller, unit, setTestUpdate)
+      await moveAirUnit(controller, unit, setAirUnitUpdate)
     }
   }
 
@@ -526,7 +526,7 @@ export async function generateUSAirOperationsMovesCarriers(controller, stateObje
         continue
       }
       await delay(50)
-      await moveAirUnit(controller, unit, setTestUpdate)
+      await moveAirUnit(controller, unit, setAirUnitUpdate)
     }
   }
 
@@ -624,7 +624,7 @@ export async function generateUSAirOperationsMovesCarriers(controller, stateObje
       await moveAirUnitToStrikeGroup({
         controller,
         unit,
-        setTestUpdate,
+        setAirUnitUpdate,
         test,
         strikeBox,
       })
@@ -638,7 +638,7 @@ export async function generateUSAirOperationsMovesCarriers(controller, stateObje
       await moveAirUnitToStrikeGroup({
         controller,
         unit,
-        setTestUpdate,
+        setAirUnitUpdate,
         test,
         strikeBox,
       })
@@ -680,7 +680,7 @@ export async function generateUSAirOperationsMovesCarriers(controller, stateObje
       await moveAirUnitToStrikeGroup({
         controller,
         unit,
-        setTestUpdate,
+        setAirUnitUpdate,
         test,
         strikeBox,
       })
@@ -688,7 +688,7 @@ export async function generateUSAirOperationsMovesCarriers(controller, stateObje
       // If CAP is valid destination -> move to CAP
       const capBox = destinations.find((box) => box.includes("TF16 CAP") || box.includes("TF17 CAP"))
       if (capBox !== undefined) {
-        flightDecktoCAP(controller, unit, setTestUpdate, test, false)
+        flightDecktoCAP(controller, unit, setAirUnitUpdate, test, false)
       }
     }
   }
@@ -704,7 +704,7 @@ export async function generateUSAirOperationsMovesCarriers(controller, stateObje
     if (unit.carrier.includes("Midway") || unit.aircraftUnit.moved === true) {
       continue
     }
-    await hangarToFlightDeck({ controller, unit, setTestUpdate, test })
+    await hangarToFlightDeck({ controller, unit, setAirUnitUpdate, test })
     await delay(10)
   }
 
@@ -714,7 +714,7 @@ export async function generateUSAirOperationsMovesCarriers(controller, stateObje
     if (unit.carrier.includes("Midway") || unit.aircraftUnit.moved === true) {
       continue
     }
-    await hangarToFlightDeck({ controller, unit, setTestUpdate, test })
+    await hangarToFlightDeck({ controller, unit, setAirUnitUpdate, test })
     await delay(10)
   }
 
@@ -726,7 +726,7 @@ export async function generateUSAirOperationsMovesCarriers(controller, stateObje
     if (unit.carrier.includes("Midway") || unit.aircraftUnit.moved === true) {
       continue
     }
-    await hangarToFlightDeck({ controller, unit, setTestUpdate, test })
+    await hangarToFlightDeck({ controller, unit, setAirUnitUpdate, test })
     await delay(10)
   }
 
@@ -955,6 +955,7 @@ export async function moveStrikeGroups(controller, stateObject, test) {
       // console.log("DEBUG SG", strikeGroup.name, "strikeGroup.targetsFirstAirOp=", strikeGroup.targetsFirstAirOp)
 
       if (strikeGroup.targetsFirstAirOp.length >= 1) {
+        // console.log("FIRST AIR OP")
         if (GlobalGameState.gameTurn === 6 || GlobalGameState.gameTurn === 7) {
           // prioritise MIF
           if (strikeGroup.targetsFirstAirOp.includes("MIF")) {
@@ -1021,6 +1022,7 @@ export async function moveStrikeGroups(controller, stateObject, test) {
           return true
         }
       } else if (strikeGroup.targetsFirstAirOp.length === 0) {
+        // console.log("NO TARGETS MOVE AS CLOSE AS POSSIBLE")
         // else move as close as possible to target
         //  => loop through all hexes and pick the one which has lowest range to target
         if (!ijndmcvTargeted && numberTargetsInRange > 1 && strikeGroup.targetsSecondAirOp.includes("IJN-DMCV")) {
@@ -1049,11 +1051,14 @@ export async function moveStrikeGroups(controller, stateObject, test) {
       }
     } else {
       // console.log(">>>>>>>>>>>>>>>>>>>> SECOND AIR OP:", strikeGroup)
+
       const usRegion = secondAirOpUSStrikeRegion(controller, strikeGroup)
 
       // For SGs with target, prioritise target
       // else move as RETURN 2 box (no target possible)
       const strikeGroupLocation = controller.getStrikeGroupLocation(strikeGroup.name, GlobalUnitsModel.Side.US)
+      // console.log(">>>>>>>>>>>>>>>>>>>> LOCATION=:", strikeGroupLocation)
+      // console.log(">>> TARGETS=", strikeGroup.targetsSecondAirOp)
 
       if (!ijndmcvTargeted && numTargetsInRange > 1 && strikeGroup.targetsSecondAirOp.includes("IJN-DMCV")) {
         const locationIJNDMCV = controller.getFleetLocation("IJN-DMCV", GlobalUnitsModel.Side.JAPAN)
@@ -1064,6 +1069,7 @@ export async function moveStrikeGroups(controller, stateObject, test) {
       if (strikeGroup.targetsSecondAirOp.includes("1AF")) {
         // CHECK TO SEE IF THE ALLOCATED TARGET (1AF) is STILL THERE...
 
+        // console.log("1AF IS A TARGET...")
         const location1AF = controller.getFleetLocation("1AF", GlobalUnitsModel.Side.JAPAN)
         if (
           controller.allCarriersSunkorDMCV(GlobalUnitsModel.Side.JAPAN) ||
@@ -1081,14 +1087,15 @@ export async function moveStrikeGroups(controller, stateObject, test) {
         return true
       }
 
-      // TODO no targets -> I think we just set attacked to true
-      return false
+      // no targets -> set attacked to true
+      strikeGroup.attacked = true
     }
   }
+  return false
 }
 
 export async function generateUSAirOperationsMovesMidway(controller, stateObject, test) {
-  const { setTestUpdate } = stateObject
+  const { setAirUnitUpdate } = stateObject
 
   // Get all air units in Strike Boxes ready to return - do this first to free up strike boxes
   let units = controller.getAirUnitsInStrikeBoxesReadyToReturn(GlobalUnitsModel.Side.US)
@@ -1099,7 +1106,7 @@ export async function generateUSAirOperationsMovesMidway(controller, stateObject
         continue
       }
       await delay(50)
-      await moveAirUnit(controller, unit, setTestUpdate)
+      await moveAirUnit(controller, unit, setAirUnitUpdate)
     }
   }
 
@@ -1110,7 +1117,7 @@ export async function generateUSAirOperationsMovesMidway(controller, stateObject
         continue
       }
       await delay(50)
-      await moveAirUnit(controller, unit, setTestUpdate)
+      await moveAirUnit(controller, unit, setAirUnitUpdate)
     }
   }
   // for each air unit that we wish to move generate an array of destination boxes
@@ -1185,7 +1192,7 @@ export async function generateUSAirOperationsMovesMidway(controller, stateObject
       await moveAirUnitToStrikeGroup({
         controller,
         unit,
-        setTestUpdate,
+        setAirUnitUpdate,
         test,
         strikeBox,
       })
@@ -1210,7 +1217,7 @@ export async function generateUSAirOperationsMovesMidway(controller, stateObject
       await moveAirUnitToStrikeGroup({
         controller,
         unit,
-        setTestUpdate,
+        setAirUnitUpdate,
         test,
         strikeBox,
       })
@@ -1219,7 +1226,7 @@ export async function generateUSAirOperationsMovesMidway(controller, stateObject
     // If CAP is valid destination -> move to CAP
     const capBox = destinations.find((box) => box.includes("MIDWAY CAP"))
     if (capBox !== undefined) {
-      flightDecktoCAP(controller, unit, setTestUpdate, test, true)
+      flightDecktoCAP(controller, unit, setAirUnitUpdate, test, true)
     }
   }
   // 7a. Get all air units in Hangar
@@ -1232,7 +1239,7 @@ export async function generateUSAirOperationsMovesMidway(controller, stateObject
     if (!unit.carrier.includes("Midway") || unit.aircraftUnit.moved === true) {
       continue
     }
-    await hangarToFlightDeck({ controller, unit, setTestUpdate, test })
+    await hangarToFlightDeck({ controller, unit, setAirUnitUpdate, test })
   }
 
   // ii) SBDs
@@ -1241,7 +1248,7 @@ export async function generateUSAirOperationsMovesMidway(controller, stateObject
     if (!unit.carrier.includes("Midway") || unit.aircraftUnit.moved === true) {
       continue
     }
-    await hangarToFlightDeck({ controller, unit, setTestUpdate, test })
+    await hangarToFlightDeck({ controller, unit, setAirUnitUpdate, test })
   }
 
   // ii) TBDs
@@ -1252,7 +1259,7 @@ export async function generateUSAirOperationsMovesMidway(controller, stateObject
     if (!unit.carrier.includes("Midway") || unit.aircraftUnit.moved === true) {
       continue
     }
-    await hangarToFlightDeck({ controller, unit, setTestUpdate, test })
+    await hangarToFlightDeck({ controller, unit, setAirUnitUpdate, test })
   }
 
   // 8a. Get all air units in Return Boxes

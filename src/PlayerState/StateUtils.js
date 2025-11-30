@@ -1072,7 +1072,7 @@ export function midwayOrAirOps() {
 // 6. Move attack aircraft to flight deck
 
 // (ensure no flight deck is empty)
-export async function endOfNightAirOperation(controller, setTestUpdate, side) {
+export async function endOfNightAirOperation(controller, setAirUnitUpdate, side) {
   // 1. Move CAP Units to Return 2 Box
   const capAirUnits = controller.getAllAirUnitsInCAPBoxes(side)
 
@@ -1083,7 +1083,7 @@ export async function endOfNightAirOperation(controller, setTestUpdate, side) {
       setValidDestinationBoxesNightOperations(controller, unit.name, side, true)
       const destBoxes = controller.getValidAirUnitDestinations(unit.name)
 
-      await moveAirUnitNight(controller, unit, setTestUpdate, destBoxes)
+      await moveAirUnitNight(controller, unit, setAirUnitUpdate, destBoxes)
 
       console.log("DEBUG MOVE CAP UNIT:", unit.name, "DEST=", destBoxes)
       unit.border = false
@@ -1098,7 +1098,7 @@ export async function endOfNightAirOperation(controller, setTestUpdate, side) {
       setValidDestinationBoxesNightOperations(controller, unit.name, side, false)
       const destBoxes = controller.getValidAirUnitDestinations(unit.name)
       await delay(10)
-      await moveAirUnitNight(controller, unit, setTestUpdate, destBoxes)
+      await moveAirUnitNight(controller, unit, setAirUnitUpdate, destBoxes)
     }
   }
 
@@ -1110,11 +1110,11 @@ export async function endOfNightAirOperation(controller, setTestUpdate, side) {
     for (const unit of return1AirUnits) {
       setValidDestinationBoxesNightOperations(controller, unit.name, side, false)
       const destBoxes = controller.getValidAirUnitDestinations(unit.name)
-      await moveAirUnitNight(controller, unit, setTestUpdate, destBoxes)
+      await moveAirUnitNight(controller, unit, setAirUnitUpdate, destBoxes)
     }
   }
 
-  await moveAirUnitsFromHangarEndOfNightOperation(controller, side, setTestUpdate)
+  await moveAirUnitsFromHangarEndOfNightOperation(controller, side, setAirUnitUpdate)
 }
 
 export async function endOfAirOperation(capAirUnits, setAirUnitUpdate) {
@@ -1344,7 +1344,7 @@ export async function rollZeDice() {
   GlobalGameState.updateGlobalState()
 }
 
-export async function moveCAPUnitsFromReturnBoxToCarrier(controller, side, setTestUpdate) {
+export async function moveCAPUnitsFromReturnBoxToCarrier(controller, side, setAirUnitUpdate) {
   const capUnitsReturning = controller.getAllCAPDefendersInCAPReturnBoxes(side)
 
   console.log("DEBUG CAP UNITS RETURNING=", capUnitsReturning)
@@ -1402,7 +1402,7 @@ export async function moveCAPUnitsFromReturnBoxToCarrier(controller, side, setTe
     console.log("DO CAP UNIT UPDATE:", update)
     update.handle = 8
 
-    setTestUpdate(update)
+    setAirUnitUpdate(update)
     await delay(10)
   }
 }

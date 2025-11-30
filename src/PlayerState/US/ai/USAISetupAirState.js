@@ -13,7 +13,7 @@ class USAISetupAirState {
     GlobalGameState.setupPhase = 6
   }
   async doAction(stateObject) {
-    const { setTestUpdate } = stateObject
+    const { setAirUnitUpdate } = stateObject
 
     let i = 0
     for (let unit of airUnitSetupDataUS) {
@@ -41,7 +41,7 @@ class USAISetupAirState {
       update.position = position1.offsets[update.index]
 
       console.log("DEBUG air unit:", unit.name, "update=", update)
-      setTestUpdate(update)
+      setAirUnitUpdate(update)
 
       i++
       if (unit.nextAction) {

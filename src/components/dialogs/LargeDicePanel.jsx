@@ -6,6 +6,7 @@ import Row from "react-bootstrap/Row"
 import Button from "react-bootstrap/Button"
 import GlobalGameState from "../../model/GlobalGameState"
 import GlobalUnitsModel from "../../model/GlobalUnitsModel"
+import GlobalUIConstants from "../UIConstants"
 import Die from "./Die"
 import "./modal.css"
 import "./largemodal.css"
@@ -53,7 +54,10 @@ function LargeDicePanel(props) {
   }, [GlobalGameState.closePanel])
   let sidey = sidebg
   if (!sidebg) {
-    sidey = GlobalGameState.sideWithInitiative === GlobalUnitsModel.Side.JAPAN ? "#4B0808" : "#293a4b"
+    sidey =
+      GlobalGameState.sideWithInitiative === GlobalUnitsModel.Side.JAPAN
+        ? GlobalUIConstants.Colors.JAPAN
+        : GlobalUIConstants.Colors.US
   }
   let showImg = false
   let img = image

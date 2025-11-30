@@ -8,7 +8,7 @@ import { autoSave } from "../../../Utils"
 
 class USAINightAirOperationsState {
   async doAction(stateObject) {
-    const { setNightLandingDone, setNightSteps, setNightAirUnits, setNightLandingPanelShow, setTestUpdate } =
+    const { setNightLandingDone, setNightSteps, setNightAirUnits, setNightLandingPanelShow, setAirUnitUpdate } =
       stateObject
     console.log(">>>>>>>> US NIGHT AIR OPERATIONS <<<<<<<<<< ")
 
@@ -25,7 +25,7 @@ class USAINightAirOperationsState {
           continue
         }
         await delay(10)
-        await moveAirUnit(GlobalInit.controller, unit, setTestUpdate, true)
+        await moveAirUnit(GlobalInit.controller, unit, setAirUnitUpdate, true)
       }
     }
 
@@ -52,10 +52,10 @@ class USAINightAirOperationsState {
   }
 
   async nextState(stateObject) {
-    const { setTestUpdate, setEliminatedUnitsPanelShow, setCardNumber, setEndOfTurnSummaryShow } = stateObject
+    const { setAirUnitUpdate, setEliminatedUnitsPanelShow, setCardNumber, setEndOfTurnSummaryShow } = stateObject
 
     // Return units to carriers and move to hangar then flight deck or CAP
-    await endOfNightAirOperation(GlobalInit.controller, setTestUpdate, GlobalUnitsModel.Side.US)
+    await endOfNightAirOperation(GlobalInit.controller, setAirUnitUpdate, GlobalUnitsModel.Side.US)
     console.log(">>>>> MOVING ON FROM US NIGHT AIR OPERATIONS<<<<<<<<<")
 
     GlobalGameState.currentPlayer = GlobalUnitsModel.Side.JAPAN

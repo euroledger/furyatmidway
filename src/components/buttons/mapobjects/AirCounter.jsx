@@ -322,27 +322,27 @@ function AirCounter({ getAirBox, setAirBox, counterData, side }) {
   }
 
   // AI STUFF
-  if (
-    !human &&
-    counterData.name === testUpdate.name &&
-    testUpdate.position != undefined &&
-    position.left !== testUpdate.position.left + "%" &&
-    position.top !== testUpdate.position.top + "%"
-  ) {
-    console.log("&&& human = ", human, "I am ", counterData.name, " -> AIR UNIT (TEST/AI) UPDATE = ", testUpdate)
-    console.log(
-      "DEBUG, current position, (",
-      position.left,
-      position.top,
-      "), test update position=(",
-      testUpdate.position.left,
-      testUpdate.position.top,
-      ")"
-    )
-    setHuman(false)
+  // if (
+  //   !human &&
+  //   counterData.name === testUpdate.name &&
+  //   testUpdate.position != undefined &&
+  //   position.left !== testUpdate.position.left + "%" &&
+  //   position.top !== testUpdate.position.top + "%"
+  // ) {
+  //   console.log("&&& human = ", human, "I am ", counterData.name, " -> AIR UNIT (TEST/AI) UPDATE = ", testUpdate)
+  //   console.log(
+  //     "DEBUG, current position, (",
+  //     position.left,
+  //     position.top,
+  //     "), test update position=(",
+  //     testUpdate.position.left,
+  //     testUpdate.position.top,
+  //     ")"
+  //   )
+  //   setHuman(false)
 
-    doUpdate(testUpdate)
-  }
+  //   doUpdate(testUpdate)
+  // }
 
   const japanDrop = (counterData) => {
     if (

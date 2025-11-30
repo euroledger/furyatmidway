@@ -282,12 +282,12 @@ export function App() {
   })
 
 
-  const [testUpdate, setTestUpdate] = useState({
-    unit: {},
-    position: {},
-    boxName: "",
-    index: -1,
-  })
+  // const [testUpdate, setTestUpdate] = useState({
+  //   unit: {},
+  //   position: {},
+  //   boxName: "",
+  //   index: -1,
+  // })
 
   const [attackAirCounterUpdate, setAttackAirCounterUpdate] = useState({
     unit: {
@@ -1191,7 +1191,7 @@ export function App() {
     setCardDicePanelShow7,
     setTestClicked,
     setCardPlayedPanelShow,
-    setTestUpdate,
+    setAirUnitUpdate,
     setAttackAirCounterUpdate,
     setFleetUnitUpdate,
     setStrikeGroupUpdate,
@@ -1403,7 +1403,7 @@ export function App() {
       setTestyClicked(true)
       await UITester({
         e,
-        setTestUpdate,
+        setAirUnitUpdate,
         setAttackAirCounterUpdate,
         setFleetUnitUpdate,
         setStrikeGroupUpdate,
@@ -3163,7 +3163,7 @@ export function App() {
         headers={airOpsHeaders}
         footers={airOpsFooters}
         showDice={true}
-        margin={25}
+        margin={15}
         sidebg={GlobalUIConstants.Colors.BOTH}
         onHide={(e) => {
           setInitiativePanelShow(false)
@@ -3628,7 +3628,7 @@ export function App() {
         image={"/images/japanflag.jpg"}
         width={30}
         showDice={true}
-        margin={315}
+        margin={355}
         diceButtonDisabled={GlobalGameState.dieRolls.length !== 0}
         closeButtonDisabled={GlobalGameState.dieRolls.length === 0}
         onHide={(e) => {
@@ -3864,7 +3864,7 @@ export function App() {
                   setCardNumber,
                   setEnabledJapanFleetBoxes,
                   setEnabledUSFleetBoxes,
-                  testUpdate,
+                  // testUpdate,
                   fleetUnitUpdate,
                   strikeGroupUpdate,
                   damageMarkerUpdate,

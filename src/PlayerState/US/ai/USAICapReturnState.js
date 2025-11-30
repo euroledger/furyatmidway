@@ -5,11 +5,11 @@ import { moveCAPUnitsFromReturnBoxToCarrier, midwayOrAirOps } from "../../StateU
 
 class USAICapReturnState {
   async doAction(stateObject) {
-    const { setTestUpdate } = stateObject
+    const { setAirUnitUpdate } = stateObject
 
     console.log(">>>>>>>> US CAP RETURN!!!!!!!!!!!!!!!!! return CAP units to parent carrier")
     
-    await moveCAPUnitsFromReturnBoxToCarrier(GlobalInit.controller, GlobalUnitsModel.Side.US, setTestUpdate)
+    await moveCAPUnitsFromReturnBoxToCarrier(GlobalInit.controller, GlobalUnitsModel.Side.US, setAirUnitUpdate)
     this.nextState(stateObject)
   }
 

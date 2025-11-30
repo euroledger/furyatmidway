@@ -12,6 +12,35 @@
   height: 10%; /* Ensure content fills the custom height */
 }
 
+.custom-modal-main-content {
+  border: 1px solid #fff !important;
+  font-weight: 600;
+  border-radius: 15px !important;
+  background-color: rgba(75, 60, 52, 0.6);
+  -webkit-background-clip: padding-box; /* For older browser compatibility */
+  background-clip: padding-box;
+  overflow: hidden
+}
+.custom-modal-content .modal-header {
+  border-top-left-radius: 14px; /* 15px minus 1px border width */
+  border-top-right-radius: 14px;
+  /* Ensure header background color matches your main background color */
+  background-color: rgba(75, 60, 52, 0.6);
+}
+
+/* Match the bottom corners of the footer to the main modal radius */
+.custom-modal-content .modal-footer {
+  border-bottom-left-radius: 14px;
+  border-bottom-right-radius: 14px;
+  /* Ensure footer background color matches your main background color */
+  background-color: rgba(75, 60, 52, 0.6);
+}
+
+
+
+
+
+
 .my-modal {
   width: 10vw; /* Occupy the 90% of the screen width */
   max-width: 10vw;

@@ -9,7 +9,7 @@ class JapanAISetupState {
   async doAction(stateObject) {
     console.log("*** JAPAN AI do air setup...for carrier:", GlobalGameState.JAPAN_CARRIERS[GlobalGameState.currentCarrier])
 
-    const { setTestUpdate } = stateObject
+    const { setAirUnitUpdate } = stateObject
     let update
     for (const unit of airUnitDataJapan) {
       update = calcRandomJapanTestData(unit, GlobalInit.controller)
@@ -22,7 +22,7 @@ class JapanAISetupState {
 
         update.handle=7
 
-      setTestUpdate(update)
+      setAirUnitUpdate(update)
       await delay(GlobalGameState.DELAY)
       if (update.nextAction) {
         await this.nextState()
