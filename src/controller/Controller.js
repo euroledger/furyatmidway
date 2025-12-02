@@ -581,6 +581,12 @@ export default class Controller {
         }
       }
     }
+    // if this is second air op and groups is empty pass back empty array
+    // otherwise all boxes are valid destinations (wrong)
+    if (groups.length === 0 && GlobalGameState.midwayAirOp === 2) {
+      return []
+    }
+
     for (let group of groups) {
       if (group.name === GlobalGameState.midwayAttackGroup) {
         strikeBoxes = new Array()

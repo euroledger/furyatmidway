@@ -15,18 +15,7 @@ class JapanHumanEndOfAirOperationState {
       stateObject
 
     console.log("NEXT STATE AFTER AIR OPERATION (japan)")
-    const unitsInReturnBoxes = GlobalInit.controller.getAllUSCarrierPlanesInReturnBoxes()
 
-    if (
-      GlobalGameState.sideWithInitiative === GlobalUnitsModel.Side.US &&
-      GlobalInit.controller.japanHandContainsCard(10) &&
-      unitsInReturnBoxes.length > 0
-    ) {
-      GlobalGameState.currentPlayer = GlobalUnitsModel.Side.JAPAN
-      setCardNumber(() => 10)
-      GlobalGameState.gamePhase = GlobalGameState.PHASE.CARD_PLAY
-      return
-    }
 
     // Add this to decrement air ops points, reset strike groups etc
 

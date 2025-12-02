@@ -17,10 +17,22 @@ class USAIEndOfAirOperationState {
   }
 
   async nextState(stateObject) {
-    const { setAirUnitUpdate, setStrikeGroupUpdate, setCardNumber, setFleetUnitUpdate } =
-      stateObject
+    const { setAirUnitUpdate, setStrikeGroupUpdate, setCardNumber, setFleetUnitUpdate } = stateObject
 
     console.log("CHEESE! NEXT STATE AFTER AIR OPERATION (US)")
+    const unitsInReturnBoxes = GlobalInit.controller.getAllUSCarrierPlanesInReturnBoxes()
+
+    if (
+      GlobalGameState.sideWithInitiative === GlobalUnitsModel.Side.US &&
+      GlobalInit.controller.japanHandContainsCard(10) &&
+      unitsInReturnBoxes.length > 0
+    ) {
+      GlobalGameState.currentPlayer = GlobalUnitsModel.Side.JAPAN
+      setCardNumber(() => 10)
+      GlobalGameState.gamePhase = GlobalGameState.PHASE.CARD_PLAY
+      GlobalGameState.updateGlobalState()
+      return
+    }
     // decrement air ops points, reset strike groups etc
     await tidyUp(setAirUnitUpdate, setStrikeGroupUpdate, setFleetUnitUpdate)
 

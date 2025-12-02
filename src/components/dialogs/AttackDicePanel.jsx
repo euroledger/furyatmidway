@@ -158,7 +158,7 @@ function AttackDicePanel(props) {
       dbDRM = "" // can never be planes on deck for DMCV
     }
   } else {
-    imageMargin = "30px"
+    imageMargin = "80px"
 
     GlobalGameState.currentCarrierAttackTarget = GlobalUnitsModel.TaskForce.MIF
 

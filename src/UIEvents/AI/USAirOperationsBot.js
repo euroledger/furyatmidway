@@ -106,7 +106,7 @@ function getFleetDistances(controller) {
   let distanceBetweenMidwayandMIF = 100
   let distanceBetweenMidwayand1AF = 100
 
-  if (!controller.allCarriersSunkorDMCV(GlobalUnitsModel.Side.JAPAN)) {
+  if (!controller.allCarriersSunkorDMCV(GlobalUnitsModel.Side.JAPAN) && location1AF.currentHex !== undefined && location1AF.boxName !== Command.FLEET_BOX) {
     distanceBetweenMidwayand1AF = distanceBetweenHexes(Controller.MIDWAY_HEX.currentHex, location1AF.currentHex)
   }
   if (

@@ -76,7 +76,7 @@ export function SingleCarrier({ controller }) {
     buttonStr: "MIF",
     width: "200px",
     height: "200px",
-    marginLeft: "-50px",
+    marginLeft: "-10px",
   }
 
   let carrierTarget
