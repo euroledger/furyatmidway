@@ -742,13 +742,17 @@ export default class Controller {
     return carrier.taskForce
   }
 
-  getAllCarriersForSide(side, excludeSunk) {
+  getAllCarriersForSide(side, excludeSunk, excludeFleetBox) {
     let fleetUnits =
       side === GlobalUnitsModel.Side.JAPAN
         ? Array.from(GlobalUnitsModel.jpFleetUnits.values())
         : Array.from(GlobalUnitsModel.usFleetUnits.values())
 
     if (side === GlobalUnitsModel.Side.JAPAN) {
+      if (excludeSunk === true) {
+        fleetUnits = fleetUnits.filter((n) => !this.isSunk(n.name))
+      }
+  
       return fleetUnits
     }
     const distance = this.numHexesBetweenFleets({ name: "CSF", side }, { name: "MIDWAY" })
@@ -1112,14 +1116,14 @@ export default class Controller {
       if (numCarriersSunk === 4) {
         return false
       }
-      if (numCarriersSunk === 3 && (jpDMCVLocation === undefined || jpDMCVLocation.boxName === Command.FLEET_BOX)) {
+      if (numCarriersSunk === 3 && (jpDMCVLocation === undefined || jpDMCVLocation.boxName === HexCommand.FLEET_BOX)) {
         return false
       }
     } else {
       if (numCarriersSunk === 3) {
         return false
       }
-      if (numCarriersSunk === 2 && usDMCVLocation !== undefined && usDMCVLocation.boxName !== Command.FLEET_BOX) {
+      if (numCarriersSunk === 2 && usDMCVLocation !== undefined && usDMCVLocation.boxName !== HexCommand.FLEET_BOX) {
         return false
       }
     }
@@ -1844,9 +1848,6 @@ export default class Controller {
   calculateVPs() {
     const numJapanCVsSunk = this.getSunkCarriers(GlobalUnitsModel.Side.JAPAN).length
     const numUSCVsSunk = this.getSunkCarriers(GlobalUnitsModel.Side.US).length
-
-    const numJapanCVsRemaining = 4 - numJapanCVsSunk
-    const numUSCVsRemaining = 3 - numUSCVsSunk
 
     GlobalGameState.japanVPs = 0
     GlobalGameState.usVPs = 0

@@ -32,7 +32,6 @@ function SubmarineAlertPanel(props) {
 
 
   const noHandler = (e) => {
-    console.log("GET RID OF FUCKING SUBMARINE")
     // setSubmarineDamagePanelShow(true)
     setSubmarineAlertPanelShow(false)
   }

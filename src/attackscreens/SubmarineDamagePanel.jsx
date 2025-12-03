@@ -4,6 +4,7 @@ import GlobalUnitsModel from "../model/GlobalUnitsModel"
 import GlobalGameState from "../model/GlobalGameState"
 import Controller from "../controller/Controller"
 import { doDMCVDamage, doCarrierDamageRolls, autoAllocateDamage } from "../DiceHandler"
+import HexCommand from "../commands/HexCommand"
 
 export function SubmarineDamagePanelHeaders({ controller, setDamagedCV, damagedCV, side, damageDone, hidden }) {
   const [elRefsCV, setElRefsCV] = useState([])
@@ -224,13 +225,24 @@ export function SubmarineDamagePanelHeaders({ controller, setDamagedCV, damagedC
   const sideBeingAttacked = side === GlobalUnitsModel.Side.US ? GlobalUnitsModel.Side.JAPAN : GlobalUnitsModel.Side.US
 
   const anyTargets = controller.anyTargetsForSubmarine(sideBeingAttacked)
+  console.log("DEBUG -> anyTargets=", anyTargets)
   if (!anyTargets) {
     setDamagedCV("NO TARGETS")
+    return
   }
 
   const excludeSunk = !damageDone
 
   let allCarriers = controller.getAllCarriersForSide(sideBeingAttacked, excludeSunk)
+
+  // remove any DMCV carriers in Fleet Box
+  if (!damageDone) {
+    allCarriers = allCarriers.filter((carrier) => {
+      const location = controller.getFleetLocation("IJN-DMCV", sideBeingAttacked)
+      return !carrier.dmcv || (carrier.dmcv && location.boxName !== HexCommand.FLEET_BOX)
+    })
+  }
+
   const arrLength = allCarriers.length
   useEffect(() => {
     // add or remove refs
@@ -251,6 +263,7 @@ export function SubmarineDamagePanelHeaders({ controller, setDamagedCV, damagedC
     }
   }, [GlobalGameState.testCarrierSelection])
   const handleClick = (carrierName) => {
+    console.log("DEBUG Set Damaged CV to", carrierName)
     setDamagedCV(carrierName)
   }
 
@@ -439,6 +452,7 @@ export function SubmarineDamagePanelFooters({
     ? side + " Die Roll Successful! One hit assigned to " + damagedCV
     : side + " Die Roll Unsuccessful!"
 
+  console.log("DEBUG damagedCV=", damagedCV)
   const carrier = controller.getCarrier(damagedCV)
 
   let undamagedCarrier = carrier.hits === 0

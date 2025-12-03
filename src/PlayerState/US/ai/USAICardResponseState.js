@@ -3,6 +3,7 @@ import GlobalInit from "../../../model/GlobalInit"
 import { delay } from "../../../Utils"
 import { setNextStateFollowingCardPlay } from "../../StateUtils"
 import GlobalUnitsModel from "../../../model/GlobalUnitsModel"
+import HexCommand from "../../../commands/HexCommand"
 
 class USAICardResponseState {
   isTorpedoPlane(unit) {
@@ -88,6 +89,12 @@ class USAICardResponseState {
 
       let allCarriers = GlobalInit.controller.getAllCarriersForSide(GlobalUnitsModel.Side.JAPAN, true)
 
+      // remove any DMCV carriers in Fleet Box
+      allCarriers = allCarriers.filter((carrier) => {
+        const location = GlobalInit.controller.getFleetLocation("IJN-DMCV", GlobalUnitsModel.Side.JAPAN)
+        return !carrier.dmcv || (carrier.dmcv && location.boxName !== HexCommand.FLEET_BOX)
+      })
+      console.log("DEBUG >>>>>>>>> SUBMARINE TARGETS FOR US:", allCarriers)
       // Choose CV with 2 damage as target, otherwise 1 damage, otherwise check for planes on deck
       let selection = allCarriers.findIndex((cv) => GlobalInit.controller.getCarrierHits(cv.name) === 2)
       if (selection === -1) {
@@ -155,8 +162,6 @@ class USAICardResponseState {
   }
 
   async nextState(stateObject) {
-    const { setAirUnitUpdate, setStrikeGroupUpdate, setFleetUnitUpdate, setEndOfAirOpAlertShow } = stateObject
-
     console.log("MOVE ON FROM CARD RESPONSE...")
     await setNextStateFollowingCardPlay(stateObject)
   }

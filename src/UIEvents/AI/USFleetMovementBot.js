@@ -130,8 +130,6 @@ export function doUSDMCVFleetMovementAction(controller, usDMCVRegions) {
     return undefined
   }
 
-  // TODO ------ if offboardPossible - move OFF THE BOARD
-
   // Move closer to row I
   const { targetHex } = distanceFromColI(usDMCVRegions)
   return targetHex

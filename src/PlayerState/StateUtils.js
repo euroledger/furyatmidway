@@ -1,7 +1,7 @@
 import GlobalGameState from "../model/GlobalGameState"
 import GlobalInit from "../model/GlobalInit"
 import GlobalUnitsModel from "../model/GlobalUnitsModel"
-import { allHexesWithinDistance, removeHexFromRegion } from "../components/HexUtils"
+import { allHexesWithinDistance, isMidwayHex, removeHexFromRegion } from "../components/HexUtils"
 import { createMapUpdateForFleet, createRemoveDMCVFleetUpdate } from "../AirUnitData"
 import { calculateSearchResults, calculateSearchValues } from "../model/SearchValues"
 import { delay } from "../Utils"
@@ -389,6 +389,7 @@ export function isMidwayAttackPossible() {
 }
 
 const canUSDMCVMoveOffBoard = (dmcvLocation) => {
+  console.log("CHECKING IF US DMCV CAN MOVE OFF BOARD, DMCV LOCATION=", dmcvLocation)
   let canMoveOffBoard
   if (dmcvLocation !== undefined && dmcvLocation.currentHex !== undefined && dmcvLocation.currentHex.q === 9) {
     // can move offboard
@@ -396,6 +397,18 @@ const canUSDMCVMoveOffBoard = (dmcvLocation) => {
       canMoveOffBoard = true
     }
   }
+  if (
+    GlobalGameState.gameTurn === 4 &&
+    dmcvLocation !== undefined &&
+    dmcvLocation.currentHex !== undefined &&
+    dmcvLocation.currentHex.q >= 8
+  ) {
+    // can move offboard
+    if (GlobalGameState.gamePhase === GlobalGameState.PHASE.US_DMCV_FLEET_MOVEMENT_PLANNING) {
+      canMoveOffBoard = true
+    }
+  }
+  console.log("\t=> DEBUG ************************** US DMCV canMoveOffBoard=", canMoveOffBoard)
   return canMoveOffBoard
 }
 const canCSFMoveOffBoard = (csfLocation) => {
@@ -1606,6 +1619,7 @@ function setRetreatRegions(location, setUSMapRegions, fleet) {
 }
 
 async function retreatOneHexTo(hex, fleet, setFleetUnitUpdate) {
+  console.trace()
   const q = hex.q
   const r = hex.r
 
@@ -1683,9 +1697,6 @@ export async function checkFleetsInSameHex(
     const usStartLocation = previousPosition.get("CSF")
     const distanceMoved = distanceBetweenHexes(usStartLocation.currentHex, csfLocation.currentHex)
 
-    // ----------------------------------------------------
-    // TODO IF AI SELECT A RETREAT HEX AT RANDOM
-    // ----------------------------------------------------
     if (distanceMoved === 2) {
       console.log("CFS MOVED 2 HEXES")
       let hexes = interveningHexes(usStartLocation.currentHex, csfLocation.currentHex)
@@ -1697,17 +1708,25 @@ export async function checkFleetsInSameHex(
             r: hexes[0].r,
           },
         }
-        const fleets = controller.getAllFleetsInLocation(hex, GlobalUnitsModel.Side.US, false)
-        if (fleets.length === 0) {
-          await retreatOneHexTo(hex.currentHex, "CSF", setFleetUnitUpdate)
+        // Ensure intervening hex is not Midway
+        if (isMidwayHex(hex.currentHex)) {
+          // choose randomly
+          usMapRegions = setRetreatRegions(csfLocation, setUSMapRegions, "CSF")
+          const retreatHex = usMapRegions[Math.floor(Math.random() * usMapRegions.length)]
+          await retreatOneHexTo(retreatHex, "CSF", setFleetUnitUpdate)
         } else {
-          // go to region selection for human or random for AI
-          if (GlobalGameState.usPlayerType === GlobalUnitsModel.TYPE.HUMAN) {
-            setRetreatRegions(csfLocation, setUSMapRegions, "CSF")
+          const fleets = controller.getAllFleetsInLocation(hex, GlobalUnitsModel.Side.US, false)
+          if (fleets.length === 0) {
+            await retreatOneHexTo(hex.currentHex, "CSF", setFleetUnitUpdate)
           } else {
-            usMapRegions = setRetreatRegions(csfLocation, setUSMapRegions, "CSF")
-            const retreatHex = usMapRegions[Math.floor(Math.random() * usMapRegions.length)]
-            await retreatOneHexTo(retreatHex, "CSF", setFleetUnitUpdate)
+            // go to region selection for human or random for AI
+            if (GlobalGameState.usPlayerType === GlobalUnitsModel.TYPE.HUMAN) {
+              setRetreatRegions(csfLocation, setUSMapRegions, "CSF")
+            } else {
+              usMapRegions = setRetreatRegions(csfLocation, setUSMapRegions, "CSF")
+              const retreatHex = usMapRegions[Math.floor(Math.random() * usMapRegions.length)]
+              await retreatOneHexTo(retreatHex, "CSF", setFleetUnitUpdate)
+            }
           }
         }
       } else if (hexes.length == 2) {
