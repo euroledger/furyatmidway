@@ -17,6 +17,10 @@ export const hexOrigin = {
 
 export const hexSize = 29.07
 
+export const hexesEqual = (hexA, hexB) => {
+  return hexA.currentHex.q === hexB.currentHex.q && hexA.currentHex.r === hexB.currentHex.r
+}
+
 export const axialToCube = (hex) => {
   const q = hex.q
   const r = hex.r

@@ -463,7 +463,7 @@ function DMCVFleetCounter({
       if (locationDMCV !== undefined && locationDMCV.currentHex !== undefined) {
         dmcv = distanceBetweenHexes(locationDMCV.currentHex, hex) === 0
       }
-      if (csfLocation !== undefined) {
+      if (csfLocation !== undefined && csfLocation.boxName !== HexCommand.FLEET_BOX) {
         csf = distanceBetweenHexes(csfLocation.currentHex, hex) === 0
       }
       if (csf) {

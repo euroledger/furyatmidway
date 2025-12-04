@@ -1,7 +1,7 @@
 import GlobalUnitsModel from "../../model/GlobalUnitsModel"
 import GlobalGameState from "../../model/GlobalGameState"
 import Controller from "../../controller/Controller"
-import { distanceBetweenHexes } from "../../components/HexUtils"
+import { distanceBetweenHexes, hexesEqual } from "../../components/HexUtils"
 import HexCommand from "../../commands/HexCommand"
 import { createStrikeGroupUpdate } from "../../AirUnitData"
 import { mergeUnique } from "../../controller/AirOperationsHandler"
@@ -106,7 +106,11 @@ function getFleetDistances(controller) {
   let distanceBetweenMidwayandMIF = 100
   let distanceBetweenMidwayand1AF = 100
 
-  if (!controller.allCarriersSunkorDMCV(GlobalUnitsModel.Side.JAPAN) && location1AF.currentHex !== undefined && location1AF.boxName !== Command.FLEET_BOX) {
+  if (
+    !controller.allCarriersSunkorDMCV(GlobalUnitsModel.Side.JAPAN) &&
+    location1AF.currentHex !== undefined &&
+    location1AF.boxName !== Command.FLEET_BOX
+  ) {
     distanceBetweenMidwayand1AF = distanceBetweenHexes(Controller.MIDWAY_HEX.currentHex, location1AF.currentHex)
   }
   if (
@@ -117,7 +121,11 @@ function getFleetDistances(controller) {
   ) {
     distanceBetweenCSFand1AF = distanceBetweenHexes(locationCSF.currentHex, location1AF.currentHex)
   }
-  if (locationIJNDMCV !== undefined && locationIJNDMCV.currentHex !== undefined) {
+  if (
+    locationIJNDMCV !== undefined &&
+    locationIJNDMCV.currentHex !== undefined &&
+    locationCSF.boxName !== HexCommand.FLEET_BOX
+  ) {
     distanceBetweenCSFandIJNDMCV = distanceBetweenHexes(locationCSF.currentHex, locationIJNDMCV.currentHex)
   }
   if (locationMIF !== undefined && locationMIF.currentHex !== undefined && locationCSF.boxName !== Command.FLEET_BOX) {
@@ -225,7 +233,6 @@ async function moveAirUnitToStrikeGroup({ controller, unit, setAirUnitUpdate, te
 
 async function moveStrikeGroup(controller, unit, fromHex, toHex, setStrikeGroupUpdate, test) {
   await delay(DELAY_MS)
-  const usStrikeGroupMove = createStrikeGroupUpdate(unit.name, toHex.currentHex.q, toHex.currentHex.r)
 
   if (test) {
     // move the unit to the new location (test only)
@@ -241,10 +248,17 @@ async function moveStrikeGroup(controller, unit, fromHex, toHex, setStrikeGroupU
       },
     })
   } else {
-    setStrikeGroupUpdate(usStrikeGroupMove)
-  }
+    // edge case if from hex and to hex are the same, teleport to Midway and back
+    if (efromHex.currentHex !== undefined && hexesEqual(fromHex, toHex)) {
+      const usStrikeGroupMove1 = createStrikeGroupUpdate(unit.name, Controller.MIDWAY_HEX)
+      setStrikeGroupUpdate(usStrikeGroupMove1)
 
-  await delay(DELAY_MS)
+      await delay(10)
+    }
+    const usStrikeGroupMove2 = createStrikeGroupUpdate(unit.name, toHex.currentHex.q, toHex.currentHex.r)
+    setStrikeGroupUpdate(usStrikeGroupMove2)
+    await delay(DELAY_MS)
+  }
 }
 async function hangarToFlightDeck({ controller, unit, setAirUnitUpdate, test }) {
   await delay(40)
@@ -940,13 +954,7 @@ export async function moveStrikeGroups(controller, stateObject, test) {
 
     if (isFirstAirOpForStrike(controller, strikeGroup, GlobalUnitsModel.Side.US)) {
       const usRegion = firstAirOpUSStrikeRegion(controller, strikeGroup)
-      // console.log(
-      //   "DEBUG",
-      //   strikeGroup.name,
-      //   strikeGroup.targetsFirstAirOp,
-      //   "usRegion=",
-      //   usRegion
-      // )
+      // console.log("DEBUG SG", strikeGroup.name, strikeGroup.targetsFirstAirOp, "usRegion=", usRegion)
       if (usRegion.length === 0) {
         // turn 3 last air op, no strike possible
         continue
@@ -1078,6 +1086,7 @@ export async function moveStrikeGroups(controller, stateObject, test) {
           strikeGroup.attacked = true
           return false
         }
+        // console.log("MOVE SG", strikeGroup.name)
         await moveStrikeGroup(controller, strikeGroup, strikeGroupLocation, location1AF, setStrikeGroupUpdate, test)
         return true
       }
