@@ -1,9 +1,8 @@
-import { React } from "react"
 import "./cap.css"
 import GlobalGameState from "../model/GlobalGameState"
 import GlobalUnitsModel from "../model/GlobalUnitsModel"
-import { allFleetsSunk, removeMIFFleet } from "../PlayerState/StateUtils"
-import { sideBeingAttacked } from "../Utils"
+import { removeMIFFleet } from "../PlayerState/StateUtils"
+import GlobalInit from "../model/GlobalInit"
 
 export function AttackResolutionHeaders() {}
 
@@ -46,17 +45,17 @@ export function AttackResolutionFooters({
 
     if (totalHits > 0) {
       mifMsg = "Midway Invasion Force reduced to"
+      GlobalInit.controller.viewEventHandler({
+        type: Controller.EventTypes.MIF_DAMAGE,
+        data: {
+          side: GlobalUnitsModel.Side.JAPAN,
+          hits: totalHits
+        },
+      })
     } else {
       mifMsg = "Midway Invasion Force remains at"
     }
   }
-  // if (isMIFtheTarget && !attackResolved) {
-  //   if (totalHits > 0) {
-  //     mifMsg = "Midway Invasion Force reduced to"
-  //   } else {
-  //     mifMsg = "Midway Invasion Force remains at"
-  //   }
-  // }
 
   return (
     <>

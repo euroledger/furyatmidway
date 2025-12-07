@@ -14,6 +14,7 @@ import ViewEventSelectionHandler from "./ViewEventSelectionHandler"
 import ViewEventCapHandler from "./ViewEventCapHandler"
 import ViewEventCarrierDamageHandler from "./ViewEventDamageHandler"
 import ViewEventCardHandler from "./ViewEventCardHandler"
+import ViewEventMIFHandler from "./ViewEventMIFHandler"
 import HexCommand from "../commands/HexCommand"
 
 export default class Controller {
@@ -39,6 +40,7 @@ export default class Controller {
     SUBMARINE_ATTACK_ROLL: "Submarine Attack Roll",
     MIDWAY_DAMAGE: "Midway Damage Allocation",
     CARD_PLAY: "Play Event Card",
+    MIF_DAMAGE: "Midway Invasion Force Damage",
     NAVAL_BOMBARDMENT_ROLL: "Naval Bombardment Roll",
     TROUBLED_RECON_ROLL: "Troubled Reconnaissance Roll",
   }
@@ -69,6 +71,7 @@ export default class Controller {
     this.capHandler = new ViewEventCapHandler(this)
     this.damageHandler = new ViewEventCarrierDamageHandler(this)
     this.cardEventHandler = new ViewEventCardHandler(this)
+    this.mifDamageHandler = new ViewEventMIFHandler(this)
   }
 
   clearTargetMap() {
@@ -457,8 +460,6 @@ export default class Controller {
   removeUnitFromCAPDefenders(unitToRemove, side) {
     let capUnits = this.getAllCAPDefenders(side)
 
-    console.log("POOOOOOOOOOOO PROCESS", unitToRemove.name, "STEPS=", unitToRemove.aircraftUnit.steps)
-
     if (unitToRemove.aircraftUnit.steps === 0) {
       unitToRemove.aircraftUnit.intercepting = false
       capUnits = capUnits.filter((unit) => unit.name !== unitToRemove.name)
@@ -470,7 +471,6 @@ export default class Controller {
     if (unitToRemove.aircraftUnit.steps === 1) {
       unitToRemove.aircraftUnit.intercepting = false
       if (capUnits.length === 0) {
-        console.log("RETURN FUCK ALL")
         return []
       } else {
         capUnits = capUnits.filter((unit) => unit.name !== unitToRemove.name)
@@ -752,7 +752,7 @@ export default class Controller {
       if (excludeSunk === true) {
         fleetUnits = fleetUnits.filter((n) => !this.isSunk(n.name))
       }
-  
+
       return fleetUnits
     }
     const distance = this.numHexesBetweenFleets({ name: "CSF", side }, { name: "MIDWAY" })
@@ -2679,6 +2679,10 @@ export default class Controller {
 
       case Controller.EventTypes.CARD_PLAY:
         this.cardEventHandler.handleCardEvent(event)
+        break
+
+      case Controller.EventTypes.MIF_DAMAGE:
+        this.mifDamageHandler.handleMIFDamageEvent(event)
         break
       default:
         console.log(`Unknown event type: ${event.type}`)

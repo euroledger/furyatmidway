@@ -21,6 +21,7 @@ import { delay } from "../../DiceHandler"
 import { DELAY_MS } from "../../PlayerState/StateUtils"
 import Command from "../../commands/Command"
 import { faL } from "@fortawesome/free-solid-svg-icons"
+import GlobalInit from "../../model/GlobalInit"
 
 export function selectUSDefendingCAPUnits(controller, stateObject) {
   const { setCapAirUnits, setFightersPresent, setCapSteps } = stateObject
@@ -164,6 +165,15 @@ function getNextAvailableStrikeBox(controller, side) {
     }
   }
 }
+async function moveAttackingStrikeUnitsToReturnBoxes(strikeGroup, setAirUnitUpdate) {
+  const strikeUnitsReturning = GlobalInit.controller.getAirUnitsInStrikeGroups(strikeGroup.box)
+
+  for (const unit of strikeUnitsReturning) {
+    await delay(40)
+    setValidDestinationBoxes(GlobalInit.controller, unit.name, unit.side)
+    await moveAirUnit(GlobalInit.controller, unit, setAirUnitUpdate)
+  }
+}
 
 async function moveAirUnitToFlightDeck({ controller, unit, setAirUnitUpdate, test, box, index }) {
   await delay(40)
@@ -249,7 +259,7 @@ async function moveStrikeGroup(controller, unit, fromHex, toHex, setStrikeGroupU
     })
   } else {
     // edge case if from hex and to hex are the same, teleport to Midway and back
-    if (efromHex.currentHex !== undefined && hexesEqual(fromHex, toHex)) {
+    if (fromHex.currentHex !== undefined && hexesEqual(fromHex, toHex)) {
       const usStrikeGroupMove1 = createStrikeGroupUpdate(unit.name, Controller.MIDWAY_HEX)
       setStrikeGroupUpdate(usStrikeGroupMove1)
 
@@ -911,8 +921,9 @@ export function getAllTargetsInRange(controller, strikeUnits) {
     // console.log(">>>>>>>>>>>>>>>>> SG", strikeGroup.name, "TARGETS FIRST AIR OP=", strikeGroup.targetsFirstAirOp)
   }
 }
+
 export async function moveStrikeGroups(controller, stateObject, test) {
-  const { setStrikeGroupUpdate } = stateObject
+  const { setStrikeGroupUpdate, setAirUnitUpdate } = stateObject
 
   // move any strike groups across the map
 
@@ -953,6 +964,7 @@ export async function moveStrikeGroups(controller, stateObject, test) {
     }
 
     if (isFirstAirOpForStrike(controller, strikeGroup, GlobalUnitsModel.Side.US)) {
+      // console.log("+++++++++++++++++++ FIRST AIR OP")
       const usRegion = firstAirOpUSStrikeRegion(controller, strikeGroup)
       // console.log("DEBUG SG", strikeGroup.name, strikeGroup.targetsFirstAirOp, "usRegion=", usRegion)
       if (usRegion.length === 0) {
@@ -961,7 +973,16 @@ export async function moveStrikeGroups(controller, stateObject, test) {
       }
 
       // console.log("DEBUG SG", strikeGroup.name, "strikeGroup.targetsFirstAirOp=", strikeGroup.targetsFirstAirOp)
+      // console.log("DEBUG SG", strikeGroup.name, "strikeGroup.targetsSecondAirOp=", strikeGroup.targetsSecondAirOp)
 
+      if (strikeGroup.targetsFirstAirOp.length === 0 && strikeGroup.targetsSecondAirOp.length === 0) {
+        // no target left in range (something must have been sunk or left the board)
+        strikeGroup.attacked = true
+        strikeGroup.airOpMoved = 1
+        strikeGroup.airOpAttacked = 1
+        moveAttackingStrikeUnitsToReturnBoxes(strikeGroup, setAirUnitUpdate)
+        continue
+      }
       if (strikeGroup.targetsFirstAirOp.length >= 1) {
         // console.log("FIRST AIR OP")
         if (GlobalGameState.gameTurn === 6 || GlobalGameState.gameTurn === 7) {

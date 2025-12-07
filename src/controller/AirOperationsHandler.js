@@ -530,7 +530,7 @@ export function doStrikeBoxUS(controller, name, side) {
 
   let destArray = new Array()
   // console.log(
-  //   "SG:",
+  //   "DEBUG SG:",
   //   strikeGroup.name,
   //   "strikeGroup.airOpMoved=",
   //   strikeGroup.airOpMoved,
@@ -558,7 +558,7 @@ export function doStrikeBoxUS(controller, name, side) {
     // check Midway in range - attack hex within 5 hexes of Midway
     const locationOfStrikeGroup = controller.getStrikeGroupLocation(strikeGroup.name, side)
 
-    if (
+    if (locationOfStrikeGroup!== undefined && locationOfStrikeGroup.currentHex !== undefined &&
       distanceBetweenHexes(locationOfStrikeGroup.currentHex, Controller.MIDWAY_HEX.currentHex) <= 5 &&
       !controller.isMidwayBaseDestroyed()
     ) {
@@ -666,7 +666,6 @@ export function doHangarNight(controller, name, side) {
   const unit = controller.getAirUnitForName(name)
   if (!unit.aircraftUnit.attack) {
     const capBox = controller.getCapBoxForNamedCarrier(carrierName, side)
-    console.log("PUSH INTO CAP BOX->", name)
     destinationsArray.push(capBox)
   }
 
@@ -690,15 +689,7 @@ export function doHangarNight(controller, name, side) {
       }
     }
   }
-  // check flight deck available
-  // if (!destAvailable) {
-  //   return 0
-  // }
-  // if (destBox) {
-  // destinationsArray.push(destBox)
-  console.log(">>>>>>>>>> destinations array=", destinationsArray)
   controller.setValidAirUnitDestinations(name, destinationsArray)
-  // }
   return numFreeSlotsOnFlightDeck
 }
 
@@ -979,7 +970,6 @@ export async function setStrikeGroupAirUnitsToNotMoved(side) {
 }
 
 export async function moveCAPtoReturnBox(controller, capAirUnits, setAirUnitUpdate) {
-  console.log("IN moveCAPtoReturnBox()...")
   const sideBeingAttacked =
     GlobalGameState.sideWithInitiative === GlobalUnitsModel.Side.US
       ? GlobalUnitsModel.Side.JAPAN
@@ -1011,15 +1001,15 @@ export async function moveCAPtoReturnBox(controller, capAirUnits, setAirUnitUpda
     const destBox = controller.getCapReturnAirBoxForNamedTaskForce(sideBeingAttacked, tf)
 
     let position1 = USAirBoxOffsets.find((box) => box.name === destBox)
-    console.log("DEBUG US set position1 to", position1)
+    // console.log("DEBUG US set position1 to", position1)
 
     if (GlobalGameState.sideWithInitiative === GlobalUnitsModel.Side.US) {
       position1 = JapanAirBoxOffsets.find((box) => box.name === destBox)
-      console.log("DEBUG JAPAN set position1 to", position1)
+      // console.log("DEBUG JAPAN set position1 to", position1)
     }
     update.boxName = location.boxName
 
-    console.log("DEBUG air unit=", capUnit.name, "location=", location.boxIndex)
+    // console.log("DEBUG air unit=", capUnit.name, "location=", location.boxIndex)
     const index = GlobalInit.controller.getFirstAvailableZone(destBox)
     update.position = position1.offsets[location.boxIndex]
     update.name = capUnit.name
@@ -1695,7 +1685,7 @@ export function firstAirOpUSStrikeRegion(controller, counterData) {
       }
     }
   } else {
-    usRegion = allHexesWithinDistance(locationOfCarrier.currentHex, 2, false)
+    usRegion = allHexesWithinDistance(locationOfCarrier.currentHex, 2, false, true)
   }
   return usRegion
 }

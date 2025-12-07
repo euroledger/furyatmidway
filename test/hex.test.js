@@ -38,8 +38,11 @@ test("Is Midway and Distances between two hexes on map", () => {
 })
 
 test("Generate regions within certain distance of hex", () => {
-  let region = allHexesWithinDistance({ q: 5, r: 1 }, 2, false)
-  const r1 = region.map((element) => {return {q:element.q, r: element.r}})
+  let region = allHexesWithinDistance({ q: 5, r: 1 }, 2, false, false)
+  const r1 = region.map((element) => {
+    return { q: element.q, r: element.r }
+  })
+
   expect(r1).toEqual([
     { q: 3, r: 1 },
     { q: 3, r: 2 },
@@ -50,7 +53,6 @@ test("Generate regions within certain distance of hex", () => {
     { q: 4, r: 3 },
     { q: 5, r: -1 },
     { q: 5, r: 0 },
-    { q: 5, r: 1 },
     { q: 5, r: 2 },
     { q: 5, r: 3 },
     { q: 6, r: -1 },
@@ -64,7 +66,9 @@ test("Generate regions within certain distance of hex", () => {
 
   // exclude Midway from region
   region = allHexesWithinDistance({ q: 7, r: 1 }, 2, true)
-  const r2 = region.map((element) => {return {q:element.q, r: element.r}})
+  const r2 = region.map((element) => {
+    return { q: element.q, r: element.r }
+  })
   expect(r2).toEqual([
     { q: 5, r: 1 },
     { q: 5, r: 2 },
@@ -74,7 +78,6 @@ test("Generate regions within certain distance of hex", () => {
     { q: 6, r: 2 },
     { q: 7, r: -1 },
     { q: 7, r: 0 },
-    { q: 7, r: 1 },
     { q: 7, r: 2 },
     { q: 7, r: 3 },
     { q: 8, r: -1 },
@@ -89,7 +92,6 @@ test("Generate regions within certain distance of hex", () => {
 })
 
 test("Find intervening hexes on Two Hex Path", () => {
-  
   // A2 -> C3 only one intervening hex (B3)
 
   let hex1 = {
@@ -122,6 +124,4 @@ test("Find intervening hexes on Two Hex Path", () => {
 
   expect(ih[1].q).toEqual(2)
   expect(ih[1].r).toEqual(2)
-
 })
-

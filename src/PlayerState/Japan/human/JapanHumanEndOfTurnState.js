@@ -55,20 +55,26 @@ class JapanHumanEndOfTurnState {
     } else if (!this.cardChecked(2)) {
       this.markCard(2)
     }
-    if (
-      !this.cardChecked(3) &&
-      (GlobalInit.controller.usHandContainsCard(3) || GlobalInit.controller.japanHandContainsCard(3))
-    ) {
-      setCardNumber(() => 3)
-      this.markCard(3)
-      if (GlobalInit.controller.usHandContainsCard(3)) {
-        GlobalGameState.currentPlayer = GlobalUnitsModel.Side.US
+
+    if (!this.cardChecked(3)) {
+      if (GlobalInit.controller.japanHandContainsCard(3)) {
+        const jpRedUnits = GlobalInit.controller.getAllReducedUnitsForSide(GlobalUnitsModel.Side.JAPAN)
+        const jpEeliminatedAirUnits = GlobalInit.controller.getAllEliminatedUnits(GlobalUnitsModel.Side.JAPAN)
+        if (!this.cardChecked(3) && (jpRedUnits.length > 0 || jpEeliminatedAirUnits.length > 0)) {
+          setCardNumber(() => 3)
+          this.markCard(3)
+          GlobalGameState.currentPlayer = GlobalUnitsModel.Side.JAPAN
+          GlobalGameState.gamePhase = GlobalGameState.PHASE.CARD_PLAY
+          return
+        }
       } else {
-        GlobalGameState.currentPlayer = GlobalUnitsModel.Side.JAPAN
+        setCardNumber(() => 3)
+        this.markCard(3)
+        GlobalGameState.currentPlayer = GlobalUnitsModel.Side.US
+        GlobalGameState.gamePhase = GlobalGameState.PHASE.CARD_PLAY
+        return
       }
-      GlobalGameState.gamePhase = GlobalGameState.PHASE.CARD_PLAY
-      return
-    } else if (!this.cardChecked(3)) {
+    } else {
       this.markCard(3)
     }
     if (

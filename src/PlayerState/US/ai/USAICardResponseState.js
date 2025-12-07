@@ -143,6 +143,7 @@ class USAICardResponseState {
         await delay(500)
         let unitsInGroup = GlobalInit.controller.getAttackingStrikeUnits()
         // select TBD as step loss if present
+        console.log(">>> unitsInGroup=", unitsInGroup)
         let unit = unitsInGroup.find((unit) => this.isTorpedoPlane(unit))
         let selection
 
@@ -151,10 +152,11 @@ class USAICardResponseState {
         } else {
           selection = unitsInGroup.findIndex((u) => u.name === unit.name)
         }
+        console.log(">>>> ELIMINATE SELECTION index=", selection)
         GlobalGameState.testStepLossSelection = selection
         GlobalGameState.updateGlobalState()
 
-        await delay(10)
+        await delay(40)
         GlobalGameState.testStepLossSelection = -1
         GlobalGameState.updateGlobalState()
       }

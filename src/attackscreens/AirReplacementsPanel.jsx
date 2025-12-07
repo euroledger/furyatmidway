@@ -287,7 +287,6 @@ export function AirReplacementsFooters({
     availableUSCVs = usCVs.filter((carrier) => {
       return !controller.isSunk(carrier, true) && controller.isHangarAvailable(carrier)
     })
-
     // IF AI only display undamaged carriers
     if (GlobalGameState.usPlayerType === GlobalUnitsModel.TYPE.AI) {
       let allCarriersDamaged = true
@@ -297,12 +296,10 @@ export function AirReplacementsFooters({
           break
         }
       }
-
       if (!allCarriersDamaged) {
         availableUSCVs = availableUSCVs.filter((cv) => controller.getCarrierHits(cv) === 0)
       }
     }
-
     arrLength = availableUSCVs.length
     if (clickedOnSomething && availableUSCVs.length === 0) {
       msg = "No carriers available to receive replacements"
@@ -318,6 +315,10 @@ export function AirReplacementsFooters({
     availableJapanCVs = japanCVs.filter(
       (carrier) => !controller.isSunk(carrier) && controller.isHangarAvailable(carrier)
     )
+
+    console.log("AVAILABLE JAPAN CVs=", availableJapanCVs)
+
+    availableJapanCVs = []
     if (GlobalGameState.jpPlayerType === GlobalUnitsModel.TYPE.AI) {
       let allCarriersDamaged = true
       for (const cv of availableJapanCVs) {

@@ -1862,7 +1862,7 @@ export function App() {
               >
                 Save Game
               </Button>
-              <Button
+              {/* <Button
                 style={{ fontSize: font }}
                 className="me-1"
                 size="sm"
@@ -1872,7 +1872,7 @@ export function App() {
                 }}
               >
                 Strike
-              </Button>
+              </Button> */}
               <Button
                 style={{ fontSize: font }}
                 className="me-1"
@@ -1885,7 +1885,7 @@ export function App() {
               >
                 Fleet
               </Button>
-              <Button
+              {/* <Button
                 style={{ fontSize: font }}
                 className="me-1"
                 size="sm"
@@ -1896,7 +1896,7 @@ export function App() {
                 }}
               >
                 Reorg
-              </Button>
+              </Button> */}
               <Button
                 style={{ fontSize: font }}
                 className="me-1"
@@ -2467,6 +2467,9 @@ export function App() {
     GlobalInit.controller.getCardPlayed(3, GlobalUnitsModel.Side.JAPAN)
 
   let card3bg = jpCard3 ? GlobalUIConstants.Colors.JAPAN : GlobalUIConstants.Colors.US
+  let card3image = GlobalInit.controller.getCardPlayed(3, GlobalUnitsModel.Side.US)
+    ? GlobalUIConstants.Flags.US
+    : GlobalUIConstants.Flags.JAPAN
   const endOfTurnSummaryHeaders = (
     <>
       <EndOfTurnSummaryHeaders
@@ -3785,6 +3788,7 @@ export function App() {
         width={74}
         hidden={hiddenCard3Boog}
         sidebg={card3bg}
+        image={card3image}
         showDice={false}
         margin={0}
         onHide={(e) => {

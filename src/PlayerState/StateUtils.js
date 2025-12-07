@@ -449,6 +449,7 @@ export const getUSFleetRegions = () => {
     if (csfLocation.currentHex !== undefined) {
       let regionsMinusAllFleets = allHexesWithinDistance(csfLocation.currentHex, GlobalGameState.fleetSpeed, true)
 
+      console.log(">>>>>>>>>regionsMinusAllFleets= ", regionsMinusAllFleets)
       // remove hex with IJN DMCV
       // if (GlobalGameState.gameTurn !== 4) {
       if (usDMCVLocation !== undefined && usDMCVLocation.currentHex !== undefined) {

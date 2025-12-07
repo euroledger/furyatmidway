@@ -79,19 +79,21 @@ AIR_STRATEGIES.push([
   MIDWAY_SETUP
 ]) // mixture of above two
 
-AIR_STRATEGIES.push([
-  [0, 0, 2, 2, 2],
-  [0, 0, 4, 4, 4],
-  [5, 5, 7, 7, 7],
-  MIDWAY_SETUP
-]) // ultra defensive all fighters in CAP, all attack aircraft in hangars
+// AIR_STRATEGIES.push([
+//   [0, 0, 2, 2, 2],
+//   [0, 0, 4, 4, 4],
+//   [5, 5, 7, 7, 7],
+//   MIDWAY_SETUP
+// ]) // ultra defensive all fighters in CAP, all attack aircraft in hangars
 
-AIR_STRATEGIES.push([
-  [1, 2, 1, 2, 2],
-  [3, 4, 3, 4, 4],
-  [6, 7, 6, 7, 7],
-  MIDWAY_SETUP
-]) // ultra aggressive no fighters in CAP, all attack aircraft either on fligth deck or hangar
+
+// No fighters in CAP is silly. Don't use this.
+// AIR_STRATEGIES.push([
+//   [1, 2, 1, 2, 2],
+//   [3, 4, 3, 4, 4],
+//   [6, 7, 6, 7, 7],
+//   MIDWAY_SETUP
+// ]) // ultra aggressive no fighters in CAP, all attack aircraft either on fligth deck or hangar
 
 
 const randomStrategy = generateRandomUSAirSetup()

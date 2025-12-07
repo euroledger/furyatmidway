@@ -1,3 +1,4 @@
+import Controller from "../controller/Controller"
 
 export const convertHexCoords = (hex) => {
   return convertCoords(hex.q, hex.r)
@@ -51,15 +52,14 @@ export const distanceBetweenHexes = (a, b) => {
   return (Math.abs(q) + Math.abs(r) + Math.abs(s)) / 2
 }
 
-
 export const mapIndexToHex = (i) => {
   const hexes = getAllHexes()
-  return hexes.find((h)=> h.index = i)
+  return hexes.find((h) => (h.index = i))
 }
 
 export const mapHexToIndex = (hex) => {
   const hexes = getAllHexes()
-  const theHex = hexes.find((h)=> h.q === hex.q && h.r === hex.r)
+  const theHex = hexes.find((h) => h.q === hex.q && h.r === hex.r)
   return theHex.index
 }
 
@@ -67,8 +67,8 @@ export const mapIndexesToHexes = (indexArray) => {
   return indexArray.map((element) => mapIndexToHex(element.index))
 }
 
-export const mapHexesToIndexes= (hexArray) => {
-  return hexArray.map((element) => mapHexToIndex({q: element.q, r: element.r}))
+export const mapHexesToIndexes = (hexArray) => {
+  return hexArray.map((element) => mapHexToIndex({ q: element.q, r: element.r }))
 }
 
 export const areCoordinatesOnMap = (q, r) => {
@@ -130,11 +130,10 @@ export const coordsOnMap = (q, r) => {
 }
 
 export const sameHex = (hexA, hexB) => {
-    if (hexA === undefined || hexB === undefined) {
-      return false
-    }
-    return hexA.q === hexB.q && hexA.r === hexB.r
-  
+  if (hexA === undefined || hexB === undefined) {
+    return false
+  }
+  return hexA.q === hexB.q && hexA.r === hexB.r
 }
 export const getAllHexes = () => {
   const allHexes = new Array()
@@ -151,7 +150,7 @@ export const getAllHexes = () => {
 }
 
 // only works for range 2 (for now)
-export const interveningHexes= (hexA, hexB) => {
+export const interveningHexes = (hexA, hexB) => {
   const hexes = getAllHexes()
 
   let result = new Array()
@@ -165,7 +164,7 @@ export const interveningHexes= (hexA, hexB) => {
   return result
 }
 
-export const allHexesWithinDistance = (hex, distance, excludeMidway) => {
+export const allHexesWithinDistance = (hex, distance, excludeMidway, excludeCurrentHex) => {
   const hexes = getAllHexes()
   const region = new Array()
   for (let h of hexes) {
@@ -173,8 +172,25 @@ export const allHexesWithinDistance = (hex, distance, excludeMidway) => {
       continue
     }
     const d = distanceBetweenHexes(h, hex)
-    if (d <= distance) {
-      region.push(h)
+
+    // edge case. if distance is 2, get intervening hexes. If that includes Midway
+    // don't add to list (cannot cross Midway hex)
+    if (d === 2) {
+      const hexes = interveningHexes(h, hex)
+      if (excludeMidway && hexes.length === 1 && (hexes[0].q === 6) & (hexes[0].r === 3)) {
+        continue
+      }
+    }
+    if (!excludeCurrentHex) {
+      if (d) {
+        if (d <= distance) {
+          region.push(h)
+        }
+      }
+    } else {
+      if (d <= distance) {
+        region.push(h)
+      }
     }
   }
   return region
