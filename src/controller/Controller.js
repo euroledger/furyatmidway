@@ -322,8 +322,10 @@ export default class Controller {
       if (
         !location.boxName.includes("STRIKE") &&
         !location.boxName.includes("RETURN") &&
-        !location.boxName.includes("CAP")
+        !location.boxName.includes("CAP") &&
+        !location.boxName.includes("OFFBOARD")
       ) {
+
         const carrierName = this.getCarrierForAirBox(location.boxName)
         console.log("DEBUG carrier=", carrierName)
 

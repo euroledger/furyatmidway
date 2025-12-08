@@ -87,6 +87,7 @@ function CardAlertPanel(props) {
         cardEventHandler(3, GlobalUnitsModel.Side.US)
         GlobalGameState.currentPlayer = GlobalUnitsModel.Side.US
         GlobalGameState.gamePhase = GlobalGameState.PHASE.CARD_RESPONSE
+        controller.setCardPlayed(3, GlobalUnitsModel.Side.US)
       } else {
         cardEventHandler(3, GlobalUnitsModel.Side.JAPAN)
         controller.setCardPlayed(3, GlobalUnitsModel.Side.JAPAN)

@@ -10,7 +10,7 @@ class USAICardResponseState {
     return unit.aircraftUnit.attack && !unit.aircraftUnit.diveBomber
   }
   async doAction(stateObject) {
-    const { cardNumber, setCarrierPlanesDitchPanelShow, setCardAlertPanelShow } = stateObject
+    const { cardNumber, setCardNumber, setCarrierPlanesDitchPanelShow, setCardAlertPanelShow } = stateObject
     console.log("**************** DO CARD RESPONSE cardNumber=", cardNumber)
     if (cardNumber === 2) {
       GlobalGameState.testCarrierSelection = -1

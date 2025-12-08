@@ -633,6 +633,7 @@ export async function setNextStateFollowingCardPlay(stateObject) {
         setCardNumber(() => 2)
         goToCardPlay(2)
       } else if (GlobalInit.controller.usHandContainsCard(3) || GlobalInit.controller.japanHandContainsCard(3)) {
+        console.log("-------------------------- QUACK 1")
         setCardNumber(() => 3)
         goToCardPlay(3)
       } else if (GlobalInit.controller.usHandContainsCard(4) || GlobalInit.controller.japanHandContainsCard(4)) {
@@ -652,6 +653,8 @@ export async function setNextStateFollowingCardPlay(stateObject) {
       break
     case 2:
       if (GlobalInit.controller.usHandContainsCard(3) || GlobalInit.controller.japanHandContainsCard(3)) {
+                console.log("-------------------------- QUACK 2")
+
         setCardNumber(() => 3)
         goToCardPlay(3)
       } else if (GlobalInit.controller.usHandContainsCard(4) || GlobalInit.controller.japanHandContainsCard(4)) {
@@ -878,6 +881,8 @@ export function determineMidwayInvasion(setCardNumber, setEndOfTurnSummaryShow, 
       currentCardNumber !== 3 &&
       (GlobalInit.controller.usHandContainsCard(3) || GlobalInit.controller.japanHandContainsCard(3))
     ) {
+              console.log("-------------------------- QUACK 3")
+
       setCardNumber(() => 3)
       GlobalGameState.gamePhase = GlobalGameState.PHASE.CARD_PLAY
       GlobalGameState.updateGlobalState()

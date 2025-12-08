@@ -212,7 +212,6 @@ export default class GlobalGameState {
 
   static log = (message) => {
     this.logItems.push(message)
-    this.stateHandler()
   }
 
   static logItems = ["Logging begin..."]

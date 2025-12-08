@@ -857,7 +857,7 @@ export function doAAAFireRolls(numDice, testRolls) {
   GlobalGameState.antiaircraftHits = hits
 
   // QUACK TESTING TAKE THIS OUT
-  // GlobalGameState.antiaircraftHits = 0
+  // GlobalGameState.antiaircraftHits = 2
 }
 
 function getFightersForStrikeGroup(controller) {

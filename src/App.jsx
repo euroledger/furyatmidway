@@ -3554,6 +3554,7 @@ export function App() {
         setSubmarineAlertPanelShow={setSubmarineAlertPanelShow}
         onHide={(e) => {
           setSubmarineAlertPanelShow(false)
+          setCardNumber(-1)
           nextAction(e)
         }}
         nextAction={nextAction}
@@ -3698,6 +3699,7 @@ export function App() {
         closeButtonDisabled={!submarineDiceButtonDisabled}
         onHide={(e) => {
           setSubmarineDamagePanelShow(false)
+          setCardNumber(-1)
           nextAction(e)
         }}
         doRoll={doSubmarine}

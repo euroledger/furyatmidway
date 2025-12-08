@@ -11,7 +11,7 @@ class MIFHitsCommand extends Command {
 
   toString() {
     let mif = GlobalGameState.midwayInvasionLevel
-    return `${this.commandType} MIF Hits: ${this.hits}, Midway Invasion Level now${mif}`
+    return `${this.commandType} Hits: ${this.hits}, Midway Invasion Force now ${mif}`
   }
 }
 

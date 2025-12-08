@@ -239,10 +239,9 @@ export function SubmarineDamagePanelHeaders({ controller, setDamagedCV, damagedC
   if (!damageDone) {
     allCarriers = allCarriers.filter((carrier) => {
       const location = controller.getFleetLocation("IJN-DMCV", sideBeingAttacked)
-      return !carrier.dmcv || (carrier.dmcv && location.boxName !== HexCommand.FLEET_BOX)
+      return !carrier.dmcv || (carrier.dmcv && location !== false && location.boxName !== HexCommand.FLEET_BOX)
     })
   }
-
   const arrLength = allCarriers.length
   useEffect(() => {
     // add or remove refs

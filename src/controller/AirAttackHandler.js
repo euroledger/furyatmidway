@@ -25,7 +25,6 @@ export function setUpAirAttack(controller, location, strikeGroup, setCardNumber,
     fleetTarget = fleets[0].name
   }
 
-  console.log(">>>>> ATTACK ON FLEET BY SG", strikeGroup.name)
   controller.setAirOpAttacked(strikeGroup)
 
   if (GlobalGameState.gamePhase === GlobalGameState.PHASE.MIDWAY_ATTACK) {
@@ -52,6 +51,7 @@ export function setUpAirAttack(controller, location, strikeGroup, setCardNumber,
         GlobalGameState.currentPlayer = GlobalUnitsModel.Side.JAPAN
       }
       GlobalGameState.gamePhase = GlobalGameState.PHASE.ANTI_AIRCRAFT_FIRE
+      GlobalGameState.updateGlobalState()
       if (fleetTarget.includes("IJN-DMCV")) {
         GlobalGameState.taskForceTarget = GlobalUnitsModel.TaskForce.JAPAN_DMCV
         GlobalGameState.currentCarrierAttackTarget = GlobalUnitsModel.TaskForce.JAPAN_DMCV
@@ -59,6 +59,7 @@ export function setUpAirAttack(controller, location, strikeGroup, setCardNumber,
         GlobalGameState.taskForceTarget = GlobalUnitsModel.TaskForce.US_DMCV
         GlobalGameState.currentCarrierAttackTarget = GlobalUnitsModel.TaskForce.US_DMCV
       } else if (fleetTarget.includes("MIF")) {
+        console.log("GIT THE MIF!!!!!!!!")
         GlobalGameState.taskForceTarget = GlobalUnitsModel.TaskForce.MIF
         GlobalGameState.currentCarrierAttackTarget = GlobalUnitsModel.TaskForce.MIF
       }

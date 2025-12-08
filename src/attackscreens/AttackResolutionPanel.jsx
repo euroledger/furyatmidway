@@ -1,18 +1,14 @@
+import { useMemo } from "react"
 import "./cap.css"
 import GlobalGameState from "../model/GlobalGameState"
 import GlobalUnitsModel from "../model/GlobalUnitsModel"
 import { removeMIFFleet } from "../PlayerState/StateUtils"
 import GlobalInit from "../model/GlobalInit"
+import Controller from "../controller/Controller"
 
 export function AttackResolutionHeaders() {}
 
-export function AttackResolutionFooters({
-  totalHits,
-  attackResolved,
-  setAttackResolved,
-  setFleetUnitUpdate,
-  setGameOverAlertShow,
-}) {
+export function AttackResolutionFooters({ totalHits, attackResolved, setAttackResolved, setFleetUnitUpdate }) {
   // const show = GlobalGameState.dieRolls.length > 0
 
   const show = true
@@ -40,18 +36,24 @@ export function AttackResolutionFooters({
       removeMIFFleet(setFleetUnitUpdate)
     }
   }
+
+  useMemo(() => {
+    if (totalHits >= 0) {
+      GlobalInit.controller.viewEventHandler({
+        type: Controller.EventTypes.MIF_DAMAGE,
+        data: {
+          side: GlobalUnitsModel.Side.JAPAN,
+          hits: totalHits,
+        },
+      })
+    }
+  }, [attackResolved])
+
   if (isMIFtheTarget && GlobalGameState.dieRolls.length > 0) {
     milStr = "" + GlobalGameState.midwayInvasionLevel
 
     if (totalHits > 0) {
       mifMsg = "Midway Invasion Force reduced to"
-      GlobalInit.controller.viewEventHandler({
-        type: Controller.EventTypes.MIF_DAMAGE,
-        data: {
-          side: GlobalUnitsModel.Side.JAPAN,
-          hits: totalHits
-        },
-      })
     } else {
       mifMsg = "Midway Invasion Force remains at"
     }
