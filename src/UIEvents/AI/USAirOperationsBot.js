@@ -964,16 +964,16 @@ export async function moveStrikeGroups(controller, stateObject, test) {
     }
 
     if (isFirstAirOpForStrike(controller, strikeGroup, GlobalUnitsModel.Side.US)) {
-      // console.log("+++++++++++++++++++ FIRST AIR OP")
+      console.log("+++++++++++++++++++ FIRST AIR OP")
       const usRegion = firstAirOpUSStrikeRegion(controller, strikeGroup)
-      // console.log("DEBUG SG", strikeGroup.name, strikeGroup.targetsFirstAirOp, "usRegion=", usRegion)
+      console.log("DEBUG SG", strikeGroup.name, strikeGroup.targetsFirstAirOp, "usRegion=", usRegion)
       if (usRegion.length === 0) {
         // turn 3 last air op, no strike possible
         continue
       }
 
-      // console.log("DEBUG SG", strikeGroup.name, "strikeGroup.targetsFirstAirOp=", strikeGroup.targetsFirstAirOp)
-      // console.log("DEBUG SG", strikeGroup.name, "strikeGroup.targetsSecondAirOp=", strikeGroup.targetsSecondAirOp)
+      console.log("DEBUG SG", strikeGroup.name, "strikeGroup.targetsFirstAirOp=", strikeGroup.targetsFirstAirOp)
+      console.log("DEBUG SG", strikeGroup.name, "strikeGroup.targetsSecondAirOp=", strikeGroup.targetsSecondAirOp)
 
       if (strikeGroup.targetsFirstAirOp.length === 0 && strikeGroup.targetsSecondAirOp.length === 0) {
         // no target left in range (something must have been sunk or left the board)
@@ -1079,7 +1079,7 @@ export async function moveStrikeGroups(controller, stateObject, test) {
         }
       }
     } else {
-      // console.log(">>>>>>>>>>>>>>>>>>>> SECOND AIR OP:", strikeGroup)
+      console.log(">>>>>>>>>>>>>>>>>>>> SECOND AIR OP:", strikeGroup)
 
       const usRegion = secondAirOpUSStrikeRegion(controller, strikeGroup)
 
