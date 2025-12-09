@@ -11,11 +11,9 @@ class JapanHumanEndOfAirOperationState {
   }
 
   async nextState(stateObject) {
-    const { setAirUnitUpdate, setStrikeGroupUpdate, setFleetUnitUpdate, setCardNumber, setEndOfTurnSummaryShow } =
-      stateObject
+    const { setAirUnitUpdate, setStrikeGroupUpdate, setFleetUnitUpdate, setCardNumber, handleReset } = stateObject
 
     console.log("NEXT STATE AFTER AIR OPERATION (japan)")
-
 
     // Add this to decrement air ops points, reset strike groups etc
 
@@ -31,6 +29,9 @@ class JapanHumanEndOfAirOperationState {
       GlobalGameState.gamePhase = GlobalGameState.PHASE.INITIATIVE_DETERMINATION
     }
     autoSave(GlobalInit.controller, GlobalUnitsModel.Side.JAPAN)
+
+    // reset zoom back to default
+    handleReset()
   }
 
   getState() {

@@ -212,6 +212,9 @@ export default class GlobalGameState {
 
   static log = (message) => {
     this.logItems.push(message)
+    if (!message.includes("MIF")) {
+      this.stateHandler()
+    }
   }
 
   static logItems = ["Logging begin..."]

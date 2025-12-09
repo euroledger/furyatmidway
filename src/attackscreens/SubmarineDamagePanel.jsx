@@ -238,7 +238,10 @@ export function SubmarineDamagePanelHeaders({ controller, setDamagedCV, damagedC
   // remove any DMCV carriers in Fleet Box
   if (!damageDone) {
     allCarriers = allCarriers.filter((carrier) => {
-      const location = controller.getFleetLocation("IJN-DMCV", sideBeingAttacked)
+      let location = controller.getFleetLocation("IJN-DMCV", GlobalUnitsModel.Side.JAPAN)
+      if (sideBeingAttacked === GlobalUnitsModel.Side.US) {
+        location = controller.getFleetLocation("US-DMCV", GlobalUnitsModel.Side.US)
+      }
       return !carrier.dmcv || (carrier.dmcv && location !== false && location.boxName !== HexCommand.FLEET_BOX)
     })
   }

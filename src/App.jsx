@@ -1,4 +1,4 @@
-import { React, useState, useEffect, createContext } from "react"
+import { useRef, useState, useEffect, createContext } from "react"
 import Container from "react-bootstrap/Container"
 import Nav from "react-bootstrap/Nav"
 import Navbar from "react-bootstrap/Navbar"
@@ -352,6 +352,8 @@ export function App() {
   const [showCardFooter, setShowCardFooter] = useState(false)
 
   const [showDice, setShowDice] = useState(false)
+
+  const transformWrapperRef = useRef(null);
 
   // QUACK TESTING ONLY REMOVE THESE ***********
   // GlobalGameState.TESTING = true
@@ -1161,6 +1163,12 @@ export function App() {
     }
     setFleetMoveAlertShow(true)
   }
+  const handleReset = () => {
+      if (transformWrapperRef.current) {
+        transformWrapperRef.current.resetTransform()
+      }
+  }
+
   const stateObject = {
     // FOR AI AND TESTING
     controller: GlobalInit.controller,
@@ -1174,6 +1182,7 @@ export function App() {
     setDamageControlPanelShow,
     setMidwayInvasionPanelShow,
     setCardDicePanelShow5,
+    handleReset,
     setCardDicePanelShow7,
     setNightLandingDone,
     setAttackResolutionPanelShow,
@@ -2018,6 +2027,7 @@ export function App() {
   }
 
   function handleScaleChange(event) {
+    console.log("SCALE=", event.instance.transformState.scale)
     setScale(event.instance.transformState.scale)
   }
 
@@ -3833,6 +3843,7 @@ export function App() {
         }}
       ></CardPanel>
       <TransformWrapper
+        ref={transformWrapperRef}
         initialScale={1}
         disabled={isMoveable}
         minScale={0.5}
