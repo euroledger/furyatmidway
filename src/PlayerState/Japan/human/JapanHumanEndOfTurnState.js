@@ -61,8 +61,6 @@ class JapanHumanEndOfTurnState {
         const jpRedUnits = GlobalInit.controller.getAllReducedUnitsForSide(GlobalUnitsModel.Side.JAPAN)
         const jpEeliminatedAirUnits = GlobalInit.controller.getAllEliminatedUnits(GlobalUnitsModel.Side.JAPAN)
         if (!this.cardChecked(3) && (jpRedUnits.length > 0 || jpEeliminatedAirUnits.length > 0)) {
-                        console.log("-------------------------- QUACK 4")
-
           setCardNumber(() => 3)
           this.markCard(3)
           GlobalGameState.currentPlayer = GlobalUnitsModel.Side.JAPAN
@@ -71,8 +69,6 @@ class JapanHumanEndOfTurnState {
         }
       } else {
         if (GlobalInit.controller.usHandContainsCard(3)) {
-                        console.log("-------------------------- QUACK 5")
-
           setCardNumber(() => 3)
           this.markCard(3)
           GlobalGameState.currentPlayer = GlobalUnitsModel.Side.US

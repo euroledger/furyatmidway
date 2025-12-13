@@ -220,7 +220,7 @@ function CarrierDamageDicePanel(props) {
     myBigMargin = margin
   }
 
-  const msg2 = "Total Hits to Allocate:"
+  const msg2 = "Total Hits Still to Allocate:"
 
   const diceButtonStr = numDice > 1 ? "Roll Dice" : "Roll Die"
   return (

@@ -25,6 +25,10 @@ export function EndOfTurnSummaryHeaders({ controller, sidebg }) {
   const csfVPs = GlobalGameState.CSFLeftMap ? 1 : 0
   const af1VPs = GlobalGameState.AF1LeftMap ? 1 : 0
 
+  if (GlobalGameState.gameTurn === 7) {
+    GlobalGameState.endOfGame = true
+  }
+
   let sidey = sidebg
   if (!sidebg) {
     sidey = GlobalUIConstants.Colors.JAPAN
@@ -110,9 +114,9 @@ export function EndOfTurnSummaryHeaders({ controller, sidebg }) {
           </div>
           {!gameTurn3Winner && (
             <div
-              // style={{
-              //   marginLeft: "0px",
-              // }}
+            // style={{
+            //   marginLeft: "0px",
+            // }}
             >
               <p
                 style={{
@@ -213,7 +217,7 @@ export function EndOfTurnSummaryHeaders({ controller, sidebg }) {
                   marginTop: "50px",
                   marginLeft: "-16px",
                   color: "white",
-                  fontSize: "18px"
+                  fontSize: "18px",
                 }}
               >
                 &emsp;

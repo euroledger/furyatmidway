@@ -207,6 +207,8 @@ export default class GlobalGameState {
     this.stateHandler()
   }
 
+  static endOfGame=false
+
   static retreatFleet = ""
   static loading = false
 

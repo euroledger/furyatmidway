@@ -70,6 +70,13 @@ export default class GameStatePanel extends React.Component {
 
     const mfs = GlobalInit.controller.getMidwayFighterAirStrength(GlobalUnitsModel.Side.US)
     const cfs = GlobalInit.controller.getCarrierFighterAirStrength(GlobalUnitsModel.Side.US)
+
+    let turnStr = `${GlobalGameState.gameTurn} - ${GlobalGameState.turnText[GlobalGameState.gameTurn - 1]}`
+    let winnerStr = ""
+    if (GlobalGameState.endOfGame) {
+      turnStr = "END OF GAME"
+      winnerStr = GlobalGameState.winner
+    }
     return (
       <>
         <Accordion defaultActiveKey="1">
@@ -77,7 +84,8 @@ export default class GameStatePanel extends React.Component {
             <Accordion.Header>Game Status</Accordion.Header>
             <Accordion.Body>
               <p className="text-left">
-                Turn: {GlobalGameState.gameTurn} - {GlobalGameState.turnText[GlobalGameState.gameTurn - 1]}
+                Turn: {turnStr}<br></br>
+                Winner: {winnerStr}
               </p>
               <p className="text-left">Japan Air Ops: {GlobalGameState.airOperationPoints.japan}</p>
               <p style={{ marginTop: "-15px" }} className="text-left">

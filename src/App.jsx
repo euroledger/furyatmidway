@@ -1871,7 +1871,7 @@ export function App() {
               >
                 Save Game
               </Button>
-              {/* <Button
+              <Button
                 style={{ fontSize: font }}
                 className="me-1"
                 size="sm"
@@ -1881,7 +1881,7 @@ export function App() {
                 }}
               >
                 Strike
-              </Button> */}
+              </Button>
               <Button
                 style={{ fontSize: font }}
                 className="me-1"
@@ -2027,7 +2027,6 @@ export function App() {
   }
 
   function handleScaleChange(event) {
-    console.log("SCALE=", event.instance.transformState.scale)
     setScale(event.instance.transformState.scale)
   }
 
@@ -3093,7 +3092,7 @@ export function App() {
             alignItems: "center",
           }}
         >
-          <p>End of Air Operation!</p>
+          <p>End of {GlobalGameState.sideWithInitiative} Air Operation!</p>
           <br></br>
           <p>Click "Close" to continue...</p>
         </div>
@@ -3826,7 +3825,7 @@ export function App() {
           nextAction(e)
         }}
         // closeButtonDisabled={false} // QUACK TESTING ONLYY
-        closeButtonDisabled={summaryButtonDisabled}
+        closeButtonDisabled={GlobalGameState.gameTurn !== 7 && summaryButtonDisabled}
         sidebg={GlobalUIConstants.Colors.BOTH}
         image={GlobalUIConstants.Flags.BOTH}
       ></LargeDicePanel>

@@ -633,7 +633,6 @@ export async function setNextStateFollowingCardPlay(stateObject) {
         setCardNumber(() => 2)
         goToCardPlay(2)
       } else if (GlobalInit.controller.usHandContainsCard(3) || GlobalInit.controller.japanHandContainsCard(3)) {
-        console.log("-------------------------- QUACK 1")
         setCardNumber(() => 3)
         goToCardPlay(3)
       } else if (GlobalInit.controller.usHandContainsCard(4) || GlobalInit.controller.japanHandContainsCard(4)) {
@@ -653,14 +652,13 @@ export async function setNextStateFollowingCardPlay(stateObject) {
       break
     case 2:
       if (GlobalInit.controller.usHandContainsCard(3) || GlobalInit.controller.japanHandContainsCard(3)) {
-                console.log("-------------------------- QUACK 2")
-
         setCardNumber(() => 3)
         goToCardPlay(3)
       } else if (GlobalInit.controller.usHandContainsCard(4) || GlobalInit.controller.japanHandContainsCard(4)) {
         setCardNumber(() => 4)
         goToCardPlay(4)
       } else {
+        setCardNumber(() => -1) // reset for next card play
         if (GlobalGameState.gameTurn === 7) {
           // determineMidwayInvasion(setCardNumber, setEndOfTurnSummaryShow, 2)
           GlobalGameState.currentPlayer = GlobalUnitsModel.Side.JAPAN
@@ -677,6 +675,7 @@ export async function setNextStateFollowingCardPlay(stateObject) {
         setCardNumber(() => 4)
         goToCardPlay(4)
       } else {
+        setCardNumber(() => -1) // reset for next card play
         if (GlobalGameState.gameTurn === 7) {
           GlobalGameState.currentPlayer = GlobalUnitsModel.Side.JAPAN
           GlobalGameState.gamePhase = GlobalGameState.PHASE.END_OF_TURN
@@ -881,8 +880,6 @@ export function determineMidwayInvasion(setCardNumber, setEndOfTurnSummaryShow, 
       currentCardNumber !== 3 &&
       (GlobalInit.controller.usHandContainsCard(3) || GlobalInit.controller.japanHandContainsCard(3))
     ) {
-              console.log("-------------------------- QUACK 3")
-
       setCardNumber(() => 3)
       GlobalGameState.gamePhase = GlobalGameState.PHASE.CARD_PLAY
       GlobalGameState.updateGlobalState()
@@ -1430,7 +1427,6 @@ export async function midwayPossible(controller, setMidwayWarningShow, setMidway
   // if there are no attack planes on deck cannot attack Midway
   // otherwise display the attack declaration dialog
   const attackUnitsOnDeck = controller.getAllUnitsOnJapaneseFlightDecks(false)
-  console.log("QUACK GlobalInit.controller.isMidwayBaseDestroyed()=", GlobalInit.controller.isMidwayBaseDestroyed())
   if (attackUnitsOnDeck.length === 0 || GlobalInit.controller.isMidwayBaseDestroyed()) {
     GlobalGameState.midwayAttackDeclaration = false
     setMidwayWarningShow(true)

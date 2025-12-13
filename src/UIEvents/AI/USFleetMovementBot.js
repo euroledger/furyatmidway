@@ -225,8 +225,8 @@ function doTurn4FleetMovement(regions, dmcvLocation) {
   //   fleetHex = furthestHexFrom(regions, current1AFLocation.currentHex)
   // }
 
-  console.log("QUACK 99 return fleetHex:", fleetHex.targetHex)
-  return fleetHex.targetHex
+  console.log("QUACK 99 return fleetHex:", fleetHex)
+  return fleetHex
 }
 function doTurns2And3FleetMovement(regions, dmcvLocation) {
 
