@@ -18,10 +18,13 @@ class JapanHumanEndOfTurnState {
   }
 
   async doAction(stateObject) {
-    const { setCardNumber, setEndOfTurnSummaryShow } = stateObject
+    const { setCardNumber, setEndOfTurnSummaryShow, setEnabledJapanBoxes } = stateObject
     console.log("STATE JapanHumanEndOfTurnState")
     console.log("CURRENT PLAYER=", GlobalGameState.currentPlayer)
     console.log("card checked (1)=", this.cardChecked(1))
+
+          setEnabledJapanBoxes(() => [])
+
 
     if (
       !this.cardChecked(1) &&
@@ -97,6 +100,13 @@ class JapanHumanEndOfTurnState {
       this.markCard(4)
     }
     if (GlobalGameState.gameTurn === 7) {
+      if (GlobalInit.controller.japanHandContainsCard(5)) {
+        GlobalGameState.dieRolls = []
+        setCardNumber(() => 5)
+        GlobalGameState.currentPlayer = GlobalUnitsModel.Side.JAPAN
+        GlobalGameState.gamePhase = GlobalGameState.PHASE.CARD_PLAY
+        return
+      }
       determineMidwayInvasion(setCardNumber, setEndOfTurnSummaryShow, -1)
       if (
         GlobalGameState.gamePhase === GlobalGameState.PHASE.MIDWAY_INVASION ||
@@ -123,22 +133,30 @@ class JapanHumanEndOfTurnState {
     GlobalGameState.midwayAttackGroup = ""
     GlobalGameState.midwayAirOpsCompleted = 0
     if (GlobalGameState.gameTurn === 7) {
-      if (GlobalInit.controller.japanHandContainsCard(6)) {
-        setCardNumber(() => 6)
-        console.log("TURN 7 GO TO CARD PLAY")
-        GlobalGameState.gamePhase = GlobalGameState.PHASE.CARD_PLAY
-        GlobalGameState.updateGlobalState()
-      } else {
-        console.log("TURN 7 MIDWAY")
-        determineMidwayInvasion(setCardNumber, setEndOfTurnSummaryShow)
-      }
+      // if (GlobalInit.controller.japanHandContainsCard(5)) {
+      //   GlobalGameState.dieRolls = []
+      //   setCardNumber(() => 5)
+      //   GlobalGameState.currentPlayer = GlobalUnitsModel.Side.JAPAN
+      //   GlobalGameState.gamePhase = GlobalGameState.PHASE.CARD_PLAY
+      //   return
+      // }
+      // if (GlobalInit.controller.japanHandContainsCard(6)) {
+      //   setCardNumber(() => 6)
+      //   console.log("TURN 7 GO TO CARD PLAY")
+      //   GlobalGameState.gamePhase = GlobalGameState.PHASE.CARD_PLAY
+      //   GlobalGameState.updateGlobalState()
+      // } else {
+      //   console.log("TURN 7 MIDWAY")
+      //   determineMidwayInvasion(setCardNumber, setEndOfTurnSummaryShow)
+      // }
     } else {
       GlobalGameState.gameTurn++
 
-      if (GlobalGameState.gameTurn === 4 || GlobalGameState.gameTurn === 7) {
+      if (GlobalGameState.gameTurn === 4) {
         if (GlobalInit.controller.japanHandContainsCard(5)) {
           GlobalGameState.dieRolls = []
           setCardNumber(() => 5)
+          GlobalGameState.currentPlayer = GlobalUnitsModel.Side.JAPAN
           GlobalGameState.gamePhase = GlobalGameState.PHASE.CARD_PLAY
           return
         }

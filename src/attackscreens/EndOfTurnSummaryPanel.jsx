@@ -8,7 +8,7 @@ import GlobalUIConstants from "../components/UIConstants"
 export function EndOfTurnSummaryHeaders({ controller, sidebg }) {
   const japanCVMsg = "IJN CVs Sunk (1 VP each):"
   const usCVMsg = "US CVs Sunk (1 VP each):"
-  const midwayControlMsg = "Midway Controlled By:"
+  const midwayControlMsg = "Midway Control:"
 
   const japanCVsSunk = controller.getSunkCarriers(GlobalUnitsModel.Side.JAPAN)
   const usCVsSunk = controller.getSunkCarriers(GlobalUnitsModel.Side.US)
@@ -24,10 +24,6 @@ export function EndOfTurnSummaryHeaders({ controller, sidebg }) {
 
   const csfVPs = GlobalGameState.CSFLeftMap ? 1 : 0
   const af1VPs = GlobalGameState.AF1LeftMap ? 1 : 0
-
-  if (GlobalGameState.gameTurn === 7) {
-    GlobalGameState.endOfGame = true
-  }
 
   let sidey = sidebg
   if (!sidebg) {
@@ -56,7 +52,7 @@ export function EndOfTurnSummaryHeaders({ controller, sidebg }) {
     usCVsSunkMsg = ` (${usCVsSunkMsg})`
   }
 
-  const midwayControl = GlobalGameState.midwayControl === GlobalUnitsModel.Side.US ? "US" : "JAPAN"
+  const midwayControl = GlobalGameState.midwayControl === GlobalUnitsModel.Side.US ? "US" : "IJN"
 
   GlobalGameState.winner = ""
   if (GlobalGameState.gameTurn === 3 || GlobalGameState.gameTurn === 7) {
@@ -200,7 +196,7 @@ export function EndOfTurnSummaryHeaders({ controller, sidebg }) {
                 marginTop: "5px",
               }}
             >
-              {midwayControlMsg} &nbsp;<strong>{midwayControl}</strong>&nbsp;&nbsp;<strong> 2</strong>&emsp; <br></br>
+              {midwayControlMsg} &nbsp;<strong>{midwayControl}</strong>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<strong> 2</strong>&emsp; <br></br>
             </p>
             <p
               style={{

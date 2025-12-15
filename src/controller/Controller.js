@@ -325,7 +325,6 @@ export default class Controller {
         !location.boxName.includes("CAP") &&
         !location.boxName.includes("OFFBOARD")
       ) {
-
         const carrierName = this.getCarrierForAirBox(location.boxName)
         console.log("DEBUG carrier=", carrierName)
 
@@ -1118,7 +1117,12 @@ export default class Controller {
       if (numCarriersSunk === 4) {
         return false
       }
-      if (numCarriersSunk === 3 && (jpDMCVLocation === undefined || jpDMCVLocation.boxName === HexCommand.FLEET_BOX)) {
+      if (
+        numCarriersSunk === 3 &&
+        GlobalGameState.jpDMCVCarrier !== "" &&
+        (jpDMCVLocation === undefined ||
+          (jpDMCVLocation !== undefined && jpDMCVLocation.boxName === HexCommand.FLEET_BOX))
+      ) {
         return false
       }
     } else {
@@ -2257,7 +2261,7 @@ export default class Controller {
     return this.airOperationsModel.getValidAirUnitDestinations(name)
   }
   drawJapanCards(num, initial, testCards) {
-    this.cardModel.drawJapanCards(num, initial, testCards)
+    return this.cardModel.drawJapanCards(num, initial, testCards)
   }
 
   replaceCardWithOtherCard(card, otherCard, side) {

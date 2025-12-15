@@ -117,14 +117,14 @@ function DicePanel(props) {
                 width: "100px",
                 height: "60px",
                 marginLeft: "-275px",
-                marginRight: "225px",
+                marginRight: "205px",
               }}
             >
               <img
                 style={{
                   width: "60px",
                   height: "40px",
-                  marginLeft: "20px"
+                  marginLeft: "60px"
                 }}
                 src={image}
               ></img>

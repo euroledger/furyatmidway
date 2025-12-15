@@ -81,8 +81,8 @@ export function playCardAction(controller, cardNumber, setAttackResolved, side) 
 
       return false
     case 8:
-      // semper fi - always play if Midway Garrison is < 5
-      return GlobalGameState.midwayGarrisonLevel < 5
+      // Alwways play this even if Garrison Level 5 so as to get first roll
+      return true
 
     case 13:
       setAttackResolved(false)

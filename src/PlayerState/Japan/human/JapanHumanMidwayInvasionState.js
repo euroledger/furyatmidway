@@ -10,12 +10,18 @@ class JapanHumanMidwayInvasionState {
   }
 
   async nextState(stateObject) {
-    const { setEndOfTurnSummaryShow } = stateObject
-    console.log("NEXT STATE AFTER human MIDWAY INVASION....END OF GAME...? GlobalGameState.endOfGame=", GlobalGameState.endOfGame)
-    GlobalGameState.gamePhase = GlobalGameState.PHASE.END_OF_GAME
-    if (!GlobalGameState.endOfGame) {
-      setEndOfTurnSummaryShow(true)
+    if (GlobalGameState.endOfGame) {
+      console.log("END OF GAME...OUTTA HERE!!!")
+      GlobalGameState.gamePhase = GlobalGameState.PHASE.END_OF_GAME
+      GlobalGameState.updateGlobalState()
+      return
     }
+    const { setEndOfTurnSummaryShow } = stateObject
+    console.log(
+      "NEXT STATE AFTER human MIDWAY INVASION....END OF GAME...? GlobalGameState.endOfGame=",
+      GlobalGameState.endOfGame
+    )
+    setEndOfTurnSummaryShow(true)
   }
 
   getState() {

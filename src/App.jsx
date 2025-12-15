@@ -818,7 +818,9 @@ export function App() {
         StateManager.gameStateManager.setUSState(stateObject)
         console.log("US AI AIR OPERATIONS doAction()")
         StateManager.gameStateManager.doAction(GlobalUnitsModel.Side.US, stateObject)
-        setUsStrikePanelEnabled(true) // for now. Move this in due course (only display for humans)
+        if (GlobalGameState.usPlayerType !== GlobalUnitsModel.TYPE.AI) {
+          setUsStrikePanelEnabled(true) // for now. Move this in due course (only display for humans)
+        }
         StateManager.gameStateManager.doNextState(GlobalUnitsModel.Side.US)
       } else {
         console.log("SET JAPAN STATE...(AIR OPERATIONS)")
@@ -852,6 +854,7 @@ export function App() {
 
   useEffect(() => {
     if (GlobalGameState.gamePhase === GlobalGameState.PHASE.END_OF_TURN) {
+      GlobalGameState.currentCarrierAttackTarget=""
       GlobalGameState.JP_AF = 6 // in case card 6 was played
       GlobalGameState.midwayHits = 0
       doStateChange()
@@ -882,6 +885,7 @@ export function App() {
         GlobalGameState.nextMidwayInvasionRoll = GlobalUnitsModel.Side.US
       }
       GlobalGameState.currentPlayer = GlobalUnitsModel.Side.JAPAN
+      GlobalGameState.endOfGame = false
       doStateChange()
     }
   }, [GlobalGameState.gamePhase])
@@ -1317,7 +1321,9 @@ export function App() {
           }
         }
       } else {
-        setUsStrikePanelEnabled(true)
+        if (GlobalGameState.usPlayerType !== GlobalUnitsModel.TYPE.AI) {
+          setUsStrikePanelEnabled(true)
+        }
         setJapanStrikePanelEnabled(false)
       }
     } else if (GlobalGameState.gamePhase === GlobalGameState.PHASE.US_DMCV_FLEET_MOVEMENT_PLANNING) {
@@ -1840,9 +1846,27 @@ export function App() {
                     }
                     GlobalGameState.jpCardsDrawn = true
                     if (GlobalGameState.gamePhase === GlobalGameState.PHASE.JAPAN_DRAWS_ONE_CARD) {
-                      GlobalInit.controller.drawJapanCards(1, false)
+                      const card = GlobalInit.controller.drawJapanCards(1, false)
+                      // const card = GlobalInit.controller.drawJapanCards(1, false, [6])
 
+                      console.log(">>>>>>>>>>>>>>> card=", card)
                       // setMidwayDialogShow(true)
+                      if (GlobalGameState.gameTurn === 7 && card === 5) {
+                        if (GlobalInit.controller.japanHandContainsCard(5)) {
+                          GlobalGameState.dieRolls = []
+                          setCardNumber(() => 5)
+                          GlobalGameState.currentPlayer = GlobalUnitsModel.Side.JAPAN
+                          GlobalGameState.gamePhase = GlobalGameState.PHASE.CARD_PLAY
+                          return
+                        }
+                      }
+                      if (card === 6 && GlobalInit.controller.japanHandContainsCard(6)) {
+                        GlobalGameState.dieRolls = []
+                        setCardNumber(() => 6)
+                        GlobalGameState.currentPlayer = GlobalUnitsModel.Side.JAPAN
+                        GlobalGameState.gamePhase = GlobalGameState.PHASE.CARD_PLAY
+                        return
+                      }
                       midwayPossible(
                         GlobalInit.controller, 
                         setMidwayWarningShow, 
@@ -3639,6 +3663,7 @@ export function App() {
         headers={cardDicePanelHeaders}
         footers={cardDicePanelFooters}
         image={"/images/japanflag.jpg"}
+        sidebg={GlobalUIConstants.Colors.JAPAN}
         width={30}
         showDice={true}
         margin={355}
@@ -3821,6 +3846,9 @@ export function App() {
         showDice={false}
         margin={0}
         onHide={(e) => {
+          if (GlobalGameState.gameTurn === 7) {
+            GlobalGameState.endOfGame = true
+          }
           setEndOfTurnSummaryShow(false)
           nextAction(e)
         }}

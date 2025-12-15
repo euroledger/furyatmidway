@@ -269,6 +269,7 @@ export function SubmarineDamagePanelHeaders({ controller, setDamagedCV, damagedC
     setDamagedCV(carrierName)
   }
 
+  console.log(">>>>>>>>>>>>> POOOOOOOOOOO allCarriers=", allCarriers)
   const cvImages = allCarriers.map((cv, i) => {
     if (cv.name === GlobalUnitsModel.Carrier.MIDWAY) {
       return <></>

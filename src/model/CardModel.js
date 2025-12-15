@@ -12,19 +12,23 @@ export default class CardModel {
     if (initial) {
       drawDeck = drawDeck.filter((card) => {
         return card._side === GlobalUnitsModel.Side.JAPAN
-
       })
     } else {
       // all cards form draw deck, note can draw cards from other side
       drawDeck = Array.from(GlobalUnitsModel.cards)
     }
+    let c
+
     if (testCards !== undefined) {
       for (let i = 0; i < num; i++) {
         const card = GlobalUnitsModel.cards.find((card) => card._number === testCards[i])
         GlobalUnitsModel.cards = Array.from(GlobalUnitsModel.cards).filter((c) => c._number != card._number)
+        c = card
         GlobalUnitsModel.jpCards.push(card)
       }
-      return
+      if (c !== undefined) {
+        return c._number
+      }
     }
     for (let i = 0; i < num; i++) {
       if (drawDeck.length > 0) {
@@ -33,7 +37,11 @@ export default class CardModel {
         drawDeck.splice(rn, 1)
         GlobalUnitsModel.cards = Array.from(GlobalUnitsModel.cards).filter((c) => c._number != card._number)
         GlobalUnitsModel.jpCards.push(card)
+        c = card
       }
+    }
+    if (c !== undefined) {
+      return c._number
     }
   }
 
@@ -45,7 +53,6 @@ export default class CardModel {
       // Remove old card from Japan hand and put back into the deck
       const index = GlobalUnitsModel.jpCards.findIndex((x) => x._number === cardNumber)
       GlobalUnitsModel.cards.push(...GlobalUnitsModel.jpCards.splice(index, 1))
-
 
       // find new card and add to Japan hand
       const newCard = GlobalUnitsModel.cards.find((card) => card._number === otherCardNumber)

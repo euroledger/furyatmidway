@@ -128,6 +128,14 @@ function AirCounter({ getAirBox, setAirBox, counterData, side }) {
 
   const onDrag = () => {
     console.log("AIR UNIT DRAG ->", counterData)
+    if (
+      GlobalGameState.gamePhase === GlobalGameState.PHASE.JAPAN_FLEET_MOVEMENT ||
+      GlobalGameState.gamePhase === GlobalGameState.PHASE.JAPAN_DRAWS_ONE_CARD ||
+      GlobalGameState.gamePhase === GlobalGameState.PHASE.JAPAN_DMCV_FLEET_MOVEMENT
+    ) {
+      setEnabledJapanBoxes(() => [])
+      return
+    }
     const location = controller.getAirUnitLocation(counterData.name)
 
     if (!location.boxName.includes("CAP RETURNING") && GlobalGameState.gamePhase === GlobalGameState.PHASE.CAP_RETURN) {

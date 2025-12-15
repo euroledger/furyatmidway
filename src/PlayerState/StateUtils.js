@@ -720,15 +720,20 @@ export async function setNextStateFollowingCardPlay(stateObject) {
       }
       break
     case 5:
+      console.log("******** MOVE ON FROM CARD 5, TURN=", GlobalGameState.gameTurn)
       // Naval Bombardment
-      if (GlobalGameState.gameTurn !== 4) {
-        GlobalGameState.currentPlayer = GlobalUnitsModel.Side.US
-        GlobalGameState.gamePhase = GlobalGameState.PHASE.JAPAN_DRAWS_ONE_CARD
-      } else {
-        GlobalGameState.currentPlayer = GlobalUnitsModel.Side.US
-        GlobalGameState.gamePhase = GlobalGameState.PHASE.US_DRAWS_ONE_CARD
-      }
-      GlobalGameState.updateGlobalState()
+      // if (GlobalGameState.gameTurn === 7) {
+      //   determineMidwayInvasion(setCardNumber, setEndOfTurnSummaryShow, -1)
+      // } else {
+        if (GlobalGameState.gameTurn !== 4) {
+          GlobalGameState.currentPlayer = GlobalUnitsModel.Side.US
+          GlobalGameState.gamePhase = GlobalGameState.PHASE.JAPAN_DRAWS_ONE_CARD
+        } else {
+          GlobalGameState.currentPlayer = GlobalUnitsModel.Side.US
+          GlobalGameState.gamePhase = GlobalGameState.PHASE.US_DRAWS_ONE_CARD
+        }
+        GlobalGameState.updateGlobalState()
+      // }
 
       break
     case 6:
