@@ -1582,6 +1582,9 @@ export default class Controller {
     // filter out fighter separated by Japan Card #9
     unitsInGroup = unitsInGroup.filter((unit) => unit.aircraftUnit.separated !== true)
 
+    // Just in case card#11 iteration one reduced a one step unit
+    unitsInGroup = unitsInGroup.filter((unit) => unit.aircraftUnit.steps > 0)
+
     return unitsInGroup
   }
 

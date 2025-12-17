@@ -2431,6 +2431,8 @@ export function App() {
       ></TowedCVHeaders>
     </>
   )
+      console.log("WANK ************ ATTACKING STEPS REMAINING=", GlobalGameState.attackingStepsRemaining)
+  
   const towedCVFooters = (
     <>
       <TowedCVFooters controller={GlobalInit.controller} towedCVSelected={towedCVSelected}></TowedCVFooters>

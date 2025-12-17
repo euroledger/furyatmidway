@@ -1,7 +1,5 @@
-import { React, useEffect, useState, createRef } from "react"
 import "./cap.css"
 import GlobalGameState from "../model/GlobalGameState"
-import { doDamageAllocation } from "../DiceHandler"
 import GlobalUnitsModel from "../model/GlobalUnitsModel"
 import GlobalUIConstants from "../components/UIConstants"
 
@@ -126,7 +124,7 @@ export function EndOfTurnSummaryHeaders({ controller, sidebg }) {
             </div>
           )}
         </div>
-
+        {/* 
         <div
           style={{
             display: "flex",
@@ -241,7 +239,68 @@ export function EndOfTurnSummaryHeaders({ controller, sidebg }) {
 
           <div></div>
           <div></div>
+        </div> */}
+
+        <div
+          style={{
+            display: "grid",
+            gridTemplateColumns: "1fr auto",
+            columnGap: "48px", // more horizontal space between label and number
+            rowGap: "8px", // keep vertical spacing tidy
+            color: "white",
+          }}
+        >
+          {/* Japan CVs */}
+          <div>
+            <div>{japanCVMsg}</div>
+            {japanCVsSunkMsg && (
+              <div>
+                <strong>{japanCVsSunkMsg}</strong>
+              </div>
+            )}
+          </div>
+          <div>
+            <strong>{numJapanCVsSunk}</strong>
+          </div>
+
+          {/* US CVs */}
+          <div>
+            <div>{usCVMsg}</div>
+            {usCVsSunkMsg && (
+              <div>
+                <strong>{usCVsSunkMsg}</strong>
+              </div>
+            )}
+          </div>
+          <div>
+            <strong>{numUSCVsSunk}</strong>
+          </div>
+
+          {/* CSF Left Map */}
+          <div>
+            {japanCSFMsg} {csfLeft}
+          </div>
+          <div>
+            <strong>{csfVPs}</strong>
+          </div>
+
+          {/* 1AF Left Map */}
+          <div>
+            {us1AFMsg} {af1Left}
+          </div>
+          <div>
+            <strong>{af1VPs}</strong>
+          </div>
+
+          {/* Midway Control */}
+          <div>
+            {midwayControlMsg} <strong>{midwayControl}</strong>
+          </div>
+          <div>
+            <strong>2</strong>
+          </div>
         </div>
+
         <div
           style={{
             width: "33%",
@@ -290,36 +349,4 @@ export function EndOfTurnSummaryHeaders({ controller, sidebg }) {
   )
 }
 
-export function EndOfTurnSummaryFooters({ eliminatedSteps, capAirUnits }) {
-  // let show = eliminatedSteps === GlobalGameState.capHits
-  // if (capAirUnits) {
-  //   show = eliminatedSteps === GlobalGameState.fighterHits
-  // } else {
-  //   if (GlobalGameState.gamePhase === GlobalGameState.PHASE.AAA_DAMAGE_ALLOCATION) {
-  //     show = eliminatedSteps === GlobalGameState.antiaircraftHits
-  //   }
-  // }
-  // return (
-  //   <>
-  //     {show && (
-  //       <div
-  //         style={{
-  //           marginTop: "10px",
-  //           marginLeft: "-28px",
-  //         }}
-  //       >
-  //         <p
-  //           style={{
-  //             display: "flex",
-  //             justifyContent: "center",
-  //             alignItems: "center",
-  //             color: "white",
-  //           }}
-  //         >
-  //           All Done!
-  //         </p>
-  //       </div>
-  //     )}
-  //   </>
-  // )
-}
+export function EndOfTurnSummaryFooters({ eliminatedSteps, capAirUnits }) {}

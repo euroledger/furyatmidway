@@ -156,7 +156,7 @@ class USAICardResponseState {
         GlobalGameState.testStepLossSelection = selection
         GlobalGameState.updateGlobalState()
 
-        await delay(40)
+        await delay(100)
         GlobalGameState.testStepLossSelection = -1
         GlobalGameState.updateGlobalState()
       }

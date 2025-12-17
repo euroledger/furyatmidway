@@ -72,7 +72,7 @@ function SplashScreen(props) {
           transform: "translate(-50%, -50%)",
         }}
       >
-        <img src="/images/furysplash.jpg" />
+        <img src="/images/furysplash2.jpg" />
         {showButtons && (
           <Button
             className="button-88"

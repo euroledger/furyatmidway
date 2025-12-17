@@ -104,7 +104,12 @@ export function DamageHeaders({
     )
   })
   setStepsLeft(totalSteps)
-  if (!capAirUnits) GlobalGameState.attackingStepsRemaining = totalSteps
+  GlobalGameState.attackingStepsRemaining = totalSteps
+
+  // console.log("+++++++++++ CRUCIAL capAirUnits=", capAirUnits)
+  // if (!capAirUnits) {
+  //   GlobalGameState.attackingStepsRemaining = totalSteps
+  // }
 
   const handleClick = (e, airUnit) => {
     // TODO
@@ -124,8 +129,15 @@ export function DamageHeaders({
         return // don't allow more steps to be eliminated than is necessary
       }
     } else if (GlobalGameState.gamePhase === GlobalGameState.PHASE.ESCORT_DAMAGE_ALLOCATION) {
+      console.log("PISSS 1********************************************* eliminatedSteps=", eliminatedSteps)
+      console.log(
+        "PISSS 2 ********************************************* GlobalGameState.fighterHits=",
+        GlobalGameState.fighterHits
+      )
+
       if (eliminatedSteps === GlobalGameState.fighterHits) {
         // setEliminatedSteps(0)
+        console.log("GET THE FUCK OUTTA HERE NOOOOOOOOOOOOOO")
         return // don't allow more steps to be eliminated than is necessary
       }
       GlobalGameState.attackingStepsRemaining = totalSteps
@@ -138,12 +150,12 @@ export function DamageHeaders({
     }
 
     doDamageAllocation(controller, airUnit)
-  
+
     setEliminatedSteps(() => eliminatedSteps + 1)
 
     GlobalGameState.updateGlobalState()
 
-    setEliminatedUnits(()=> [...eliminatedUnits,airUnit])
+    setEliminatedUnits(() => [...eliminatedUnits, airUnit])
   }
   let hitsToAllocate = GlobalGameState.capHits !== undefined ? GlobalGameState.capHits : 0
   if (GlobalGameState.gamePhase === GlobalGameState.PHASE.AAA_DAMAGE_ALLOCATION) {
