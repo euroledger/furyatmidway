@@ -105,12 +105,6 @@ export function DamageHeaders({
   })
   setStepsLeft(totalSteps)
   GlobalGameState.attackingStepsRemaining = totalSteps
-
-  // console.log("+++++++++++ CRUCIAL capAirUnits=", capAirUnits)
-  // if (!capAirUnits) {
-  //   GlobalGameState.attackingStepsRemaining = totalSteps
-  // }
-
   const handleClick = (e, airUnit) => {
     // TODO
     // We need a general utility function that checks:
@@ -129,15 +123,7 @@ export function DamageHeaders({
         return // don't allow more steps to be eliminated than is necessary
       }
     } else if (GlobalGameState.gamePhase === GlobalGameState.PHASE.ESCORT_DAMAGE_ALLOCATION) {
-      console.log("PISSS 1********************************************* eliminatedSteps=", eliminatedSteps)
-      console.log(
-        "PISSS 2 ********************************************* GlobalGameState.fighterHits=",
-        GlobalGameState.fighterHits
-      )
-
       if (eliminatedSteps === GlobalGameState.fighterHits) {
-        // setEliminatedSteps(0)
-        console.log("GET THE FUCK OUTTA HERE NOOOOOOOOOOOOOO")
         return // don't allow more steps to be eliminated than is necessary
       }
       GlobalGameState.attackingStepsRemaining = totalSteps

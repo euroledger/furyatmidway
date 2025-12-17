@@ -47,7 +47,6 @@ class USAIEscortDamageAllocationState {
   async nextState(stateObject) {
     const { capAirUnits, setAirUnitUpdate, setEliminatedUnitsPanelShow } = stateObject
 
-    console.log("ATTACKING STEPS REMAINING=", GlobalGameState.attackingStepsRemaining)
     if (GlobalGameState.attackingStepsRemaining > 0) {
       // if elite pilots and midway attack we did escort counterattack first
       // so transition to CAP_INTERCEPTION
