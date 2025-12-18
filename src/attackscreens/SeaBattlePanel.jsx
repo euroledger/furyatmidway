@@ -119,8 +119,8 @@ export function SeaBattleFooters({
     jpHitsMsg = " ",
     usHitsMsg = " "
   if (dieRollsMade) {
-    jpDieMsg = `Japan Die Roll: `
-    usDieMsg = `US Die Roll: `
+    jpDieMsg = `Japan Die Roll (-2) : `
+    usDieMsg = `US Die Roll (-4) : `
     GlobalGameState.jpSeaBattleHits = Math.max(0, GlobalGameState.dieRolls[0] - 2)
     // GlobalGameState.jpSeaBattleHits = 0 // QUACK TESTING ONLY
 

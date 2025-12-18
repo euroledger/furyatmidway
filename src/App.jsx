@@ -1847,10 +1847,6 @@ export function App() {
                     GlobalGameState.jpCardsDrawn = true
                     if (GlobalGameState.gamePhase === GlobalGameState.PHASE.JAPAN_DRAWS_ONE_CARD) {
                       const card = GlobalInit.controller.drawJapanCards(1, false)
-                      // const card = GlobalInit.controller.drawJapanCards(1, false, [6])
-
-                      console.log(">>>>>>>>>>>>>>> card=", card)
-                      // setMidwayDialogShow(true)
                       if (GlobalGameState.gameTurn === 7 && card === 5) {
                         if (GlobalInit.controller.japanHandContainsCard(5)) {
                           GlobalGameState.dieRolls = []
@@ -2430,9 +2426,7 @@ export function App() {
         setTowedCVSelected={setTowedCVSelected}
       ></TowedCVHeaders>
     </>
-  )
-      console.log("WANK ************ ATTACKING STEPS REMAINING=", GlobalGameState.attackingStepsRemaining)
-  
+  )  
   const towedCVFooters = (
     <>
       <TowedCVFooters controller={GlobalInit.controller} towedCVSelected={towedCVSelected}></TowedCVFooters>
@@ -2631,6 +2625,9 @@ export function App() {
       ></SeaBattleDamagePanelHeaders>
     </>
   )
+
+
+
   const seaBattleDamageCloseButtonDisabled = !seaBattleDamageDone
 
   const seaBattleDamageFooters = (
@@ -2717,6 +2714,9 @@ export function App() {
     doCVDamageControl(roll)
   }
 
+
+  console.log("+++++++++++++ PISS US AIR OPS=", GlobalGameState.airOperationPoints.us)
+
   function doCardRoll(roll) {
     if (cardNumber === 5) {
       doNavalBombardmentRoll(GlobalInit.controller, roll)
@@ -2750,7 +2750,6 @@ export function App() {
     GlobalGameState.updateGlobalState()
   }
   function doTargetSelectionRoll(roll0) {
-    // roll0 = 3 // QUACK TESTING
     doSelectionRoll(GlobalInit.controller, roll0)
 
     setTargetDetermined(true)
@@ -3210,7 +3209,7 @@ export function App() {
         doRoll={doInitiativeRoll}
         diceButtonDisabled={airOpsDiceButtonDisabled}
         closeButtonDisabled={!airOpsDiceButtonDisabled}
-        image="NOFLAG"
+        image="NOFLAG" 
       ></DicePanel>
       <DicePanel
         numDice={2}
@@ -3240,6 +3239,7 @@ export function App() {
         headerText="Surface Battle Damage Allocation"
         headers={seaBattleDamageHeaders}
         footers={seaBattleDamageFooters}
+        image={GlobalUIConstants.Flags.JAPAN}
         showDice={false}
         margin={25}
         onHide={(e) => {
@@ -3851,6 +3851,9 @@ export function App() {
           if (GlobalGameState.gameTurn === 7) {
             GlobalGameState.endOfGame = true
           }
+          // this ensures that we go to nextState in endofturn as japan player
+          GlobalGameState.currentPlayer = GlobalUnitsModel.Side.JAPAN
+
           setEndOfTurnSummaryShow(false)
           nextAction(e)
         }}

@@ -48,12 +48,6 @@ export function DamageHeaders({
 
   let totalSteps = 0
   const airCounters = unitsInGroup.map((airUnit, i) => {
-    if (airUnit.aircraftUnit.steps === 0) {
-      setStepsLeft(0)
-      if (!capAirUnits) GlobalGameState.attackingStepsRemaining = 0
-      return <></>
-    }
-
     if (GlobalGameState.gamePhase === GlobalGameState.PHASE.ESCORT_DAMAGE_ALLOCATION) {
       totalSteps += airUnit.aircraftUnit.steps
     } else {
@@ -104,7 +98,10 @@ export function DamageHeaders({
     )
   })
   setStepsLeft(totalSteps)
-  GlobalGameState.attackingStepsRemaining = totalSteps
+  console.log("QUACK 1 setting GlobalGameState.attackingStepsRemaining to ", totalSteps)
+  if (GlobalGameState.gamePhase !== GlobalGameState.PHASE.ESCORT_DAMAGE_ALLOCATION) {
+    GlobalGameState.attackingStepsRemaining = totalSteps
+  }
   const handleClick = (e, airUnit) => {
     // TODO
     // We need a general utility function that checks:
@@ -126,12 +123,16 @@ export function DamageHeaders({
       if (eliminatedSteps === GlobalGameState.fighterHits) {
         return // don't allow more steps to be eliminated than is necessary
       }
+      console.log("QUACK 2 setting GlobalGameState.attackingStepsRemaining to ", totalSteps)
+
       GlobalGameState.attackingStepsRemaining = totalSteps
     } else if (GlobalGameState.gamePhase === GlobalGameState.PHASE.AAA_DAMAGE_ALLOCATION) {
       if (eliminatedSteps === GlobalGameState.antiaircraftHits) {
         // setEliminatedSteps(0)
         return // don't allow more steps to be eliminated than is necessary
       }
+      console.log("QUACK 3 setting GlobalGameState.attackingStepsRemaining to ", totalSteps)
+
       GlobalGameState.attackingStepsRemaining = totalSteps
     }
 

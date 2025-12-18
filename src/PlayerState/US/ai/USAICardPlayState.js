@@ -31,6 +31,7 @@ class USAICardPlayState {
     const playThisCard = playCardAction(GlobalInit.controller, cardNumber, setAttackResolved, GlobalUnitsModel.Side.US)
 
     console.log("playThisCard=", playThisCard)
+
     if (playThisCard) {
       GlobalInit.controller.setCardPlayed(cardNumber, GlobalUnitsModel.Side.US)
       if (cardNumber === 1) {
@@ -95,9 +96,6 @@ class USAICardPlayState {
   }
 
   async nextState(stateObject) {
-    const { setSearchValuesAlertShow, setSearchValues, setSearchResults, cardNumber } = stateObject
-
-    console.log("NEXT STATE FROM US CARD PLAY cardNumber=", cardNumber)
     await setNextStateFollowingCardPlay(stateObject)
 
     // This should be done in next state (eg AIR SEARCH)

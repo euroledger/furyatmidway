@@ -93,6 +93,9 @@ export default class GlobalGameState {
   static gameTurn = 1
   static winner = ""
 
+
+  static checkedCard6 = false
+
   static currentCarrier = 0
   static currentCarrierDivision = 1
 

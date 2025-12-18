@@ -30,13 +30,11 @@ class USAIEscortDamageAllocationState {
       const { unit, index } = await allocateEscortDamageToDefendingCapUnits(capUnits)
       numHitsAllocated++
 
-      console.log(">>>> CAP ELIM index=", index)
       await delay(30)
 
       GlobalGameState.testStepLossSelection = index
       GlobalGameState.updateGlobalState()
       const newCapUnits = GlobalInit.controller.removeUnitFromCAPDefenders(unit, GlobalUnitsModel.Side.US)
-      console.log("(>>>>>>>>>><<< newCapUnits=", newCapUnits)
       setCapAirUnits(() => newCapUnits)
     }
 

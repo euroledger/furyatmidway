@@ -5,7 +5,7 @@ import { midwayPossible, midwayDeclarationHandler } from "../../StateUtils"
 
 class JapanHumanDrawOneCardState {
   async doAction(stateObject) {
-        const { setCardNumber } = stateObject
+    const { setCardNumber } = stateObject
 
     console.log("DO JAPAN DRAW ONE CARD ACTION ---- CHECK FOR CARDS 5 AND 6 FIRST GAME TURN=", GlobalGameState.gameTurn)
     // this.nextState(stateObject)
@@ -21,12 +21,14 @@ class JapanHumanDrawOneCardState {
       }
     }
     if (GlobalGameState.gameTurn !== 4) {
-      if (GlobalInit.controller.japanHandContainsCard(6)) {
+      // only check card 6 if not already checked ie it was just drawn
+      if (!GlobalGameState.checkedCard6 && GlobalInit.controller.japanHandContainsCard(6)) {
         setCardNumber(() => 6)
         console.log("TURN 7 GO TO CARD PLAY")
         GlobalGameState.gamePhase = GlobalGameState.PHASE.CARD_PLAY
         GlobalGameState.updateGlobalState()
       }
+      GlobalGameState.phaseCompleted = true
     }
   }
 

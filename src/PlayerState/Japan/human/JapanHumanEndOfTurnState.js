@@ -18,14 +18,12 @@ class JapanHumanEndOfTurnState {
   }
 
   async doAction(stateObject) {
-    const { setCardNumber, setEndOfTurnSummaryShow, setEnabledJapanBoxes } = stateObject
+    const { setCardNumber, cardNumber, setEndOfTurnSummaryShow, setEnabledJapanBoxes } = stateObject
     console.log("STATE JapanHumanEndOfTurnState")
     console.log("CURRENT PLAYER=", GlobalGameState.currentPlayer)
     console.log("card checked (1)=", this.cardChecked(1))
 
-          setEnabledJapanBoxes(() => [])
-
-
+    setEnabledJapanBoxes(() => [])
     if (
       !this.cardChecked(1) &&
       GlobalInit.controller.usHandContainsCard(1) &&
@@ -115,11 +113,11 @@ class JapanHumanEndOfTurnState {
         return
       }
     }
-    console.log("END OF TURM SUMMARY.........")
     setEndOfTurnSummaryShow(true) // TODO check for other cards
   }
 
   async nextState(stateObject) {
+    console.log(">>>>>>>>>> MOVING ON FROM GAME TURN END")
     const { setCardNumber, setEndOfTurnSummaryShow } = stateObject
 
     // if this is the end of turn 7 - possible Midway Invasion
@@ -166,6 +164,7 @@ class JapanHumanEndOfTurnState {
 
       if (GlobalInit.controller.japanHandContainsCard(6) && GlobalGameState.gameTurn !== 4) {
         setCardNumber(() => 6)
+        GlobalGameState.currentPlayer = GlobalUnitsModel.Side.JAPAN
         GlobalGameState.gamePhase = GlobalGameState.PHASE.CARD_PLAY
       } else {
         if (GlobalGameState.gameTurn === 2 || GlobalGameState.gameTurn === 4 || GlobalGameState.gameTurn === 6) {

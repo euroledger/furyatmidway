@@ -624,7 +624,6 @@ export async function setNextStateFollowingCardPlay(stateObject) {
 
   console.log(">>>>>>>>>>>>>>>>>> MOVING ON FROM CARD", cardNumber)
   GlobalGameState.cardsChecked.push(cardNumber)
-
   switch (cardNumber) {
     case -1:
       break
@@ -671,6 +670,7 @@ export async function setNextStateFollowingCardPlay(stateObject) {
       break
     case 3:
       console.log("MOVE ON FROM CARD 3")
+      GlobalGameState.cardsChecked.push(3)
       if (GlobalInit.controller.usHandContainsCard(4) || GlobalInit.controller.japanHandContainsCard(4)) {
         setCardNumber(() => 4)
         goToCardPlay(4)
@@ -683,9 +683,11 @@ export async function setNextStateFollowingCardPlay(stateObject) {
         } else {
           GlobalGameState.currentPlayer = GlobalUnitsModel.Side.JAPAN
           GlobalGameState.gamePhase = GlobalGameState.PHASE.END_OF_TURN
-          setEndOfTurnSummaryShow(true)
+          // setEndOfTurnSummaryShow(true)
+          // nextAction()
         }
       }
+      GlobalGameState.updateGlobalState()
       break
     case 4:
       console.log("MOVE ON FROM CARD 4")
@@ -725,19 +727,20 @@ export async function setNextStateFollowingCardPlay(stateObject) {
       // if (GlobalGameState.gameTurn === 7) {
       //   determineMidwayInvasion(setCardNumber, setEndOfTurnSummaryShow, -1)
       // } else {
-        if (GlobalGameState.gameTurn !== 4) {
-          GlobalGameState.currentPlayer = GlobalUnitsModel.Side.US
-          GlobalGameState.gamePhase = GlobalGameState.PHASE.JAPAN_DRAWS_ONE_CARD
-        } else {
-          GlobalGameState.currentPlayer = GlobalUnitsModel.Side.US
-          GlobalGameState.gamePhase = GlobalGameState.PHASE.US_DRAWS_ONE_CARD
-        }
-        GlobalGameState.updateGlobalState()
+      if (GlobalGameState.gameTurn !== 4) {
+        GlobalGameState.currentPlayer = GlobalUnitsModel.Side.US
+        GlobalGameState.gamePhase = GlobalGameState.PHASE.JAPAN_DRAWS_ONE_CARD
+      } else {
+        GlobalGameState.currentPlayer = GlobalUnitsModel.Side.US
+        GlobalGameState.gamePhase = GlobalGameState.PHASE.US_DRAWS_ONE_CARD
+      }
+      GlobalGameState.updateGlobalState()
       // }
 
       break
     case 6:
       // High Speed Reconnaissance
+      GlobalGameState.checkedCard6 = true
       if (GlobalGameState.gameTurn === 1) {
         GlobalGameState.usCardsDrawn = true
         if (isMidwayAttackPossible()) {
@@ -758,7 +761,8 @@ export async function setNextStateFollowingCardPlay(stateObject) {
         // Now check for possible play of card 5
         setCardNumber(() => 5)
       } else {
-        setCardNumber(() => 0) // reset for next card play
+        setCardNumber(() => -1)
+        GlobalGameState.checkedCard6 = true
         if (GlobalGameState.gameTurn === 2 || GlobalGameState.gameTurn === 4 || GlobalGameState.gameTurn === 6) {
           GlobalGameState.currentPlayer = GlobalUnitsModel.Side.US
           GlobalGameState.gamePhase = GlobalGameState.PHASE.US_DRAWS_ONE_CARD
@@ -797,7 +801,7 @@ export async function setNextStateFollowingCardPlay(stateObject) {
       // await tidyUp(setAirUnitUpdate, setStrikeGroupUpdate, setFleetUnitUpdate)
       // GlobalGameState.gamePhase = GlobalGameState.PHASE.INITIATIVE_DETERMINATION
 
-      await tidyUp(setAirUnitUpdate, setStrikeGroupUpdate, setFleetUnitUpdate)
+      // await tidyUp(setAirUnitUpdate, setStrikeGroupUpdate, setFleetUnitUpdate)
       GlobalGameState.currentPlayer = GlobalUnitsModel.Side.JAPAN
       GlobalGameState.gamePhase = GlobalGameState.PHASE.END_OF_AIR_OPERATION
       setEndOfAirOpAlertShow(true)
