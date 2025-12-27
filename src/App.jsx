@@ -128,6 +128,10 @@ export default App
 export const BoardContext = createContext()
 
 export function App() {
+  const [isPlaying, setIsPlaying] = useState(false);
+    const audioRef = useRef(new Audio("/sounds/theme.m4a"));
+
+
   const [splash, setSplash] = useState(true)
   const [showZones, setShowZones] = useState(true)
   const [enabledJapanBoxes, setEnabledJapanBoxes] = useState([])
@@ -1702,6 +1706,8 @@ export function App() {
 
       return
     }
+
+
     let endOfAirOps = false
     if (GlobalGameState.gamePhase === GlobalGameState.PHASE.NIGHT_AIR_OPERATIONS_JAPAN) {
       endOfAirOps = await endOfMyNightAirOperations(GlobalUnitsModel.Side.JAPAN)
@@ -1723,7 +1729,18 @@ export function App() {
       GlobalGameState.updateGlobalState()
     }
   }
+  const toggleSound = () => {
+    // Create a new Audio object using the imported sound file
+    audioRef.current.volume = 0.1
+    audioRef.current.loop = true
 
+     if (isPlaying) {
+      audioRef.current.pause();
+    } else {
+      audioRef.current.play();
+    }
+    setIsPlaying(!isPlaying);
+  }
   const Controls = () => {
     const { zoomIn, zoomOut, resetTransform } = useControls()
     let image = "/images/usaflag.jpg"
@@ -1775,6 +1792,9 @@ export function App() {
     if (GlobalGameState.hideCounters) {
       hideMsg = "Show"
     }
+
+    let musicMsg = isPlaying ? "Stop" : "Play" 
+
     return (
       <Navbar
         style={{ fontSize: font }}
@@ -1914,6 +1934,18 @@ export function App() {
               >
                 Fleet
               </Button>
+              <Button
+                style={{ fontSize: font }}
+                className="me-1"
+                size="sm"
+                variant="outline-light"
+                onClick={() => {
+                 toggleSound()
+                }}
+              >
+                {musicMsg} 
+              </Button >
+           
               {/* <Button
                 style={{ fontSize: font }}
                 className="me-1"
@@ -2467,7 +2499,7 @@ export function App() {
   )
 
   const endOfTurnHeader =
-    GlobalGameState.gameTurn !== 7 ? `End of Turn ${GlobalGameState.gameTurn} - Summary` : "End of Game Summary"
+    GlobalGameState.gameTurn !== 7 ? `End of Turn ${GlobalGameState.gameTurn} - Summary` : "End of Game Summary: Battle of Midway"
 
   // determine whether to hide (AI) buttons
   let hiddenBoog =
@@ -2713,9 +2745,6 @@ export function App() {
   function doDamageControl(roll) {
     doCVDamageControl(roll)
   }
-
-
-  console.log("+++++++++++++ PISS US AIR OPS=", GlobalGameState.airOperationPoints.us)
 
   function doCardRoll(roll) {
     if (cardNumber === 5) {

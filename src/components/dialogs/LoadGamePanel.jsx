@@ -229,9 +229,9 @@ function LoadGamePanel(props) {
           <ConfirmPanelAuto setShowConfirmPanelAuto={setShowConfirmPanelAuto}></ConfirmPanelAuto>
         )}
       </Modal.Body>
-      <Modal.Footer style={{ background: `${bg}`, color: "black" }}>
+      {/* <Modal.Footer style={{ background: `${bg}`, color: "black" }}>
         <Button onClick={props.onHide}>Close</Button>
-      </Modal.Footer>
+      </Modal.Footer> */}
     </Modal>
   )
 }

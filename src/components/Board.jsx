@@ -137,7 +137,7 @@ function Board({
   return (
     <>
       <div>
-        <img src="/images/bb.jpg" alt="test" style={{ left: "50%" }} width="100%" height="100%" />
+        <img src="/images/bb3.jpg" alt="test" style={{ left: "50%" }} width="100%" height="100%" />
         <div
           style={{
             position: "absolute",

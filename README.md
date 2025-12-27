@@ -32,7 +32,7 @@ Then select `Code` and `Download ZIP` as shown here
 
 ![image info](/public/images/download.jpg)
 
-Unpack the zip folder into a new source code folder called furyatmidwasy then:
+Unpack the zip folder into a new source code folder called furyatmidway then:
 
 4. cd to the source code folder:
 
@@ -49,6 +49,8 @@ Unpack the zip folder into a new source code folder called furyatmidwasy then:
 In a web browser, go to the following URL to see the game:
 
 `localhost:3000`
+
+(It is recommended to play the game in Full Screen mode which is F11 to enter/exit on Windows/ Adjust the zoom setting to maximise the window if required)
 
 
 

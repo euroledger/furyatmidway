@@ -124,123 +124,6 @@ export function EndOfTurnSummaryHeaders({ controller, sidebg }) {
             </div>
           )}
         </div>
-        {/* 
-        <div
-          style={{
-            display: "flex",
-            justifyContent: "center",
-            alignItems: "center",
-            color: "white",
-            width: "33%",
-          }}
-        >
-          <div>
-            <p
-              style={{
-                color: "white",
-                marginTop: "5px",
-              }}
-            >
-              {japanCVMsg} &emsp;
-              <strong>
-                {numJapanCVsSunk}
-                {japanCVsSunkMsg}
-              </strong>
-              &emsp; <br></br>
-            </p>
-            <p
-              style={{
-                color: "white",
-                marginTop: "5px",
-                marginLeft: "2px",
-              }}
-            >
-              {usCVMsg} &emsp;
-              <strong>
-                {numUSCVsSunk}
-                {usCVsSunkMsg}
-              </strong>
-              &emsp; <br></br>
-            </p>
-
-            <p
-              style={{
-                color: "white",
-                marginTop: "5px",
-                marginLeft: "-4px",
-              }}
-            >
-              {japanCSFMsg}&emsp;
-              {csfLeft}
-              &emsp;&emsp;&emsp;&emsp;<strong>{csfVPs}</strong>
-              <br></br>
-            </p>
-            <p
-              style={{
-                color: "white",
-                marginTop: "5px",
-                marginLeft: "-2px",
-              }}
-            >
-              {us1AFMsg}&emsp;
-              {af1Left}
-              &emsp;&emsp;&emsp;&emsp;<strong>{af1VPs}</strong>
-              <br></br>
-            </p>
-
-            <p
-              style={{
-                color: "white",
-                marginTop: "5px",
-              }}
-            >
-              {midwayControlMsg} &nbsp;<strong>{midwayControl}</strong>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<strong> 2</strong>&emsp; <br></br>
-            </p>
-            <p
-              style={{
-                marginTop: "20px",
-                color: "white",
-              }}
-            >
-              {gameContinuesMsg}
-            </p>
-
-            {(gameTurn3Winner || GlobalGameState.gameTurn === 7) && (
-              <p
-                style={{
-                  marginTop: "50px",
-                  marginLeft: "-16px",
-                  color: "white",
-                  fontSize: "18px",
-                }}
-              >
-                &emsp;
-                <strong>
-                  {vmsg}&nbsp;{GlobalGameState.winner}
-                </strong>
-                !!
-              </p>
-            )}
-
-            {!GlobalGameState.winner && (
-              <p
-                style={{
-                  display: "flex",
-                  marginTop: "50px",
-                  justifyContent: "center",
-                  alignItems: "center",
-                  color: "white",
-                }}
-              >
-                Click "Close" to begin next turn...
-              </p>
-            )}
-          </div>
-
-          <div></div>
-          <div></div>
-        </div> */}
-
         <div
           style={{
             display: "grid",
@@ -344,6 +227,46 @@ export function EndOfTurnSummaryHeaders({ controller, sidebg }) {
             </div>
           )}
         </div>
+      </div>
+      <div
+        style={{
+          display: "flex",
+          justifyContent: "center",
+          alignItems: "center",
+        }}
+      >
+        {(gameTurn3Winner || GlobalGameState.gameTurn === 7) && (
+          <p
+            style={{
+              marginTop: "50px",
+              marginLeft: "-16px",
+              color: "white",
+              fontSize: "18px",
+            }}
+          >
+            &emsp;
+            <strong>
+              {vmsg}&nbsp;{GlobalGameState.winner}
+            </strong>
+            !!
+          </p>
+        )}
+        {!GlobalGameState.winner && (
+          <div
+            style={{
+              display: "flex",
+              flexDirection: "column",
+              justifyContent: "center",
+              alignItems: "center",
+              marginTop: "20px",
+              color: "white",
+            }}
+          >
+            {gameContinuesMsg && <p style={{ marginBottom: "10px" }}>{gameContinuesMsg}</p>}
+
+            <p style={{ marginTop: "10px" }}>Click "Close" to begin next turn...</p>
+          </div>
+        )}
       </div>
     </>
   )
