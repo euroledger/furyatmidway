@@ -176,7 +176,7 @@ function AirAttackCounter({
   return (
     <div>
       <input
-        draggabble="true"
+        draggable="true"
         onDragStart={onDrag}
         onDragEnd={(e) => handleDrop(e, airUnit)}
         type="image"

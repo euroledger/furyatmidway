@@ -602,7 +602,7 @@ function AirCounter({ getAirBox, setAirBox, counterData, side }) {
         id="saveForm2"
         onMouseEnter={onDrag}
         onMouseLeave={onStop}
-        draggabble="true"
+        draggable="true"
         onDragStart={onDrag}
         onDragEnd={handleDrop}
         onClick={(e) => handleClick(e)}

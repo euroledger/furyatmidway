@@ -1,7 +1,9 @@
-# Fury at Midway, (c) Revolution Games
+# Fury at Midway, (c) Bonsai Games
 
-An attempt to create a PC version of the board game _Fury at Midway_ by Yasushi Nakaguro with AI to allow solitaire play.
+This is a PC version of the board game _Fury at Midway_ by Yasushi Nakaguro with AI to allow solitaire play.
 The intention is to have an AI control either the Japanese or US fleets (or both).
+
+As of Dec 25 the US AI is implemented; the IJN AI is still under development.
 
 # Installation (Windows)
 
@@ -52,6 +54,11 @@ In a web browser, go to the following URL to see the game:
 
 (It is recommended to play the game in Full Screen mode which is F11 to enter/exit on Windows/ Adjust the zoom setting to maximise the window if required)
 
+I tried the above installation on Linux/Mac and it is the same, and works fine.
+
+As of Dec 2025, I have tested the game on all browsers; on PC/Linux/Mac. It runs on all browsers and plaforms.
+
+__Exception: The game does NOT work on Firefox (drag and drop bug in that browser).__
 
 
 
