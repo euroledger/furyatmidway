@@ -60,5 +60,8 @@ As of Dec 2025, I have tested the game on all browsers; on PC/Linux/Mac. It runs
 
 __Exception: The game does NOT work on Firefox (drag and drop bug in that browser).__
 
+The user guide is in the root directory of the zip file/cloned directory
+__Fury at Midway User Guide.docx__
+
 
 
