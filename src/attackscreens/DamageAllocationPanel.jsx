@@ -98,10 +98,10 @@ export function DamageHeaders({
     )
   })
   setStepsLeft(totalSteps)
-  console.log("QUACK 1 setting GlobalGameState.attackingStepsRemaining to ", totalSteps)
-  if (GlobalGameState.gamePhase !== GlobalGameState.PHASE.ESCORT_DAMAGE_ALLOCATION) {
+  console.log("POO 1 setting GlobalGameState.attackingStepsRemaining to ", totalSteps)
+  // if (GlobalGameState.gamePhase === GlobalGameState.PHASE.ESCORT_DAMAGE_ALLOCATION) {
     GlobalGameState.attackingStepsRemaining = totalSteps
-  }
+  // }
   const handleClick = (e, airUnit) => {
     // TODO
     // We need a general utility function that checks:

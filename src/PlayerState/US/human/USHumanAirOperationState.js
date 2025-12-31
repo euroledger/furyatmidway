@@ -9,7 +9,7 @@ class USHumanAirOperationState {
   }
 
   async nextState(stateObject) {
-   
+    console.log("NEXT STATE AFTER US AIR OPERATIONS...")
   }
 
   getState() {

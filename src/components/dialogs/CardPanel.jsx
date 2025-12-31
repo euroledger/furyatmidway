@@ -3,6 +3,7 @@ import Button from "react-bootstrap/Button"
 import GlobalUnitsModel from "../../model/GlobalUnitsModel"
 import GlobalGameState from "../../model/GlobalGameState"
 import "./modal.css"
+import GlobalUIConstants from "../UIConstants"
 
 function CardPanel(props) {
   const cardArray =
@@ -10,7 +11,12 @@ function CardPanel(props) {
       ? GlobalUnitsModel.jpCards.map((c) => c._number)
       : GlobalUnitsModel.usCards.map((c) => c._number)
 
-  const bg = GlobalGameState.gameTurn === 4 ? "black" :"#293a4b"
+  let bg = GlobalGameState.gameTurn === 4 ? "black" :"#293a4b"
+
+  if (props.side === GlobalUnitsModel.Side.JAPAN && GlobalGameState.gameTurn !== 4) {
+    bg = GlobalUIConstants.Colors.JAPAN
+  }
+  
   const header = `${props.side} Hand`
   const sizey = cardArray.length >= 4 ? "xl" : "lg"
 

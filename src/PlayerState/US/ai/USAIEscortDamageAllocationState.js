@@ -46,6 +46,7 @@ class USAIEscortDamageAllocationState {
     const { capAirUnits, setAirUnitUpdate, setEliminatedUnitsPanelShow } = stateObject
 
     if (GlobalGameState.attackingStepsRemaining > 0) {
+      console.log("QUACK 1 DEBUG attacking steps remaining!")
       // if elite pilots and midway attack we did escort counterattack first
       // so transition to CAP_INTERCEPTION
       if (GlobalGameState.taskForceTarget === GlobalUnitsModel.TaskForce.MIDWAY && GlobalGameState.elitePilots) {
@@ -55,6 +56,11 @@ class USAIEscortDamageAllocationState {
         GlobalGameState.gamePhase = GlobalGameState.PHASE.ANTI_AIRCRAFT_FIRE
       }
     } else {
+      console.log(
+        "QUACK 2 NO Attacking steps remaining! GlobalGameState.attackingStepsRemaining=",
+        GlobalGameState.attackingStepsRemaining
+      )
+
       await endOfAirOperation(capAirUnits, setAirUnitUpdate, setEliminatedUnitsPanelShow)
       midwayOrAirOps()
     }

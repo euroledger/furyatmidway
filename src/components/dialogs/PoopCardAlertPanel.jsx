@@ -19,6 +19,7 @@ function PoopCardAlertPanel(props) {
     width,
     eventHandler,
     margin,
+    sidebg,
     setCardDicePanelShow5,
     setCardDicePanelShow7,
     setStrikeLostPanelShow,
@@ -57,8 +58,12 @@ function PoopCardAlertPanel(props) {
     onHide(e)
   }
 
-  const bg = GlobalGameState.gameTurn === 4 ? "black" : "#293a4b"
+  
+  let bg = GlobalGameState.gameTurn === 4 ? "black" : "#293a4b"
 
+  if (sidebg && GlobalGameState.gameTurn !== 4) {
+    bg = sidebg
+  }
   let myBigBollocks = "modal-width" + 2
 
   if (width) {

@@ -1,6 +1,7 @@
 import GlobalGameState from "../../../model/GlobalGameState"
 import GlobalUnitsModel from "../../../model/GlobalUnitsModel"
 import { goToDMCVState } from "../../StateUtils"
+import GlobalInit from "../../../model/GlobalInit"
 
 class USHumanFleetMovementPlanningState {
   async doAction(stateObject) {
@@ -15,6 +16,10 @@ class USHumanFleetMovementPlanningState {
 
     GlobalGameState.initial1AFLocation = GlobalInit.controller.getFleetLocation("1AF", GlobalUnitsModel.Side.JAPAN)
     GlobalGameState.initialMIFLocation = GlobalInit.controller.getFleetLocation("MIF", GlobalUnitsModel.Side.JAPAN)
+    GlobalGameState.initialDMCVLocation = GlobalInit.controller.getFleetLocation(
+      "IJN-DMCV",
+      GlobalUnitsModel.Side.JAPAN
+    )
     GlobalGameState.gamePhase = GlobalGameState.PHASE.JAPAN_FLEET_MOVEMENT
   }
 

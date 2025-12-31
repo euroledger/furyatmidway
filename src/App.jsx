@@ -2510,6 +2510,10 @@ export function App() {
     GlobalGameState.sideWithInitiative === GlobalUnitsModel.Side.JAPAN &&
     GlobalGameState.usPlayerType === GlobalUnitsModel.TYPE.AI
 
+  let poopboog = GlobalGameState.jpPlayerType === GlobalUnitsModel.TYPE.AI
+      ? GlobalUIConstants.Colors.JAPAN
+      : GlobalUIConstants.Colors.US
+
   let sideboog =
     GlobalGameState.jpPlayerType === GlobalUnitsModel.TYPE.HUMAN
       ? GlobalUIConstants.Colors.JAPAN
@@ -3679,6 +3683,7 @@ export function App() {
         setAttackResolved={setAttackResolved}
         setSubmarineAlertPanelShow={setSubmarineAlertPanelShow}
         setSubmarineDamagePanelShow={setSubmarineDamagePanelShow}
+        sidebg={poopboog}
         onHide={(e) => {
           setCardPlayedPanelShow(false)
           if (cardNumber === 13 || cardNumber === 5 || cardNumber === 8) {

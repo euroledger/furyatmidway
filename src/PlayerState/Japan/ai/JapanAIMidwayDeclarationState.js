@@ -2,6 +2,7 @@ import GlobalGameState from "../../../model/GlobalGameState"
 import GlobalInit from "../../../model/GlobalInit"
 import GlobalUnitsModel from "../../../model/GlobalUnitsModel"
 import midwayAttackDecisionAction from "../../../UIEvents/AI/MidwayAttackDeclarationBot"
+import { goToDMCVState } from "../../StateUtils"
 
 class JapanAIMidwayDeclarationState {
   async doAction(stateObject) {
