@@ -21,6 +21,8 @@ class JapanHumanFleetMovementState {
 
   async nextState(stateObject) {
     console.log("NEXT STATE AFTER FLEET MOVEMENT....")
+    GlobalGameState.initial1AFLocation = GlobalInit.controller.getFleetLocation("1AF", GlobalUnitsModel.Side.JAPAN)
+
     GlobalGameState.distanceBetweenCarrierFleets = GlobalInit.controller.numHexesBetweenFleets(
       { name: "1AF", side: GlobalUnitsModel.Side.JAPAN },
       { name: "CSF", side: GlobalUnitsModel.Side.US }

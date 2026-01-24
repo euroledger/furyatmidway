@@ -252,7 +252,7 @@ function Board({
           counterData={GlobalInit.counters.get("CSF-JPMAP")}
           setCurrentJapanHex={setCurrentJapanHex}
           setCurrentUSHex={setCurrentUSHex}
-          enabled={true}
+          enabled={GlobalGameState.initial1AFLocation !== undefined} // do not display initial US Fleet position
           side={GlobalUnitsModel.Side.JAPAN}
           getFleetBox={getFleetBox}
           setFleetBox={setFleetBox}
