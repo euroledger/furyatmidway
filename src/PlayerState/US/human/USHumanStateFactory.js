@@ -6,6 +6,7 @@ import USHumanAirSearchState from "./USHumanAirSearchState"
 import USHumanAirOperationState from "./USHumanAirOperationState"
 import USHumanCardDrawState from "./USHumanCardDrawState"
 import USHumanSetupFleetState from "./USHumanSetupFleetState"
+import USHumanCardPlayState from "./USHumanCardPlayState"
 
 function mapGameStateToUSHumanHandlerState() {
   switch (GlobalGameState.gamePhase) {
@@ -29,8 +30,13 @@ function mapGameStateToUSHumanHandlerState() {
 
     case GlobalGameState.PHASE.US_CARD_DRAW:
       return new USHumanCardDrawState()
+    
+    case GlobalGameState.PHASE.CARD_PLAY:
+      return new USHumanCardPlayState()
 
     default:
+      console.log("+++++ ERRROR +++++ NO US HUMAN STATE FOUND FOR PHASE", GlobalGameState.gamePhase)
+      
   }
 }
 

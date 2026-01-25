@@ -762,7 +762,7 @@ export function App() {
       //   StateManager.gameStateManager.setJapanState(stateObject)
       // }
       doStateChange()
-    }
+    } 
   }, [GlobalGameState.gamePhase])
 
   useEffect(() => {
@@ -772,23 +772,23 @@ export function App() {
   }, [GlobalGameState.gamePhase])
 
   useEffect(() => {
-    if (GlobalGameState.gamePhase === GlobalGameState.PHASE.CARD_PLAY) {
-      setEliminatedSteps(0)
-      setHeaderText("Possible Card Play: Card #" + cardNumber)
-      GlobalGameState.dieRolls = []
-      if (cardNumber === 2 || cardNumber === 4) {
-        setDamagedCV("")
-      }
-      if (cardNumber !== 0 && cardNumber !== -1) {
-        if (GlobalGameState.currentPlayer === GlobalUnitsModel.Side.US) {
-          StateManager.gameStateManager.setUSState(stateObject)
-          StateManager.gameStateManager.doAction(GlobalUnitsModel.Side.US, stateObject)
-        } else {
-          StateManager.gameStateManager.setJapanState(stateObject)
-          StateManager.gameStateManager.doAction(GlobalUnitsModel.Side.JAPAN, stateObject)
+      if (GlobalGameState.gamePhase === GlobalGameState.PHASE.CARD_PLAY) {
+        setEliminatedSteps(0)
+        GlobalGameState.dieRolls = []
+        if (cardNumber === 2 || cardNumber === 4) {
+          setDamagedCV("")
+        }
+        if (cardNumber !== 0 && cardNumber !== -1) {
+          if (GlobalGameState.currentPlayer === GlobalUnitsModel.Side.US) {
+            StateManager.gameStateManager.setUSState(stateObject)
+            StateManager.gameStateManager.doAction(GlobalUnitsModel.Side.US, stateObject)
+          } else {
+            StateManager.gameStateManager.setJapanState(stateObject)
+            StateManager.gameStateManager.doAction(GlobalUnitsModel.Side.JAPAN, stateObject)
+          }
         }
       }
-    }
+    // }
   }, [GlobalGameState.gamePhase, cardNumber])
 
   useEffect(() => {
@@ -977,21 +977,39 @@ export function App() {
 
     if (GlobalGameState.gamePhase === GlobalGameState.PHASE.US_FLEET_MOVEMENT_PLANNING) {
       GlobalGameState.phaseCompleted = true // may just want to skip any fleet movement (leave fleet where it is)
-      console.log("DEBUG csfLocation=", csfLocation)
-      if (csfLocation.currentHex !== undefined) {
-        let regionsMinusAllFleets = allHexesWithinDistance(csfLocation.currentHex, GlobalGameState.fleetSpeed, true)
 
-        // remove hex with IJN DMCV
-        // if (GlobalGameState.gameTurn !== 4) {
+      let locationOfCarrier = GlobalInit.controller.getFleetLocation("CSF", GlobalUnitsModel.Side.US)
+      if (GlobalGameState.initialCSFLocation !== undefined) {
+        locationOfCarrier = GlobalGameState.initialCSFLocation
+      }
+  
+      GlobalGameState.phaseCompleted = true // may just want to skip any fleet movement (leave fleet where it is)
+      
+      if (locationOfCarrier !== undefined && locationOfCarrier.currentHex !== undefined) {
+        // US CSF Fleet is not allowed to move to same hex as other fleets, remove US-DMCV hex from region
+        let usRegion = allHexesWithinDistance(locationOfCarrier.currentHex, GlobalGameState.fleetSpeed, false)
+
+        usRegion.push(locationOfCarrier.currentHex) // allow move back to start hex
         if (usDMCVLocation !== undefined && usDMCVLocation.currentHex !== undefined) {
-          regionsMinusAllFleets = removeHexFromRegion(regionsMinusAllFleets, usDMCVLocation.currentHex)
+          usRegion = removeHexFromRegion(usRegion, usDMCVLocation.currentHex)
         }
-        // }
-        setUSMapRegions(regionsMinusAllFleets)
+        setUSMapRegions(usRegion)
         if (GlobalGameState.usPlayerType === GlobalUnitsModel.TYPE.HUMAN) {
           setFleetMoveAlertShow(true)
         }
       }
+    // if (csfLocation.currentHex !== undefined) {
+      //   let regionsMinusAllFleets = allHexesWithinDistance(csfLocation.currentHex, GlobalGameState.fleetSpeed, true)
+
+      //   // remove hex with IJN DMCV
+      //   // if (GlobalGameState.gameTurn !== 4) {
+      //   if (usDMCVLocation !== undefined && usDMCVLocation.currentHex !== undefined) {
+      //     regionsMinusAllFleets = removeHexFromRegion(regionsMinusAllFleets, usDMCVLocation.currentHex)
+      //   }
+      //   // }
+      //   setUSMapRegions(regionsMinusAllFleets)
+       
+      // }
     } else if (GlobalGameState.gamePhase === GlobalGameState.PHASE.US_DMCV_FLEET_MOVEMENT_PLANNING) {
       let usRegion
       const csfLocation = GlobalInit.controller.getFleetLocation("CSF", GlobalUnitsModel.Side.US)
@@ -3160,7 +3178,7 @@ export function App() {
         size={4}
         onHide={(e) => {
           setSearchValuesAlertShow(false)
-          GlobalGameState.gamePhase = GlobalGameState.PHASE.AIR_OPERATIONS
+          GlobalGameState.gamePhase = GlobalGameState.PHASE.INITIATIVE_DETERMINATION
           nextAction(e)
         }}
       >

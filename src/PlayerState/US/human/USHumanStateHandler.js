@@ -16,6 +16,7 @@ class USHumanStateHandler extends PlayerStateHandler {
   }
 
   async doNextState(stateObject) {
+    console.trace()
     this.stateObject = stateObject ?? this.stateObject
     console.log("BISCUITS: this.currentState=", this.currentState, "State Object=", this.stateObject)
     this.currentState = (await this.currentState.nextState(this.stateObject)) ?? this.currentState

@@ -25,6 +25,8 @@ class JapanAIMidwayDeclarationState {
       GlobalGameState.gamePhase = GlobalGameState.PHASE.US_DMCV_FLEET_MOVEMENT_PLANNING
     } else {
       console.log(">>>>>>>>> SET PHASE TO US_FLEET_MOVEMENT_PLANNING")
+      GlobalGameState.initialCSFLocation = GlobalInit.controller.getFleetLocation("CSF", GlobalUnitsModel.Side.US)
+
       GlobalGameState.gamePhase = GlobalGameState.PHASE.US_FLEET_MOVEMENT_PLANNING
     }
   }

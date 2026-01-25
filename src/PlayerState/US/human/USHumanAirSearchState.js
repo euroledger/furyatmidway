@@ -1,14 +1,16 @@
 import GlobalGameState from "../../../model/GlobalGameState"
-import USHumanInitiativeDeterminationState from "./USHumanInitiativeDeterminationState"
+// import USAIInitiativeDeterminationState from "./USAIInitiativeDeterminationState"
+import { calcAirOpsPoints } from "../../StateUtils"
 
 class USHumanAirSearchState {
   async doAction(stateObject) {
-    
+    const { setSearchValuesAlertShow, setSearchValues, setSearchResults } = stateObject
+    calcAirOpsPoints({ setSearchValues, setSearchResults, setSearchValuesAlertShow })
+    setSearchValuesAlertShow(true)
   }
 
   async nextState(stateObject) {
-    GlobalGameState.gamePhase = GlobalGameState.PHASE.INITIATIVE_DETERMINATION
-    return new USHumanInitiativeDeterminationState()
+    // GlobalGameState.gamePhase = GlobalGameState.PHASE.INITIATIVE_DETERMINATION
   }
 
   getState() {

@@ -51,6 +51,9 @@ export function saveGameState(controller, gameId) {
   const locationMIFText = JSON.stringify(GlobalGameState.initialMIFLocation)
   const locationDMCVText = JSON.stringify(GlobalGameState.initialDMCVLocation)
 
+  const locationCSFText = JSON.stringify(GlobalGameState.initialCSFLocation)
+  const locationUSDMCVText = JSON.stringify(GlobalGameState.initialUSDMCVLocation)
+
   let previousPositionText
   if (GlobalGameState.previousPosition !== undefined) {
     previousPositionText = JSON.stringify(Array.from(GlobalGameState.previousPosition.entries()))
@@ -70,7 +73,7 @@ export function saveGameState(controller, gameId) {
 
   const usFleetText = JSON.stringify(Array.from(GlobalUnitsModel.usFleetUnits.entries()))
 
-    console.log(">>>>>>>>>>>>>>>>>>>>>>> SAVINIG US MAP OBJECTS=", usMapText)
+  console.log(">>>>>>>>>>>>>>>>>>>>>>> SAVINIG US MAP OBJECTS=", usMapText)
 
   const jpFleetText = JSON.stringify(Array.from(GlobalUnitsModel.jpFleetUnits.entries()))
   const logItems = JSON.stringify(Array.from(GlobalGameState.logItems.entries()))
@@ -95,6 +98,8 @@ export function saveGameState(controller, gameId) {
     ijnFleetLocation: location1AFText,
     mifFleetLocation: locationMIFText,
     dmcvFleetLocation: locationDMCVText,
+    usCSFFleetLocation: locationCSFText,
+    usDMCVFleetLocation: locationUSDMCVText,
     previousPosition: previousPositionText,
     uscards: usCardText,
     cards: cardText,
@@ -272,7 +277,7 @@ function createDamageUpdatesMidway(controller) {
   const boxName = controller.getAirBoxForNamedShip(
     GlobalUnitsModel.Side.US,
     GlobalUnitsModel.Carrier.MIDWAY,
-    "FLIGHT_DECK"
+    "FLIGHT_DECK",
   )
   let markers = new Array()
 
@@ -585,6 +590,15 @@ export function loadGameStateForId(controller, gameId) {
   if (dmcvLocationText !== undefined) {
     GlobalGameState.initialDMCVLocation = JSON.parse(dmcvLocationText)
   }
+
+  const csfLocationText = gameDetails.usCSFFleetLocation
+  if (csfLocationText !== undefined) {
+    GlobalGameState.initialCSFLocation = JSON.parse(csfLocationText)
+  }
+  const usdmcvLocationText = gameDetails.usDMCVFleetLocation
+  if (usdmcvLocationText !== undefined) {
+    GlobalGameState.initialUSDMCVLocation = JSON.parse(usdmcvLocationText)
+  }
   const previousPositionText = gameDetails.previousPosition
 
   let previousPosition
@@ -666,7 +680,7 @@ export function loadGameStateForId(controller, gameId) {
   // GlobalInit.controller.drawJapanCards(1, false, [10])
 
   GlobalUnitsModel.usCards = JSON.parse(usCardText)
-  // GlobalInit.controller.drawUSCards(1, true, [4]) // QUACK TESTING
+  // GlobalInit.controller.drawUSCards(1, true, [7]) // QUACK TESTING
 
   if (jpCardsPlayedText !== undefined) {
     GlobalUnitsModel.jpCardsPlayed = JSON.parse(jpCardsPlayedText)

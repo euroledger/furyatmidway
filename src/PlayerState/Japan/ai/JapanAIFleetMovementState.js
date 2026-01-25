@@ -3,6 +3,8 @@ import { delay } from "../../../Utils"
 import { DELAY_MS, goToMidwayAttackOrUSFleetMovement } from "../../StateUtils"
 import { createFleetUpdate } from "../../../AirUnitData"
 import { moveJapan1AFFleetAction } from "../../../UIEvents/AI/JapanFleetMovementBot"
+import GlobalInit from "../../../model/GlobalInit"
+import GlobalUnitsModel from "../../../model/GlobalUnitsModel"
 
 class JapanAIFleetMovementState {
   async doAction(stateObject) {
@@ -15,6 +17,8 @@ class JapanAIFleetMovementState {
   }
 
   async nextState(stateObject) {
+    GlobalGameState.initial1AFLocation = GlobalInit.controller.getFleetLocation("1AF", GlobalUnitsModel.Side.JAPAN)
+    
     const { setMidwayNoAttackAlertShow, setJapanMapRegions, setJapanMIFMapRegions, setFleetUnitUpdate } = stateObject
     await goToMidwayAttackOrUSFleetMovement({
       setMidwayNoAttackAlertShow,

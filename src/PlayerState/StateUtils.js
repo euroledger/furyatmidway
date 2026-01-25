@@ -268,7 +268,7 @@ export async function goToMidwayAttackOrUSFleetMovement({
 
       let distance = GlobalInit.controller.numHexesBetweenFleets(
         { name: "1AF", side: GlobalUnitsModel.Side.JAPAN },
-        { name: "MIDWAY" }
+        { name: "MIDWAY" },
       )
       calcAirOpsPointsMidway(distance)
       GlobalGameState.sideWithInitiative = GlobalUnitsModel.Side.JAPAN
@@ -337,6 +337,7 @@ export async function usFleetMovementNextStateHandler({
   setSearchValues,
   setSearchResults,
 }) {
+  console.log("IN THE US FLEET MOVEMENT QUACK HANDLER!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!")
   const { numFleetsInSameHexAsCSF, numFleetsInSameHexAsUSDMCV } = GlobalInit.controller.opposingFleetsInSameHex()
   if (GlobalGameState.gameTurn === 4) {
     if (numFleetsInSameHexAsCSF === 2 || numFleetsInSameHexAsUSDMCV === 2) {
@@ -360,6 +361,7 @@ export async function usFleetMovementNextStateHandler({
       if (GlobalInit.controller.usHandContainsCard(7)) {
         setCardNumber(() => 7)
         GlobalGameState.gamePhase = GlobalGameState.PHASE.CARD_PLAY
+        GlobalGameState.updateGlobalState()
       } else {
         calcAirOpsPoints({ setSearchValues, setSearchResults })
         GlobalGameState.gamePhase = GlobalGameState.PHASE.AIR_SEARCH
@@ -375,7 +377,7 @@ export function isMidwayAttackPossible() {
     "attackUnitsOnDeck.length=",
     attackUnitsOnDeck,
     "GlobalInit.controller.isMidwayBaseDestroyed()=",
-    GlobalInit.controller.isMidwayBaseDestroyed()
+    GlobalInit.controller.isMidwayBaseDestroyed(),
   )
   if (attackUnitsOnDeck.length === 0 || GlobalInit.controller.isMidwayBaseDestroyed()) {
     console.log("MIDWAY ATTACK NOT POSSIBLE")
@@ -445,19 +447,35 @@ export const getUSFleetRegions = () => {
 
   let usCSFRegions, usDMCVRegions
   if (GlobalGameState.gamePhase === GlobalGameState.PHASE.US_FLEET_MOVEMENT_PLANNING) {
-    GlobalGameState.phaseCompleted = true // may just want to skip any fleet movement (leave fleet where it is)
-    if (csfLocation.currentHex !== undefined) {
-      let regionsMinusAllFleets = allHexesWithinDistance(csfLocation.currentHex, GlobalGameState.fleetSpeed, true)
+    // CHECK GLOBAL LOCATION FOR PREVIOUSLY SAVED GAME
 
-      console.log(">>>>>>>>>regionsMinusAllFleets= ", regionsMinusAllFleets)
-      // remove hex with IJN DMCV
-      // if (GlobalGameState.gameTurn !== 4) {
-      if (usDMCVLocation !== undefined && usDMCVLocation.currentHex !== undefined) {
-        regionsMinusAllFleets = removeHexFromRegion(regionsMinusAllFleets, usDMCVLocation.currentHex)
-      }
-      // }
-      usCSFRegions = regionsMinusAllFleets
+    let locationOfCarrier = GlobalInit.controller.getFleetLocation("CSF", GlobalUnitsModel.Side.US)
+    if (GlobalGameState.initialCSFLocation !== undefined) {
+      locationOfCarrier = GlobalGameState.initialCSFLocation
     }
+
+    console.log(">>>>>>>>> LOCATION OF US CSF CARRIER FLEET QUACK=", locationOfCarrier)
+    GlobalGameState.phaseCompleted = true // may just want to skip any fleet movement (leave fleet where it is)
+   
+     if (locationOfCarrier !== undefined && locationOfCarrier.currentHex !== undefined) {
+      // US CSF Fleet is not allowed to move to same hex as other fleets, remove US-DMCV hex from region
+      let usRegion = allHexesWithinDistance(locationOfCarrier.currentHex, GlobalGameState.fleetSpeed, true)
+
+       if (usDMCVLocation !== undefined && usDMCVLocation.currentHex !== undefined) {
+        usRegion = removeHexFromRegion(usRegion, usDMCVLocation.currentHex)
+      }
+      usCSFRegions = usRegion
+     }
+    // if (csfLocation.currentHex !== undefined) {
+    //   let regionsMinusAllFleets = allHexesWithinDistance(csfLocation.currentHex, GlobalGameState.fleetSpeed, true)
+
+    
+    //   if (usDMCVLocation !== undefined && usDMCVLocation.currentHex !== undefined) {
+    //     regionsMinusAllFleets = removeHexFromRegion(regionsMinusAllFleets, usDMCVLocation.currentHex)
+    //   }
+    //   // }
+    //   usCSFRegions = regionsMinusAllFleets
+    // }
   } else if (GlobalGameState.gamePhase === GlobalGameState.PHASE.US_DMCV_FLEET_MOVEMENT_PLANNING) {
     const csfLocation = GlobalInit.controller.getFleetLocation("CSF", GlobalUnitsModel.Side.US)
 
@@ -1650,7 +1668,7 @@ export async function checkFleetsInSameHex(
   setFleetUnitUpdate,
   setPreviousPosition,
   previousPosition,
-  setUSMapRegions
+  setUSMapRegions,
 ) {
   const { numFleetsInSameHexAsCSF, numFleetsInSameHexAsUSDMCV } = controller.opposingFleetsInSameHex()
   // 1. loop through US Fleets
@@ -1674,7 +1692,7 @@ export async function checkFleetsInSameHex(
         const fleets = GlobalInit.controller.getAllFleetsInLocation(
           usDMCVStartLocation,
           GlobalUnitsModel.Side.US,
-          false
+          false,
         )
         if (fleets.length === 0) {
           await retreatOneHexTo(usDMCVStartLocation.currentHex, "US-DMCV", setFleetUnitUpdate)
