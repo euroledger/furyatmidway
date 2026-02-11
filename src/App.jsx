@@ -824,8 +824,9 @@ export function App() {
         StateManager.gameStateManager.doAction(GlobalUnitsModel.Side.US, stateObject)
         if (GlobalGameState.usPlayerType !== GlobalUnitsModel.TYPE.AI) {
           setUsStrikePanelEnabled(true) // for now. Move this in due course (only display for humans)
+        } else {
+          StateManager.gameStateManager.doNextState(GlobalUnitsModel.Side.US)
         }
-        StateManager.gameStateManager.doNextState(GlobalUnitsModel.Side.US)
       } else {
         console.log("SET JAPAN STATE...(AIR OPERATIONS)")
         StateManager.gameStateManager.setJapanState(stateObject)
@@ -2792,16 +2793,16 @@ export function App() {
   // console.log("GlobalUnitsModel.usStrikeGroups=", GlobalUnitsModel.usStrikeGroups)
   function doInitiativeRoll(roll0, roll1) {
     // for testing QUACK
-    // doIntiativeRoll(GlobalInit.controller, 6, 1, true) // JAPAN initiative
+    doIntiativeRoll(GlobalInit.controller, 6, 1, true) // JAPAN initiative
     // doIntiativeRoll(GlobalInit.controller, 1, 6, true) // US initiative
 
     // doIntiativeRoll(GlobalInit.controller, 3, 3, true) // tie
 
-    doIntiativeRoll(GlobalInit.controller, roll0, roll1)
+    // doIntiativeRoll(GlobalInit.controller, roll0, roll1)
     GlobalGameState.updateGlobalState()
   }
   function doTargetSelectionRoll(roll0) {
-    doSelectionRoll(GlobalInit.controller, roll0)
+    dofSelectionRoll(GlobalInit.controller, roll0)
 
     setTargetDetermined(true)
     GlobalGameState.updateGlobalState()

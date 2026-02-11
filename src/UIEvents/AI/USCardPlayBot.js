@@ -75,7 +75,7 @@ export function playCardAction(controller, cardNumber, setAttackResolved, side) 
       }
 
       console.log("++++++++++++++ distanceBetweenCSFand1AF=", distanceBetweenCSFand1AF)
-      if (distanceBetweenCSFand1AF <= 2 || distanceBetweenUSDMCVand1AF <= 2 || GlobalGameState.gameTurn === 7) {
+      if (distanceBetweenCSFand1AF <= 3 || distanceBetweenUSDMCVand1AF <= 2 || GlobalGameState.gameTurn === 7) {
         return true
       }
 

@@ -558,7 +558,9 @@ export function doStrikeBoxUS(controller, name, side) {
     // check Midway in range - attack hex within 5 hexes of Midway
     const locationOfStrikeGroup = controller.getStrikeGroupLocation(strikeGroup.name, side)
 
-    if (locationOfStrikeGroup!== undefined && locationOfStrikeGroup.currentHex !== undefined &&
+    if (
+      locationOfStrikeGroup !== undefined &&
+      locationOfStrikeGroup.currentHex !== undefined &&
       distanceBetweenHexes(locationOfStrikeGroup.currentHex, Controller.MIDWAY_HEX.currentHex) <= 5 &&
       !controller.isMidwayBaseDestroyed()
     ) {
@@ -931,7 +933,7 @@ export async function moveOrphanedCAPUnitsToEliminatedBox(side, box, unit) {
   if (box !== undefined) {
     const reorgUnits = getReorgUnits(side, box, unit)
     if (reorgUnits.length > 0) {
-      return "Reorg the following units:", reorgUnits
+      return ("Reorg the following units:", reorgUnits)
     }
   }
 
@@ -1080,7 +1082,7 @@ export function getStep1Fighters(airUnits) {
       unit.aircraftUnit !== undefined &&
       unit.carrier !== GlobalUnitsModel.Carrier.MIDWAY &&
       unit.aircraftUnit.steps === 1 &&
-      unit.aircraftUnit.attack === false
+      unit.aircraftUnit.attack === false,
   )
 }
 
@@ -1104,7 +1106,7 @@ export function getStep1TorpedoPlanes(airUnits) {
       unit.aircraftUnit.steps === 1 &&
       unit.carrier !== GlobalUnitsModel.Carrier.MIDWAY &&
       unit.aircraftUnit.attack === true &&
-      unit.aircraftUnit.diveBomber === false
+      unit.aircraftUnit.diveBomber === false,
   )
 }
 
@@ -1478,7 +1480,7 @@ export function setValidDestinationBoxesNightOperations(controller, airUnitName,
     // see if US CSF within two hexes of Midway
     let hexesBetweenMidwayAndCSF = controller.numHexesBetweenFleets(
       { name: "MIDWAY", side: GlobalUnitsModel.Side.US },
-      { name: "CSF", side: GlobalUnitsModel.Side.US }
+      { name: "CSF", side: GlobalUnitsModel.Side.US },
     )
 
     // This is not correct, the test should be if strike hex is within 5 of Midway
@@ -1574,7 +1576,7 @@ export function setValidDestinationBoxes(controller, airUnitName, side) {
     // see if US CSF within two hexes of Midway
     let hexesBetweenMidwayAndCSF = controller.numHexesBetweenFleets(
       { name: "MIDWAY", side: GlobalUnitsModel.Side.US },
-      { name: "CSF", side: GlobalUnitsModel.Side.US }
+      { name: "CSF", side: GlobalUnitsModel.Side.US },
     )
 
     // This is not correct, the test should be if strike hex is within 5 of Midway
@@ -1593,7 +1595,7 @@ export function setValidDestinationBoxes(controller, airUnitName, side) {
   if (location.boxName.includes("CAP RETURNING")) {
     let hexesBetweenMidwayAndCSF = controller.numHexesBetweenFleets(
       { name: "MIDWAY", side: GlobalUnitsModel.Side.US },
-      { name: "CSF", side: GlobalUnitsModel.Side.US }
+      { name: "CSF", side: GlobalUnitsModel.Side.US },
     )
     const useMidway = hexesBetweenMidwayAndCSF <= 2 && side === GlobalUnitsModel.Side.US
     const destinations = doCapReturn(controller, airUnitName, side, useMidway)
@@ -1646,6 +1648,39 @@ export function handleAirUnitMoves(controller, side) {
   }
 }
 
+export function firstAirOpJapanStrikeRegion(controller, counterData) {
+  let locationOfCarrier,
+    ijnRegion = new Array()
+
+  locationOfCarrier = controller.getFleetLocation("1AF", GlobalUnitsModel.Side.JAPAN)
+
+  if (!locationOfCarrier) {
+    return []
+  }
+  if (GlobalGameState.gameTurn === 3 && GlobalGameState.airOperationPoints["japan"] === 1) {
+    const locationOfEnemyCarrier = controller.getFleetLocation("CSF", GlobalUnitsModel.Side.US)
+    const locationOfEnemyDMCV = controller.getFleetLocation("US-DMCV", GlobalUnitsModel.Side.US)
+    let distanceToDMCV, distanceToCSF
+    if (locationOfEnemyCarrier !== undefined) {
+      distanceToCSF = distanceBetweenHexes(locationOfCarrier.currentHex, locationOfEnemyCarrier.currentHex)
+      if (distanceToCSF <= 2) {
+        // strike group can move to attack enemy carrier fleet
+        ijnRegion.push(locationOfEnemyCarrier.currentHex)
+      }
+    }
+    if (locationOfEnemyDMCV !== undefined && locationOfEnemyDMCV.currentHex !== undefined) {
+      distanceToDMCV = distanceBetweenHexes(locationOfCarrier.currentHex, locationOfEnemyDMCV.currentHex)
+      if (distanceToDMCV <= 2) {
+        // strike group can move to attack enemy carrier fleet
+        ijnRegion.push(locationOfEnemyDMCV.currentHex)
+      }
+    }
+   
+  } else {
+    ijnRegion = allHexesWithinDistance(locationOfCarrier.currentHex, 2, false, true)
+  }
+  return ijnRegion
+}
 export function firstAirOpUSStrikeRegion(controller, counterData) {
   let locationOfCarrier,
     usRegion = new Array()
@@ -1690,6 +1725,32 @@ export function firstAirOpUSStrikeRegion(controller, counterData) {
   return usRegion
 }
 
+export function secondAirOpJapanStrikeRegion(controller, counterData) {
+  let japanRegion = new Array()
+  const locationOfStrikeGroup = controller.getStrikeGroupLocation(counterData.name, GlobalUnitsModel.Side.JAPAN)
+
+  // second air op for this SG, use movement allowance (3) and position of SG to determine regions
+  const speed = 3
+
+  const locationOfEnemyCarrier = controller.getFleetLocation("CSF", GlobalUnitsModel.Side.JAPAN)
+  const locationOfEnemyDMCV = controller.getFleetLocation("US-DMCV", GlobalUnitsModel.Side.JAPAN)
+  let distanceToDMCV, distanceToCSF
+  if (locationOfEnemyCarrier !== undefined) {
+    distanceToCSF = distanceBetweenHexes(locationOfStrikeGroup.currentHex, locationOfEnemyCarrier.currentHex)
+    if (distanceToCSF <= speed) {
+      // strike group can move to attack enemy carrier fleet
+      japanRegion.push(locationOfEnemyCarrier.currentHex)
+    }
+  }
+  if (locationOfEnemyDMCV !== undefined && locationOfEnemyDMCV.currentHex !== undefined) {
+    distanceToDMCV = distanceBetweenHexes(locationOfStrikeGroup.currentHex, locationOfEnemyDMCV.currentHex)
+    if (distanceToDMCV <= speed) {
+      // strike group can move to attack enemy carrier fleet
+      japanRegion.push(locationOfEnemyDMCV.currentHex)
+    }
+  }
+  return japanRegion
+}
 export function secondAirOpUSStrikeRegion(controller, counterData) {
   let usRegion = new Array()
   const locationOfStrikeGroup = controller.getStrikeGroupLocation(counterData.name, GlobalUnitsModel.Side.US)
@@ -1728,11 +1789,10 @@ export function secondAirOpUSStrikeRegion(controller, counterData) {
 export function isFirstAirOpForStrike(controller, counterData, side) {
   const locationOfStrikeGroup = controller.getStrikeGroupLocation(counterData.name, side)
 
+  const airOp = side === GlobalUnitsModel.Side.US ? GlobalGameState.airOpUS : GlobalGameState.airOpJapan
   const sg = controller.getStrikeGroupForBox(side, counterData.box)
   return !(
     (sg.gameTurnMoved !== undefined && sg.gameTurnMoved !== GlobalGameState.gameTurn) ||
-    (locationOfStrikeGroup !== undefined &&
-      counterData.airOpMoved !== undefined &&
-      GlobalGameState.airOpUS !== counterData.airOpMoved)
+    (locationOfStrikeGroup !== undefined && counterData.airOpMoved !== undefined && airOp !== counterData.airOpMoved)
   )
 }

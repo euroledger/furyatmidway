@@ -38,8 +38,9 @@ export function doNavalBombardmentRoll(controller, roll) {
 }
 export function doTroubledReconnaissanceRoll(controller, roll) {
   let theRoll = roll ?? randomDice(1)
-  GlobalGameState.dieRolls = [theRoll]
+  GlobalGameState.dieRolls = theRoll
 
+  console.log("GlobalGameState.dieRolls[0]=", GlobalGameState.dieRolls[0])
   GlobalGameState.JP_AF = GlobalGameState.dieRolls[0]
   GlobalGameState.updateGlobalState()
 

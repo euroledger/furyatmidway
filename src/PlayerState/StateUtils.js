@@ -1648,7 +1648,6 @@ function setRetreatRegions(location, setUSMapRegions, fleet) {
 }
 
 async function retreatOneHexTo(hex, fleet, setFleetUnitUpdate) {
-  console.trace()
   const q = hex.q
   const r = hex.r
 

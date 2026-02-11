@@ -133,7 +133,9 @@ function CardAlertPanel(props) {
       cardEventHandler(7, GlobalUnitsModel.Side.US)
       controller.setCardPlayed(7, GlobalUnitsModel.Side.US)
       onHide(e)
-      nextAction(e)
+      if (GlobalGameState.usPlayerType === GlobalUnitsModel.TYPE.AI) {
+        nextAction(e)
+      }
     } else if (cardNumber === 8) {
       cardEventHandler(8, GlobalUnitsModel.Side.US)
       controller.setCardPlayed(8, GlobalUnitsModel.Side.US)

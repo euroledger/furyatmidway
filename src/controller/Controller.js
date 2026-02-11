@@ -309,7 +309,7 @@ export default class Controller {
     // do not include any air units from carriers that have 2 hits or are sunk
     const units = this.getAllAirUnits(side)
     let reducedUnits = units.filter(
-      (unit) => unit.aircraftUnit.steps === 1 && unit.carrier !== GlobalUnitsModel.Carrier.MIDWAY
+      (unit) => unit.aircraftUnit.steps === 1 && unit.carrier !== GlobalUnitsModel.Carrier.MIDWAY,
     )
 
     let allowedUnits = new Array()
@@ -343,7 +343,7 @@ export default class Controller {
       side === GlobalUnitsModel.Side.US ? GlobalUnitsModel.AirBox.US_ELIMINATED : GlobalUnitsModel.AirBox.JP_ELIMINATED
     const units = this.getAllAirUnits(side)
     const eliminatedAirUnits = units.filter(
-      (unit) => this.getAirUnitLocation(unit.name).boxName === box && unit.carrier !== GlobalUnitsModel.Carrier.MIDWAY
+      (unit) => this.getAirUnitLocation(unit.name).boxName === box && unit.carrier !== GlobalUnitsModel.Carrier.MIDWAY,
     )
     return eliminatedAirUnits
   }
@@ -353,10 +353,15 @@ export default class Controller {
     return units.filter((unit) => unit.parentCarrier === carrier)
   }
 
+  getAllUnitsOnJapanFlightDeckofNamedCarrier(carrier) {
+    const units = this.getAllUnitsOnJapanFlightDecks()
+    return units.filter((unit) => unit.parentCarrier === carrier)
+  }
+
   getAllUnitsOnUSFlightDecks() {
     const airUnits = Array.from(this.counters.values())
     const defenders = airUnits.filter(
-      (unit) => unit.constructor.name === "AirUnit" && unit.side === GlobalUnitsModel.Side.US
+      (unit) => unit.constructor.name === "AirUnit" && unit.side === GlobalUnitsModel.Side.US,
     )
 
     let units = new Array()
@@ -370,10 +375,29 @@ export default class Controller {
     return units
   }
 
+  getAllUnitsOnJapanFlightDecks(fighters) {
+    const airUnits = Array.from(this.counters.values())
+    const defenders = airUnits.filter(
+      (unit) => unit.constructor.name === "AirUnit" && unit.side === GlobalUnitsModel.Side.JAPAN,
+    )
+
+    let units = new Array()
+    for (const unit of defenders) {
+      const location = this.getAirUnitLocation(unit.name)
+      if (location.boxName.includes("FLIGHT")) {
+        units.push(unit)
+      }
+    }
+    // will either filter all fighters or all non-fighters
+    units = units.filter((unit) => unit.aircraftUnit.attack !== fighters)
+    return units
+  }
+
+
   getAllUnitsOnMidwayRunways() {
     const airUnits = Array.from(this.counters.values())
     const defenders = airUnits.filter(
-      (unit) => unit.constructor.name === "AirUnit" && unit.side === GlobalUnitsModel.Side.US
+      (unit) => unit.constructor.name === "AirUnit" && unit.side === GlobalUnitsModel.Side.US,
     )
 
     let units = new Array()
@@ -390,7 +414,7 @@ export default class Controller {
   getAllUnitsOnUSFlightDecks(fighters) {
     const airUnits = Array.from(this.counters.values())
     const defenders = airUnits.filter(
-      (unit) => unit.constructor.name === "AirUnit" && unit.side === GlobalUnitsModel.Side.US
+      (unit) => unit.constructor.name === "AirUnit" && unit.side === GlobalUnitsModel.Side.US,
     )
 
     let units = new Array()
@@ -405,10 +429,26 @@ export default class Controller {
     return units
   }
 
+  getAllUnitsInJapanHangars() {
+    const airUnits = Array.from(this.counters.values())
+    const defenders = airUnits.filter(
+      (unit) => unit.constructor.name === "AirUnit" && unit.side === GlobalUnitsModel.Side.JAPAN,
+    )
+
+    let units = new Array()
+    for (const unit of defenders) {
+      const location = this.getAirUnitLocation(unit.name)
+
+      if (location.boxName.includes("HANGAR")) {
+        units.push(unit)
+      }
+    }
+    return units
+  }
   getAllUnitsInUSHangars() {
     const airUnits = Array.from(this.counters.values())
     const defenders = airUnits.filter(
-      (unit) => unit.constructor.name === "AirUnit" && unit.side === GlobalUnitsModel.Side.US
+      (unit) => unit.constructor.name === "AirUnit" && unit.side === GlobalUnitsModel.Side.US,
     )
 
     let units = new Array()
@@ -425,7 +465,7 @@ export default class Controller {
   getAllUnitsInUSHangars() {
     const airUnits = Array.from(this.counters.values())
     const defenders = airUnits.filter(
-      (unit) => unit.constructor.name === "AirUnit" && unit.side === GlobalUnitsModel.Side.US
+      (unit) => unit.constructor.name === "AirUnit" && unit.side === GlobalUnitsModel.Side.US,
     )
 
     let units = new Array()
@@ -442,7 +482,7 @@ export default class Controller {
   getAllUnitsOnJapaneseFlightDecks(fighters) {
     const airUnits = Array.from(this.counters.values())
     const defenders = airUnits.filter(
-      (unit) => unit.constructor.name === "AirUnit" && unit.side === GlobalUnitsModel.Side.JAPAN
+      (unit) => unit.constructor.name === "AirUnit" && unit.side === GlobalUnitsModel.Side.JAPAN,
     )
 
     let units = new Array()
@@ -490,7 +530,7 @@ export default class Controller {
   getAllCAPDefenders(side) {
     const units = Array.from(this.counters.values())
     const defenders = units.filter(
-      (unit) => unit.constructor.name === "AirUnit" && unit.side === side && unit.aircraftUnit.intercepting
+      (unit) => unit.constructor.name === "AirUnit" && unit.side === side && unit.aircraftUnit.intercepting,
     )
     return defenders
   }
@@ -1013,7 +1053,7 @@ export default class Controller {
     const flightDeckBox = this.airOperationsModel.getAirBoxForNamedShip(
       side,
       GlobalGameState.currentCarrierAttackTarget,
-      "FLIGHT"
+      "FLIGHT",
     )
     let boxName = Object.values(flightDeckBox)[0]
     const attackUnitsOnFlightDeck = this.getAttackAircraftInBox(boxName)
@@ -2410,7 +2450,9 @@ export default class Controller {
   }
 
   calcSearchResults(distances) {
+    console.log("BOOOOOBS GlobalGameState.JP_AF - distances.jp_af=", GlobalGameState.JP_AF - distances.jp_af)
     let jpVal = Math.max(1, GlobalGameState.JP_AF - distances.jp_af)
+    console.log("FOOOOOK jpVal=", jpVal)
     jpVal = Math.min(4, jpVal)
 
     jpVal -= GlobalGameState.midwayAirOpsCompleted
@@ -2546,7 +2588,7 @@ export default class Controller {
   getMidwayFighterAirStrength(side) {
     let units = this.getAllAirUnits(side)
     units = units.filter(
-      (unit) => unit.aircraftUnit.attack === false && unit.carrier === GlobalUnitsModel.Carrier.MIDWAY
+      (unit) => unit.aircraftUnit.attack === false && unit.carrier === GlobalUnitsModel.Carrier.MIDWAY,
     )
 
     let strength = units.reduce((sum, unit) => sum + unit.aircraftUnit.steps, 0)
@@ -2555,7 +2597,7 @@ export default class Controller {
   getCarrierFighterAirStrength(side) {
     let units = this.getAllAirUnits(side)
     units = units.filter(
-      (unit) => unit.aircraftUnit.attack === false && unit.carrier !== GlobalUnitsModel.Carrier.MIDWAY
+      (unit) => unit.aircraftUnit.attack === false && unit.carrier !== GlobalUnitsModel.Carrier.MIDWAY,
     )
 
     let strength = units.reduce((sum, unit) => sum + unit.aircraftUnit.steps, 0)
@@ -2564,7 +2606,7 @@ export default class Controller {
   getMidwayAttackAirStrength(side) {
     let units = this.getAllAirUnits(side)
     units = units.filter(
-      (unit) => unit.aircraftUnit.attack === true && unit.carrier === GlobalUnitsModel.Carrier.MIDWAY
+      (unit) => unit.aircraftUnit.attack === true && unit.carrier === GlobalUnitsModel.Carrier.MIDWAY,
     )
 
     let strength = units.reduce((sum, unit) => sum + unit.aircraftUnit.steps, 0)
@@ -2573,7 +2615,7 @@ export default class Controller {
   getCarrierAttackAirStrength(side) {
     let units = this.getAllAirUnits(side)
     units = units.filter(
-      (unit) => unit.aircraftUnit.attack === true && unit.carrier !== GlobalUnitsModel.Carrier.MIDWAY
+      (unit) => unit.aircraftUnit.attack === true && unit.carrier !== GlobalUnitsModel.Carrier.MIDWAY,
     )
 
     let strength = units.reduce((sum, unit) => sum + unit.aircraftUnit.steps, 0)

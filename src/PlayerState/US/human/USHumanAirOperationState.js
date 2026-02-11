@@ -1,6 +1,4 @@
-
 import GlobalGameState from "../../../model/GlobalGameState"
-
 
 class USHumanAirOperationState {
   async doAction(stateObject) {
@@ -9,7 +7,11 @@ class USHumanAirOperationState {
   }
 
   async nextState(stateObject) {
-    console.log("NEXT STATE AFTER US AIR OPERATIONS...")
+    console.trace()
+    const { setEndOfAirOpAlertShow } = stateObject
+    console.log("MOVE ON FROM US AIR OPERATIONS!")
+    setEndOfAirOpAlertShow(true)
+    GlobalGameState.gamePhase = GlobalGameState.PHASE.END_OF_AIR_OPERATION
   }
 
   getState() {

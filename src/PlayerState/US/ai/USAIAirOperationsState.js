@@ -34,8 +34,6 @@ class USAIAirOperationsState {
       if (!inBattle) {
         console.log("NOT IN BATTLE, end the air op NOW!!!!!!!!!!!!")
         this.endOfAirOp = true
-        // const returningUnitsNotMoved = GlobalInit.controller.getReturningUnitsNotMoved(GlobalUnitsModel.Side.US)
-
         await setStrikeGroupAirUnitsToNotMoved(GlobalGameState.sideWithInitiative)
         await generateUSAirOperationsMovesCarriers(GlobalInit.controller, stateObject)
         await generateUSAirOperationsMovesMidway(GlobalInit.controller, stateObject)

@@ -1081,8 +1081,6 @@ export async function moveStrikeGroups(controller, stateObject, test) {
     } else {
       // console.log(">>>>>>>>>>>>>>>>>>>> SECOND AIR OP:", strikeGroup)
 
-      const usRegion = secondAirOpUSStrikeRegion(controller, strikeGroup)
-
       // For SGs with target, prioritise target
       // else move as RETURN 2 box (no target possible)
       const strikeGroupLocation = controller.getStrikeGroupLocation(strikeGroup.name, GlobalUnitsModel.Side.US)
